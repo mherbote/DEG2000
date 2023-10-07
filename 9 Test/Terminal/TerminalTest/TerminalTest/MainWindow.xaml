@@ -1,0 +1,9 @@
+﻿<Window x:Class="TerminalTest.MainWindow"
+        x:Name="Term1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Test Terminal" Height="300" Width="400" Left="100" Top="100">
+   <Canvas  Margin="0,0,0,0" Name="Canvas1" >
+       
+   </Canvas>
+</Window>

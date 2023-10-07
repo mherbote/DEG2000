@@ -168,6 +168,7 @@ Module COMMON
 
     Public Function atoi(ByRef cmd As String, ByRef i As Integer) As ULong
         Dim num As ULong
+
         num = 0
         Do While i <= Len(cmd) And InStr(HEX, UCase(Mid(cmd, i, 1)), CompareMethod.Text) > 0 _
                                And InStr(HEX, UCase(Mid(cmd, i, 1)), CompareMethod.Text) < 11
