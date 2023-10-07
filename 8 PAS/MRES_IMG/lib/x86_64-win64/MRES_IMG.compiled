@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Compiler Value="C:\Programme\lazarus\fpc\3.2.0\bin\x86_64-win64\fpc.exe" Date="1357352815"/>
+  <Params Value=" -MObjFPC -Scghi -O1 -g -gl -l -vewnhibq &quot;-FiD:\devel\1 DEG2000\8 PAS\MRES_IMG\lib\x86_64-win64&quot; &quot;-FuD:\devel\1 DEG2000\8 PAS\MRES_IMG\&quot; &quot;-FUD:\devel\1 DEG2000\8 PAS\MRES_IMG\lib\x86_64-win64\&quot; &quot;-FED:\devel\1 DEG2000\8 PAS\MRES_IMG\&quot; &quot;-oD:\devel\1 DEG2000\8 PAS\MRES_IMG\MRES_IMG.exe&quot; MRES_IMG.lpr"/>
+</CONFIG>
