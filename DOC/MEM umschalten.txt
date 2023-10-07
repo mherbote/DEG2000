@@ -1,0 +1,109 @@
+um1::
+Anwender-TRAM (0000H-CFFFH) wegschalten			4
+System  -TRAM (8000H-CFFFH)  zuschalten			0
+ZRE, OFS, ABS und PFS        zuschalten			1
+
+um2::
+ZRE, OFS, ABS und PFS       wegschalten
+System  -TRAM (8000H-CFFFH) wegschalten
+Anwender-TRAM (0000H-CFFFH)  zuschalten
+
+
+
+sdir::																			für KMBG
+System  -TRAM (D000H-FFFFH) wegschalten
+Anwender-TRAM (D000H-FFFFH)  zuschalten
+
+rdir::																			für KMBG
+Anwender-TRAM (D000H-FFFFH) wegschalten
+System  -TRAM (D000H-FFFFH)  zuschalten
+
+
+setlp::
+System  -TRAM (C000H-FFFFH) wegschalten
+zusatz-PFS                   zuschalten
+
+reslp::
+zusatz-PFS                  wegschalten
+System  -TRAM (C000H-FFFFH)  zuschalten
+
+
+
+setp0::
+ZRE                         wegschalten
+Anwender-TRAM (0000H-0FFFH)  zuschalten
+
+resp0::
+Anwender-TRAM (0000H-0FFFH) wegschalten
+ZRE                          zuschalten
+
+
+trak::
+ZRE, OFS und PFS      zuschalten
+
+trdea::
+
+
+
+
+gosys1	macro
+Anwender-TRAM (0000H-7FFFH) wegschalten
+ZRE, OFS, ABS und PFS        zuschalten
+
+
+=================================================
+S44
+===
+0000'			start:						
+		;1)											; Anwender-TRAM (8000H-CFFFH) wegschalten
+		;2)											; System  -TRAM (8000H-CFFFH)  zuschalten
+		;3)											;	sbios-1700H	; SYS4 Speicherbereich löschen 		Länge =01700H+sbiosl
+		;4)											; sbios1			; BIOS - Teil laden								Länge =abios2-sbios1
+		;5)											; gosys2			; Sprung zur Version 1.2					Länge =gosys3-gosys2
+		;6)				JP		gosys0	; 8000H 
+
+---------------------		
+00FD'			sbios1::
+					.phase		sbios		; 9600H
+9600
+.
+.
+.
+AC16			biosxx::
+					.dephase
+1713'			sbios2::
+---------------------		
+1713'			op11::					
+					.phase		00C00H
+					opsmac
+0C00			op1111::					
+.
+.
+.
+0C56				JP			inp2
+					.dephase
+176C'			op12::
+---------------------		
+176C'			abios1::
+					.phase		abios		; F400H
+F400					
+.
+.
+.
+FE52
+					.dephase
+1E3C'			abios2::
+---------------------		
+1E3C'			gosys2::
+					.phase		gosys0
+8000			
+		;1)											; Anwender-TRAM (0000H-7FFFH) wegschalten
+		;2)											; ZRE, OFS, ABS und PFS        zuschalten
+		;3)				JP		0				; SYS12
+.
+.
+.
+8010
+					.dephase
+1E4F'			gosys3::
+=================================================
