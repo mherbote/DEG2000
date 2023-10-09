@@ -589,89 +589,155 @@ KV.AVZS:
 ;
 ;**********************************************************************
 	DW	$
-	DB	'KRD1'
+	DB	'KRW1'
 	JR	KH.RDSTA
 ;
 	DW	$
-	DB	'KRD2'
+	DB	'KRW2'
 KH.RDSTA:
 	CALL	U1.KTINI	;Initialisierung E/A-Tab.
-	LD	A,(UE.BWSA+325H)
+	LD	A,(UE.BWSA + 10*80 + 5)	;325H i von KRDi
 	AND	0FH
 	LD	(IX+4),A	;Subadresse eintragen
 KH.RES:
+KH.KSRE:
 	CALL	UR.KRE	;Reservieren
 KH.RD1:
-	LD	(IX+5),02H	;Block wiedergeben
+KH.KSRW:
+	LD	(IX+5),021H	;umspulen (rewind)
 	CALL	UF.EXEC
-	LD	A,(IX+2)	;Laenge = 1, dann BM
-	CP	1
-	JP	Z,KH.RDBM
-	CALL	KH.BILO
-	CALL	KH.ANZBL	;Block anzeigen
-KH.RD3:
+	JR		KH.RDBA
+;
+;	Z Y K L U S  über Tastatureingaben
+KH.RD3:	;Zyklus
+	LD	(IX+8),0	;Anzahl Bandmarken
 	CALL	UR.TAREP	;Tastaturabfrage
+	CP	080H
+	JR	Z,KH.KSRE	;---> P 01	Reservieren EIN
+	CP	082H
+	JR	Z,KH.KSRA	;---> P 03	Reservieren AUS
+	CP	081H
+	JR	Z,KH.KSRW	;---> P 02	Rewind
+
+	CP	083H
+	JR	Z,KH.KSRP	;---> P 04	        read; display
+	CP	085H
+	JR	Z,KH.KSRM	;---> P 06	R-; R-; read; display
+
+	LD	(IX+8),1	;Anzahl Bandmarken
+	CP	086H
+	JR	Z,KH.BMP	;---> P07	BM+
+	CP	088H
+	JR	Z,KH.BMM	;---> P09	BM-
+
 	CP	089H
-	JR	Z,KH.RD1	;---> P 10
+	JR	Z,KH.WREC	;---> P10	write Record
+	CP	08AH
+	JR	Z,KH.WBM	;---> P11	write BM
 	CP	08BH
-KH.RD6:
-	CALL	Z,KH.RD2	;---> P 12
-	JR	Z,KH.RD1
+	JR	Z,KH.WSL	;---> P11	write SL
+
 	CP	0CDH
-KH.RD4:
 	JR	Z,KH.SYSRT	;---> SYS
-	CP	85H
-	CALL	Z,KH.KBRS	;---> P 6
-	CP	86H
-	LD	(IX+8),1
-	PUSH	AF
-	CALL	Z,UR.KLV	;---> P 7
-	POP	AF
-	JR	Z,KH.RD3
-	CP	87H
-	PUSH	AF
-	CALL	Z,UR.KRA	;---> P 8
-	POP	AF
-	JR	Z,KH.RD3
-	CP	88H
-	PUSH	AF
-	CALL	Z,UR.KLR	;---> P 9
-	POP	AF
-	JR	Z,KH.RD3
-	CP	0E2H	;CTRL,US,B : BM SCHREIBEN
-	PUSH	AF
-	CALL	Z,UR.KBM
-	POP	AF
-	JP	Z,KH.RD3
-	CP	83H
-	JP	Z,KH.RES	;---> P 4
-	CP	84H
-	CALL	Z,UR.KRWW	;---> P 5
-	JP	KH.RD3
+
+	JR	KH.RD3
+
+;	P 03	Reservieren AUS
+KH.KSRA:
+	LD	(IX+5),021H	;umspulen (rewind)
+	CALL	UF.EXEC
+	CALL	UR.KRA
+	JR		KH.RDBA
+
+;	P 06	R-; R-; read; display
+KH.KSRM:
+	CALL	KH.RD2
+;	P 04	        read; display
+KH.KSRP:
+ 	LD	(IX+5),002H	;naechst Record lesen
+	CALL	UF.EXEC
+	LD	A,(IX+2)	;Lade die Laenge des Blockes
+	CP	1	;Laenge = 1, dann BandMarke
+	JR	Z,KH.RDBM
+	CP	2	;Laenge = 2, dann Schlussluecke
+	JR	Z,KH.RDSL
+	CALL	KH.ANZBL	;Block anzeigen
+	JR	KH.RD3
+
+;	P 07	BM+
+KH.BMP:
+	CALL	UR.KLV	;Bandmarke vorsetzen
+	CALL	UR.KBR	;Record    zuruecksetzen
+	JR	KH.KSRP
+;	P 09	BM-
+KH.BMM:
+	CALL	UR.KLR	;Bandmarke zurücksetzen
+	JR	KH.KSRP
+
+;	P 10	write Record
+KH.WREC:
+	; LD	(IX+5),08H
+	; CALL	UF.EXEC
+	; CALL	UR.KBR
+	JR	KH.RD3
+
+;	P 11	write BM
+KH.WBM:
+	JR	KH.RD3
+
+;	P 12	write SL
+KH.WSL:
+	JR	KH.RD3
+
+;	SYS		Systemruecksprung
 KH.SYSRT:
-	CALL	KH.BILO	;Systemruecksprung
-	RET
-KH.RD2:
-	PUSH	AF	;Flags retten
-	CALL	UR.KBR	;Block ruecksetzen
-	CALL	UR.KBR
-	POP	AF
-	RET
+	CALL	KH.BILO
+	JP	SY.SYSTB
+
+KH.RDBA:
+	CALL	KH.BILO
+	LD	HL,UA.ZKBA	;"Bandanfang"
+	LD	DE,UE.BWSA
+	LD	BC,UA.ZKBM-UA.ZKBA
+	LDIR
+	JP	KH.RD3
+
 KH.RDBM:
 	CALL	KH.BILO
 	LD	HL,UA.ZKBM	;"Bandmarke"
 	LD	DE,UE.BWSA
-	LD	BC,9
+	LD	BC,UA.ZKSL-UA.ZKBM
 	LDIR
 	JP	KH.RD3
+
+KH.RDSL:
+	CALL	KH.BILO
+	LD	HL,UA.ZKSL	;"Schlussluecke"
+	LD	DE,UE.BWSA
+	LD	BC,UA.ZKEE-UA.ZKSL
+	LDIR
+	JP	KH.RD3
+
 KH.ANZBL:
 	CALL	KH.BILO
 KH.ANZB1:
 	LD	HL,UE.PUF
+	CP	020H
+	JR	NZ,KH.ANZB2
+	LD	B,2	; 2 Zeilen anzeigen
+	JR	KH.ANZB4
+KH.ANZB2:
+	CP	080H
+	JR	NZ,KH.ANZB3
+	LD	B,8	; 8 Zeilen anzeigen
+	JR	KH.ANZB4
+KH.ANZB3:	
+	LD	B,24	; 24 Zeilen anzeigen
+KH.ANZB4:
 	CALL	KH.AZBLD	;Bild anzeigen (24 Zeilen)
 	RET		; IN...HL:=akt. Pufferadresse
+
 KH.AZBLD:
-	LD	B,24	; 24 Zeilen anzeigen
 	LD	DE,UE.BWSA
 KH.AZBL1:
 	PUSH	BC
@@ -684,6 +750,13 @@ KH.AZBL1:
 	EX	DE,HL
 	POP	HL
 	DJNZ	KH.AZBL1
+	RET
+
+KH.RD2:
+	PUSH	AF	;Flags retten
+	CALL	UR.KBR	;Block ruecksetzen
+	CALL	UR.KBR
+	POP	AF
 	RET
 ;                                IN...HL:= Pufferadresse
 ;                                     DE:= Zeilenanfang
@@ -766,33 +839,7 @@ KH.BLEV2:
 	INC	SP
 	DJNZ	KH.BLEV2
 	RET		;---> Anzeige beendet
-;*********************************************************************
-	DW	$
-	DB	'KWR1'
-	JR	KH.WRSTA
-;
-	DW	$
-	DB	'KWR2'
-KH.WRSTA:
-	LD	A,(UE.BWSA+325H)
-	LD	IX,UB.KTAB	;Block aufzeichnen
-	BIT	2,(IX)
-	JR	Z,$+9
-	PUSH	AF
-	LD	A,19H
-	CALL	UF.ERANZ
-	POP	AF
-	AND	0FH
-	LD	(IX+4),A
-	LD	(IX+5),08H
-	CALL	UF.EXEC
-	CALL	UR.KBR
-	JP	KH.RD1
-KH.KBRS:
-	CALL	UR.KBR
-	CALL	KH.BILO
-	POP	DE
-	RET
+
 ;----------------------------------------------------
 KH.BILO:
 	LD	HL,3000H

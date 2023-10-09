@@ -69,12 +69,12 @@ SY.ICTC3: DW    0               ;          CTC- Kanal 3
 	ORG	000A0H
                                 ;Initialisierungen
 SY.INRE1:
-	LD	SP,SM.STACK	;- Zeichen in die 25.Zeile schreiben
-	LD	HL,SD.BWSA + 24*80
-	LD	DE,SD.BWSA + 24*80 +1
-	LD	BC,79
-	LD	(HL),'-'
-	LDIR
+	LD	SP,SM.STACK
+	; LD	HL,SD.BWSA + 24*80	;- Zeichen in die 25.Zeile schreiben
+	; LD	DE,SD.BWSA + 24*80 +1
+	; LD	BC,79
+	; LD	(HL),'-'
+	; LDIR
 
 	IF	SD.GENE AND 00010000B	;DEG2000 Emulator
 	LD	BC,004C0H	;HS-Speicher auf Standard (1) umschalten

@@ -1,0 +1,62 @@
+	PAGE
+
+	ORG     0A800H
+    LD      BC,004C0H
+    LD      HL,0A818H
+    OTIR
+    LD      HL,0A000H
+    LD      DE,00000H
+    LD      BC,00800H
+    LDIR
+    JP      00000H
+    NOP
+    NOP
+;   ORG     0A818H
+    DB      0F0H
+    DB      003H
+    DB      009H    ; Alle Bereiche auf 3 (SYS3) umschlten
+    DB      0FFH
+    NOP
+    NOP
+    NOP
+    NOP
+
+;   ORG     0A820H
+    PUSH    BC
+    PUSH    HL
+    LD      HL,0A82DH
+    LD      BC,00340H
+    OTIR
+    POP     HL
+    POP     NC
+    RET
+;   ORG     0A82DH
+    DB      0F0H
+    DB      002H    ; Cursor AUS- schalten
+    DB      0FFH
+
+;   ORG     0A830H
+    PUSH    BC
+    PUSH    HL
+    LD      HL,0A849H
+    POP     BC
+    PUSH    BC
+    LD      (HL),C
+    INC     HL
+    LD      (HL),B
+    LD      HL,0A845H
+    LD      BC,00740H
+    OTIR
+    POP     HL
+    POP     BC
+    RET
+;   ORG     0A845H        
+    DB      0F0H
+    DB      004H    ; Cursor EIN-schalten mit HL als BWS-Adresse
+    DA      03000H
+;   ORG     0A849H    
+    DA      03000H  ; BWS-Adresse
+    DB      0FFH
+
+    END
+ 

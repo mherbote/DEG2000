@@ -1,6 +1,7 @@
 ''	MACRO-80 3.44	09-Dec-81	PAGE	1
 
 
+  000B                          SY.SYSTB  EQU	0000BH
   0D00                          SM.FKTAB  EQU	00D00H
   21EF                          ATACO     EQU	021EFH
   3000                          SD.BWSA   EQU	03000H
@@ -537,9 +538,9 @@
   552A'                  C      KR.GR2:
   552A'   3E 02          C      	LD	A,02H
   552C'                  C      KR.GR3:
-  552C'   CD 6D65'       C      	CALL	U1.KTINI
+  552C'   CD 6D90'       C      	CALL	U1.KTINI
   552F'   DD 77 04       C      	LD	(IX+4),A
-  5532'   CD 6A86'       C      	CALL	UR.KRE
+  5532'   CD 6AB1'       C      	CALL	UR.KRE
   5535'   C9             C      	RET
                          C      ;-------------------------------------------------------------------
   5536'   5536'          C      	DW	$
@@ -551,9 +552,9 @@
   5543'   4B 32 4C 2B    C      	DB	'K2L+'
   5547'   CD 552A'       C      	CALL	KR.GR2
   554A'   21 0001        C      	LD	HL,1	; IX + 8 := 1 / Anzahl BM
-  554D'   CD 6E9C'       C      	CALL	XY.STDX
+  554D'   CD 6EC7'       C      	CALL	XY.STDX
   5550'   08             C      	DB	8
-  5551'   CD 6A9E'       C      	CALL	UR.KLV
+  5551'   CD 6AC9'       C      	CALL	UR.KLV
   5554'   C9             C      	RET
                          C      ;---------------------------------------------------------------------
   5555'   5555'          C      	DW	$
@@ -565,9 +566,9 @@
   5562'   4B 32 4C 2D    C      	DB	'K2L-'
   5566'   CD 552A'       C      	CALL	KR.GR2
   5569'   21 0001        C      	LD	HL,1	; IX + 8 := 1 / Anzahl BM
-  556C'   CD 6E9C'       C      	CALL	XY.STDX
+  556C'   CD 6EC7'       C      	CALL	XY.STDX
   556F'   08             C      	DB	8
-  5570'   CD 6AA4'       C      	CALL	UR.KLR
+  5570'   CD 6ACF'       C      	CALL	UR.KLR
   5573'   C9             C      	RET
                          C      ;---------------------------------------------------------------------
   5574'   5574'          C      	DW	$
@@ -578,7 +579,7 @@
   557F'   557F'          C      	DW	$
   5581'   4B 32 52 2B    C      	DB	'K2R+'
   5585'   CD 552A'       C      	CALL	KR.GR2
-  5588'   CD 6AB6'       C      	CALL	UR.KBV
+  5588'   CD 6AE1'       C      	CALL	UR.KBV
   558B'   C9             C      	RET
                          C      ;--------------------------------------------------------------------
   558C'   558C'          C      	DW	$
@@ -589,7 +590,7 @@
   5597'   5597'          C      	DW	$
   5599'   4B 32 52 2D    C      	DB	'K2R-'
   559D'   CD 552A'       C      	CALL	KR.GR2
-  55A0'   CD 6ABC'       C      	CALL	UR.KBR
+  55A0'   CD 6AE7'       C      	CALL	UR.KBR
   55A3'   C9             C      	RET
                          C      ;--------------------------------------------------------------------
   55A4'   55A4'          C      	DW	$
@@ -603,7 +604,7 @@
   55AF'   55AF'          C      	DW	$
   55B1'   4B 32 52 57    C      	DB	'K2RW'
   55B5'   CD 552A'       C      	CALL	KR.GR2
-  55B8'   CD 6A8E'       C      	CALL	UR.KRW
+  55B8'   CD 6AB9'       C      	CALL	UR.KRW
   55BB'   18 14          C      	JR	KR.CKRA
                          C      ;---------------------------------------------------------------------
   55BD'   55BD'          C      	DW	$
@@ -615,7 +616,7 @@
   55CA'   4B 32 52 41    C      	DB	'K2RA'
   55CE'   CD 552A'       C      	CALL	KR.GR2
   55D1'                  C      KR.CKRA:
-  55D1'   CD 6A98'       C      	CALL	UR.KRA
+  55D1'   CD 6AC3'       C      	CALL	UR.KRA
   55D4'   C9             C      	RET
                          C      ;---------------------------------------------------------------------
   55D5'                  C      KR.KARO:
@@ -624,12 +625,12 @@
                          C      ;----------------------------------------------------------------------
   55D9'                  C      KR.VORSP:
   55D9'   11 3327        C      	LD	DE,UE.BWSA+327H
-  55DC'   CD 6FDC'       C      	CALL	UC.CVDB
+  55DC'   CD 7007'       C      	CALL	UC.CVDB
   55DF'   45             C      	LD	B,L
   55E0'   3E 46          C      	LD	A,'F'
   55E2'   32 2B1E'       C      	LD	(UB.PAR2),A
-  55E5'   CD 6A86'       C      	CALL	UR.KRE
-  55E8'   CD 6ACB'       C      	CALL	UR.POSIK
+  55E5'   CD 6AB1'       C      	CALL	UR.KRE
+  55E8'   CD 6AF6'       C      	CALL	UR.POSIK
   55EB'   C9             C      	RET
                          C      ;---------------------------------------------------------------------
   55EC'   55EC'          C      	DW	$
@@ -641,9 +642,9 @@
   55F9'   58 4B 41 32    C      	DB	'XKA2'
   55FD'   CD 552A'       C      	CALL	KR.GR2
   5600'   CD 55D9'       C      	CALL	KR.VORSP
-  5603'   CD 5F85'       C      	CALL	FD.FDINP
-  5606'   CD 6A8E'       C      	CALL	UR.KRW
-  5609'   CD 6A98'       C      	CALL	UR.KRA
+  5603'   CD 5FB0'       C      	CALL	FD.FDINP
+  5606'   CD 6AB9'       C      	CALL	UR.KRW
+  5609'   CD 6AC3'       C      	CALL	UR.KRA
   560C'   C9             C      	RET
                          C      ;----------------------------------------------------------------------
   560D'   560D'          C      	DW	$
@@ -654,15 +655,15 @@
   5618'   5618'          C      	DW	$
   561A'   59 4B 41 32    C      	DB	'YKA2'
   561E'   CD 552A'       C      	CALL	KR.GR2
-  5621'   CD 6A86'       C      	CALL	UR.KRE
+  5621'   CD 6AB1'       C      	CALL	UR.KRE
   5624'   11 3327        C      	LD	DE,UE.BWSA+327H
-  5627'   CD 6FDC'       C      	CALL	UC.CVDB
+  5627'   CD 7007'       C      	CALL	UC.CVDB
   562A'   2D             C      	DEC	L
   562B'   28 09          C      	JR	Z,$+11
   562D'   DD 75 0A       C      	LD	(IX+10),L
   5630'   CD 565D'       C      	CALL	KR.TYPT
-  5633'   CD 6A9E'       C      	CALL	UR.KLV
-  5636'   CD 5FD8'       C      	CALL	FD.FDOUT
+  5633'   CD 6AC9'       C      	CALL	UR.KLV
+  5636'   CD 6003'       C      	CALL	FD.FDOUT
   5639'   C9             C      	RET
                          C      ;---------------------------------------------------------------------------
   563A'   563A'          C      	DW	$
@@ -673,10 +674,10 @@
   5645'   5645'          C      	DW	$
   5647'   4B 32 43 4C    C      	DB	'K2CL'
   564B'   CD 552A'       C      	CALL	KR.GR2
-  564E'   CD 6AAA'       C      	CALL	UR.KBM
-  5651'   CD 6AB0'       C      	CALL	UR.KSL
-  5654'   CD 6A8E'       C      	CALL	UR.KRW
-  5657'   CD 6A98'       C      	CALL	UR.KRA
+  564E'   CD 6AD5'       C      	CALL	UR.KBM
+  5651'   CD 6ADB'       C      	CALL	UR.KSL
+  5654'   CD 6AB9'       C      	CALL	UR.KRW
+  5657'   CD 6AC3'       C      	CALL	UR.KRA
   565A'   C3 000B        C      	JP	UE.SYSTB
                          C      ;--------------------------------------------------------------------
   565D'                  C      KR.TYPT:
@@ -726,97 +727,98 @@
   568B'                  C      UF.EXEC2:	
   568B'   CD 55D5'       C      	CALL	KR.KARO
   568E'                  C      UF.EXEC1:
-  568E'   DD CB 00 7E    C      	BIT	7,(IX)
+  568E'   DD CB 00 7E    C      	BIT	7,(IX)	;Status
   5692'   28 CF          C      	JR	Z,UF.RET
+  5694'   DD 7E 01       C      	LD	A,(IX+1)	;FehlerschlC<ssel
                          C      ;-------------------------Fehlerbehandlung---------------
-  5694'                  C      UF.ERANZ:
-  5694'   E5             C      	PUSH	HL
-  5695'   D5             C      	PUSH	DE
-  5696'   C5             C      	PUSH	BC
-  5697'   F5             C      	PUSH	AF
-  5698'   F5             C      	PUSH	AF
-  5699'   3E 13          C      	LD	A,19
-  569B'   32 2B00'       C      	LD	(UB.ZN),A
-  569E'   21 58F7'       C      	LD	HL,UA.ZKF	;IN: <A> Fehlerschluessel
-  56A1'   CD 6B2E'       C      	CALL	UR.MIMO
-  56A4'   F1             C      	POP	AF
-  56A5'   F5             C      	PUSH	AF
-  56A6'   EB             C      	EX	DE,HL
-  56A7'   CD 6F20'       C      	CALL	UC.CVBX+2
-  56AA'   F1             C      	POP	AF
-  56AB'   FE 17          C      	CP	17H
-  56AD'   CA 572F'       C      	JP	Z,UF.FL17
-  56B0'   FE 18          C      	CP	18H
-  56B2'   CA 5723'       C      	JP	Z,UF.FL18
-  56B5'   FE 00          C      	CP	00H
-  56B7'   CA 5715'       C      	JP	Z,UF.BEHB
-  56BA'   FE 11          C      	CP	11H
-  56BC'   CA 5715'       C      	JP	Z,UF.BEHB
-  56BF'   FE 19          C      	CP	19H
-  56C1'   28 1D          C      	JR	Z,UF.AZVB
-  56C3'   FE 14          C      	CP	14H
-  56C5'   CA 5732'       C      	JP	Z,UF.FL14
-  56C8'   FE 16          C      	CP	16H
-  56CA'   CA 5735'       C      	JP	Z,UF.FL16
-  56CD'   C3 5663'       C      	JP	UF.RET
+  5697'                  C      UF.ERANZ:
+  5697'   E5             C      	PUSH	HL
+  5698'   D5             C      	PUSH	DE
+  5699'   C5             C      	PUSH	BC
+  569A'   F5             C      	PUSH	AF
+  569B'   F5             C      	PUSH	AF
+  569C'   3E 13          C      	LD	A,19
+  569E'   32 2B00'       C      	LD	(UB.ZN),A
+  56A1'   21 58FA'       C      	LD	HL,UA.ZKF	;IN: <A> Fehlerschluessel
+  56A4'   CD 6B59'       C      	CALL	UR.MIMO
+  56A7'   F1             C      	POP	AF
+  56A8'   F5             C      	PUSH	AF
+  56A9'   EB             C      	EX	DE,HL
+  56AA'   CD 6F4B'       C      	CALL	UC.CVBX+2
+  56AD'   F1             C      	POP	AF
+  56AE'   FE 17          C      	CP	17H
+  56B0'   CA 5732'       C      	JP	Z,UF.FL17
+  56B3'   FE 18          C      	CP	18H
+  56B5'   CA 5726'       C      	JP	Z,UF.FL18
+  56B8'   FE 00          C      	CP	00H
+  56BA'   CA 5718'       C      	JP	Z,UF.BEHB
+  56BD'   FE 11          C      	CP	11H
+  56BF'   CA 5718'       C      	JP	Z,UF.BEHB
+  56C2'   FE 19          C      	CP	19H
+  56C4'   28 1D          C      	JR	Z,UF.AZVB
+  56C6'   FE 14          C      	CP	14H
+  56C8'   CA 5735'       C      	JP	Z,UF.FL14
+  56CB'   FE 16          C      	CP	16H
+  56CD'   CA 5738'       C      	JP	Z,UF.FL16
+  56D0'   C3 5663'       C      	JP	UF.RET
                          C      ;----------------------------------------------------------------------
-  56D0'                  C      UF.SYS:
-  56D0'   DD 7E 01       C      	LD	A,(IX+1)
-  56D3'   11 35A8        C      	LD	DE,UE.BWSA+5A8H
-  56D6'   CD 6F20'       C      	CALL	UC.CVBX+2
-  56D9'   00             C      	NOP
-  56DA'   00             C      	NOP
-  56DB'   00             C      	NOP
-  56DC'                  C      UF.SYS1:
-  56DC'   31 0CFE        C      	LD	SP,UE.STANF
-  56DF'   C9             C      	RET
+  56D3'                  C      UF.SYS:
+  56D3'   DD 7E 01       C      	LD	A,(IX+1)
+  56D6'   11 35A8        C      	LD	DE,UE.BWSA+5A8H
+  56D9'   CD 6F4B'       C      	CALL	UC.CVBX+2
+  56DC'   00             C      	NOP
+  56DD'   00             C      	NOP
+  56DE'   00             C      	NOP
+  56DF'                  C      UF.SYS1:
+  56DF'   31 0CFE        C      	LD	SP,UE.STANF
+  56E2'   C9             C      	RET
                          C      ;----------------------------------------------------------
-  56E0'                  C      UF.AZVB:
-  56E0'   DD CB 00 96    C      	RES	2,(IX)	;Aufzeichnen verboten
-  56E4'   DD 36 05 41    C      	LD	(IX+5),41H
-  56E8'   CD 55D5'       C      	CALL	KR.KARO
-  56EB'   DD CB 00 7E    C      	BIT	7,(IX)
+  56E3'                  C      UF.AZVB:
+  56E3'   DD CB 00 96    C      	RES	2,(IX)	;Aufzeichnen verboten
+  56E7'   DD 36 05 41    C      	LD	(IX+5),41H
+  56EB'   CD 55D5'       C      	CALL	KR.KARO
 'Fehleranzeige und Behandlung'	MACRO-80 3.44	09-Dec-81	PAGE	1-16
 
 
-  56EF'   20 DF          C      	JR	NZ,UF.SYS
-  56F1'   21 5867'       C      	LD	HL,UA.FRZ
-  56F4'   CD 6B2E'       C      	CALL	UR.MIMO
-  56F7'   38 E3          C      	JR	C,UF.SYS1
-  56F9'   DD 36 05 31    C      	LD	(IX+5),31H
-  56FD'   CD 55D5'       C      	CALL	KR.KARO
-  5700'   DD CB 00 66    C      	BIT	4,(IX)
-  5704'   20 CA          C      	JR	NZ,UF.SYS
-  5706'   DD CB 00 7E    C      	BIT	7,(IX)
-  570A'   20 C4          C      	JR	NZ,UF.SYS
-  570C'   DD CB 00 56    C      	BIT	2,(IX)
-  5710'   20 BE          C      	JR	NZ,UF.SYS
-  5712'   C3 571D'       C      	JP	UF.BEHB1
+  56EE'   DD CB 00 7E    C      	BIT	7,(IX)
+  56F2'   20 DF          C      	JR	NZ,UF.SYS
+  56F4'   21 586A'       C      	LD	HL,UA.FRZ
+  56F7'   CD 6B59'       C      	CALL	UR.MIMO
+  56FA'   38 E3          C      	JR	C,UF.SYS1
+  56FC'   DD 36 05 31    C      	LD	(IX+5),31H
+  5700'   CD 55D5'       C      	CALL	KR.KARO
+  5703'   DD CB 00 66    C      	BIT	4,(IX)
+  5707'   20 CA          C      	JR	NZ,UF.SYS
+  5709'   DD CB 00 7E    C      	BIT	7,(IX)
+  570D'   20 C4          C      	JR	NZ,UF.SYS
+  570F'   DD CB 00 56    C      	BIT	2,(IX)
+  5713'   20 BE          C      	JR	NZ,UF.SYS
+  5715'   C3 5720'       C      	JP	UF.BEHB1
                          C      ;----------------------------------------------------------
-  5715'                  C      UF.BEHB:
-  5715'   21 5867'       C      	LD	HL,UA.FRZ
-  5718'   CD 6B2E'       C      	CALL	UR.MIMO
-  571B'   38 BF          C      	JR	C,UF.SYS1
-  571D'                  C      UF.BEHB1:
-  571D'   DD 71 05       C      	LD	(IX+5),C	;??? Inhalt von C
-  5720'   C3 566C'       C      	JP	UF.EXEC+4
+  5718'                  C      UF.BEHB:
+  5718'   21 586A'       C      	LD	HL,UA.FRZ
+  571B'   CD 6B59'       C      	CALL	UR.MIMO
+  571E'   38 BF          C      	JR	C,UF.SYS1
+  5720'                  C      UF.BEHB1:
+  5720'   DD 71 05       C      	LD	(IX+5),C	;??? Inhalt von C
+  5723'   C3 566C'       C      	JP	UF.EXEC+4
                          C      ;---------------------------------------
-  5723'                  C      UF.FL18:
-  5723'   21 586D'       C      	LD	HL,UA.BMGF
-  5726'   CD 6B2E'       C      	CALL	UR.MIMO
-  5729'   DA 56DC'       C      	JP	C,UF.SYS1
-  572C'   C3 5663'       C      	JP	UF.RET
-                         C      ;------------------------------------------
-  572F'                  C      UF.FL17:
+  5726'                  C      UF.FL18:
+  5726'   21 5870'       C      	LD	HL,UA.BMGF
+  5729'   CD 6B59'       C      	CALL	UR.MIMO
+  572C'   DA 56DF'       C      	JP	C,UF.SYS1
   572F'   C3 5663'       C      	JP	UF.RET
-                         C      ;-------------------------------------
-  5732'                  C      UF.FL14:
+                         C      ;------------------------------------------
+  5732'                  C      UF.FL17:
   5732'   C3 5663'       C      	JP	UF.RET
+                         C      ;-------------------------------------
+  5735'                  C      UF.FL14:
+  5735'   C3 5663'       C      	JP	UF.RET
                          C      
-  5735'                  C      UF.FL16:
-  5735'   21 5867'       C      	LD	HL,UA.FRZ
-  5738'   CD 6B2E'       C      	CALL	UR.MIMO
-  573B'   C3 5663'       C      	JP	UF.RET
+  5738'                  C      UF.FL16:
+  5738'   21 586A'       C      	LD	HL,UA.FRZ
+  573B'   CD 6B59'       C      	CALL	UR.MIMO
+  573E'   C3 5663'       C      	JP	UF.RET
                          C      ;----------------------------------------------------------------------
                          C      ;	END
                          C          PAGE
@@ -837,282 +839,292 @@
                          C      ;     AUSSCHRIFTEN
                          C      ;
                          C      ;----------------------------------------------------------------------
-  573E'                  C      UA.DS:
-  573E'   00             C      	DB	0
-  573F'   01             C      	DB	1
-  5740'   00             C      	DB	0
-  5741'   01             C      	DB	1
-  5742'   20 20 44 53    C      	DB	'  DS************   '
-  5746'   2A 2A 2A 2A    C      
-  574A'   2A 2A 2A 2A    C      
-  574E'   2A 2A 2A 2A    C      
-  5752'   20 20 20       C      
-  5755'   01             C      	DB	1
-  5756'   00             C      	DB	0
-  5757'   00             C      	DB	0
-  5758'   00             C      	DB	0
+  5741'                  C      UA.DS:
+  5741'   00             C      	DB	0
+  5742'   01             C      	DB	1
+  5743'   00             C      	DB	0
+  5744'   01             C      	DB	1
+  5745'   20 20 44 53    C      	DB	'  DS************   '
+  5749'   2A 2A 2A 2A    C      
+  574D'   2A 2A 2A 2A    C      
+  5751'   2A 2A 2A 2A    C      
+  5755'   20 20 20       C      
+  5758'   01             C      	DB	1
   5759'   00             C      	DB	0
   575A'   00             C      	DB	0
   575B'   00             C      	DB	0
   575C'   00             C      	DB	0
   575D'   00             C      	DB	0
+  575E'   00             C      	DB	0
+  575F'   00             C      	DB	0
+  5760'   00             C      	DB	0
                          C      ;----------------------------------------------------------------------
-  575E'                  C      UA.KNAME:
-  575E'   06             C      	DB	06H
-  575F'   10             C      	DB	16
-  5760'   40             C      	DB	40H
-  5761'   20 4B 61 73    C      	DB	' KassettenName: '
-  5765'   73 65 74 74    C      
-  5769'   65 6E 4E 61    C      
-  576D'   6D 65 3A 20    C      
-  5771'                  C      UA.NR:
-  5771'   03             C      	DB	03H
-  5772'   10             C      	DB	16
-  5773'   40             C      	DB	40H
-  5774'   20 4B 61 73    C      	DB	' Kassetten-Nr.: '
-  5778'   73 65 74 74    C      
-  577C'   65 6E 2D 4E    C      
-  5780'   72 2E 3A 20    C      
-  5784'                  C      UA.KOMMT:
-  5784'   0B             C      	DB	0BH
-  5785'   10             C      	DB	16
-  5786'   80             C      	DB	80H
-  5787'   20 20 20 20    C      	DB	'     Kommentar: '
-  578B'   20 4B 6F 6D    C      
-  578F'   6D 65 6E 74    C      
-  5793'   61 72 3A 20    C      
+  5761'                  C      UA.KNAME:
+  5761'   06             C      	DB	06H
+  5762'   10             C      	DB	16
+  5763'   40             C      	DB	40H
+  5764'   20 4B 61 73    C      	DB	' KassettenName: '
+  5768'   73 65 74 74    C      
+  576C'   65 6E 4E 61    C      
+  5770'   6D 65 3A 20    C      
+  5774'                  C      UA.NR:
+  5774'   03             C      	DB	03H
+  5775'   10             C      	DB	16
+  5776'   40             C      	DB	40H
+  5777'   20 4B 61 73    C      	DB	' Kassetten-Nr.: '
+  577B'   73 65 74 74    C      
+  577F'   65 6E 2D 4E    C      
+  5783'   72 2E 3A 20    C      
+  5787'                  C      UA.KOMMT:
+  5787'   0B             C      	DB	0BH
+  5788'   10             C      	DB	16
+  5789'   80             C      	DB	80H
+  578A'   20 20 20 20    C      	DB	'     Kommentar: '
+  578E'   20 4B 6F 6D    C      
+  5792'   6D 65 6E 74    C      
+  5796'   61 72 3A 20    C      
                          C      ;----------------------------------------------------------------------
-  5797'                  C      UA.Z7E:
-  5797'   45 69 6E 67    C      	DB	'Eingabe      =====>     Ausgabe'
-  579B'   61 62 65 20    C      
-  579F'   20 20 20 20    C      
-  57A3'   20 3D 3D 3D    C      
-  57A7'   3D 3D 3E 20    C      
-  57AB'   20 20 20 20    C      
-  57AF'   41 75 73 67    C      
-  57B3'   61 62 65       C      
-  57B6'                  C      UA.GER:
-  57B6'   20 20 20 20    C      	DB	'       Geraet: '
-  57BA'   20 20 20 47    C      
-  57BE'   65 72 61 65    C      
-  57C2'   74 3A 20       C      
+  579A'                  C      UA.Z7E:
+  579A'   45 69 6E 67    C      	DB	'Eingabe      =====>     Ausgabe'
+  579E'   61 62 65 20    C      
+  57A2'   20 20 20 20    C      
+  57A6'   20 3D 3D 3D    C      
+  57AA'   3D 3D 3E 20    C      
+  57AE'   20 20 20 20    C      
+  57B2'   41 75 73 67    C      
+  57B6'   61 62 65       C      
+  57B9'                  C      UA.GER:
+  57B9'   20 20 20 20    C      	DB	'       Geraet: '
+  57BD'   20 20 20 47    C      
+  57C1'   65 72 61 65    C      
+  57C5'   74 3A 20       C      
                          C      ;----------------------------------------------------------------------
-  57C5'                  C      UA.KOPFR:
-  57C5'   01             C      	DB	01H
-  57C6'   33             C      	DB	51
-  57C7'   80             C      	DB	80H
-  57C8'   20 20 20 20    C      	DB	'                Datei               kopieren J/N ? '
-  57CC'   20 20 20 20    C      
-  57D0'   20 20 20 20    C      
-  57D4'   20 20 20 20    C      
-  57D8'   44 61 74 65    C      
-  57DC'   69 20 20 20    C      
-  57E0'   20 20 20 20    C      
-  57E4'   20 20 20 20    C      
-  57E8'   20 20 20 20    C      
-  57EC'   6B 6F 70 69    C      
-  57F0'   65 72 65 6E    C      
+  57C8'                  C      UA.KOPFR:
+  57C8'   01             C      	DB	01H
+  57C9'   33             C      	DB	51
+  57CA'   80             C      	DB	80H
+  57CB'   20 20 20 20    C      	DB	'                Datei               kopieren J/N ? '
+  57CF'   20 20 20 20    C      
+  57D3'   20 20 20 20    C      
+  57D7'   20 20 20 20    C      
+  57DB'   44 61 74 65    C      
+  57DF'   69 20 20 20    C      
+  57E3'   20 20 20 20    C      
+  57E7'   20 20 20 20    C      
+  57EB'   20 20 20 20    C      
+  57EF'   6B 6F 70 69    C      
+  57F3'   65 72 65 6E    C      
 'Ausschriften'	MACRO-80 3.44	09-Dec-81	PAGE	1-19
 
 
-  57F4'   20 4A 2F 4E    C      
-  57F8'   20 3F 20       C      
-  57FB'                  C      UA.EABFR:
-  57FB'   01             C      	DB	01H
-  57FC'   33             C      	DB	51
-  57FD'   80             C      	DB	80H
-  57FE'   20 20 20 20    C      	DB	'                Eingaben in Ordnung  ---->   J/N ? '
-  5802'   20 20 20 20    C      
-  5806'   20 20 20 20    C      
-  580A'   20 20 20 20    C      
-  580E'   45 69 6E 67    C      
-  5812'   61 62 65 6E    C      
-  5816'   20 69 6E 20    C      
-  581A'   4F 72 64 6E    C      
-  581E'   75 6E 67 20    C      
-  5822'   20 2D 2D 2D    C      
-  5826'   2D 3E 20 20    C      
-  582A'   20 4A 2F 4E    C      
-  582E'   20 3F 20       C      
-  5831'                  C      UA.VORH:
-  5831'   01             C      	DB	1
-  5832'   33             C      	DB	51
-  5833'   80             C      	DB	80H
-  5834'   2A 2A 2A 2A    C      	DB	'************* Datei vorh.;SYS-Ende,kopieren  J/N ? '
-  5838'   2A 2A 2A 2A    C      
-  583C'   2A 2A 2A 2A    C      
-  5840'   2A 20 44 61    C      
-  5844'   74 65 69 20    C      
-  5848'   76 6F 72 68    C      
-  584C'   2E 3B 53 59    C      
-  5850'   53 2D 45 6E    C      
-  5854'   64 65 2C 6B    C      
-  5858'   6F 70 69 65    C      
-  585C'   72 65 6E 20    C      
-  5860'   20 4A 2F 4E    C      
-  5864'   20 3F 20       C      
+  57F7'   20 4A 2F 4E    C      
+  57FB'   20 3F 20       C      
+  57FE'                  C      UA.EABFR:
+  57FE'   01             C      	DB	01H
+  57FF'   33             C      	DB	51
+  5800'   80             C      	DB	80H
+  5801'   20 20 20 20    C      	DB	'                Eingaben in Ordnung  ---->   J/N ? '
+  5805'   20 20 20 20    C      
+  5809'   20 20 20 20    C      
+  580D'   20 20 20 20    C      
+  5811'   45 69 6E 67    C      
+  5815'   61 62 65 6E    C      
+  5819'   20 69 6E 20    C      
+  581D'   4F 72 64 6E    C      
+  5821'   75 6E 67 20    C      
+  5825'   20 2D 2D 2D    C      
+  5829'   2D 3E 20 20    C      
+  582D'   20 4A 2F 4E    C      
+  5831'   20 3F 20       C      
+  5834'                  C      UA.VORH:
+  5834'   01             C      	DB	1
+  5835'   33             C      	DB	51
+  5836'   80             C      	DB	80H
+  5837'   2A 2A 2A 2A    C      	DB	'************* Datei vorh.;SYS-Ende,kopieren  J/N ? '
+  583B'   2A 2A 2A 2A    C      
+  583F'   2A 2A 2A 2A    C      
+  5843'   2A 20 44 61    C      
+  5847'   74 65 69 20    C      
+  584B'   76 6F 72 68    C      
+  584F'   2E 3B 53 59    C      
+  5853'   53 2D 45 6E    C      
+  5857'   64 65 2C 6B    C      
+  585B'   6F 70 69 65    C      
+  585F'   72 65 6E 20    C      
+  5863'   20 4A 2F 4E    C      
+  5867'   20 3F 20       C      
                          C      ;----------------------------------------------------------------------
-  5867'                  C      UA.FRZ:
-  5867'   02             C      	DB	2
-  5868'   03             C      	DB	3
-  5869'   80             C      	DB	80H
-  586A'   3F 3F 20       C      	DB	'?? '
-  586D'                  C      UA.BMGF:
-  586D'   01             C      	DB	01H
-  586E'   07             C      	DB	7
-  586F'   80             C      	DB	80H
-  5870'   42 4D 20 21    C      	DB	'BM ! ??'
-  5874'   20 3F 3F       C      
-  5877'                  C      UA.DOK:
-  5877'   00             C      	DB	0
-  5878'   04             C      	DB	4
-  5879'   80             C      	DB	80H
-  587A'   69 2E 4F 2E    C      	DB	'i.O.'
-  587E'                  C      UA.DF:
-  587E'   00             C      	DB	0
-  587F'   04             C      	DB	4
-  5880'   80             C      	DB	80H
-  5881'   46 68 6C 2E    C      	DB	'Fhl.'
+  586A'                  C      UA.FRZ:
+  586A'   02             C      	DB	2
+  586B'   03             C      	DB	3
+  586C'   80             C      	DB	80H
+  586D'   3F 3F 20       C      	DB	'?? '
+  5870'                  C      UA.BMGF:
+  5870'   01             C      	DB	01H
+  5871'   07             C      	DB	7
+  5872'   80             C      	DB	80H
+  5873'   42 4D 20 21    C      	DB	'BM ! ??'
+  5877'   20 3F 3F       C      
+  587A'                  C      UA.DOK:
+  587A'   00             C      	DB	0
+  587B'   04             C      	DB	4
+  587C'   80             C      	DB	80H
+  587D'   69 2E 4F 2E    C      	DB	'i.O.'
+  5881'                  C      UA.DF:
+  5881'   00             C      	DB	0
+  5882'   04             C      	DB	4
+  5883'   80             C      	DB	80H
+  5884'   46 68 6C 2E    C      	DB	'Fhl.'
                          C      ;----------------------------------------------------------------------
-  5885'                  C      UA.ZKDAT:
-  5885'   06             C      	DB	6
-  5886'   10             C      	DB	16
-  5887'   40             C      	DB	40H
-  5888'   20 20 20 20    C      	DB	'     Dateiname: '
-  588C'   20 44 61 74    C      
-  5890'   65 69 6E 61    C      
-  5894'   6D 65 3A 20    C      
-  5898'                  C      UA.ZKLAD:
-  5898'   04             C      	DB	4
-  5899'   10             C      	DB	16
-  589A'   08             C      	DB	08H
-  589B'   20 20 20 4C    C      	DB	'   Ladeadresse: '
-  589F'   61 64 65 61    C      
-  58A3'   64 72 65 73    C      
-  58A7'   73 65 3A 20    C      
+  5888'                  C      UA.ZKDAT:
+  5888'   06             C      	DB	6
+  5889'   10             C      	DB	16
+  588A'   40             C      	DB	40H
+  588B'   20 20 20 20    C      	DB	'     Dateiname: '
+  588F'   20 44 61 74    C      
+  5893'   65 69 6E 61    C      
+  5897'   6D 65 3A 20    C      
+  589B'                  C      UA.ZKLAD:
+  589B'   04             C      	DB	4
+  589C'   10             C      	DB	16
+  589D'   08             C      	DB	08H
+  589E'   20 20 20 4C    C      	DB	'   Ladeadresse: '
+  58A2'   61 64 65 61    C      
+  58A6'   64 72 65 73    C      
+  58AA'   73 65 3A 20    C      
                          C      ;------------------------------------------------------------------
-  58AB'                  C      UA.ZKBEG:
-  58AB'   04             C      	DB	4
-  58AC'   10             C      	DB	16
-  58AD'   08             C      	DB	08H
-  58AE'   20 20 20 20    C      	DB	'        Beginn: '
-  58B2'   20 20 20 20    C      
-  58B6'   42 65 67 69    C      
+  58AE'                  C      UA.ZKBEG:
+  58AE'   04             C      	DB	4
+  58AF'   10             C      	DB	16
+  58B0'   08             C      	DB	08H
+  58B1'   20 20 20 20    C      	DB	'        Beginn: '
+  58B5'   20 20 20 20    C      
+  58B9'   42 65 67 69    C      
 'Ausschriften'	MACRO-80 3.44	09-Dec-81	PAGE	1-20
 
 
-  58BA'   6E 6E 3A 20    C      
-  58BE'                  C      UA.ZKEND:
-  58BE'   04             C      	DB	4
-  58BF'   10             C      	DB	16
-  58C0'   08             C      	DB	08H
-  58C1'   20 20 20 20    C      	DB	'          Ende: '
-  58C5'   20 20 20 20    C      
-  58C9'   20 20 45 6E    C      
-  58CD'   64 65 3A 20    C      
-  58D1'                  C      UA.STADR:
-  58D1'   04             C      	DB	4
-  58D2'   10             C      	DB	16
-  58D3'   08             C      	DB	08H
-  58D4'   20 20 53 74    C      	DB	'  Startadresse: '
-  58D8'   61 72 74 61    C      
-  58DC'   64 72 65 73    C      
-  58E0'   73 65 3A 20    C      
-  58E4'                  C      UA.ZKDL:
-  58E4'   01             C      	DB	1
-  58E5'   10             C      	DB	16
-  58E6'   20             C      	DB	20H
-  58E7'   20 4C 6F 65    C      	DB	' Loeschen J/N : '
-  58EB'   73 63 68 65    C      
-  58EF'   6E 20 4A 2F    C      
-  58F3'   4E 20 3A 20    C      
-  58F7'                  C      UA.ZKF:
-  58F7'   00             C      	DB	0
-  58F8'   08             C      	DB	8
-  58F9'   00             C      	DB	0
-  58FA'   46 65 68 6C    C      	DB	'Fehler: '
-  58FE'   65 72 3A 20    C      
+  58BD'   6E 6E 3A 20    C      
+  58C1'                  C      UA.ZKEND:
+  58C1'   04             C      	DB	4
+  58C2'   10             C      	DB	16
+  58C3'   08             C      	DB	08H
+  58C4'   20 20 20 20    C      	DB	'          Ende: '
+  58C8'   20 20 20 20    C      
+  58CC'   20 20 45 6E    C      
+  58D0'   64 65 3A 20    C      
+  58D4'                  C      UA.STADR:
+  58D4'   04             C      	DB	4
+  58D5'   10             C      	DB	16
+  58D6'   08             C      	DB	08H
+  58D7'   20 20 53 74    C      	DB	'  Startadresse: '
+  58DB'   61 72 74 61    C      
+  58DF'   64 72 65 73    C      
+  58E3'   73 65 3A 20    C      
+  58E7'                  C      UA.ZKDL:
+  58E7'   01             C      	DB	1
+  58E8'   10             C      	DB	16
+  58E9'   20             C      	DB	20H
+  58EA'   20 4C 6F 65    C      	DB	' Loeschen J/N : '
+  58EE'   73 63 68 65    C      
+  58F2'   6E 20 4A 2F    C      
+  58F6'   4E 20 3A 20    C      
+  58FA'                  C      UA.ZKF:
+  58FA'   00             C      	DB	0
+  58FB'   08             C      	DB	8
+  58FC'   00             C      	DB	0
+  58FD'   46 65 68 6C    C      	DB	'Fehler: '
+  5901'   65 72 3A 20    C      
                          C      ;----------------------------------------------------------------------
-  5902'                  C      UA.ZKRES:
-  5902'   03             C      	DB	3
-  5903'   10             C      	DB	16
-  5904'   10             C      	DB	10H
-  5905'   52 65 73 65    C      	DB	'Reservebloecke: '
-  5909'   72 76 65 62    C      
-  590D'   6C 6F 65 63    C      
-  5911'   6B 65 3A 20    C      
-  5915'                  C      UA.ZKSDT:
-  5915'   04             C      	DB	4
-  5916'   12             C      	DB	18
-  5917'   40             C      	DB	40H
-  5918'   20 20 20 20    C      	DB	'     Dateiname:   '
-  591C'   20 44 61 74    C      
-  5920'   65 69 6E 61    C      
-  5924'   6D 65 3A 20    C      
-  5928'   20 20          C      
-  592A'                  C      UA.ZKBEL:
-  592A'   00             C      	DB	0
-  592B'   10             C      	DB	16
-  592C'   00             C      	DB	0
-  592D'   42 6C 6F 65    C      	DB	'Bloecke belegt: '
-  5931'   63 6B 65 20    C      
-  5935'   62 65 6C 65    C      
-  5939'   67 74 3A 20    C      
-  593D'                  C      UA.ZKBLG:
-  593D'   00             C      	DB	0
-  593E'   10             C      	DB	16
-  593F'   00             C      	DB	0
-  5940'   42 6C 6F 65    C      	DB	'Bloecke gesamt: '
-  5944'   63 6B 65 20    C      
-  5948'   67 65 73 61    C      
-  594C'   6D 74 3A 20    C      
+  5905'                  C      UA.ZKRES:
+  5905'   03             C      	DB	3
+  5906'   10             C      	DB	16
+  5907'   10             C      	DB	10H
+  5908'   52 65 73 65    C      	DB	'Reservebloecke: '
+  590C'   72 76 65 62    C      
+  5910'   6C 6F 65 63    C      
+  5914'   6B 65 3A 20    C      
+  5918'                  C      UA.ZKSDT:
+  5918'   04             C      	DB	4
+  5919'   12             C      	DB	18
+  591A'   40             C      	DB	40H
+  591B'   20 20 20 20    C      	DB	'     Dateiname:   '
+  591F'   20 44 61 74    C      
+  5923'   65 69 6E 61    C      
+  5927'   6D 65 3A 20    C      
+  592B'   20 20          C      
+  592D'                  C      UA.ZKBEL:
+  592D'   00             C      	DB	0
+  592E'   10             C      	DB	16
+  592F'   00             C      	DB	0
+  5930'   42 6C 6F 65    C      	DB	'Bloecke belegt: '
+  5934'   63 6B 65 20    C      
+  5938'   62 65 6C 65    C      
+  593C'   67 74 3A 20    C      
+  5940'                  C      UA.ZKBLG:
+  5940'   00             C      	DB	0
+  5941'   10             C      	DB	16
+  5942'   00             C      	DB	0
+  5943'   42 6C 6F 65    C      	DB	'Bloecke gesamt: '
+  5947'   63 6B 65 20    C      
+  594B'   67 65 73 61    C      
+  594F'   6D 74 3A 20    C      
                          C      ;----------------------------------------------------------------------
-  5950'                  C      UA.ZKBM:
-  5950'   42 61 6E 64    C      	DB	'Bandmarke'
-  5954'   6D 61 72 6B    C      
-  5958'   65             C      
+  5953'                  C      UA.ZKBA:
+  5953'   42 61 6E 64    C      	DB	'Bandanfang'
+  5957'   61 6E 66 61    C      
+  595B'   6E 67          C      
+  595D'                  C      UA.ZKBM:
+  595D'   42 61 6E 64    C      	DB	'Bandmarke'
+  5961'   6D 61 72 6B    C      
+  5965'   65             C      
+  5966'                  C      UA.ZKSL:
+  5966'   53 63 68 6C    C      	DB	'Schlussluecke'
+  596A'   75 73 73 6C    C      
+  596E'   75 65 63 6B    C      
+  5972'   65             C      
+  5973'                  C      UA.ZKEE:	
                          C      ;----------------------------------------------------------------------
-  5959'                  C      UA.LD:
-  5959'   26             C      	DB	38
-  595A'   0F             C      	DB	15
-  595B'   80             C      	DB	80H
-  595C'   20 20 20 20    C      	DB	'               '
-  5960'   20 20 20 20    C      
-  5964'   20 20 20 20    C      
-  5968'   20 20 20       C      
-  596B'                  C      UA.ZRSCH:
-  596B'   01             C      	DB	1
-  596C'   16             C      	DB	22
-  596D'   80             C      	DB	80H
+  5973'                  C      UA.LD:
+  5973'   26             C      	DB	38
 'Ausschriften'	MACRO-80 3.44	09-Dec-81	PAGE	1-21
 
 
-  596E'   56 65 72 7A    C      	DB	'Verz. schreiben J/N ? '
-  5972'   2E 20 73 63    C      
-  5976'   68 72 65 69    C      
-  597A'   62 65 6E 20    C      
-  597E'   4A 2F 4E 20    C      
-  5982'   3F 20          C      
-  5984'                  C      UA.ANZWD:
-  5984'   01             C      	DB	1
-  5985'   16             C      	DB	22
-  5986'   80             C      	DB	80H
-  5987'   41 6E 7A 65    C      	DB	'Anzeige wdhln.  J/N ? '
-  598B'   69 67 65 20    C      
-  598F'   77 64 68 6C    C      
-  5993'   6E 2E 20 20    C      
-  5997'   4A 2F 4E 20    C      
-  599B'   3F 20          C      
+  5974'   0F             C      	DB	15
+  5975'   80             C      	DB	80H
+  5976'   20 20 20 20    C      	DB	'               '
+  597A'   20 20 20 20    C      
+  597E'   20 20 20 20    C      
+  5982'   20 20 20       C      
+  5985'                  C      UA.ZRSCH:
+  5985'   01             C      	DB	1
+  5986'   16             C      	DB	22
+  5987'   80             C      	DB	80H
+  5988'   56 65 72 7A    C      	DB	'Verz. schreiben J/N ? '
+  598C'   2E 20 73 63    C      
+  5990'   68 72 65 69    C      
+  5994'   62 65 6E 20    C      
+  5998'   4A 2F 4E 20    C      
+  599C'   3F 20          C      
+  599E'                  C      UA.ANZWD:
+  599E'   01             C      	DB	1
+  599F'   16             C      	DB	22
+  59A0'   80             C      	DB	80H
+  59A1'   41 6E 7A 65    C      	DB	'Anzeige wdhln.  J/N ? '
+  59A5'   69 67 65 20    C      
+  59A9'   77 64 68 6C    C      
+  59AD'   6E 2E 20 20    C      
+  59B1'   4A 2F 4E 20    C      
+  59B5'   3F 20          C      
                          C      ;----------------------------------------------------------------------
-  599D'                  C      UA.ALTR:
-  599D'   20 41 55 53    C      	DB	' AUSGLEICH LAUFWERKSTOLERANZEN  '
-  59A1'   47 4C 45 49    C      
-  59A5'   43 48 20 4C    C      
-  59A9'   41 55 46 57    C      
-  59AD'   45 52 4B 53    C      
-  59B1'   54 4F 4C 45    C      
-  59B5'   52 41 4E 5A    C      
-  59B9'   45 4E 20 20    C      
+  59B7'                  C      UA.ALTR:
+  59B7'   20 41 55 53    C      	DB	' AUSGLEICH LAUFWERKSTOLERANZEN  '
+  59BB'   47 4C 45 49    C      
+  59BF'   43 48 20 4C    C      
+  59C3'   41 55 46 57    C      
+  59C7'   45 52 4B 53    C      
+  59CB'   54 4F 4C 45    C      
+  59CF'   52 41 4E 5A    C      
+  59D3'   45 4E 20 20    C      
                          C      ;----------------------------------------------------------------------
                          C      ;	END
                                 ;
@@ -1136,147 +1148,147 @@
                          C      ;      INITIALISIEREN VON MRES KASSETTEN
                          C      ;
                          C      ;----------------------------------------------------------------------
-  59BD'   59BD'          C      	DW	$
-  59BF'   49 4E 49 54    C      	DB	'INIT'
-  59C3'   21 4070        C      	LD	HL,PUF.KASS	;Puffer fC<r Umbenennung Kassette lC6schen
-  59C6'   11 4071        C      	LD	DE,PUF.KASS+1
-  59C9'   01 000F        C      	LD	BC,15
-  59CC'   36 20          C      	LD	(HL),020H
-  59CE'   ED B0          C      	LDIR
-  59D0'   3A 3327        C      	LD	A,(UE.BWSA+327H)
-  59D3'   CD 6E40'       C      	CALL	U1.TST
-  59D6'   D8             C      	RET	C
-  59D7'   F5             C      	PUSH	AF
-  59D8'   CD 6D65'       C      	CALL	U1.KTINI
-  59DB'   F1             C      	POP	AF
-  59DC'   DD 77 04       C      	LD	(IX+4),A	;GERAETEADR. -->TAB
-  59DF'   CD 6A86'       C      	CALL	UR.KRE	;RES. EIN
-  59E2'   DD CB 00 56    C      	BIT	2,(IX)
-  59E6'   28 05          C      	JR	Z,$+7
-  59E8'   3E 19          C      	LD	A,19H
-  59EA'   CD 5694'       C      	CALL	UF.ERANZ
-  59ED'   CD 6A94'       C      	CALL	UR.KRWW	;RUECKSPULEN MIT WARTEN
-  59F0'   CD 6AAA'       C      	CALL	UR.KBM	;BM SCHREIBEN
-  59F3'   21 0E66        C      	LD	HL,UE.PUF	;AUFBAU 1.BLOCK
-  59F6'   3E 40          C      	LD	A,40H
-  59F8'   06 50          C      	LD	B,80
-  59FA'   CD 6E21'       C      	CALL	U1.TR
-  59FD'   3E 00          C      	LD	A,00H
-  59FF'   06 30          C      	LD	B,48
-  5A01'   CD 6E21'       C      	CALL	U1.TR
-  5A04'   DD 36 02 80    C      	LD	(IX+2),80H
-  5A08'   DD 36 05 08    C      	LD	(IX+5),08H	;CMD SCHREIBEN
-  5A0C'   CD 5668'       C      	CALL	UF.EXEC
-  5A0F'   CD 5AB8'       C      	CALL	KI.KO03
-  5A12'                  C      KI.KN:
-  5A12'   CD 6E2C'       C      	CALL	U1.BILO
-  5A15'   3E 0D          C      	LD	A,13
-  5A17'   32 2B00'       C      	LD	(UB.ZN),A	;ZEILENNR. 15
-  5A1A'   21 575E'       C      	LD	HL,UA.KNAME	;ABFRAGE KASS.NAME
-  5A1D'   CD 6B2E'       C      	CALL	UR.MIMO
-  5A20'   D8             C      	RET	C
-  5A21'   E5             C      	PUSH	HL
-  5A22'   C5             C      	PUSH	BC
-  5A23'   11 4070        C      	LD	DE,PUF.KASS
-  5A26'   01 0006        C      	LD	BC,6
-  5A29'   ED B0          C      	LDIR
-  5A2B'   C1             C      	POP	BC
-  5A2C'   E1             C      	POP	HL
-  5A2D'   06 06          C      	LD	B,6
-  5A2F'   11 0E6A        C      	LD	DE,UE.PUF+4	;NAME IN PUFFER
-  5A32'   CD 7035'       C      	CALL	UC.KONV	;MIT KONVERTIERUNG IN DKOI-CODE
-  5A35'                  C      KI.NMR:
-  5A35'   21 5771'       C      	LD	HL,UA.NR	;ABFR. KASS.NUMMER
-  5A38'   CD 6B2E'       C      	CALL	UR.MIMO
-  5A3B'   38 D5          C      	JR	C,KI.KN	;BEI SYS-TASTE ZU VORHERIGER
-  5A3D'   E5             C      	PUSH	HL
-  5A3E'   C5             C      	PUSH	BC
-  5A3F'   11 4076        C      	LD	DE,PUF.KASS+6
-  5A42'   01 0003        C      	LD	BC,3
-  5A45'   ED B0          C      	LDIR
-  5A47'   C1             C      	POP	BC
-  5A48'   E1             C      	POP	HL
-  5A49'   06 03          C      	LD	B,3
-  5A4B'   11 0E8B        C      	LD	DE,UE.PUF+37
-  5A4E'   CD 7035'       C      	CALL	UC.KONV
-  5A51'                  C      KI.KM:
-  5A51'   21 5784'       C      	LD	HL,UA.KOMMT	;ABFR. KOMMENTAR
-  5A54'   CD 6B2E'       C      	CALL	UR.MIMO
-  5A57'   38 B9          C      	JR	C,KI.KN
-  5A59'   06 0B          C      	LD	B,11
-  5A5B'   11 0E8E        C      	LD	DE,UE.PUF+40
-  5A5E'   CD 7035'       C      	CALL	UC.KONV
-  5A61'   CD 5668'       C      	CALL	UF.EXEC	;3.BLOCK SCHREIBEN
-  5A64'   CD 5AC3'       C      	CALL	KI.RENA	;Kassette umbenennen
-  5A67'   CD 6AAA'       C      	CALL	UR.KBM	;BM , 1.LABEL BEENDET
-  5A6A'   21 599D'       C      	LD	HL,UA.ALTR
-  5A6D'   11 0E66        C      	LD	DE,UE.PUF
+  59D7'   59D7'          C      	DW	$
+  59D9'   49 4E 49 54    C      	DB	'INIT'
+  59DD'   21 4070        C      	LD	HL,PUF.KASS	;Puffer fC<r Umbenennung Kassette lC6schen
+  59E0'   11 4071        C      	LD	DE,PUF.KASS+1
+  59E3'   01 000F        C      	LD	BC,15
+  59E6'   36 20          C      	LD	(HL),020H
+  59E8'   ED B0          C      	LDIR
+  59EA'   3A 3327        C      	LD	A,(UE.BWSA+327H)
+  59ED'   CD 6E6B'       C      	CALL	U1.TST
+  59F0'   D8             C      	RET	C
+  59F1'   F5             C      	PUSH	AF
+  59F2'   CD 6D90'       C      	CALL	U1.KTINI
+  59F5'   F1             C      	POP	AF
+  59F6'   DD 77 04       C      	LD	(IX+4),A	;GERAETEADR. -->TAB
+  59F9'   CD 6AB1'       C      	CALL	UR.KRE	;RES. EIN
+  59FC'   DD CB 00 56    C      	BIT	2,(IX)
+  5A00'   28 05          C      	JR	Z,$+7
+  5A02'   3E 19          C      	LD	A,19H
+  5A04'   CD 5697'       C      	CALL	UF.ERANZ
+  5A07'   CD 6ABF'       C      	CALL	UR.KRWW	;RUECKSPULEN MIT WARTEN
+  5A0A'   CD 6AD5'       C      	CALL	UR.KBM	;BM SCHREIBEN
+  5A0D'   21 0E66        C      	LD	HL,UE.PUF	;AUFBAU 1.BLOCK
+  5A10'   3E 40          C      	LD	A,40H
+  5A12'   06 50          C      	LD	B,80
+  5A14'   CD 6E4C'       C      	CALL	U1.TR
+  5A17'   3E 00          C      	LD	A,00H
+  5A19'   06 30          C      	LD	B,48
+  5A1B'   CD 6E4C'       C      	CALL	U1.TR
+  5A1E'   DD 36 02 80    C      	LD	(IX+2),80H
+  5A22'   DD 36 05 08    C      	LD	(IX+5),08H	;CMD SCHREIBEN
+  5A26'   CD 5668'       C      	CALL	UF.EXEC
+  5A29'   CD 5AD2'       C      	CALL	KI.KO03
+  5A2C'                  C      KI.KN:
+  5A2C'   CD 6E57'       C      	CALL	U1.BILO
+  5A2F'   3E 0D          C      	LD	A,13
+  5A31'   32 2B00'       C      	LD	(UB.ZN),A	;ZEILENNR. 15
+  5A34'   21 5761'       C      	LD	HL,UA.KNAME	;ABFRAGE KASS.NAME
+  5A37'   CD 6B59'       C      	CALL	UR.MIMO
+  5A3A'   D8             C      	RET	C
+  5A3B'   E5             C      	PUSH	HL
+  5A3C'   C5             C      	PUSH	BC
+  5A3D'   11 4070        C      	LD	DE,PUF.KASS
+  5A40'   01 0006        C      	LD	BC,6
+  5A43'   ED B0          C      	LDIR
+  5A45'   C1             C      	POP	BC
+  5A46'   E1             C      	POP	HL
+  5A47'   06 06          C      	LD	B,6
+  5A49'   11 0E6A        C      	LD	DE,UE.PUF+4	;NAME IN PUFFER
+  5A4C'   CD 7060'       C      	CALL	UC.KONV	;MIT KONVERTIERUNG IN DKOI-CODE
+  5A4F'                  C      KI.NMR:
+  5A4F'   21 5774'       C      	LD	HL,UA.NR	;ABFR. KASS.NUMMER
+  5A52'   CD 6B59'       C      	CALL	UR.MIMO
+  5A55'   38 D5          C      	JR	C,KI.KN	;BEI SYS-TASTE ZU VORHERIGER
+  5A57'   E5             C      	PUSH	HL
+  5A58'   C5             C      	PUSH	BC
+  5A59'   11 4076        C      	LD	DE,PUF.KASS+6
+  5A5C'   01 0003        C      	LD	BC,3
+  5A5F'   ED B0          C      	LDIR
+  5A61'   C1             C      	POP	BC
+  5A62'   E1             C      	POP	HL
+  5A63'   06 03          C      	LD	B,3
+  5A65'   11 0E8B        C      	LD	DE,UE.PUF+37
+  5A68'   CD 7060'       C      	CALL	UC.KONV
+  5A6B'                  C      KI.KM:
+  5A6B'   21 5787'       C      	LD	HL,UA.KOMMT	;ABFR. KOMMENTAR
+  5A6E'   CD 6B59'       C      	CALL	UR.MIMO
+  5A71'   38 B9          C      	JR	C,KI.KN
+  5A73'   06 0B          C      	LD	B,11
+  5A75'   11 0E8E        C      	LD	DE,UE.PUF+40
+  5A78'   CD 7060'       C      	CALL	UC.KONV
+  5A7B'   CD 5668'       C      	CALL	UF.EXEC	;3.BLOCK SCHREIBEN
+  5A7E'   CD 5ADD'       C      	CALL	KI.RENA	;Kassette umbenennen
+  5A81'   CD 6AD5'       C      	CALL	UR.KBM	;BM , 1.LABEL BEENDET
+  5A84'   21 59B7'       C      	LD	HL,UA.ALTR
+  5A87'   11 0E66        C      	LD	DE,UE.PUF
 'Initialisieren von MRES Kassetten'	MACRO-80 3.44	09-Dec-81	PAGE	1-23
 
 
-  5A70'   01 0020        C      	LD	BC,20H
-  5A73'   ED B0          C      	LDIR		;AUSGLEICH LFWSTLNZ->PUFFER
-  5A75'   DD 36 02 20    C      	LD	(IX+2),20H	;NEUE BLOCKLAENGE
-  5A79'   DD 36 05 08    C      	LD	(IX+5),08H
-  5A7D'   CD 5668'       C      	CALL	UF.EXEC	;SCHREIBEN
-  5A80'   21 573E'       C      	LD	HL,UA.DS
-  5A83'   11 0E66        C      	LD	DE,UE.PUF
-  5A86'   01 0020        C      	LD	BC,32
-  5A89'   ED B0          C      	LDIR		;DS-SATZ --> PUFFER
-  5A8B'   CD 5668'       C      	CALL	UF.EXEC
-  5A8E'   3E A5          C      	LD	A,0A5H
-  5A90'   06 20          C      	LD	B,32
-  5A92'   21 0E66        C      	LD	HL,UE.PUF
-  5A95'   CD 6E21'       C      	CALL	U1.TR
-  5A98'   06 68          C      	LD	B,68H	;103 VERZ.SAETZE
-  5A9A'                  C      KI.VERZ:
-  5A9A'   C5             C      	PUSH	BC
-  5A9B'   CD 5668'       C      	CALL	UF.EXEC
-  5A9E'   C1             C      	POP	BC
-  5A9F'   10 F9          C      	DJNZ	KI.VERZ
-  5AA1'   CD 6AAA'       C      	CALL	UR.KBM
-  5AA4'   CD 6D02'       C      	CALL	U1.VS1	;1.DATEIVORSATZ -->PUFFER
-  5AA7'   DD 36 05 08    C      	LD	(IX+5),08H
-  5AAB'   CD 5668'       C      	CALL	UF.EXEC
-  5AAE'   CD 6AB0'       C      	CALL	UR.KSL	;SCHLUSSLUECKE SCHREIBEN
-  5AB1'   CD 6A8E'       C      	CALL	UR.KRW
-  5AB4'   CD 6A98'       C      	CALL	UR.KRA
-  5AB7'   C9             C      	RET
+  5A8A'   01 0020        C      	LD	BC,20H
+  5A8D'   ED B0          C      	LDIR		;AUSGLEICH LFWSTLNZ->PUFFER
+  5A8F'   DD 36 02 20    C      	LD	(IX+2),20H	;NEUE BLOCKLAENGE
+  5A93'   DD 36 05 08    C      	LD	(IX+5),08H
+  5A97'   CD 5668'       C      	CALL	UF.EXEC	;SCHREIBEN
+  5A9A'   21 5741'       C      	LD	HL,UA.DS
+  5A9D'   11 0E66        C      	LD	DE,UE.PUF
+  5AA0'   01 0020        C      	LD	BC,32
+  5AA3'   ED B0          C      	LDIR		;DS-SATZ --> PUFFER
+  5AA5'   CD 5668'       C      	CALL	UF.EXEC
+  5AA8'   3E A5          C      	LD	A,0A5H
+  5AAA'   06 20          C      	LD	B,32
+  5AAC'   21 0E66        C      	LD	HL,UE.PUF
+  5AAF'   CD 6E4C'       C      	CALL	U1.TR
+  5AB2'   06 68          C      	LD	B,68H	;103 VERZ.SAETZE
+  5AB4'                  C      KI.VERZ:
+  5AB4'   C5             C      	PUSH	BC
+  5AB5'   CD 5668'       C      	CALL	UF.EXEC
+  5AB8'   C1             C      	POP	BC
+  5AB9'   10 F9          C      	DJNZ	KI.VERZ
+  5ABB'   CD 6AD5'       C      	CALL	UR.KBM
+  5ABE'   CD 6D2D'       C      	CALL	U1.VS1	;1.DATEIVORSATZ -->PUFFER
+  5AC1'   DD 36 05 08    C      	LD	(IX+5),08H
+  5AC5'   CD 5668'       C      	CALL	UF.EXEC
+  5AC8'   CD 6ADB'       C      	CALL	UR.KSL	;SCHLUSSLUECKE SCHREIBEN
+  5ACB'   CD 6AB9'       C      	CALL	UR.KRW
+  5ACE'   CD 6AC3'       C      	CALL	UR.KRA
+  5AD1'   C9             C      	RET
                          C      ;
-  5AB8'                  C      KI.KO03:
-  5AB8'   CD 5668'       C      	CALL	UF.EXEC	;FUER KI14
-  5ABB'   06 31          C      	LD	B,49
-  5ABD'   2B             C      	DEC	HL
-  5ABE'   10 FD          C      	DJNZ	$-1
-  5AC0'   36 D9          C      	LD	(HL),0D9H
-  5AC2'   C9             C      	RET
+  5AD2'                  C      KI.KO03:
+  5AD2'   CD 5668'       C      	CALL	UF.EXEC	;FUER KI14
+  5AD5'   06 31          C      	LD	B,49
+  5AD7'   2B             C      	DEC	HL
+  5AD8'   10 FD          C      	DJNZ	$-1
+  5ADA'   36 D9          C      	LD	(HL),0D9H
+  5ADC'   C9             C      	RET
                          C      ;
-  5AC3'                  C      KI.RENA:	;Kassettendateiname umbenennen
-  5AC3'   E5             C      	PUSH	HL
-  5AC4'   D5             C      	PUSH	DE
-  5AC5'   C5             C      	PUSH	BC
-  5AC6'   F5             C      	PUSH	AF
-  5AC7'   21 407A        C      	LD	HL,PUF.KASS+10
-  5ACA'   36 00          C      	LD	(HL),0	;AbschluC neuer Name
-  5ACC'   21 5AE2'       C      	LD	HL,KI.RENA9+2
-  5ACF'   DD 7E 04       C      	LD	A,(IX+4)	;SubAdresse
-  5AD2'   77             C      	LD	(HL),A
-  5AD3'   21 5AE0'       C      	LD	HL,KI.RENA9
-  5AD6'   01 0730        C      	LD	BC,00730H	;AKB-Adresse + LC$nge Parameterbereich
-  5AD9'   ED B3          C      	OTIR
-  5ADB'   F1             C      	POP	AF
-  5ADC'   C1             C      	POP	BC
-  5ADD'   D1             C      	POP	DE
-  5ADE'   E1             C      	POP	HL
-  5ADF'   C9             C      	RET
-  5AE0'                  C      KI.RENA9:
-  5AE0'   F0             C      	DB	0F0H
-  5AE1'   44             C      	DB	044H	;Kommando
-  5AE2'   00             C      	DB	0		;SubAdresse
-  5AE3'   01             C      	DB	1		;HSbereich
-  5AE4'   40             C      	DB	HIGH(PUF.KASS)
-  5AE5'   70             C      	DB	LOW(PUF.KASS)
-  5AE6'   FF             C      	DB	0FFH
+  5ADD'                  C      KI.RENA:	;Kassettendateiname umbenennen
+  5ADD'   E5             C      	PUSH	HL
+  5ADE'   D5             C      	PUSH	DE
+  5ADF'   C5             C      	PUSH	BC
+  5AE0'   F5             C      	PUSH	AF
+  5AE1'   21 407A        C      	LD	HL,PUF.KASS+10
+  5AE4'   36 00          C      	LD	(HL),0	;AbschluC neuer Name
+  5AE6'   21 5AFC'       C      	LD	HL,KI.RENA9+2
+  5AE9'   DD 7E 04       C      	LD	A,(IX+4)	;SubAdresse
+  5AEC'   77             C      	LD	(HL),A
+  5AED'   21 5AFA'       C      	LD	HL,KI.RENA9
+  5AF0'   01 0730        C      	LD	BC,00730H	;AKB-Adresse + LC$nge Parameterbereich
+  5AF3'   ED B3          C      	OTIR
+  5AF5'   F1             C      	POP	AF
+  5AF6'   C1             C      	POP	BC
+  5AF7'   D1             C      	POP	DE
+  5AF8'   E1             C      	POP	HL
+  5AF9'   C9             C      	RET
+  5AFA'                  C      KI.RENA9:
+  5AFA'   F0             C      	DB	0F0H
+  5AFB'   44             C      	DB	044H	;Kommando
+  5AFC'   00             C      	DB	0		;SubAdresse
+  5AFD'   01             C      	DB	1		;HSbereich
+  5AFE'   40             C      	DB	HIGH(PUF.KASS)
+  5AFF'   70             C      	DB	LOW(PUF.KASS)
+  5B00'   FF             C      	DB	0FFH
                          C      ;---------------------------------------------------------------------
                          C      ;	END
                          C      	TITLE	'Anzeigen und Aendern des MRES-Verzeichnisses'
@@ -1291,443 +1303,443 @@
                          C      ;    ANZEIGEN UND AENDERN DES VERZEICHNISSES VON MRES KASSETTEN
                          C      ;
                          C      ;----------------------------------------------------------------------
-  5AE7'   5AE7'          C      	DW	$
-  5AE9'   44 49 52 20    C      	DB	'DIR '
-  5AED'   3A 3326        C      	LD	A,(UE.BWSA+326H)
-  5AF0'   CD 6E40'       C      	CALL	U1.TST
-  5AF3'   D8             C      	RET	C
-  5AF4'   CD 6D65'       C      	CALL	U1.KTINI
-  5AF7'   DD 77 04       C      	LD	(IX+4),A
-  5AFA'   CD 6E2C'       C      	CALL	U1.BILO
-  5AFD'   CD 6A86'       C      	CALL	UR.KRE
-  5B00'   CD 6A94'       C      	CALL	UR.KRWW
-  5B03'   CD 6D19'       C      	CALL	U1.DSVG
-  5B06'   C5             C      	PUSH	BC
+  5B01'   5B01'          C      	DW	$
+  5B03'   44 49 52 20    C      	DB	'DIR '
+  5B07'   3A 3326        C      	LD	A,(UE.BWSA+326H)
+  5B0A'   CD 6E6B'       C      	CALL	U1.TST
+  5B0D'   D8             C      	RET	C
+  5B0E'   CD 6D90'       C      	CALL	U1.KTINI
+  5B11'   DD 77 04       C      	LD	(IX+4),A
+  5B14'   CD 6E57'       C      	CALL	U1.BILO
+  5B17'   CD 6AB1'       C      	CALL	UR.KRE
+  5B1A'   CD 6ABF'       C      	CALL	UR.KRWW
+  5B1D'   CD 6D44'       C      	CALL	U1.DSVG
+  5B20'   C5             C      	PUSH	BC
                          C      ;----------------------------------------------------------------------
-  5B07'   CD 6CA2'       C      	CALL	U1.KBR4	;KASS.NAME,NR.,KOMMENTAR ANZEIGEN
-  5B0A'   DD 36 05 02    C      	LD	(IX+5),02H
-  5B0E'   CD 5668'       C      	CALL	UF.EXEC
-  5B11'   21 0E6A        C      	LD	HL,UE.PUF+4
-  5B14'   11 3240        C      	LD	DE,3240H	;=8.ZEILE,16.SPALTE
-  5B17'   06 06          C      	LD	B,6
-  5B19'   CD 702B'       C      	CALL	UC.DKONV
-  5B1C'   21 0E8B        C      	LD	HL,UE.PUF+37
-  5B1F'   13             C      	INC	DE
-  5B20'   13             C      	INC	DE
-  5B21'   06 03          C      	LD	B,3
-  5B23'   CD 702B'       C      	CALL	UC.DKONV
-  5B26'   13             C      	INC	DE
-  5B27'   13             C      	INC	DE
-  5B28'   06 0B          C      	LD	B,11
-  5B2A'   CD 702B'       C      	CALL	UC.DKONV
-  5B2D'   21 3290        C      	LD	HL,3290H
-  5B30'   3E 3D          C      	LD	A,'='
-  5B32'   77             C      	LD	(HL),A
-  5B33'   E5             C      	PUSH	HL
-  5B34'   D1             C      	POP	DE
-  5B35'   13             C      	INC	DE
-  5B36'   01 0017        C      	LD	BC,23
-  5B39'   ED B0          C      	LDIR
+  5B21'   CD 6CCD'       C      	CALL	U1.KBR4	;KASS.NAME,NR.,KOMMENTAR ANZEIGEN
+  5B24'   DD 36 05 02    C      	LD	(IX+5),02H
+  5B28'   CD 5668'       C      	CALL	UF.EXEC
+  5B2B'   21 0E6A        C      	LD	HL,UE.PUF+4
+  5B2E'   11 3240        C      	LD	DE,3240H	;=8.ZEILE,16.SPALTE
+  5B31'   06 06          C      	LD	B,6
+  5B33'   CD 7056'       C      	CALL	UC.DKONV
+  5B36'   21 0E8B        C      	LD	HL,UE.PUF+37
+  5B39'   13             C      	INC	DE
+  5B3A'   13             C      	INC	DE
+  5B3B'   06 03          C      	LD	B,3
+  5B3D'   CD 7056'       C      	CALL	UC.DKONV
+  5B40'   13             C      	INC	DE
+  5B41'   13             C      	INC	DE
+  5B42'   06 0B          C      	LD	B,11
+  5B44'   CD 7056'       C      	CALL	UC.DKONV
+  5B47'   21 3290        C      	LD	HL,3290H
+  5B4A'   3E 3D          C      	LD	A,'='
+  5B4C'   77             C      	LD	(HL),A
+  5B4D'   E5             C      	PUSH	HL
+  5B4E'   D1             C      	POP	DE
+  5B4F'   13             C      	INC	DE
+  5B50'   01 0017        C      	LD	BC,23
+  5B53'   ED B0          C      	LDIR
                          C      ;----------------------------------------------------------------------
-  5B3B'   06 03          C      	LD	B,3	;POSITIONIEREN VOR DS-SATZ
-  5B3D'   CD 5668'       C      	CALL	UF.EXEC
-  5B40'   10 FB          C      	DJNZ	$-3
-  5B42'   CD 6D93'       C      	CALL	U1.VERIN
-  5B45'   CD 6A94'       C      	CALL	UR.KRWW
-  5B48'   06 07          C      	LD	B,7
-  5B4A'   CD 6DBD'       C      	CALL	U1.VORS1
-  5B4D'   C1             C      	POP	BC
-  5B4E'   05             C      	DEC	B
-  5B4F'   CD 5D7C'       C      	CALL	KV.ANZ
-  5B52'   04             C      	INC	B
-  5B53'   05             C      	DEC	B
-  5B54'   CA 5C9E'       C      	JP	Z,KV.KRW
-  5B57'   04             C      	INC	B
-  5B58'   C5             C      	PUSH	BC
+  5B55'   06 03          C      	LD	B,3	;POSITIONIEREN VOR DS-SATZ
+  5B57'   CD 5668'       C      	CALL	UF.EXEC
+  5B5A'   10 FB          C      	DJNZ	$-3
+  5B5C'   CD 6DBE'       C      	CALL	U1.VERIN
+  5B5F'   CD 6ABF'       C      	CALL	UR.KRWW
+  5B62'   06 07          C      	LD	B,7
+  5B64'   CD 6DE8'       C      	CALL	U1.VORS1
+  5B67'   C1             C      	POP	BC
+  5B68'   05             C      	DEC	B
+  5B69'   CD 5D96'       C      	CALL	KV.ANZ
+  5B6C'   04             C      	INC	B
+  5B6D'   05             C      	DEC	B
+  5B6E'   CA 5CB8'       C      	JP	Z,KV.KRW
+  5B71'   04             C      	INC	B
+  5B72'   C5             C      	PUSH	BC
                          C      ;----------------------------------------------------------------------
-  5B59'                  C      KV.ANF:
-  5B59'   05             C      	DEC	B
-  5B5A'   78             C      	LD	A,B
-  5B5B'   58             C      	LD	E,B
-  5B5C'   D6 09          C      	SUB	9
-  5B5E'   38 05          C      	JR	C,$+7
-  5B60'   0E 09          C      	LD	C,9
-  5B62'   41             C      	LD	B,C
-  5B63'   18 03          C      	JR	$+5
-  5B65'   43             C      	LD	B,E
-  5B66'   48             C      	LD	C,B
-  5B67'   AF             C      	XOR	A
-  5B68'   F5             C      	PUSH	AF	;A=RESTL.ANZAHL ODER 0
-  5B69'   C5             C      	PUSH	BC
-  5B6A'   21 2B2A'       C      	LD	HL,UB.SATZ
-  5B6D'   36 00          C      	LD	(HL),00H
-  5B6F'   23             C      	INC	HL
-  5B70'   36 37          C      	LD	(HL),55
-  5B72'   23             C      	INC	HL
-  5B73'   36 80          C      	LD	(HL),80H
-  5B75'   23             C      	INC	HL
+  5B73'                  C      KV.ANF:
+  5B73'   05             C      	DEC	B
+  5B74'   78             C      	LD	A,B
+  5B75'   58             C      	LD	E,B
+  5B76'   D6 09          C      	SUB	9
+  5B78'   38 05          C      	JR	C,$+7
+  5B7A'   0E 09          C      	LD	C,9
+  5B7C'   41             C      	LD	B,C
+  5B7D'   18 03          C      	JR	$+5
+  5B7F'   43             C      	LD	B,E
+  5B80'   48             C      	LD	C,B
+  5B81'   AF             C      	XOR	A
+  5B82'   F5             C      	PUSH	AF	;A=RESTL.ANZAHL ODER 0
+  5B83'   C5             C      	PUSH	BC
+  5B84'   21 2B2A'       C      	LD	HL,UB.SATZ
+  5B87'   36 00          C      	LD	(HL),00H
+  5B89'   23             C      	INC	HL
+  5B8A'   36 37          C      	LD	(HL),55
+  5B8C'   23             C      	INC	HL
+  5B8D'   36 80          C      	LD	(HL),80H
+  5B8F'   23             C      	INC	HL
 'Anzeigen und Aendern des MRES-Verzeichnisses'	MACRO-80 3.44	09-Dec-81	PAGE	1-25
 
 
-  5B76'   06 37          C      	LD	B,55
-  5B78'   3E 20          C      	LD	A,20H
-  5B7A'   CD 6E21'       C      	CALL	U1.TR	;AUSGABESATZ LOESCHEN
-  5B7D'   3E 0D          C      	LD	A,13
-  5B7F'   32 2B00'       C      	LD	(UB.ZN),A
-  5B82'   CD 6E2C'       C      	CALL	U1.BILO
-  5B85'   11 2B3C'       C      	LD	DE,UB.SATZ+18
-  5B88'   D5             C      	PUSH	DE
-  5B89'   21 ECA2        C      	LD	HL,BC.VTABE+32	;ADR. VERZ.TABELLE
-  5B8C'   E5             C      	PUSH	HL
+  5B90'   06 37          C      	LD	B,55
+  5B92'   3E 20          C      	LD	A,20H
+  5B94'   CD 6E4C'       C      	CALL	U1.TR	;AUSGABESATZ LOESCHEN
+  5B97'   3E 0D          C      	LD	A,13
+  5B99'   32 2B00'       C      	LD	(UB.ZN),A
+  5B9C'   CD 6E57'       C      	CALL	U1.BILO
+  5B9F'   11 2B3C'       C      	LD	DE,UB.SATZ+18
+  5BA2'   D5             C      	PUSH	DE
+  5BA3'   21 ECA2        C      	LD	HL,BC.VTABE+32	;ADR. VERZ.TABELLE
+  5BA6'   E5             C      	PUSH	HL
                          C      ;---------------------------MAX 9 SAETZE ANZEIGEN----------------------
-  5B8D'                  C      KV.ZLTR:
-  5B8D'   CD 5D04'       C      	CALL	KV.BSTR	;VTABE-->UB.SATZ
-  5B90'   D1             C      	POP	DE	;VERZ.ADR.
-  5B91'   E1             C      	POP	HL	;ADR.AUSGABESATZ
-  5B92'   E5             C      	PUSH	HL
-  5B93'   D5             C      	PUSH	DE
-  5B94'   01 0012        C      	LD	BC,18
-  5B97'   B7             C      	OR	A
-  5B98'   ED 42          C      	SBC	HL,BC
-  5B9A'   CD 6B2E'       C      	CALL	UR.MIMO	;ANZEIGE EINE ZEILE
-  5B9D'   E1             C      	POP	HL	;VERZ.ADR
-  5B9E'   D1             C      	POP	DE
-  5B9F'   01 0020        C      	LD	BC,32
-  5BA2'   09             C      	ADD	HL,BC
-  5BA3'   C1             C      	POP	BC
-  5BA4'   05             C      	DEC	B
-  5BA5'   28 05          C      	JR	Z,$+7
-  5BA7'   C5             C      	PUSH	BC
-  5BA8'   D5             C      	PUSH	DE
-  5BA9'   E5             C      	PUSH	HL	;NEUE VERZ.TAB ADR
-  5BAA'   18 E1          C      	JR	KV.ZLTR
+  5BA7'                  C      KV.ZLTR:
+  5BA7'   CD 5D1E'       C      	CALL	KV.BSTR	;VTABE-->UB.SATZ
+  5BAA'   D1             C      	POP	DE	;VERZ.ADR.
+  5BAB'   E1             C      	POP	HL	;ADR.AUSGABESATZ
+  5BAC'   E5             C      	PUSH	HL
+  5BAD'   D5             C      	PUSH	DE
+  5BAE'   01 0012        C      	LD	BC,18
+  5BB1'   B7             C      	OR	A
+  5BB2'   ED 42          C      	SBC	HL,BC
+  5BB4'   CD 6B59'       C      	CALL	UR.MIMO	;ANZEIGE EINE ZEILE
+  5BB7'   E1             C      	POP	HL	;VERZ.ADR
+  5BB8'   D1             C      	POP	DE
+  5BB9'   01 0020        C      	LD	BC,32
+  5BBC'   09             C      	ADD	HL,BC
+  5BBD'   C1             C      	POP	BC
+  5BBE'   05             C      	DEC	B
+  5BBF'   28 05          C      	JR	Z,$+7
+  5BC1'   C5             C      	PUSH	BC
+  5BC2'   D5             C      	PUSH	DE
+  5BC3'   E5             C      	PUSH	HL	;NEUE VERZ.TAB ADR
+  5BC4'   18 E1          C      	JR	KV.ZLTR
                          C      ;----------------------------------------------------------------------
-  5BAC'   41             C      	LD	B,C	;ANZAHL DER ANGEZEIGTEN ZEILEN
-  5BAD'   3A 2B00'       C      	LD	A,(UB.ZN)
-  5BB0'   90             C      	SUB	B
-  5BB1'   32 2B00'       C      	LD	(UB.ZN),A	;KURSOR AUF ANFANG 12.ZEILE
-  5BB4'   C5             C      	PUSH	BC
-  5BB5'   D5             C      	PUSH	DE
-  5BB6'   E5             C      	PUSH	HL
+  5BC6'   41             C      	LD	B,C	;ANZAHL DER ANGEZEIGTEN ZEILEN
+  5BC7'   3A 2B00'       C      	LD	A,(UB.ZN)
+  5BCA'   90             C      	SUB	B
+  5BCB'   32 2B00'       C      	LD	(UB.ZN),A	;KURSOR AUF ANFANG 12.ZEILE
+  5BCE'   C5             C      	PUSH	BC
+  5BCF'   D5             C      	PUSH	DE
+  5BD0'   E5             C      	PUSH	HL
                          C      ;------------------------VERZ. ZEIGER AUF 1.ANGEZEIGTE EINTR.
-  5BB7'   C5             C      	PUSH	BC
-  5BB8'   01 0020        C      	LD	BC,32
-  5BBB'   B7             C      	OR	A
-  5BBC'   ED 42          C      	SBC	HL,BC
-  5BBE'   C1             C      	POP	BC
-  5BBF'   10 F6          C      	DJNZ	$-8
-  5BC1'   E5             C      	PUSH	HL
-                         C      ;----------------------------------------------------------------------
-  5BC2'                  C      KV.TABTR:
-  5BC2'   21 5959'       C      	LD	HL,UA.LD
-  5BC5'   CD 6B2E'       C      	CALL	UR.MIMO	;KURSOR AUF ANF.12.ZEILE
-  5BC8'   DA 5C08'       C      	JP	C,KV.ZEIHO
-  5BCB'   D1             C      	POP	DE
-  5BCC'   D5             C      	PUSH	DE	;ZIELADR.IN VTAB
-  5BCD'   CD 5D31'       C      	CALL	KV.SPTR	;ZEILE WIEDER IN SPEICHER
-  5BD0'   E1             C      	POP	HL	;ZIELADR.IN VTAB
-  5BD1'   01 0020        C      	LD	BC,32
-  5BD4'   09             C      	ADD	HL,BC
-  5BD5'   FD E1          C      	POP	IY
-  5BD7'   D1             C      	POP	DE
+  5BD1'   C5             C      	PUSH	BC
+  5BD2'   01 0020        C      	LD	BC,32
+  5BD5'   B7             C      	OR	A
+  5BD6'   ED 42          C      	SBC	HL,BC
   5BD8'   C1             C      	POP	BC
-  5BD9'   05             C      	DEC	B
-  5BDA'   28 07          C      	JR	Z,$+9
-  5BDC'   C5             C      	PUSH	BC
-  5BDD'   D5             C      	PUSH	DE
-  5BDE'   FD E5          C      	PUSH	IY
-  5BE0'   E5             C      	PUSH	HL
-  5BE1'   18 DF          C      	JR	KV.TABTR
+  5BD9'   10 F6          C      	DJNZ	$-8
+  5BDB'   E5             C      	PUSH	HL
+                         C      ;----------------------------------------------------------------------
+  5BDC'                  C      KV.TABTR:
+  5BDC'   21 5973'       C      	LD	HL,UA.LD
+  5BDF'   CD 6B59'       C      	CALL	UR.MIMO	;KURSOR AUF ANF.12.ZEILE
+  5BE2'   DA 5C22'       C      	JP	C,KV.ZEIHO
+  5BE5'   D1             C      	POP	DE
+  5BE6'   D5             C      	PUSH	DE	;ZIELADR.IN VTAB
+  5BE7'   CD 5D4B'       C      	CALL	KV.SPTR	;ZEILE WIEDER IN SPEICHER
+  5BEA'   E1             C      	POP	HL	;ZIELADR.IN VTAB
+  5BEB'   01 0020        C      	LD	BC,32
+  5BEE'   09             C      	ADD	HL,BC
+  5BEF'   FD E1          C      	POP	IY
+  5BF1'   D1             C      	POP	DE
+  5BF2'   C1             C      	POP	BC
+  5BF3'   05             C      	DEC	B
+  5BF4'   28 07          C      	JR	Z,$+9
+  5BF6'   C5             C      	PUSH	BC
+  5BF7'   D5             C      	PUSH	DE
+  5BF8'   FD E5          C      	PUSH	IY
+  5BFA'   E5             C      	PUSH	HL
+  5BFB'   18 DF          C      	JR	KV.TABTR
                          C      ;--------------------WEITERBLAETTERN ODER AUSGABE----------------------
-  5BE3'   F1             C      	POP	AF
-  5BE4'   B7             C      	OR	A
-  5BE5'   28 42          C      	JR	Z,KV.AUSG	;KEINE WEITEREN ANZEIGEN
-  5BE7'   D6 09          C      	SUB	9
-  5BE9'   38 05          C      	JR	C,$+7
-  5BEB'   06 09          C      	LD	B,9
-  5BED'   48             C      	LD	C,B
-  5BEE'   18 05          C      	JR	$+7
-  5BF0'   C6 09          C      	ADD	A,9
-  5BF2'   47             C      	LD	B,A
-  5BF3'   48             C      	LD	C,B
-  5BF4'   AF             C      	XOR	A
-  5BF5'   F5             C      	PUSH	AF
+  5BFD'   F1             C      	POP	AF
+  5BFE'   B7             C      	OR	A
+  5BFF'   28 42          C      	JR	Z,KV.AUSG	;KEINE WEITEREN ANZEIGEN
+  5C01'   D6 09          C      	SUB	9
+  5C03'   38 05          C      	JR	C,$+7
+  5C05'   06 09          C      	LD	B,9
+  5C07'   48             C      	LD	C,B
+  5C08'   18 05          C      	JR	$+7
+  5C0A'   C6 09          C      	ADD	A,9
+  5C0C'   47             C      	LD	B,A
+  5C0D'   48             C      	LD	C,B
+  5C0E'   AF             C      	XOR	A
+  5C0F'   F5             C      	PUSH	AF
 'Anzeigen und Aendern des MRES-Verzeichnisses'	MACRO-80 3.44	09-Dec-81	PAGE	1-26
 
 
-  5BF6'   C5             C      	PUSH	BC
-  5BF7'   D5             C      	PUSH	DE
-  5BF8'   E5             C      	PUSH	HL
-  5BF9'   3E 0D          C      	LD	A,13
-  5BFB'   32 2B00'       C      	LD	(UB.ZN),A
-  5BFE'   CD 6E2C'       C      	CALL	U1.BILO
-  5C01'   E1             C      	POP	HL
-  5C02'   D1             C      	POP	DE
-  5C03'   D5             C      	PUSH	DE
-  5C04'   E5             C      	PUSH	HL
-  5C05'   C3 5B8D'       C      	JP	KV.ZLTR
+  5C10'   C5             C      	PUSH	BC
+  5C11'   D5             C      	PUSH	DE
+  5C12'   E5             C      	PUSH	HL
+  5C13'   3E 0D          C      	LD	A,13
+  5C15'   32 2B00'       C      	LD	(UB.ZN),A
+  5C18'   CD 6E57'       C      	CALL	U1.BILO
+  5C1B'   E1             C      	POP	HL
+  5C1C'   D1             C      	POP	DE
+  5C1D'   D5             C      	PUSH	DE
+  5C1E'   E5             C      	PUSH	HL
+  5C1F'   C3 5BA7'       C      	JP	KV.ZLTR
                          C      ;----------------------------------------------------------------------
-  5C08'                  C      KV.ZEIHO:
-  5C08'   21 2B00'       C      	LD	HL,UB.ZN
-  5C0B'   7E             C      	LD	A,(HL)
-  5C0C'   D6 0F          C      	SUB	15
-  5C0E'   38 15          C      	JR	C,$+23	;WENN IN 12. ZEILE SYS GEDRUECKT
-  5C10'   35             C      	DEC	(HL)
-  5C11'   35             C      	DEC	(HL)	;ZEILENNR.-2
-  5C12'   E1             C      	POP	HL
-  5C13'   01 0020        C      	LD	BC,32
-  5C16'   B7             C      	OR	A
-  5C17'   ED 42          C      	SBC	HL,BC	;VERZ.ZEIGER RUECKSETZEN
-  5C19'   FD E1          C      	POP	IY
-  5C1B'   D1             C      	POP	DE
-  5C1C'   C1             C      	POP	BC
-  5C1D'   04             C      	INC	B
-  5C1E'   C5             C      	PUSH	BC
-  5C1F'   D5             C      	PUSH	DE
-  5C20'   FD E5          C      	PUSH	IY
-  5C22'   E5             C      	PUSH	HL
-  5C23'   18 01          C      	JR	$+3
-  5C25'   35             C      	DEC	(HL)
-  5C26'   C3 5BC2'       C      	JP	KV.TABTR
+  5C22'                  C      KV.ZEIHO:
+  5C22'   21 2B00'       C      	LD	HL,UB.ZN
+  5C25'   7E             C      	LD	A,(HL)
+  5C26'   D6 0F          C      	SUB	15
+  5C28'   38 15          C      	JR	C,$+23	;WENN IN 12. ZEILE SYS GEDRUECKT
+  5C2A'   35             C      	DEC	(HL)
+  5C2B'   35             C      	DEC	(HL)	;ZEILENNR.-2
+  5C2C'   E1             C      	POP	HL
+  5C2D'   01 0020        C      	LD	BC,32
+  5C30'   B7             C      	OR	A
+  5C31'   ED 42          C      	SBC	HL,BC	;VERZ.ZEIGER RUECKSETZEN
+  5C33'   FD E1          C      	POP	IY
+  5C35'   D1             C      	POP	DE
+  5C36'   C1             C      	POP	BC
+  5C37'   04             C      	INC	B
+  5C38'   C5             C      	PUSH	BC
+  5C39'   D5             C      	PUSH	DE
+  5C3A'   FD E5          C      	PUSH	IY
+  5C3C'   E5             C      	PUSH	HL
+  5C3D'   18 01          C      	JR	$+3
+  5C3F'   35             C      	DEC	(HL)
+  5C40'   C3 5BDC'       C      	JP	KV.TABTR
                          C      ;----------------------------------------------------------------------
-  5C29'                  C      KV.AUSG:
-  5C29'   E5             C      	PUSH	HL
-  5C2A'   21 596B'       C      	LD	HL,UA.ZRSCH
-  5C2D'   CD 6B2E'       C      	CALL	UR.MIMO
-  5C30'   7E             C      	LD	A,(HL)
-  5C31'   E1             C      	POP	HL
-  5C32'   FE 4A          C      	CP	'J'
-  5C34'   28 11          C      	JR	Z,$+19
-  5C36'   21 5984'       C      	LD	HL,UA.ANZWD
-  5C39'   CD 6B2E'       C      	CALL	UR.MIMO
-  5C3C'   7E             C      	LD	A,(HL)
-  5C3D'   FE 4A          C      	CP	'J'
-  5C3F'   C1             C      	POP	BC
-  5C40'   C2 5C9E'       C      	JP	NZ,KV.KRW
-  5C43'   C5             C      	PUSH	BC
-  5C44'   C3 5B59'       C      	JP	KV.ANF
+  5C43'                  C      KV.AUSG:
+  5C43'   E5             C      	PUSH	HL
+  5C44'   21 5985'       C      	LD	HL,UA.ZRSCH
+  5C47'   CD 6B59'       C      	CALL	UR.MIMO
+  5C4A'   7E             C      	LD	A,(HL)
+  5C4B'   E1             C      	POP	HL
+  5C4C'   FE 4A          C      	CP	'J'
+  5C4E'   28 11          C      	JR	Z,$+19
+  5C50'   21 599E'       C      	LD	HL,UA.ANZWD
+  5C53'   CD 6B59'       C      	CALL	UR.MIMO
+  5C56'   7E             C      	LD	A,(HL)
+  5C57'   FE 4A          C      	CP	'J'
+  5C59'   C1             C      	POP	BC
+  5C5A'   C2 5CB8'       C      	JP	NZ,KV.KRW
+  5C5D'   C5             C      	PUSH	BC
+  5C5E'   C3 5B73'       C      	JP	KV.ANF
                          C      ;--------------------------------Dateien am Ende loeschen ? ---------
-  5C47'   CD 5D72'       C      	CALL	KV.SBC
-  5C4A'   20 34          C      	JR	NZ,$+54
-  5C4C'   3A EC85        C      	LD	A,(BC.VTABE+3)
-  5C4F'   3D             C      	DEC	A
-  5C50'   5F             C      	LD	E,A
-  5C51'   16 00          C      	LD	D,0
-  5C53'   3E 01          C      	LD	A,1
-  5C55'   82             C      	ADD	A,D
-  5C56'   57             C      	LD	D,A
-  5C57'   1D             C      	DEC	E
-  5C58'   28 05          C      	JR	Z,$+7
-  5C5A'   CD 5D72'       C      	CALL	KV.SBC
-  5C5D'   28 F4          C      	JR	Z,$-10
-  5C5F'   C1             C      	POP	BC	;D: Anzahl zu loeschender Dateien
-  5C60'   79             C      	LD	A,C
-  5C61'   92             C      	SUB	D
-  5C62'   32 0E67        C      	LD	(UE.PUF+1),A	;DS-Satz korrigieren
-  5C65'   78             C      	LD	A,B
-  5C66'   92             C      	SUB	D
-  5C67'   32 0E69        C      	LD	(UE.PUF+3),A
-  5C6A'   CD 6ABC'       C      	CALL	UR.KBR
-  5C6D'   CD 6ABC'       C      	CALL	UR.KBR
-  5C70'   CD 6AB6'       C      	CALL	UR.KBV
-  5C73'   DD 36 05 08    C      	LD	(IX+5),08H
-  5C77'   CD 5668'       C      	CALL	UF.EXEC	;und schreiben
-  5C7A'   47             C      	LD	B,A
-  5C7B'   05             C      	DEC	B
-  5C7C'   28 20          C      	JR	Z,$+34
-  5C7E'   04             C      	INC	B
-  5C7F'   C5             C      	PUSH	BC
+  5C61'   CD 5D8C'       C      	CALL	KV.SBC
+  5C64'   20 34          C      	JR	NZ,$+54
+  5C66'   3A EC85        C      	LD	A,(BC.VTABE+3)
+  5C69'   3D             C      	DEC	A
+  5C6A'   5F             C      	LD	E,A
+  5C6B'   16 00          C      	LD	D,0
+  5C6D'   3E 01          C      	LD	A,1
+  5C6F'   82             C      	ADD	A,D
+  5C70'   57             C      	LD	D,A
+  5C71'   1D             C      	DEC	E
+  5C72'   28 05          C      	JR	Z,$+7
+  5C74'   CD 5D8C'       C      	CALL	KV.SBC
+  5C77'   28 F4          C      	JR	Z,$-10
+  5C79'   C1             C      	POP	BC	;D: Anzahl zu loeschender Dateien
+  5C7A'   79             C      	LD	A,C
+  5C7B'   92             C      	SUB	D
+  5C7C'   32 0E67        C      	LD	(UE.PUF+1),A	;DS-Satz korrigieren
+  5C7F'   78             C      	LD	A,B
+  5C80'   92             C      	SUB	D
+  5C81'   32 0E69        C      	LD	(UE.PUF+3),A
+  5C84'   CD 6AE7'       C      	CALL	UR.KBR
+  5C87'   CD 6AE7'       C      	CALL	UR.KBR
+  5C8A'   CD 6AE1'       C      	CALL	UR.KBV
+  5C8D'   DD 36 05 08    C      	LD	(IX+5),08H
+  5C91'   CD 5668'       C      	CALL	UF.EXEC	;und schreiben
+  5C94'   47             C      	LD	B,A
+  5C95'   05             C      	DEC	B
+  5C96'   28 20          C      	JR	Z,$+34
+  5C98'   04             C      	INC	B
+  5C99'   C5             C      	PUSH	BC
                          C      ;-------------------------------------Verzeichnis schreiben -----------
 'Anzeigen und Aendern des MRES-Verzeichnisses'	MACRO-80 3.44	09-Dec-81	PAGE	1-27
 
 
-  5C80'   C1             C      	POP	BC
-  5C81'   05             C      	DEC	B
-  5C82'   21 ECA2        C      	LD	HL,BC.VTABE+32
-  5C85'   C5             C      	PUSH	BC
-  5C86'   11 0E66        C      	LD	DE,UE.PUF
-  5C89'   01 0020        C      	LD	BC,32
-  5C8C'   ED B0          C      	LDIR
-  5C8E'   CD 6AB6'       C      	CALL	UR.KBV
-  5C91'   CD 6ABC'       C      	CALL	UR.KBR
-  5C94'   DD 36 05 08    C      	LD	(IX+5),08H	;OHNE RAW
-  5C98'   CD 5668'       C      	CALL	UF.EXEC
-  5C9B'   C1             C      	POP	BC
-  5C9C'   10 E7          C      	DJNZ	$-23
+  5C9A'   C1             C      	POP	BC
+  5C9B'   05             C      	DEC	B
+  5C9C'   21 ECA2        C      	LD	HL,BC.VTABE+32
+  5C9F'   C5             C      	PUSH	BC
+  5CA0'   11 0E66        C      	LD	DE,UE.PUF
+  5CA3'   01 0020        C      	LD	BC,32
+  5CA6'   ED B0          C      	LDIR
+  5CA8'   CD 6AE1'       C      	CALL	UR.KBV
+  5CAB'   CD 6AE7'       C      	CALL	UR.KBR
+  5CAE'   DD 36 05 08    C      	LD	(IX+5),08H	;OHNE RAW
+  5CB2'   CD 5668'       C      	CALL	UF.EXEC
+  5CB5'   C1             C      	POP	BC
+  5CB6'   10 E7          C      	DJNZ	$-23
                          C      ;---------------------------------------------------------------------
-  5C9E'                  C      KV.KRW:
-  5C9E'   CD 6A8E'       C      	CALL	UR.KRW
-  5CA1'   CD 6A98'       C      	CALL	UR.KRA
-  5CA4'   3A 3328        C      	LD	A,(UE.BWSA+328H)
-  5CA7'   FE 44          C      	CP	'D'
-  5CA9'   C0             C      	RET	NZ
-  5CAA'   21 323D        C      	LD	HL,UE.BWSA+23DH
-  5CAD'   00             C      	NOP
-  5CAE'   CD 5CEA'       C      	CALL	KV.DRU1
-  5CB1'   21 328D        C      	LD	HL,UE.BWSA+28DH
-  5CB4'   CD 5CEA'       C      	CALL	KV.DRU1
-  5CB7'   CD 4040        C      	CALL	PRINT
-  5CBA'   21 2B64'       C      	LD	HL,UB.DTAB
-  5CBD'   11 2B65'       C      	LD	DE,UB.DTAB+1
-  5CC0'   01 0028        C      	LD	BC,40
-  5CC3'   36 20          C      	LD	(HL),20H
-  5CC5'   ED B0          C      	LDIR
-  5CC7'   3A EC85        C      	LD	A,(BC.VTABE+3)
-  5CCA'   47             C      	LD	B,A
-  5CCB'   05             C      	DEC	B
-  5CCC'   21 EC82        C      	LD	HL,BC.VTABE
-  5CCF'   11 0020        C      	LD	DE,32
-  5CD2'                  C      KV.P1:
-  5CD2'   C5             C      	PUSH	BC
-  5CD3'   19             C      	ADD	HL,DE
-  5CD4'   E5             C      	PUSH	HL
-  5CD5'   D5             C      	PUSH	DE
-  5CD6'   11 2B64'       C      	LD	DE,UB.DTAB
-  5CD9'   CD 5D04'       C      	CALL	KV.BSTR
-  5CDC'   21 2B64'       C      	LD	HL,UB.DTAB
-  5CDF'   06 28          C      	LD	B,40
-  5CE1'   CD 5CEC'       C      	CALL	KV.DRU
-  5CE4'   D1             C      	POP	DE
-  5CE5'   E1             C      	POP	HL
-  5CE6'   C1             C      	POP	BC
-  5CE7'   10 E9          C      	DJNZ	KV.P1
-  5CE9'   C9             C      	RET
+  5CB8'                  C      KV.KRW:
+  5CB8'   CD 6AB9'       C      	CALL	UR.KRW
+  5CBB'   CD 6AC3'       C      	CALL	UR.KRA
+  5CBE'   3A 3328        C      	LD	A,(UE.BWSA+328H)
+  5CC1'   FE 44          C      	CP	'D'
+  5CC3'   C0             C      	RET	NZ
+  5CC4'   21 323D        C      	LD	HL,UE.BWSA+23DH
+  5CC7'   00             C      	NOP
+  5CC8'   CD 5D04'       C      	CALL	KV.DRU1
+  5CCB'   21 328D        C      	LD	HL,UE.BWSA+28DH
+  5CCE'   CD 5D04'       C      	CALL	KV.DRU1
+  5CD1'   CD 4040        C      	CALL	PRINT
+  5CD4'   21 2B64'       C      	LD	HL,UB.DTAB
+  5CD7'   11 2B65'       C      	LD	DE,UB.DTAB+1
+  5CDA'   01 0028        C      	LD	BC,40
+  5CDD'   36 20          C      	LD	(HL),20H
+  5CDF'   ED B0          C      	LDIR
+  5CE1'   3A EC85        C      	LD	A,(BC.VTABE+3)
+  5CE4'   47             C      	LD	B,A
+  5CE5'   05             C      	DEC	B
+  5CE6'   21 EC82        C      	LD	HL,BC.VTABE
+  5CE9'   11 0020        C      	LD	DE,32
+  5CEC'                  C      KV.P1:
+  5CEC'   C5             C      	PUSH	BC
+  5CED'   19             C      	ADD	HL,DE
+  5CEE'   E5             C      	PUSH	HL
+  5CEF'   D5             C      	PUSH	DE
+  5CF0'   11 2B64'       C      	LD	DE,UB.DTAB
+  5CF3'   CD 5D1E'       C      	CALL	KV.BSTR
+  5CF6'   21 2B64'       C      	LD	HL,UB.DTAB
+  5CF9'   06 28          C      	LD	B,40
+  5CFB'   CD 5D06'       C      	CALL	KV.DRU
+  5CFE'   D1             C      	POP	DE
+  5CFF'   E1             C      	POP	HL
+  5D00'   C1             C      	POP	BC
+  5D01'   10 E9          C      	DJNZ	KV.P1
+  5D03'   C9             C      	RET
                          C      
-  5CEA'                  C      KV.DRU1:
-  5CEA'   06 1E          C      	LD	B,30
-  5CEC'                  C      KV.DRU:
-  5CEC'   7E             C      	LD	A,(HL)
-  5CED'   23             C      	INC	HL
-  5CEE'   CD 5CF9'       C      	CALL	KV.KO02
-  5CF1'   10 F9          C      	DJNZ	KV.DRU
-  5CF3'   3E 1E          C      	LD	A,1EH
-  5CF5'   CD 4040        C      	CALL	PRINT
-  5CF8'   C9             C      	RET
+  5D04'                  C      KV.DRU1:
+  5D04'   06 1E          C      	LD	B,30
+  5D06'                  C      KV.DRU:
+  5D06'   7E             C      	LD	A,(HL)
+  5D07'   23             C      	INC	HL
+  5D08'   CD 5D13'       C      	CALL	KV.KO02
+  5D0B'   10 F9          C      	DJNZ	KV.DRU
+  5D0D'   3E 1E          C      	LD	A,1EH
+  5D0F'   CD 4040        C      	CALL	PRINT
+  5D12'   C9             C      	RET
                          C      ;
-  5CF9'                  C      KV.KO02:
-  5CF9'   CB BF          C      	RES	7,A	;FUER KV17 (DRUCKERAUSGABE)
-  5CFB'   FE 20          C      	CP	20H
-  5CFD'   30 02          C      	JR	NC,$+4
-  5CFF'   3E 2A          C      	LD	A,2AH
-  5D01'   C3 4040        C      	JP	PRINT
+  5D13'                  C      KV.KO02:
+  5D13'   CB BF          C      	RES	7,A	;FUER KV17 (DRUCKERAUSGABE)
+  5D15'   FE 20          C      	CP	20H
+  5D17'   30 02          C      	JR	NC,$+4
+  5D19'   3E 2A          C      	LD	A,2AH
+  5D1B'   C3 4040        C      	JP	PRINT
                          C      ;---------------------------------------------------------------------
-  5D04'                  C      KV.BSTR:
-  5D04'   01 0006        C      	LD	BC,6	;Aufbereitung des Verz.Satzes
-  5D07'   C5             C      	PUSH	BC
-  5D08'   ED B0          C      	LDIR		;Transport VTABE--->UB.SATZ
-  5D0A'   13             C      	INC	DE
-  5D0B'   13             C      	INC	DE
-  5D0C'   13             C      	INC	DE
-  5D0D'   01 0002        C      	LD	BC,2
-  5D10'   ED B0          C      	LDIR
-  5D12'   13             C      	INC	DE
-  5D13'   13             C      	INC	DE
-  5D14'   13             C      	INC	DE
-  5D15'   C1             C      	POP	BC
+  5D1E'                  C      KV.BSTR:
+  5D1E'   01 0006        C      	LD	BC,6	;Aufbereitung des Verz.Satzes
+  5D21'   C5             C      	PUSH	BC
+  5D22'   ED B0          C      	LDIR		;Transport VTABE--->UB.SATZ
+  5D24'   13             C      	INC	DE
+  5D25'   13             C      	INC	DE
+  5D26'   13             C      	INC	DE
+  5D27'   01 0002        C      	LD	BC,2
+  5D2A'   ED B0          C      	LDIR
+  5D2C'   13             C      	INC	DE
+  5D2D'   13             C      	INC	DE
+  5D2E'   13             C      	INC	DE
+  5D2F'   C1             C      	POP	BC
 'Anzeigen und Aendern des MRES-Verzeichnisses'	MACRO-80 3.44	09-Dec-81	PAGE	1-28
 
 
-  5D16'   C5             C      	PUSH	BC
-  5D17'   ED B0          C      	LDIR
-  5D19'   13             C      	INC	DE
-  5D1A'   13             C      	INC	DE
-  5D1B'   13             C      	INC	DE
-  5D1C'   C1             C      	POP	BC
-  5D1D'   ED B0          C      	LDIR
-  5D1F'   13             C      	INC	DE
-  5D20'   13             C      	INC	DE
-  5D21'   13             C      	INC	DE
-  5D22'   01 0003        C      	LD	BC,3
-  5D25'   ED B0          C      	LDIR
-  5D27'   13             C      	INC	DE
-  5D28'   13             C      	INC	DE
-  5D29'   13             C      	INC	DE
-  5D2A'   6E             C      	LD	L,(HL)	;Konvertierung Labelnummer
-  5D2B'   26 00          C      	LD	H,0
-  5D2D'   CD 6F97'       C      	CALL	UC.CVBD2
-  5D30'   C9             C      	RET
+  5D30'   C5             C      	PUSH	BC
+  5D31'   ED B0          C      	LDIR
+  5D33'   13             C      	INC	DE
+  5D34'   13             C      	INC	DE
+  5D35'   13             C      	INC	DE
+  5D36'   C1             C      	POP	BC
+  5D37'   ED B0          C      	LDIR
+  5D39'   13             C      	INC	DE
+  5D3A'   13             C      	INC	DE
+  5D3B'   13             C      	INC	DE
+  5D3C'   01 0003        C      	LD	BC,3
+  5D3F'   ED B0          C      	LDIR
+  5D41'   13             C      	INC	DE
+  5D42'   13             C      	INC	DE
+  5D43'   13             C      	INC	DE
+  5D44'   6E             C      	LD	L,(HL)	;Konvertierung Labelnummer
+  5D45'   26 00          C      	LD	H,0
+  5D47'   CD 6FC2'       C      	CALL	UC.CVBD2
+  5D4A'   C9             C      	RET
                          C      ;----------------------------------------------------------------------
-  5D31'                  C      KV.SPTR:
-  5D31'   7E             C      	LD	A,(HL)
-  5D32'   FE 09          C      	CP	09H	;Soll Satz geloescht werden?
-  5D34'   20 02          C      	JR	NZ,$+4
-  5D36'   AF             C      	XOR	A
-  5D37'   77             C      	LD	(HL),A
-  5D38'   01 0006        C      	LD	BC,6
-  5D3B'   C5             C      	PUSH	BC
-  5D3C'   ED B0          C      	LDIR		;Ruecktransport BWSA--->VTABE
-  5D3E'   23             C      	INC	HL
-  5D3F'   23             C      	INC	HL
-  5D40'   23             C      	INC	HL
-  5D41'   01 0002        C      	LD	BC,2
-  5D44'   ED B0          C      	LDIR
-  5D46'   23             C      	INC	HL
-  5D47'   23             C      	INC	HL
-  5D48'   23             C      	INC	HL
-  5D49'   C1             C      	POP	BC
-  5D4A'   C5             C      	PUSH	BC
-  5D4B'   ED B0          C      	LDIR
-  5D4D'   23             C      	INC	HL
-  5D4E'   23             C      	INC	HL
-  5D4F'   23             C      	INC	HL
-  5D50'   C1             C      	POP	BC
-  5D51'   ED B0          C      	LDIR
-  5D53'   23             C      	INC	HL
-  5D54'   23             C      	INC	HL
-  5D55'   23             C      	INC	HL
-  5D56'   01 0003        C      	LD	BC,3
-  5D59'   ED B0          C      	LDIR
-  5D5B'   23             C      	INC	HL
-  5D5C'   23             C      	INC	HL
-  5D5D'   23             C      	INC	HL
-  5D5E'   D5             C      	PUSH	DE
-  5D5F'   EB             C      	EX	DE,HL
-  5D60'   CD 5D67'       C      	CALL	KV.DBCVM
-  5D63'   7D             C      	LD	A,L
-  5D64'   E1             C      	POP	HL
-  5D65'   77             C      	LD	(HL),A
-  5D66'   C9             C      	RET
+  5D4B'                  C      KV.SPTR:
+  5D4B'   7E             C      	LD	A,(HL)
+  5D4C'   FE 09          C      	CP	09H	;Soll Satz geloescht werden?
+  5D4E'   20 02          C      	JR	NZ,$+4
+  5D50'   AF             C      	XOR	A
+  5D51'   77             C      	LD	(HL),A
+  5D52'   01 0006        C      	LD	BC,6
+  5D55'   C5             C      	PUSH	BC
+  5D56'   ED B0          C      	LDIR		;Ruecktransport BWSA--->VTABE
+  5D58'   23             C      	INC	HL
+  5D59'   23             C      	INC	HL
+  5D5A'   23             C      	INC	HL
+  5D5B'   01 0002        C      	LD	BC,2
+  5D5E'   ED B0          C      	LDIR
+  5D60'   23             C      	INC	HL
+  5D61'   23             C      	INC	HL
+  5D62'   23             C      	INC	HL
+  5D63'   C1             C      	POP	BC
+  5D64'   C5             C      	PUSH	BC
+  5D65'   ED B0          C      	LDIR
+  5D67'   23             C      	INC	HL
+  5D68'   23             C      	INC	HL
+  5D69'   23             C      	INC	HL
+  5D6A'   C1             C      	POP	BC
+  5D6B'   ED B0          C      	LDIR
+  5D6D'   23             C      	INC	HL
+  5D6E'   23             C      	INC	HL
+  5D6F'   23             C      	INC	HL
+  5D70'   01 0003        C      	LD	BC,3
+  5D73'   ED B0          C      	LDIR
+  5D75'   23             C      	INC	HL
+  5D76'   23             C      	INC	HL
+  5D77'   23             C      	INC	HL
+  5D78'   D5             C      	PUSH	DE
+  5D79'   EB             C      	EX	DE,HL
+  5D7A'   CD 5D81'       C      	CALL	KV.DBCVM
+  5D7D'   7D             C      	LD	A,L
+  5D7E'   E1             C      	POP	HL
+  5D7F'   77             C      	LD	(HL),A
+  5D80'   C9             C      	RET
                          C      ;----------------------------------------------------------------------
-  5D67'                  C      KV.DBCVM:
-  5D67'   06 02          C      	LD	B,2	;FELDLAENGE
-  5D69'   CD 6FDC'       C      	CALL	UC.CVDB	;KONVERTIER. DEZI-->BINAER
-  5D6C'   D0             C      	RET	NC		;OHNE FEHLER
-  5D6D'   C0             C      	RET	NZ
-  5D6E'   13             C      	INC	DE	;1.ZEICHEN WAR KEINE DEZ.ZAHL
-  5D6F'   10 F8          C      	DJNZ	$-6
-  5D71'   C9             C      	RET
+  5D81'                  C      KV.DBCVM:
+  5D81'   06 02          C      	LD	B,2	;FELDLAENGE
+  5D83'   CD 7007'       C      	CALL	UC.CVDB	;KONVERTIER. DEZI-->BINAER
+  5D86'   D0             C      	RET	NC		;OHNE FEHLER
+  5D87'   C0             C      	RET	NZ
+  5D88'   13             C      	INC	DE	;1.ZEICHEN WAR KEINE DEZ.ZAHL
+  5D89'   10 F8          C      	DJNZ	$-6
+  5D8B'   C9             C      	RET
                          C      ;----------------------------------------------------------------------
-  5D72'                  C      KV.SBC:
-  5D72'   01 0020        C      	LD	BC,32
-  5D75'   B7             C      	OR	A
-  5D76'   ED 42          C      	SBC	HL,BC
-  5D78'   7E             C      	LD	A,(HL)
-  5D79'   FE 00          C      	CP	00H
-  5D7B'   C9             C      	RET	
+  5D8C'                  C      KV.SBC:
+  5D8C'   01 0020        C      	LD	BC,32
+  5D8F'   B7             C      	OR	A
+  5D90'   ED 42          C      	SBC	HL,BC
+  5D92'   7E             C      	LD	A,(HL)
+  5D93'   FE 00          C      	CP	00H
+  5D95'   C9             C      	RET	
                          C      ;---------------------------------------------------------------------
-  5D7C'                  C      KV.ANZ:
-  5D7C'   C5             C      	PUSH	BC
-  5D7D'   68             C      	LD	L,B
-  5D7E'   26 00          C      	LD	H,0
-  5D80'   11 3332        C      	LD	DE,3332H
+  5D96'                  C      KV.ANZ:
+  5D96'   C5             C      	PUSH	BC
+  5D97'   68             C      	LD	L,B
+  5D98'   26 00          C      	LD	H,0
+  5D9A'   11 3332        C      	LD	DE,3332H
 'Anzeigen und Aendern des MRES-Verzeichnisses'	MACRO-80 3.44	09-Dec-81	PAGE	1-29
 
 
-  5D83'   CD 6F93'       C      	CALL	UC.CVBD3
-  5D86'   13             C      	INC	DE
-  5D87'   13             C      	INC	DE
-  5D88'   21 5D92'       C      	LD	HL,KV.AVZS
-  5D8B'   01 0011        C      	LD	BC,17
-  5D8E'   ED B0          C      	LDIR
-  5D90'   C1             C      	POP	BC
-  5D91'   C9             C      	RET
+  5D9D'   CD 6FBE'       C      	CALL	UC.CVBD3
+  5DA0'   13             C      	INC	DE
+  5DA1'   13             C      	INC	DE
+  5DA2'   21 5DAC'       C      	LD	HL,KV.AVZS
+  5DA5'   01 0011        C      	LD	BC,17
+  5DA8'   ED B0          C      	LDIR
+  5DAA'   C1             C      	POP	BC
+  5DAB'   C9             C      	RET
                          C      ;-----------------------------------------------------------------------
-  5D92'                  C      KV.AVZS:
-  5D92'   56 65 72 7A    C      	DB	'Verzeichnissaetze'
-  5D96'   65 69 63 68    C      
-  5D9A'   6E 69 73 73    C      
-  5D9E'   61 65 74 7A    C      
-  5DA2'   65             C      
+  5DAC'                  C      KV.AVZS:
+  5DAC'   56 65 72 7A    C      	DB	'Verzeichnissaetze'
+  5DB0'   65 69 63 68    C      
+  5DB4'   6E 69 73 73    C      
+  5DB8'   61 65 74 7A    C      
+  5DBC'   65             C      
                          C      ;----------------------------------------------------------------------
                          C      ;	END
                          C      	TITLE	'Kommandos: KRDx und KWRx'
@@ -1748,232 +1760,282 @@
                          C      ;               Verstaendigungstabelle eingetragen werden.
                          C      ;
                          C      ;**********************************************************************
-  5DA3'   5DA3'          C      	DW	$
-  5DA5'   4B 52 44 31    C      	DB	'KRD1'
-  5DA9'   18 06          C      	JR	KH.RDSTA
+  5DBD'   5DBD'          C      	DW	$
+  5DBF'   4B 52 57 31    C      	DB	'KRW1'
+  5DC3'   18 06          C      	JR	KH.RDSTA
                          C      ;
-  5DAB'   5DAB'          C      	DW	$
-  5DAD'   4B 52 44 32    C      	DB	'KRD2'
-  5DB1'                  C      KH.RDSTA:
-  5DB1'   CD 6D65'       C      	CALL	U1.KTINI	;Initialisierung E/A-Tab.
-  5DB4'   3A 3325        C      	LD	A,(UE.BWSA+325H)
-  5DB7'   E6 0F          C      	AND	0FH
-  5DB9'   DD 77 04       C      	LD	(IX+4),A	;Subadresse eintragen
-  5DBC'                  C      KH.RES:
-  5DBC'   CD 6A86'       C      	CALL	UR.KRE	;Reservieren
-  5DBF'                  C      KH.RD1:
-  5DBF'   DD 36 05 02    C      	LD	(IX+5),02H	;Block wiedergeben
-  5DC3'   CD 5668'       C      	CALL	UF.EXEC
-  5DC6'   DD 7E 02       C      	LD	A,(IX+2)	;Laenge = 1, dann BM
-  5DC9'   FE 01          C      	CP	1
-  5DCB'   CA 5E2E'       C      	JP	Z,KH.RDBM
-  5DCE'   CD 5F0B'       C      	CALL	KH.BILO
-  5DD1'   CD 5E3F'       C      	CALL	KH.ANZBL	;Block anzeigen
-  5DD4'                  C      KH.RD3:
-  5DD4'   CD 6C5A'       C      	CALL	UR.TAREP	;Tastaturabfrage
-  5DD7'   FE 89          C      	CP	089H
-  5DD9'   28 E4          C      	JR	Z,KH.RD1	;---> P 10
-  5DDB'   FE 8B          C      	CP	08BH
-  5DDD'                  C      KH.RD6:
-  5DDD'   CC 5E25'       C      	CALL	Z,KH.RD2	;---> P 12
-  5DE0'   28 DD          C      	JR	Z,KH.RD1
-  5DE2'   FE CD          C      	CP	0CDH
-  5DE4'                  C      KH.RD4:
-  5DE4'   28 3B          C      	JR	Z,KH.SYSRT	;---> SYS
-  5DE6'   FE 85          C      	CP	85H
-  5DE8'   CC 5F03'       C      	CALL	Z,KH.KBRS	;---> P 6
-  5DEB'   FE 86          C      	CP	86H
-  5DED'   DD 36 08 01    C      	LD	(IX+8),1
-  5DF1'   F5             C      	PUSH	AF
-  5DF2'   CC 6A9E'       C      	CALL	Z,UR.KLV	;---> P 7
-  5DF5'   F1             C      	POP	AF
-  5DF6'   28 DC          C      	JR	Z,KH.RD3
-  5DF8'   FE 87          C      	CP	87H
-  5DFA'   F5             C      	PUSH	AF
-  5DFB'   CC 6A98'       C      	CALL	Z,UR.KRA	;---> P 8
-  5DFE'   F1             C      	POP	AF
-  5DFF'   28 D3          C      	JR	Z,KH.RD3
-  5E01'   FE 88          C      	CP	88H
-  5E03'   F5             C      	PUSH	AF
-  5E04'   CC 6AA4'       C      	CALL	Z,UR.KLR	;---> P 9
-  5E07'   F1             C      	POP	AF
-  5E08'   28 CA          C      	JR	Z,KH.RD3
-  5E0A'   FE E2          C      	CP	0E2H	;CTRL,US,B : BM SCHREIBEN
-  5E0C'   F5             C      	PUSH	AF
-  5E0D'   CC 6AAA'       C      	CALL	Z,UR.KBM
-  5E10'   F1             C      	POP	AF
-  5E11'   CA 5DD4'       C      	JP	Z,KH.RD3
-  5E14'   FE 83          C      	CP	83H
-  5E16'   CA 5DBC'       C      	JP	Z,KH.RES	;---> P 4
-  5E19'   FE 84          C      	CP	84H
-  5E1B'   CC 6A94'       C      	CALL	Z,UR.KRWW	;---> P 5
-  5E1E'   C3 5DD4'       C      	JP	KH.RD3
-  5E21'                  C      KH.SYSRT:
-  5E21'   CD 5F0B'       C      	CALL	KH.BILO	;Systemruecksprung
-  5E24'   C9             C      	RET
-  5E25'                  C      KH.RD2:
-  5E25'   F5             C      	PUSH	AF	;Flags retten
-  5E26'   CD 6ABC'       C      	CALL	UR.KBR	;Block ruecksetzen
-  5E29'   CD 6ABC'       C      	CALL	UR.KBR
-  5E2C'   F1             C      	POP	AF
-  5E2D'   C9             C      	RET
+  5DC5'   5DC5'          C      	DW	$
+  5DC7'   4B 52 57 32    C      	DB	'KRW2'
+  5DCB'                  C      KH.RDSTA:
+  5DCB'   CD 6D90'       C      	CALL	U1.KTINI	;Initialisierung E/A-Tab.
+  5DCE'   3A 3325        C      	LD	A,(UE.BWSA + 10*80 + 5)	;325H i von KRDi
+  5DD1'   E6 0F          C      	AND	0FH
+  5DD3'   DD 77 04       C      	LD	(IX+4),A	;Subadresse eintragen
+  5DD6'                  C      KH.RES:
+  5DD6'                  C      KH.KSRE:
+  5DD6'   CD 6AB1'       C      	CALL	UR.KRE	;Reservieren
+  5DD9'                  C      KH.RD1:
+  5DD9'                  C      KH.KSRW:
+  5DD9'   DD 36 05 21    C      	LD	(IX+5),021H	;umspulen (rewind)
+  5DDD'   CD 5668'       C      	CALL	UF.EXEC
+  5DE0'   18 78          C      	JR		KH.RDBA
+                         C      ;
+                         C      ;	Z Y K L U S  C<ber Tastatureingaben
+  5DE2'                  C      KH.RD3:	;Zyklus
+  5DE2'   DD 36 08 00    C      	LD	(IX+8),0	;Anzahl Bandmarken
+  5DE6'   CD 6C85'       C      	CALL	UR.TAREP	;Tastaturabfrage
+  5DE9'   FE 80          C      	CP	080H
+  5DEB'   28 E9          C      	JR	Z,KH.KSRE	;---> P 01	Reservieren EIN
+  5DED'   FE 82          C      	CP	082H
+  5DEF'   28 2A          C      	JR	Z,KH.KSRA	;---> P 03	Reservieren AUS
+  5DF1'   FE 81          C      	CP	081H
+  5DF3'   28 E4          C      	JR	Z,KH.KSRW	;---> P 02	Rewind
+                         C      
+  5DF5'   FE 83          C      	CP	083H
+  5DF7'   28 31          C      	JR	Z,KH.KSRP	;---> P 04	        read; display
+  5DF9'   FE 85          C      	CP	085H
+  5DFB'   28 2A          C      	JR	Z,KH.KSRM	;---> P 06	R-; R-; read; display
+                         C      
+  5DFD'   DD 36 08 01    C      	LD	(IX+8),1	;Anzahl Bandmarken
+  5E01'   FE 86          C      	CP	086H
+  5E03'   28 3C          C      	JR	Z,KH.BMP	;---> P07	BM+
+  5E05'   FE 88          C      	CP	088H
+  5E07'   28 40          C      	JR	Z,KH.BMM	;---> P09	BM-
+                         C      
+  5E09'   FE 89          C      	CP	089H
+  5E0B'   28 41          C      	JR	Z,KH.WREC	;---> P10	write Record
+  5E0D'   FE 8A          C      	CP	08AH
+  5E0F'   28 3F          C      	JR	Z,KH.WBM	;---> P11	write BM
+  5E11'   FE 8B          C      	CP	08BH
+  5E13'   28 3D          C      	JR	Z,KH.WSL	;---> P11	write SL
+                         C      
+  5E15'   FE CD          C      	CP	0CDH
+  5E17'   28 3B          C      	JR	Z,KH.SYSRT	;---> SYS
+                         C      
+  5E19'   18 C7          C      	JR	KH.RD3
+                         C      
+                         C      ;	P 03	Reservieren AUS
+  5E1B'                  C      KH.KSRA:
+  5E1B'   DD 36 05 21    C      	LD	(IX+5),021H	;umspulen (rewind)
+  5E1F'   CD 5668'       C      	CALL	UF.EXEC
+  5E22'   CD 6AC3'       C      	CALL	UR.KRA
+  5E25'   18 33          C      	JR		KH.RDBA
+                         C      
+                         C      ;	P 06	R-; R-; read; display
+  5E27'                  C      KH.KSRM:
+  5E27'   CD 5EBC'       C      	CALL	KH.RD2
+                         C      ;	P 04	        read; display
+  5E2A'                  C      KH.KSRP:
+  5E2A'   DD 36 05 02    C       	LD	(IX+5),002H	;naechst Record lesen
+  5E2E'   CD 5668'       C      	CALL	UF.EXEC
+  5E31'   DD 7E 02       C      	LD	A,(IX+2)	;Lade die Laenge des Blockes
 'Kommandos: KRDx und KWRx'	MACRO-80 3.44	09-Dec-81	PAGE	1-31
 
 
-  5E2E'                  C      KH.RDBM:
-  5E2E'   CD 5F0B'       C      	CALL	KH.BILO
-  5E31'   21 5950'       C      	LD	HL,UA.ZKBM	;"Bandmarke"
-  5E34'   11 3000        C      	LD	DE,UE.BWSA
-  5E37'   01 0009        C      	LD	BC,9
-  5E3A'   ED B0          C      	LDIR
-  5E3C'   C3 5DD4'       C      	JP	KH.RD3
-  5E3F'                  C      KH.ANZBL:
-  5E3F'   CD 5F0B'       C      	CALL	KH.BILO
-  5E42'                  C      KH.ANZB1:
-  5E42'   21 0E66        C      	LD	HL,UE.PUF
-  5E45'   CD 5E49'       C      	CALL	KH.AZBLD	;Bild anzeigen (24 Zeilen)
-  5E48'   C9             C      	RET		; IN...HL:=akt. Pufferadresse
-  5E49'                  C      KH.AZBLD:
-  5E49'   06 18          C      	LD	B,24	; 24 Zeilen anzeigen
-  5E4B'   11 3000        C      	LD	DE,UE.BWSA
-  5E4E'                  C      KH.AZBL1:
-  5E4E'   C5             C      	PUSH	BC
-  5E4F'   CD 5E5E'       C      	CALL	KH.AZ1Z	; 1 Zeile anzeigen
-  5E52'   C1             C      	POP	BC
-  5E53'   E5             C      	PUSH	HL	;akt. Pufferadresse retten
-  5E54'   EB             C      	EX	DE,HL
-  5E55'   11 0050        C      	LD	DE,80
-  5E58'   19             C      	ADD	HL,DE	;neuen Zeilenanfang berechnen
-  5E59'   EB             C      	EX	DE,HL
-  5E5A'   E1             C      	POP	HL
-  5E5B'   10 F1          C      	DJNZ	KH.AZBL1
-  5E5D'   C9             C      	RET
-                         C      ;                                IN...HL:= Pufferadresse
-                         C      ;                                     DE:= Zeilenanfang
-  5E5E'                  C      KH.AZ1Z:
-  5E5E'   D5             C      	PUSH	DE	;eine Zeile anzeigen
-  5E5F'   E5             C      	PUSH	HL
-  5E60'   D5             C      	PUSH	DE
-  5E61'   E1             C      	POP	HL
-  5E62'   01 0040        C      	LD	BC,64
-  5E65'   09             C      	ADD	HL,BC
-  5E66'   E5             C      	PUSH	HL
-  5E67'   C1             C      	POP	BC	;BC:= Anfang ASCII-Darstellung
-  5E68'   E1             C      	POP	HL
-  5E69'   CD 5E82'       C      	CALL	KH.AZADR	;Adresse anzeigen
-  5E6C'   13             C      	INC	DE
-  5E6D'   13             C      	INC	DE
-  5E6E'   CD 5E8B'       C      	CALL	KH.AZ4BY	;1. Vierergruppe
-  5E71'   13             C      	INC	DE
-  5E72'   13             C      	INC	DE
-  5E73'   CD 5E8B'       C      	CALL	KH.AZ4BY	;2.      ''
-  5E76'   13             C      	INC	DE
-  5E77'   13             C      	INC	DE
-  5E78'   CD 5E8B'       C      	CALL	KH.AZ4BY	;3.      ''
-  5E7B'   13             C      	INC	DE
-  5E7C'   13             C      	INC	DE
-  5E7D'   CD 5E8B'       C      	CALL	KH.AZ4BY	;4.      ''
-  5E80'   D1             C      	POP	DE
-  5E81'   C9             C      	RET
-  5E82'                  C      KH.AZADR:
-  5E82'   7C             C      	LD	A,H	;Anzeige der Adresse
-  5E83'   CD 6F20'       C      	CALL	UC.CVBX+2
-  5E86'   7D             C      	LD	A,L
-  5E87'   CD 6F20'       C      	CALL	UC.CVBX+2
-  5E8A'   C9             C      	RET
-  5E8B'                  C      KH.AZ4BY:
-  5E8B'   AF             C      	XOR	A	;Anzeige einer Vierergruppe
-  5E8C'   32 2B1C'       C      	LD	(UB.PAR1),A
-  5E8F'                  C      KH.AZ4B0:
-  5E8F'   7E             C      	LD	A,(HL)
-  5E90'   F5             C      	PUSH	AF
-  5E91'   CD 6F20'       C      	CALL	UC.CVBX+2	;Code als Hexadezimalzahl
-  5E94'   F1             C      	POP	AF
-  5E95'   13             C      	INC	DE
-  5E96'   23             C      	INC	HL
-  5E97'   FE 20          C      	CP	20H
-  5E99'   38 15          C      	JR	C,KH.AZ4B1	;nicht darstellbar
-  5E9B'   FE 7F          C      	CP	7FH
-  5E9D'   30 11          C      	JR	NC,KH.AZ4B1	;nicht darstellbar
-  5E9F'                  C      KH.AZ4B3:
-  5E9F'   02             C      	LD	(BC),A	;Code als ASCII-Zeichen
-  5EA0'   03             C      	INC	BC
-  5EA1'   CD 5EB4'       C      	CALL	KH.BLEVG	;Test auf Blockende
-  5EA4'   3A 2B1C'       C      	LD	A,(UB.PAR1)
-  5EA7'   3C             C      	INC	A
-  5EA8'   FE 04          C      	CP	4
-  5EAA'   C8             C      	RET	Z
+  5E34'   FE 01          C      	CP	1	;Laenge = 1, dann BandMarke
+  5E36'   28 33          C      	JR	Z,KH.RDBM
+  5E38'   FE 02          C      	CP	2	;Laenge = 2, dann Schlussluecke
+  5E3A'   28 40          C      	JR	Z,KH.RDSL
+  5E3C'   CD 5E8D'       C      	CALL	KH.ANZBL	;Block anzeigen
+  5E3F'   18 A1          C      	JR	KH.RD3
+                         C      
+                         C      ;	P 07	BM+
+  5E41'                  C      KH.BMP:
+  5E41'   CD 6AC9'       C      	CALL	UR.KLV	;Bandmarke vorsetzen
+  5E44'   CD 6AE7'       C      	CALL	UR.KBR	;Record    zuruecksetzen
+  5E47'   18 E1          C      	JR	KH.KSRP
+                         C      ;	P 09	BM-
+  5E49'                  C      KH.BMM:
+  5E49'   CD 6ACF'       C      	CALL	UR.KLR	;Bandmarke zurC<cksetzen
+  5E4C'   18 DC          C      	JR	KH.KSRP
+                         C      
+                         C      ;	P 10	write Record
+  5E4E'                  C      KH.WREC:
+                         C      	; LD	(IX+5),08H
+                         C      	; CALL	UF.EXEC
+                         C      	; CALL	UR.KBR
+  5E4E'   18 92          C      	JR	KH.RD3
+                         C      
+                         C      ;	P 11	write BM
+  5E50'                  C      KH.WBM:
+  5E50'   18 90          C      	JR	KH.RD3
+                         C      
+                         C      ;	P 12	write SL
+  5E52'                  C      KH.WSL:
+  5E52'   18 8E          C      	JR	KH.RD3
+                         C      
+                         C      ;	SYS		Systemruecksprung
+  5E54'                  C      KH.SYSRT:
+  5E54'   CD 5F36'       C      	CALL	KH.BILO
+  5E57'   C3 000B        C      	JP	SY.SYSTB
+                         C      
+  5E5A'                  C      KH.RDBA:
+  5E5A'   CD 5F36'       C      	CALL	KH.BILO
+  5E5D'   21 5953'       C      	LD	HL,UA.ZKBA	;"Bandanfang"
+  5E60'   11 3000        C      	LD	DE,UE.BWSA
+  5E63'   01 000A        C      	LD	BC,UA.ZKBM-UA.ZKBA
+  5E66'   ED B0          C      	LDIR
+  5E68'   C3 5DE2'       C      	JP	KH.RD3
+                         C      
+  5E6B'                  C      KH.RDBM:
+  5E6B'   CD 5F36'       C      	CALL	KH.BILO
+  5E6E'   21 595D'       C      	LD	HL,UA.ZKBM	;"Bandmarke"
+  5E71'   11 3000        C      	LD	DE,UE.BWSA
+  5E74'   01 0009        C      	LD	BC,UA.ZKSL-UA.ZKBM
+  5E77'   ED B0          C      	LDIR
+  5E79'   C3 5DE2'       C      	JP	KH.RD3
+                         C      
+  5E7C'                  C      KH.RDSL:
+  5E7C'   CD 5F36'       C      	CALL	KH.BILO
+  5E7F'   21 5966'       C      	LD	HL,UA.ZKSL	;"Schlussluecke"
+  5E82'   11 3000        C      	LD	DE,UE.BWSA
+  5E85'   01 000D        C      	LD	BC,UA.ZKEE-UA.ZKSL
+  5E88'   ED B0          C      	LDIR
+  5E8A'   C3 5DE2'       C      	JP	KH.RD3
+                         C      
+  5E8D'                  C      KH.ANZBL:
+  5E8D'   CD 5F36'       C      	CALL	KH.BILO
+  5E90'                  C      KH.ANZB1:
+  5E90'   21 0E66        C      	LD	HL,UE.PUF
+  5E93'   FE 20          C      	CP	020H
+  5E95'   20 04          C      	JR	NZ,KH.ANZB2
+  5E97'   06 02          C      	LD	B,2	; 2 Zeilen anzeigen
+  5E99'   18 0A          C      	JR	KH.ANZB4
+  5E9B'                  C      KH.ANZB2:
+  5E9B'   FE 80          C      	CP	080H
+  5E9D'   20 04          C      	JR	NZ,KH.ANZB3
+  5E9F'   06 08          C      	LD	B,8	; 8 Zeilen anzeigen
+  5EA1'   18 02          C      	JR	KH.ANZB4
+  5EA3'                  C      KH.ANZB3:	
+  5EA3'   06 18          C      	LD	B,24	; 24 Zeilen anzeigen
+  5EA5'                  C      KH.ANZB4:
+  5EA5'   CD 5EA9'       C      	CALL	KH.AZBLD	;Bild anzeigen (24 Zeilen)
+  5EA8'   C9             C      	RET		; IN...HL:=akt. Pufferadresse
+                         C      
+  5EA9'                  C      KH.AZBLD:
+  5EA9'   11 3000        C      	LD	DE,UE.BWSA
+  5EAC'                  C      KH.AZBL1:
 'Kommandos: KRDx und KWRx'	MACRO-80 3.44	09-Dec-81	PAGE	1-32
 
 
-  5EAB'   32 2B1C'       C      	LD	(UB.PAR1),A
-  5EAE'   18 DF          C      	JR	KH.AZ4B0
-  5EB0'                  C      KH.AZ4B1:
-  5EB0'   3E 7F          C      	LD	A,07FH
-  5EB2'   18 EB          C      	JR	KH.AZ4B3
-  5EB4'                  C      KH.BLEVG:
-  5EB4'   D5             C      	PUSH	DE	;Blockendetest
-  5EB5'   E5             C      	PUSH	HL
-  5EB6'   11 0E66        C      	LD	DE,UE.PUF	;DE:= Pufferanfang
-  5EB9'   B7             C      	OR	A
-  5EBA'   ED 52          C      	SBC	HL,DE	;HL:= Anzahl der angezeigten
-  5EBC'   EB             C      	EX	DE,HL
-  5EBD'   CD 6E8C'       C      	CALL	XY.LIDX
-  5EC0'   09             C      	DB	9
-  5EC1'   B7             C      	OR	A
-  5EC2'   ED 52          C      	SBC	HL,DE
-  5EC4'   E1             C      	POP	HL
-  5EC5'   D1             C      	POP	DE
-  5EC6'   28 01          C      	JR	Z,KH.BLEV1
-  5EC8'   C9             C      	RET
-  5EC9'                  C      KH.BLEV1:
-  5EC9'   06 0C          C      	LD	B,12
-  5ECB'                  C      KH.BLEV2:
-  5ECB'   33             C      	INC	SP
-  5ECC'   10 FD          C      	DJNZ	KH.BLEV2
-  5ECE'   C9             C      	RET		;---> Anzeige beendet
-                         C      ;*********************************************************************
-  5ECF'   5ECF'          C      	DW	$
-  5ED1'   4B 57 52 31    C      	DB	'KWR1'
-  5ED5'   18 06          C      	JR	KH.WRSTA
-                         C      ;
-  5ED7'   5ED7'          C      	DW	$
-  5ED9'   4B 57 52 32    C      	DB	'KWR2'
-  5EDD'                  C      KH.WRSTA:
-  5EDD'   3A 3325        C      	LD	A,(UE.BWSA+325H)
-  5EE0'   DD 21 2B01'    C      	LD	IX,UB.KTAB	;Block aufzeichnen
-  5EE4'   DD CB 00 56    C      	BIT	2,(IX)
-  5EE8'   28 07          C      	JR	Z,$+9
-  5EEA'   F5             C      	PUSH	AF
-  5EEB'   3E 19          C      	LD	A,19H
-  5EED'   CD 5694'       C      	CALL	UF.ERANZ
-  5EF0'   F1             C      	POP	AF
-  5EF1'   E6 0F          C      	AND	0FH
-  5EF3'   DD 77 04       C      	LD	(IX+4),A
-  5EF6'   DD 36 05 08    C      	LD	(IX+5),08H
-  5EFA'   CD 5668'       C      	CALL	UF.EXEC
-  5EFD'   CD 6ABC'       C      	CALL	UR.KBR
-  5F00'   C3 5DBF'       C      	JP	KH.RD1
-  5F03'                  C      KH.KBRS:
-  5F03'   CD 6ABC'       C      	CALL	UR.KBR
-  5F06'   CD 5F0B'       C      	CALL	KH.BILO
-  5F09'   D1             C      	POP	DE
-  5F0A'   C9             C      	RET
+  5EAC'   C5             C      	PUSH	BC
+  5EAD'   CD 5EC5'       C      	CALL	KH.AZ1Z	; 1 Zeile anzeigen
+  5EB0'   C1             C      	POP	BC
+  5EB1'   E5             C      	PUSH	HL	;akt. Pufferadresse retten
+  5EB2'   EB             C      	EX	DE,HL
+  5EB3'   11 0050        C      	LD	DE,80
+  5EB6'   19             C      	ADD	HL,DE	;neuen Zeilenanfang berechnen
+  5EB7'   EB             C      	EX	DE,HL
+  5EB8'   E1             C      	POP	HL
+  5EB9'   10 F1          C      	DJNZ	KH.AZBL1
+  5EBB'   C9             C      	RET
+                         C      
+  5EBC'                  C      KH.RD2:
+  5EBC'   F5             C      	PUSH	AF	;Flags retten
+  5EBD'   CD 6AE7'       C      	CALL	UR.KBR	;Block ruecksetzen
+  5EC0'   CD 6AE7'       C      	CALL	UR.KBR
+  5EC3'   F1             C      	POP	AF
+  5EC4'   C9             C      	RET
+                         C      ;                                IN...HL:= Pufferadresse
+                         C      ;                                     DE:= Zeilenanfang
+  5EC5'                  C      KH.AZ1Z:
+  5EC5'   D5             C      	PUSH	DE	;eine Zeile anzeigen
+  5EC6'   E5             C      	PUSH	HL
+  5EC7'   D5             C      	PUSH	DE
+  5EC8'   E1             C      	POP	HL
+  5EC9'   01 0040        C      	LD	BC,64
+  5ECC'   09             C      	ADD	HL,BC
+  5ECD'   E5             C      	PUSH	HL
+  5ECE'   C1             C      	POP	BC	;BC:= Anfang ASCII-Darstellung
+  5ECF'   E1             C      	POP	HL
+  5ED0'   CD 5EE9'       C      	CALL	KH.AZADR	;Adresse anzeigen
+  5ED3'   13             C      	INC	DE
+  5ED4'   13             C      	INC	DE
+  5ED5'   CD 5EF2'       C      	CALL	KH.AZ4BY	;1. Vierergruppe
+  5ED8'   13             C      	INC	DE
+  5ED9'   13             C      	INC	DE
+  5EDA'   CD 5EF2'       C      	CALL	KH.AZ4BY	;2.      ''
+  5EDD'   13             C      	INC	DE
+  5EDE'   13             C      	INC	DE
+  5EDF'   CD 5EF2'       C      	CALL	KH.AZ4BY	;3.      ''
+  5EE2'   13             C      	INC	DE
+  5EE3'   13             C      	INC	DE
+  5EE4'   CD 5EF2'       C      	CALL	KH.AZ4BY	;4.      ''
+  5EE7'   D1             C      	POP	DE
+  5EE8'   C9             C      	RET
+  5EE9'                  C      KH.AZADR:
+  5EE9'   7C             C      	LD	A,H	;Anzeige der Adresse
+  5EEA'   CD 6F4B'       C      	CALL	UC.CVBX+2
+  5EED'   7D             C      	LD	A,L
+  5EEE'   CD 6F4B'       C      	CALL	UC.CVBX+2
+  5EF1'   C9             C      	RET
+  5EF2'                  C      KH.AZ4BY:
+  5EF2'   AF             C      	XOR	A	;Anzeige einer Vierergruppe
+  5EF3'   32 2B1C'       C      	LD	(UB.PAR1),A
+  5EF6'                  C      KH.AZ4B0:
+  5EF6'   7E             C      	LD	A,(HL)
+  5EF7'   F5             C      	PUSH	AF
+  5EF8'   CD 6F4B'       C      	CALL	UC.CVBX+2	;Code als Hexadezimalzahl
+  5EFB'   F1             C      	POP	AF
+  5EFC'   13             C      	INC	DE
+  5EFD'   23             C      	INC	HL
+  5EFE'   FE 20          C      	CP	20H
+  5F00'   38 15          C      	JR	C,KH.AZ4B1	;nicht darstellbar
+  5F02'   FE 7F          C      	CP	7FH
+  5F04'   30 11          C      	JR	NC,KH.AZ4B1	;nicht darstellbar
+  5F06'                  C      KH.AZ4B3:
+  5F06'   02             C      	LD	(BC),A	;Code als ASCII-Zeichen
+  5F07'   03             C      	INC	BC
+  5F08'   CD 5F1B'       C      	CALL	KH.BLEVG	;Test auf Blockende
+  5F0B'   3A 2B1C'       C      	LD	A,(UB.PAR1)
+  5F0E'   3C             C      	INC	A
+  5F0F'   FE 04          C      	CP	4
+  5F11'   C8             C      	RET	Z
+  5F12'   32 2B1C'       C      	LD	(UB.PAR1),A
+  5F15'   18 DF          C      	JR	KH.AZ4B0
+  5F17'                  C      KH.AZ4B1:
+  5F17'   3E 7F          C      	LD	A,07FH
+  5F19'   18 EB          C      	JR	KH.AZ4B3
+  5F1B'                  C      KH.BLEVG:
+  5F1B'   D5             C      	PUSH	DE	;Blockendetest
+  5F1C'   E5             C      	PUSH	HL
+  5F1D'   11 0E66        C      	LD	DE,UE.PUF	;DE:= Pufferanfang
+  5F20'   B7             C      	OR	A
+'Kommandos: KRDx und KWRx'	MACRO-80 3.44	09-Dec-81	PAGE	1-33
+
+
+  5F21'   ED 52          C      	SBC	HL,DE	;HL:= Anzahl der angezeigten
+  5F23'   EB             C      	EX	DE,HL
+  5F24'   CD 6EB7'       C      	CALL	XY.LIDX
+  5F27'   09             C      	DB	9
+  5F28'   B7             C      	OR	A
+  5F29'   ED 52          C      	SBC	HL,DE
+  5F2B'   E1             C      	POP	HL
+  5F2C'   D1             C      	POP	DE
+  5F2D'   28 01          C      	JR	Z,KH.BLEV1
+  5F2F'   C9             C      	RET
+  5F30'                  C      KH.BLEV1:
+  5F30'   06 0C          C      	LD	B,12
+  5F32'                  C      KH.BLEV2:
+  5F32'   33             C      	INC	SP
+  5F33'   10 FD          C      	DJNZ	KH.BLEV2
+  5F35'   C9             C      	RET		;---> Anzeige beendet
+                         C      
                          C      ;----------------------------------------------------
-  5F0B'                  C      KH.BILO:
-  5F0B'   21 3000        C      	LD	HL,3000H
-  5F0E'   01 077F        C      	LD	BC,24*80 -1	;800H
-  5F11'   36 20          C      	LD	(HL),20H
-  5F13'   E5             C      	PUSH	HL
-  5F14'   D1             C      	POP	DE
-  5F15'   13             C      	INC	DE
-  5F16'   ED B0          C      	LDIR
-  5F18'   C9             C      	RET
+  5F36'                  C      KH.BILO:
+  5F36'   21 3000        C      	LD	HL,3000H
+  5F39'   01 077F        C      	LD	BC,24*80 -1	;800H
+  5F3C'   36 20          C      	LD	(HL),20H
+  5F3E'   E5             C      	PUSH	HL
+  5F3F'   D1             C      	POP	DE
+  5F40'   13             C      	INC	DE
+  5F41'   ED B0          C      	LDIR
+  5F43'   C9             C      	RET
                          C      ;------------------------------------------------------
                          C      ;	END
                          C      	TITLE	'Ein-/Ausgabe im freien Format'
                          C      	PAGE
-'Ein-/Ausgabe im freien Format'	MACRO-80 3.44	09-Dec-81	PAGE	1-33
+'Ein-/Ausgabe im freien Format'	MACRO-80 3.44	09-Dec-81	PAGE	1-34
 
 
                          C      
@@ -1986,24 +2048,24 @@
                          C      ;**********************************************************************
                          C      ;      Positionieren auf Datei, IN: <C>:= Labelnummer
                          C      ;
-  5F19'                  C      FD.POSK:
-  5F19'   C5             C      	PUSH	BC
-  5F1A'   41             C      	LD	B,C
-  5F1B'   04             C      	INC	B
-  5F1C'   CD 6ACB'       C      	CALL	UR.POSIK
-  5F1F'   CD 5F31'       C      	CALL	FD.KO01
-  5F22'   3A 0E66        C      	LD	A,(UE.PUF)
-  5F25'   B9             C      	CP	C
-  5F26'   C1             C      	POP	BC
-  5F27'   20 01          C      	JR	NZ,$+3
-  5F29'   C9             C      	RET
-  5F2A'   D1             C      	POP	DE
-  5F2B'   3E 94          C      	LD	A,94H
-  5F2D'   CD 5694'       C      	CALL	UF.ERANZ
-  5F30'   C9             C      	RET
+  5F44'                  C      FD.POSK:
+  5F44'   C5             C      	PUSH	BC
+  5F45'   41             C      	LD	B,C
+  5F46'   04             C      	INC	B
+  5F47'   CD 6AF6'       C      	CALL	UR.POSIK
+  5F4A'   CD 5F5C'       C      	CALL	FD.KO01
+  5F4D'   3A 0E66        C      	LD	A,(UE.PUF)
+  5F50'   B9             C      	CP	C
+  5F51'   C1             C      	POP	BC
+  5F52'   20 01          C      	JR	NZ,$+3
+  5F54'   C9             C      	RET
+  5F55'   D1             C      	POP	DE
+  5F56'   3E 94          C      	LD	A,94H
+  5F58'   CD 5697'       C      	CALL	UF.ERANZ
+  5F5B'   C9             C      	RET
                          C      ;
-  5F31'   DD 36 05 02    C      FD.KO01:	LD	(IX+5),2	;FUER FD19
-  5F35'   C3 5668'       C      	JP	UF.EXEC
+  5F5C'   DD 36 05 02    C      FD.KO01:	LD	(IX+5),2	;FUER FD19
+  5F60'   C3 5668'       C      	JP	UF.EXEC
                          C      ;----------------------------------------------------------------------
                          C      ;      Datei im Verzeichnis suchen
                          C      ;      HL:= Dateiname, <B>:= Anzahl Verzeichniseintragungen + 1
@@ -2011,440 +2073,440 @@
                          C      ;      O:  CY:= 0 Datei nicht vorhanden, <C> unveraendert
                          C      ;          CY:= 1 <C>:= Labelnummer
                          C      ;      K:  B
-  5F38'                  C      FD.DASU:
-  5F38'   D5             C      	PUSH	DE
-  5F39'   05             C      	DEC	B
-  5F3A'   28 0A          C      	JR	Z,$+12
-  5F3C'   CD 5F31'       C      	CALL	FD.KO01
-  5F3F'   CD 6D4A'       C      	CALL	U1.NMVGL
-  5F42'   38 05          C      	JR	C,$+7
-  5F44'   10 F6          C      	DJNZ	$-8
-  5F46'   B7             C      	OR	A
-  5F47'   D1             C      	POP	DE
-  5F48'   C9             C      	RET
-  5F49'   5F             C      	LD	E,A
-  5F4A'   3A 0E6C        C      	LD	A,(UE.PUF+6)
-  5F4D'   BA             C      	CP	D
-  5F4E'   20 F4          C      	JR	NZ,$-10
-  5F50'   4B             C      	LD	C,E
-  5F51'   37             C      	SCF
-  5F52'   18 F3          C      	JR	$-11
+  5F63'                  C      FD.DASU:
+  5F63'   D5             C      	PUSH	DE
+  5F64'   05             C      	DEC	B
+  5F65'   28 0A          C      	JR	Z,$+12
+  5F67'   CD 5F5C'       C      	CALL	FD.KO01
+  5F6A'   CD 6D75'       C      	CALL	U1.NMVGL
+  5F6D'   38 05          C      	JR	C,$+7
+  5F6F'   10 F6          C      	DJNZ	$-8
+  5F71'   B7             C      	OR	A
+  5F72'   D1             C      	POP	DE
+  5F73'   C9             C      	RET
+  5F74'   5F             C      	LD	E,A
+  5F75'   3A 0E6C        C      	LD	A,(UE.PUF+6)
+  5F78'   BA             C      	CP	D
+  5F79'   20 F4          C      	JR	NZ,$-10
+  5F7B'   4B             C      	LD	C,E
+  5F7C'   37             C      	SCF
+  5F7D'   18 F3          C      	JR	$-11
                          C      ;----------------------------------------------------------------------
                          C      ;      Reservebloecke schreiben
                          C      ;
-  5F54'                  C      FD.WRRES:
-  5F54'   C5             C      	PUSH	BC
-  5F55'   D5             C      	PUSH	DE
-  5F56'   E5             C      	PUSH	HL
-  5F57'   21 5902'       C      	LD	HL,UA.ZKRES
-  5F5A'   CD 6B2E'       C      	CALL	UR.MIMO
-  5F5D'   EB             C      	EX	DE,HL
-  5F5E'   CD 6FDC'       C      	CALL	UC.CVDB
-  5F61'   7C             C      	LD	A,H
-  5F62'   B5             C      	OR	L
-  5F63'   20 04          C      	JR	NZ,$+6
-  5F65'   E1             C      	POP	HL
-  5F66'   D1             C      	POP	DE
-  5F67'   C1             C      	POP	BC
-  5F68'   C9             C      	RET
-  5F69'   E5             C      	PUSH	HL
-  5F6A'   21 0E66        C      	LD	HL,UE.PUF
-  5F6D'   01 0090        C      	LD	BC,90H
-  5F70'   CD 6C93'       C      	CALL	U1.CLRB
-  5F73'   21 0080        C      	LD	HL,80H
-  5F76'   CD 6EAC'       C      	CALL	XY.STIDX
-  5F79'   09             C      	DB	9
-  5F7A'   E1             C      	POP	HL
-  5F7B'   CD 72C5'       C      	CALL	UK.KBA
-  5F7E'   2B             C      	DEC	HL
-  5F7F'   7C             C      	LD	A,H
-'Ein-/Ausgabe im freien Format'	MACRO-80 3.44	09-Dec-81	PAGE	1-34
-
-
-  5F80'   B5             C      	OR	L
-  5F81'   20 E6          C      	JR	NZ,$-24
-  5F83'   18 E0          C      	JR	$-30
-                         C      ;----------------------------------------------------------------------
-                         C      ;      F/S - Datei in den Editorraum einlesen
-                         C      ;
-  5F85'                  C      FD.FDINP:
-  5F85'   21 0000        C      	LD	HL,0
-  5F88'   CD 6E9C'       C      	CALL	XY.STDX
-  5F8B'   11             C      	DB	17
-  5F8C'   CD 7214'       C      	CALL	UK.KLPFB	;Pufferbereitstellung
-  5F8F'   21 3328        C      	LD	HL,UE.BWSA+328H
-  5F92'   06 05          C      	LD	B,5
-  5F94'   7E             C      	LD	A,(HL)
-  5F95'   FE 45          C      	CP	'E'
-  5F97'   28 05          C      	JR	Z,$+7
-  5F99'   23             C      	INC	HL
-  5F9A'   10 F8          C      	DJNZ	$-6
-  5F9C'   18 05          C      	JR	$+7
-  5F9E'   2A 0DC4        C      	LD	HL,(UE.EDEND)
-  5FA1'   18 03          C      	JR	$+5
-  5FA3'   21 8830        C      	LD	HL,UE.TEXAN
-  5FA6'   D9             C      	EXX
-  5FA7'   CD 71D1'       C      	CALL	DC.INIT	;Dekomprimierung initialisieren
-  5FAA'   D9             C      	EXX
-  5FAB'   3A 2B1E'       C      	LD	A,(UB.PAR2)	;Dateitypmerker
-  5FAE'   FE 53          C      	CP	'S'
-  5FB0'   F5             C      	PUSH	AF
-  5FB1'   CC 5FCC'       C      	CALL	Z,FD.SDIN	;Zeicheneingabe S- Datei
-  5FB4'   77             C      	LD	(HL),A
-  5FB5'   B7             C      	OR	A
-  5FB6'   28 12          C      	JR	Z,$+20
-  5FB8'   F1             C      	POP	AF
-  5FB9'   28 07          C      	JR	Z,$+9
-  5FBB'   C4 71D7'       C      	CALL	NZ,UK.GETK	;Zeicheneingabe F- Datei
-  5FBE'   77             C      	LD	(HL),A	;Zeichen in Speicher eintragen
-  5FBF'   BE             C      	CP	(HL)	;Echolesen
-  5FC0'   20 10          C      	JR	NZ,$+18
-  5FC2'   B7             C      	OR	A	;<A>:= 0, Z:= 1
-  5FC3'   C8             C      	RET	Z
-  5FC4'   23             C      	INC	HL	;HL:= HL + 1
-  5FC5'   22 0DC4        C      	LD	(UE.EDEND),HL	;Textende
-  5FC8'   18 E1          C      	JR	$-29
-  5FCA'   F1             C      	POP	AF
-  5FCB'   C9             C      	RET
-  5FCC'                  C      FD.SDIN:
-  5FCC'   D9             C      	EXX
-  5FCD'   CD 7196'       C      	CALL	DC.DCMPR
-  5FD0'   D9             C      	EXX
-  5FD1'   C9             C      	RET
-  5FD2'   3E 93          C      	LD	A,93H	;Fehlerschluessel
-  5FD4'   CD 5694'       C      	CALL	UF.ERANZ
-  5FD7'   C9             C      	RET
-                         C      ;----------------------------------------------------------------------
-                         C      ;      Ausgabe einer F/S - Datei (neuer Bestand)
-                         C      ;
-  5FD8'                  C      FD.FDOUT:
-  5FD8'   21 0000        C      	LD	HL,0	;Blockzaehler loeschen
-  5FDB'   CD 6E9C'       C      	CALL	XY.STDX
-  5FDE'   11             C      	DB	17
-  5FDF'   21 0080        C      	LD	HL,80H	;Blocklaenge eintragen
-  5FE2'   CD 6EAC'       C      	CALL	XY.STIDX
-  5FE5'   09             C      	DB	9
-  5FE6'   CD 72A0'       C      	CALL	UK.KSPFB	;Pufferbereitstellung
-  5FE9'   21 8830        C      	LD	HL,UE.TEXAN	;HL:= Textanfang
-  5FEC'   ED 5B 0DC4     C      	LD	DE,(UE.EDEND)	;BC:= Textende
-  5FF0'   D9             C      	EXX
-  5FF1'   CD 7190'       C      	CALL	CP.INIT
-  5FF4'   D9             C      	EXX
-  5FF5'   B7             C      	OR	A	;CY:= 0
-  5FF6'   E5             C      	PUSH	HL
-  5FF7'   ED 52          C      	SBC	HL,DE
-  5FF9'   30 13          C      	JR	NC,$+21
-  5FFB'   E1             C      	POP	HL
-  5FFC'   3A 2B1E'       C      	LD	A,(UB.PAR2)
-  5FFF'   FE 53          C      	CP	'S'
-  6001'   F5             C      	PUSH	AF
-  6002'   7E             C      	LD	A,(HL)
-  6003'   CC 6026'       C      	CALL	Z,FD.SDOUT
-  6006'   F1             C      	POP	AF
-  6007'   7E             C      	LD	A,(HL)
-  6008'   C4 727C'       C      	CALL	NZ,UK.PUTK
-  600B'   23             C      	INC	HL
+  5F7F'                  C      FD.WRRES:
+  5F7F'   C5             C      	PUSH	BC
+  5F80'   D5             C      	PUSH	DE
+  5F81'   E5             C      	PUSH	HL
+  5F82'   21 5905'       C      	LD	HL,UA.ZKRES
+  5F85'   CD 6B59'       C      	CALL	UR.MIMO
+  5F88'   EB             C      	EX	DE,HL
+  5F89'   CD 7007'       C      	CALL	UC.CVDB
+  5F8C'   7C             C      	LD	A,H
+  5F8D'   B5             C      	OR	L
+  5F8E'   20 04          C      	JR	NZ,$+6
+  5F90'   E1             C      	POP	HL
+  5F91'   D1             C      	POP	DE
+  5F92'   C1             C      	POP	BC
+  5F93'   C9             C      	RET
+  5F94'   E5             C      	PUSH	HL
+  5F95'   21 0E66        C      	LD	HL,UE.PUF
+  5F98'   01 0090        C      	LD	BC,90H
+  5F9B'   CD 6CBE'       C      	CALL	U1.CLRB
+  5F9E'   21 0080        C      	LD	HL,80H
+  5FA1'   CD 6ED7'       C      	CALL	XY.STIDX
+  5FA4'   09             C      	DB	9
+  5FA5'   E1             C      	POP	HL
+  5FA6'   CD 72F0'       C      	CALL	UK.KBA
+  5FA9'   2B             C      	DEC	HL
+  5FAA'   7C             C      	LD	A,H
 'Ein-/Ausgabe im freien Format'	MACRO-80 3.44	09-Dec-81	PAGE	1-35
 
 
-  600C'   18 E7          C      	JR	$-23
-  600E'   E1             C      	POP	HL	;Endebehandlung
-  600F'   01 0120        C      	LD	BC,288
-  6012'   AF             C      	XOR	A
-  6013'   CD 727C'       C      	CALL	UK.PUTK
-  6016'   0B             C      	DEC	BC
-  6017'   78             C      	LD	A,B
-  6018'   B1             C      	OR	C
-  6019'   20 F7          C      	JR	NZ,$-7
-  601B'   CD 61E9'       C      	CALL	FD.DSPBB
-  601E'   CD 5F54'       C      	CALL	FD.WRRES	;Reservebloecke schreiben
-  6021'   CD 6E7C'       C      	CALL	XY.LDDX	;HL:= Blockzaehler
-  6024'   11             C      	DB	17
-  6025'   C9             C      	RET
-  6026'                  C      FD.SDOUT:
-  6026'   D9             C      	EXX
-  6027'   CD 712D'       C      	CALL	CP.COMPR
-  602A'   D9             C      	EXX
-  602B'   C9             C      	RET
+  5FAB'   B5             C      	OR	L
+  5FAC'   20 E6          C      	JR	NZ,$-24
+  5FAE'   18 E0          C      	JR	$-30
                          C      ;----------------------------------------------------------------------
-                         C      ;      Ausgabe einer F/S - Datei (alter Bestand)
+                         C      ;      F/S - Datei in den Editorraum einlesen
                          C      ;
-  602C'                  C      FD.FDOWR:
-  602C'   21 0000        C      	LD	HL,0
-  602F'   CD 6E9C'       C      	CALL	XY.STDX
-  6032'   11             C      	DB	17
-  6033'   21 8830        C      	LD	HL,UE.TEXAN
-  6036'   D9             C      	EXX
-  6037'   CD 7190'       C      	CALL	CP.INIT
-  603A'   D9             C      	EXX
-  603B'   E5             C      	PUSH	HL
-  603C'                  C      FD.FDOW1:
-  603C'   CD 607C'       C      	CALL	FD.FDUP
-  603F'   E1             C      	POP	HL
-  6040'                  C      FD.FDOW2:
-  6040'   E5             C      	PUSH	HL
-  6041'   ED 5B 0DC4     C      	LD	DE,(UE.EDEND)
-  6045'   B7             C      	OR	A
-  6046'   ED 52          C      	SBC	HL,DE
-  6048'   30 1B          C      	JR	NC,FD.FDOW3
-  604A'   E1             C      	POP	HL
-  604B'   3A 2B1E'       C      	LD	A,(UB.PAR2)
-  604E'   FE 53          C      	CP	'S'
-  6050'   7E             C      	LD	A,(HL)
-  6051'   28 41          C      	JR	Z,FD.SDOW
-  6053'   CD 727C'       C      	CALL	UK.PUTK
-  6056'   0B             C      	DEC	BC
-  6057'                  C      FD.FDOW4:
-  6057'   23             C      	INC	HL
-  6058'   78             C      	LD	A,B
-  6059'   B1             C      	OR	C
-  605A'   20 E4          C      	JR	NZ,FD.FDOW2
-  605C'   CD 72C5'       C      	CALL	UK.KBA	;Block schreiben
-  605F'   E5             C      	PUSH	HL
-  6060'   CD 6072'       C      	CALL	FD.DECBZ
-  6063'   18 D7          C      	JR	FD.FDOW1
-  6065'                  C      FD.FDOW3:
-  6065'   E1             C      	POP	HL
-  6066'   AF             C      	XOR	A	;Endekennzeichen 00H 
-  6067'   CD 727C'       C      	CALL	UK.PUTK
-  606A'   CD 72C5'       C      	CALL	UK.KBA
-  606D'   CD 6072'       C      	CALL	FD.DECBZ
-  6070'   B7             C      	OR	A
-  6071'   C9             C      	RET
-  6072'                  C      FD.DECBZ:
-  6072'   CD 6E7C'       C      	CALL	XY.LDDX
-  6075'   11             C      	DB	17
-  6076'   2B             C      	DEC	HL
-  6077'   CD 6E9C'       C      	CALL	XY.STDX
-  607A'   11             C      	DB	17
-  607B'   C9             C      	RET
-  607C'                  C      FD.FDUP:
-  607C'   CD 7237'       C      	CALL	UK.KBW
-  607F'   DD 7E 02       C      	LD	A,(IX+2)	;Laenge = 1, dann BM
-  6082'   FE 01          C      	CP	1
-  6084'   CA 620E'       C      	JP	Z,FD.BMGF
-  6087'   CD 6ABC'       C      	CALL	UR.KBR
-  608A'   CD 6E8C'       C      	CALL	XY.LIDX
-  608D'   09             C      	DB	9
-  608E'   E5             C      	PUSH	HL
-  608F'   C1             C      	POP	BC
-  6090'   CD 72A0'       C      	CALL	UK.KSPFB
-  6093'   C9             C      	RET
+  5FB0'                  C      FD.FDINP:
+  5FB0'   21 0000        C      	LD	HL,0
+  5FB3'   CD 6EC7'       C      	CALL	XY.STDX
+  5FB6'   11             C      	DB	17
+  5FB7'   CD 723F'       C      	CALL	UK.KLPFB	;Pufferbereitstellung
+  5FBA'   21 3328        C      	LD	HL,UE.BWSA+328H
+  5FBD'   06 05          C      	LD	B,5
+  5FBF'   7E             C      	LD	A,(HL)
+  5FC0'   FE 45          C      	CP	'E'
+  5FC2'   28 05          C      	JR	Z,$+7
+  5FC4'   23             C      	INC	HL
+  5FC5'   10 F8          C      	DJNZ	$-6
+  5FC7'   18 05          C      	JR	$+7
+  5FC9'   2A 0DC4        C      	LD	HL,(UE.EDEND)
+  5FCC'   18 03          C      	JR	$+5
+  5FCE'   21 8830        C      	LD	HL,UE.TEXAN
+  5FD1'   D9             C      	EXX
+  5FD2'   CD 71FC'       C      	CALL	DC.INIT	;Dekomprimierung initialisieren
+  5FD5'   D9             C      	EXX
+  5FD6'   3A 2B1E'       C      	LD	A,(UB.PAR2)	;Dateitypmerker
+  5FD9'   FE 53          C      	CP	'S'
+  5FDB'   F5             C      	PUSH	AF
+  5FDC'   CC 5FF7'       C      	CALL	Z,FD.SDIN	;Zeicheneingabe S- Datei
+  5FDF'   77             C      	LD	(HL),A
+  5FE0'   B7             C      	OR	A
+  5FE1'   28 12          C      	JR	Z,$+20
+  5FE3'   F1             C      	POP	AF
+  5FE4'   28 07          C      	JR	Z,$+9
+  5FE6'   C4 7202'       C      	CALL	NZ,UK.GETK	;Zeicheneingabe F- Datei
+  5FE9'   77             C      	LD	(HL),A	;Zeichen in Speicher eintragen
+  5FEA'   BE             C      	CP	(HL)	;Echolesen
+  5FEB'   20 10          C      	JR	NZ,$+18
+  5FED'   B7             C      	OR	A	;<A>:= 0, Z:= 1
+  5FEE'   C8             C      	RET	Z
+  5FEF'   23             C      	INC	HL	;HL:= HL + 1
+  5FF0'   22 0DC4        C      	LD	(UE.EDEND),HL	;Textende
+  5FF3'   18 E1          C      	JR	$-29
+  5FF5'   F1             C      	POP	AF
+  5FF6'   C9             C      	RET
+  5FF7'                  C      FD.SDIN:
+  5FF7'   D9             C      	EXX
+  5FF8'   CD 71C1'       C      	CALL	DC.DCMPR
+  5FFB'   D9             C      	EXX
+  5FFC'   C9             C      	RET
+  5FFD'   3E 93          C      	LD	A,93H	;Fehlerschluessel
+  5FFF'   CD 5697'       C      	CALL	UF.ERANZ
+  6002'   C9             C      	RET
+                         C      ;----------------------------------------------------------------------
+                         C      ;      Ausgabe einer F/S - Datei (neuer Bestand)
+                         C      ;
+  6003'                  C      FD.FDOUT:
+  6003'   21 0000        C      	LD	HL,0	;Blockzaehler loeschen
+  6006'   CD 6EC7'       C      	CALL	XY.STDX
+  6009'   11             C      	DB	17
+  600A'   21 0080        C      	LD	HL,80H	;Blocklaenge eintragen
+  600D'   CD 6ED7'       C      	CALL	XY.STIDX
+  6010'   09             C      	DB	9
+  6011'   CD 72CB'       C      	CALL	UK.KSPFB	;Pufferbereitstellung
+  6014'   21 8830        C      	LD	HL,UE.TEXAN	;HL:= Textanfang
+  6017'   ED 5B 0DC4     C      	LD	DE,(UE.EDEND)	;BC:= Textende
+  601B'   D9             C      	EXX
+  601C'   CD 71BB'       C      	CALL	CP.INIT
+  601F'   D9             C      	EXX
+  6020'   B7             C      	OR	A	;CY:= 0
+  6021'   E5             C      	PUSH	HL
+  6022'   ED 52          C      	SBC	HL,DE
+  6024'   30 13          C      	JR	NC,$+21
+  6026'   E1             C      	POP	HL
+  6027'   3A 2B1E'       C      	LD	A,(UB.PAR2)
+  602A'   FE 53          C      	CP	'S'
+  602C'   F5             C      	PUSH	AF
+  602D'   7E             C      	LD	A,(HL)
+  602E'   CC 6051'       C      	CALL	Z,FD.SDOUT
+  6031'   F1             C      	POP	AF
+  6032'   7E             C      	LD	A,(HL)
+  6033'   C4 72A7'       C      	CALL	NZ,UK.PUTK
+  6036'   23             C      	INC	HL
 'Ein-/Ausgabe im freien Format'	MACRO-80 3.44	09-Dec-81	PAGE	1-36
 
 
-  6094'                  C      FD.SDOW:
-  6094'   CD 6026'       C      	CALL	FD.SDOUT
-  6097'   78             C      	LD	A,B
-  6098'   A1             C      	AND	C
-  6099'   FE FF          C      	CP	0FFH
-  609B'   28 1B          C      	JR	Z,FD.SDK1
-  609D'   FE FE          C      	CP	0FEH
-  609F'   28 03          C      	JR	Z,FD.SDK2
-  60A1'   C3 6057'       C      	JP	FD.FDOW4
-  60A4'                  C      FD.SDK2:
-  60A4'   EB             C      	EX	DE,HL
-  60A5'   CD 607C'       C      	CALL	FD.FDUP
-  60A8'   3E 09          C      	LD	A,09H
-  60AA'   CD 727C'       C      	CALL	UK.PUTK
-  60AD'   0B             C      	DEC	BC
-  60AE'                  C      FD.SDK0:
-  60AE'   3E 3B          C      	LD	A,';'
-  60B0'   CD 727C'       C      	CALL	UK.PUTK
-  60B3'   0B             C      	DEC	BC
-  60B4'   EB             C      	EX	DE,HL
-  60B5'   C3 6057'       C      	JP	FD.FDOW4
-  60B8'                  C      FD.SDK1:
-  60B8'   EB             C      	EX	DE,HL
-  60B9'   CD 607C'       C      	CALL	FD.FDUP
-  60BC'   18 F0          C      	JR	FD.SDK0
-                         C      ;--------------------------------------------------------------
-                         C      ;        Startroutine Ein-/Ausgabe
+  6037'   18 E7          C      	JR	$-23
+  6039'   E1             C      	POP	HL	;Endebehandlung
+  603A'   01 0120        C      	LD	BC,288
+  603D'   AF             C      	XOR	A
+  603E'   CD 72A7'       C      	CALL	UK.PUTK
+  6041'   0B             C      	DEC	BC
+  6042'   78             C      	LD	A,B
+  6043'   B1             C      	OR	C
+  6044'   20 F7          C      	JR	NZ,$-7
+  6046'   CD 6214'       C      	CALL	FD.DSPBB
+  6049'   CD 5F7F'       C      	CALL	FD.WRRES	;Reservebloecke schreiben
+  604C'   CD 6EA7'       C      	CALL	XY.LDDX	;HL:= Blockzaehler
+  604F'   11             C      	DB	17
+  6050'   C9             C      	RET
+  6051'                  C      FD.SDOUT:
+  6051'   D9             C      	EXX
+  6052'   CD 7158'       C      	CALL	CP.COMPR
+  6055'   D9             C      	EXX
+  6056'   C9             C      	RET
+                         C      ;----------------------------------------------------------------------
+                         C      ;      Ausgabe einer F/S - Datei (alter Bestand)
                          C      ;
-  60BE'                  C      FD.FSTRT:
-  60BE'   CD 6E2C'       C      	CALL	U1.BILO
-  60C1'   CD 6D65'       C      	CALL	U1.KTINI
-  60C4'   3A 3326        C      	LD	A,(UE.BWSA+326H)
-  60C7'   CD 6E40'       C      	CALL	U1.TST
-  60CA'   DA 60F6'       C      	JP	C,FD.STRT1
-  60CD'   DD 77 04       C      	LD	(IX+4),A
-  60D0'   CD 6A86'       C      	CALL	UR.KRE
-  60D3'   CD 6A94'       C      	CALL	UR.KRWW
-  60D6'   CD 6D19'       C      	CALL	U1.DSVG
-  60D9'   3E 0E          C      	LD	A,14
-  60DB'   32 2B00'       C      	LD	(UB.ZN),A
-  60DE'   3A 3328        C      	LD	A,(UE.BWSA+328H)
-  60E1'   FE 53          C      	CP	'S'
-  60E3'   28 02          C      	JR	Z,$+4
-  60E5'   3E 46          C      	LD	A,'F'
-  60E7'   57             C      	LD	D,A
-  60E8'   32 2B1E'       C      	LD	(UB.PAR2),A
-  60EB'   21 5915'       C      	LD	HL,UA.ZKSDT
-  60EE'   28 03          C      	JR	Z,$+5
-  60F0'   21 5885'       C      	LD	HL,UA.ZKDAT
-  60F3'   CD 6B2E'       C      	CALL	UR.MIMO
-  60F6'                  C      FD.STRT1:
-  60F6'   FD E1          C      	POP	IY
-  60F8'   D8             C      	RET	C
-  60F9'   FD E5          C      	PUSH	IY
-  60FB'   3E 53          C      	LD	A,'S'
-  60FD'   BA             C      	CP	D
-  60FE'   CC 6129'       C      	CALL	Z,FD.DECHL
-  6101'   CD 5F38'       C      	CALL	FD.DASU
-  6104'   DC 610B'       C      	CALL	C,FD.SETJ
-  6107'   D4 6123'       C      	CALL	NC,FD.SETN
-  610A'   C9             C      	RET
-  610B'                  C      FD.SETJ:
-  610B'   C5             C      	PUSH	BC
-  610C'   D5             C      	PUSH	DE
-  610D'   E5             C      	PUSH	HL
-  610E'   EB             C      	EX	DE,HL
-  610F'   06 08          C      	LD	B,8
-  6111'   13             C      	INC	DE
-  6112'   10 FD          C      	DJNZ	$-1
-  6114'   21 0E6E        C      	LD	HL,UE.PUF+8
-  6117'   01 0006        C      	LD	BC,6
-  611A'   ED B0          C      	LDIR
-  611C'   E1             C      	POP	HL
-  611D'   D1             C      	POP	DE
-  611E'   C1             C      	POP	BC
-  611F'   3E 4A          C      	LD	A,'J'
-  6121'   18 02          C      	JR	$+4
-  6123'                  C      FD.SETN:
-  6123'   3E 4E          C      	LD	A,'N'
-  6125'   32 2B1C'       C      	LD	(UB.PAR1),A
-  6128'   C9             C      	RET
-  6129'                  C      FD.DECHL:
-  6129'   2B             C      	DEC	HL
+  6057'                  C      FD.FDOWR:
+  6057'   21 0000        C      	LD	HL,0
+  605A'   CD 6EC7'       C      	CALL	XY.STDX
+  605D'   11             C      	DB	17
+  605E'   21 8830        C      	LD	HL,UE.TEXAN
+  6061'   D9             C      	EXX
+  6062'   CD 71BB'       C      	CALL	CP.INIT
+  6065'   D9             C      	EXX
+  6066'   E5             C      	PUSH	HL
+  6067'                  C      FD.FDOW1:
+  6067'   CD 60A7'       C      	CALL	FD.FDUP
+  606A'   E1             C      	POP	HL
+  606B'                  C      FD.FDOW2:
+  606B'   E5             C      	PUSH	HL
+  606C'   ED 5B 0DC4     C      	LD	DE,(UE.EDEND)
+  6070'   B7             C      	OR	A
+  6071'   ED 52          C      	SBC	HL,DE
+  6073'   30 1B          C      	JR	NC,FD.FDOW3
+  6075'   E1             C      	POP	HL
+  6076'   3A 2B1E'       C      	LD	A,(UB.PAR2)
+  6079'   FE 53          C      	CP	'S'
+  607B'   7E             C      	LD	A,(HL)
+  607C'   28 41          C      	JR	Z,FD.SDOW
+  607E'   CD 72A7'       C      	CALL	UK.PUTK
+  6081'   0B             C      	DEC	BC
+  6082'                  C      FD.FDOW4:
+  6082'   23             C      	INC	HL
+  6083'   78             C      	LD	A,B
+  6084'   B1             C      	OR	C
+  6085'   20 E4          C      	JR	NZ,FD.FDOW2
+  6087'   CD 72F0'       C      	CALL	UK.KBA	;Block schreiben
+  608A'   E5             C      	PUSH	HL
+  608B'   CD 609D'       C      	CALL	FD.DECBZ
+  608E'   18 D7          C      	JR	FD.FDOW1
+  6090'                  C      FD.FDOW3:
+  6090'   E1             C      	POP	HL
+  6091'   AF             C      	XOR	A	;Endekennzeichen 00H 
+  6092'   CD 72A7'       C      	CALL	UK.PUTK
+  6095'   CD 72F0'       C      	CALL	UK.KBA
+  6098'   CD 609D'       C      	CALL	FD.DECBZ
+  609B'   B7             C      	OR	A
+  609C'   C9             C      	RET
+  609D'                  C      FD.DECBZ:
+  609D'   CD 6EA7'       C      	CALL	XY.LDDX
+  60A0'   11             C      	DB	17
+  60A1'   2B             C      	DEC	HL
+  60A2'   CD 6EC7'       C      	CALL	XY.STDX
+  60A5'   11             C      	DB	17
+  60A6'   C9             C      	RET
+  60A7'                  C      FD.FDUP:
+  60A7'   CD 7262'       C      	CALL	UK.KBW
+  60AA'   DD 7E 02       C      	LD	A,(IX+2)	;Laenge = 1, dann BM
+  60AD'   FE 01          C      	CP	1
+  60AF'   CA 6239'       C      	JP	Z,FD.BMGF
+  60B2'   CD 6AE7'       C      	CALL	UR.KBR
+  60B5'   CD 6EB7'       C      	CALL	XY.LIDX
+  60B8'   09             C      	DB	9
+  60B9'   E5             C      	PUSH	HL
+  60BA'   C1             C      	POP	BC
+  60BB'   CD 72CB'       C      	CALL	UK.KSPFB
+  60BE'   C9             C      	RET
 'Ein-/Ausgabe im freien Format'	MACRO-80 3.44	09-Dec-81	PAGE	1-37
 
 
-  612A'   2B             C      	DEC	HL
-  612B'   C9             C      	RET
-                         C      ;****************************************************************
-                         C      ;        Ausgabeprogramm
-                         C      ;****************************************************************
-  612C'   612C'          C      	DW	$
-  612E'   41 55 53 20    C      	DB	'AUS '
-  6132'                  C      FD.FOUT1:
-  6132'   CD 60BE'       C      	CALL	FD.FSTRT
-  6135'   3A 2B1C'       C      	LD	A,(UB.PAR1)
-  6138'   FE 4A          C      	CP	'J'	;DATEI SCHON VORHANDEN ?
-  613A'   CA 61A5'       C      	JP	Z,FD.FOLWR	;JA
-                         C      ;-------------------------------NEIN--> NEUE ERSTELLEN-----------------
-  613D'   79             C      	LD	A,C	;NEXT RECORD
-  613E'   32 2B1C'       C      	LD	(UB.PAR1),A
-  6141'   3E 7F          C      	LD	A,7FH
-  6143'   32 2B20'       C      	LD	(UB.PAR3),A	;PARAMETER KOMMENTARABFRAGE JA
-  6146'   CD 6DC9'       C      	CALL	U1.VZS	;NEUEN VERZ.SATZ SCHREIBEN
-  6149'   CD 5F19'       C      	CALL	FD.POSK
-  614C'   C5             C      	PUSH	BC
-  614D'   CD 5FD8'       C      	CALL	FD.FDOUT
-  6150'   E5             C      	PUSH	HL	;BLOCKZAEHLER
-  6151'   CD 6AAA'       C      	CALL	UR.KBM
-  6154'   21 0020        C      	LD	HL,32
-  6157'   CD 6EAC'       C      	CALL	XY.STIDX
-  615A'   09             C      	DB	9
-  615B'   CD 6D09'       C      	CALL	U1.VSX
-  615E'   E1             C      	POP	HL
-  615F'   C1             C      	POP	BC
-  6160'   E5             C      	PUSH	HL
-  6161'   79             C      	LD	A,C
-  6162'   3C             C      	INC	A
-  6163'   32 0E66        C      	LD	(UE.PUF),A
-  6166'   F5             C      	PUSH	AF
-  6167'   DD 36 05 08    C      	LD	(IX+5),08H
-  616B'   CD 5668'       C      	CALL	UF.EXEC
-  616E'   CD 6A94'       C      	CALL	UR.KRWW
-  6171'   CD 6D19'       C      	CALL	U1.DSVG
-  6174'   CD 6ABC'       C      	CALL	UR.KBR
-  6177'   F1             C      	POP	AF
-  6178'   32 0E67        C      	LD	(UE.PUF+1),A
-  617B'   78             C      	LD	A,B
-  617C'   3C             C      	INC	A
-  617D'   32 0E69        C      	LD	(UE.PUF+3),A
-  6180'   DD 36 05 08    C      	LD	(IX+5),08H
-  6184'   CD 5668'       C      	CALL	UF.EXEC
-  6187'   DD 36 05 02    C      	LD	(IX+5),02H
-  618B'   CD 5668'       C      	CALL	UF.EXEC
-  618E'   10 FB          C      	DJNZ	$-3
-  6190'   CD 6ABC'       C      	CALL	UR.KBR
-  6193'   E1             C      	POP	HL
-  6194'   22 0E7F        C      	LD	(UE.PUF+25),HL
-  6197'   DD 36 05 08    C      	LD	(IX+5),08H
-  619B'   CD 5668'       C      	CALL	UF.EXEC
-  619E'                  C      FD.END:
-  619E'   CD 6A8E'       C      	CALL	UR.KRW
-  61A1'   CD 6A98'       C      	CALL	UR.KRA
-  61A4'   C9             C      	RET
-  61A5'                  C      FD.FOLWR:
-  61A5'   21 58E4'       C      	LD	HL,UA.ZKDL	;DATEI UEBERSCHREIBEN?
-  61A8'   CD 6B2E'       C      	CALL	UR.MIMO
-  61AB'   D8             C      	RET	C
-  61AC'   7E             C      	LD	A,(HL)
-  61AD'   FE 4A          C      	CP	'J'
-  61AF'   C0             C      	RET	NZ
-  61B0'   CD 5F19'       C      	CALL	FD.POSK
-  61B3'   CD 602C'       C      	CALL	FD.FDOWR
-  61B6'   CD 61E9'       C      	CALL	FD.DSPBB
-  61B9'   CD 6203'       C      	CALL	FD.RDEND
-  61BC'   CD 61F9'       C      	CALL	FD.DSPBG
-  61BF'   18 DD          C      	JR	$-33
-                         C      ;**********************************************************************
-                         C      ;      Eingabeprogramm
-                         C      ;**********************************************************************
-  61C1'   61C1'          C      	DW	$
-  61C3'   45 49 4E 20    C      	DB	'EIN '
-  61C7'                  C      FD.FDIN2:
-  61C7'   CD 60BE'       C      	CALL	FD.FSTRT
-  61CA'   3A 2B1C'       C      	LD	A,(UB.PAR1)
-  61CD'   FE 4A          C      	CP	'J'
-  61CF'   28 07          C      	JR	Z,$+9
-  61D1'   3E 91          C      	LD	A,91H
-  61D3'   CD 5694'       C      	CALL	UF.ERANZ
+  60BF'                  C      FD.SDOW:
+  60BF'   CD 6051'       C      	CALL	FD.SDOUT
+  60C2'   78             C      	LD	A,B
+  60C3'   A1             C      	AND	C
+  60C4'   FE FF          C      	CP	0FFH
+  60C6'   28 1B          C      	JR	Z,FD.SDK1
+  60C8'   FE FE          C      	CP	0FEH
+  60CA'   28 03          C      	JR	Z,FD.SDK2
+  60CC'   C3 6082'       C      	JP	FD.FDOW4
+  60CF'                  C      FD.SDK2:
+  60CF'   EB             C      	EX	DE,HL
+  60D0'   CD 60A7'       C      	CALL	FD.FDUP
+  60D3'   3E 09          C      	LD	A,09H
+  60D5'   CD 72A7'       C      	CALL	UK.PUTK
+  60D8'   0B             C      	DEC	BC
+  60D9'                  C      FD.SDK0:
+  60D9'   3E 3B          C      	LD	A,';'
+  60DB'   CD 72A7'       C      	CALL	UK.PUTK
+  60DE'   0B             C      	DEC	BC
+  60DF'   EB             C      	EX	DE,HL
+  60E0'   C3 6082'       C      	JP	FD.FDOW4
+  60E3'                  C      FD.SDK1:
+  60E3'   EB             C      	EX	DE,HL
+  60E4'   CD 60A7'       C      	CALL	FD.FDUP
+  60E7'   18 F0          C      	JR	FD.SDK0
+                         C      ;--------------------------------------------------------------
+                         C      ;        Startroutine Ein-/Ausgabe
+                         C      ;
+  60E9'                  C      FD.FSTRT:
+  60E9'   CD 6E57'       C      	CALL	U1.BILO
+  60EC'   CD 6D90'       C      	CALL	U1.KTINI
+  60EF'   3A 3326        C      	LD	A,(UE.BWSA+326H)
+  60F2'   CD 6E6B'       C      	CALL	U1.TST
+  60F5'   DA 6121'       C      	JP	C,FD.STRT1
+  60F8'   DD 77 04       C      	LD	(IX+4),A
+  60FB'   CD 6AB1'       C      	CALL	UR.KRE
+  60FE'   CD 6ABF'       C      	CALL	UR.KRWW
+  6101'   CD 6D44'       C      	CALL	U1.DSVG
+  6104'   3E 0E          C      	LD	A,14
+  6106'   32 2B00'       C      	LD	(UB.ZN),A
+  6109'   3A 3328        C      	LD	A,(UE.BWSA+328H)
+  610C'   FE 53          C      	CP	'S'
+  610E'   28 02          C      	JR	Z,$+4
+  6110'   3E 46          C      	LD	A,'F'
+  6112'   57             C      	LD	D,A
+  6113'   32 2B1E'       C      	LD	(UB.PAR2),A
+  6116'   21 5918'       C      	LD	HL,UA.ZKSDT
+  6119'   28 03          C      	JR	Z,$+5
+  611B'   21 5888'       C      	LD	HL,UA.ZKDAT
+  611E'   CD 6B59'       C      	CALL	UR.MIMO
+  6121'                  C      FD.STRT1:
+  6121'   FD E1          C      	POP	IY
+  6123'   D8             C      	RET	C
+  6124'   FD E5          C      	PUSH	IY
+  6126'   3E 53          C      	LD	A,'S'
+  6128'   BA             C      	CP	D
+  6129'   CC 6154'       C      	CALL	Z,FD.DECHL
+  612C'   CD 5F63'       C      	CALL	FD.DASU
+  612F'   DC 6136'       C      	CALL	C,FD.SETJ
+  6132'   D4 614E'       C      	CALL	NC,FD.SETN
+  6135'   C9             C      	RET
+  6136'                  C      FD.SETJ:
+  6136'   C5             C      	PUSH	BC
+  6137'   D5             C      	PUSH	DE
+  6138'   E5             C      	PUSH	HL
+  6139'   EB             C      	EX	DE,HL
+  613A'   06 08          C      	LD	B,8
+  613C'   13             C      	INC	DE
+  613D'   10 FD          C      	DJNZ	$-1
+  613F'   21 0E6E        C      	LD	HL,UE.PUF+8
+  6142'   01 0006        C      	LD	BC,6
+  6145'   ED B0          C      	LDIR
+  6147'   E1             C      	POP	HL
+  6148'   D1             C      	POP	DE
+  6149'   C1             C      	POP	BC
+  614A'   3E 4A          C      	LD	A,'J'
+  614C'   18 02          C      	JR	$+4
+  614E'                  C      FD.SETN:
+  614E'   3E 4E          C      	LD	A,'N'
+  6150'   32 2B1C'       C      	LD	(UB.PAR1),A
+  6153'   C9             C      	RET
+  6154'                  C      FD.DECHL:
+  6154'   2B             C      	DEC	HL
 'Ein-/Ausgabe im freien Format'	MACRO-80 3.44	09-Dec-81	PAGE	1-38
 
 
-  61D6'   18 C6          C      	JR	FD.END
-  61D8'   CD 5F19'       C      	CALL	FD.POSK
-  61DB'   CD 5F85'       C      	CALL	FD.FDINP
-  61DE'   CD 61E9'       C      	CALL	FD.DSPBB
-  61E1'   CD 6203'       C      	CALL	FD.RDEND
-  61E4'   CD 61F9'       C      	CALL	FD.DSPBG
-  61E7'   18 B5          C      	JR	FD.END
+  6155'   2B             C      	DEC	HL
+  6156'   C9             C      	RET
+                         C      ;****************************************************************
+                         C      ;        Ausgabeprogramm
+                         C      ;****************************************************************
+  6157'   6157'          C      	DW	$
+  6159'   41 55 53 20    C      	DB	'AUS '
+  615D'                  C      FD.FOUT1:
+  615D'   CD 60E9'       C      	CALL	FD.FSTRT
+  6160'   3A 2B1C'       C      	LD	A,(UB.PAR1)
+  6163'   FE 4A          C      	CP	'J'	;DATEI SCHON VORHANDEN ?
+  6165'   CA 61D0'       C      	JP	Z,FD.FOLWR	;JA
+                         C      ;-------------------------------NEIN--> NEUE ERSTELLEN-----------------
+  6168'   79             C      	LD	A,C	;NEXT RECORD
+  6169'   32 2B1C'       C      	LD	(UB.PAR1),A
+  616C'   3E 7F          C      	LD	A,7FH
+  616E'   32 2B20'       C      	LD	(UB.PAR3),A	;PARAMETER KOMMENTARABFRAGE JA
+  6171'   CD 6DF4'       C      	CALL	U1.VZS	;NEUEN VERZ.SATZ SCHREIBEN
+  6174'   CD 5F44'       C      	CALL	FD.POSK
+  6177'   C5             C      	PUSH	BC
+  6178'   CD 6003'       C      	CALL	FD.FDOUT
+  617B'   E5             C      	PUSH	HL	;BLOCKZAEHLER
+  617C'   CD 6AD5'       C      	CALL	UR.KBM
+  617F'   21 0020        C      	LD	HL,32
+  6182'   CD 6ED7'       C      	CALL	XY.STIDX
+  6185'   09             C      	DB	9
+  6186'   CD 6D34'       C      	CALL	U1.VSX
+  6189'   E1             C      	POP	HL
+  618A'   C1             C      	POP	BC
+  618B'   E5             C      	PUSH	HL
+  618C'   79             C      	LD	A,C
+  618D'   3C             C      	INC	A
+  618E'   32 0E66        C      	LD	(UE.PUF),A
+  6191'   F5             C      	PUSH	AF
+  6192'   DD 36 05 08    C      	LD	(IX+5),08H
+  6196'   CD 5668'       C      	CALL	UF.EXEC
+  6199'   CD 6ABF'       C      	CALL	UR.KRWW
+  619C'   CD 6D44'       C      	CALL	U1.DSVG
+  619F'   CD 6AE7'       C      	CALL	UR.KBR
+  61A2'   F1             C      	POP	AF
+  61A3'   32 0E67        C      	LD	(UE.PUF+1),A
+  61A6'   78             C      	LD	A,B
+  61A7'   3C             C      	INC	A
+  61A8'   32 0E69        C      	LD	(UE.PUF+3),A
+  61AB'   DD 36 05 08    C      	LD	(IX+5),08H
+  61AF'   CD 5668'       C      	CALL	UF.EXEC
+  61B2'   DD 36 05 02    C      	LD	(IX+5),02H
+  61B6'   CD 5668'       C      	CALL	UF.EXEC
+  61B9'   10 FB          C      	DJNZ	$-3
+  61BB'   CD 6AE7'       C      	CALL	UR.KBR
+  61BE'   E1             C      	POP	HL
+  61BF'   22 0E7F        C      	LD	(UE.PUF+25),HL
+  61C2'   DD 36 05 08    C      	LD	(IX+5),08H
+  61C6'   CD 5668'       C      	CALL	UF.EXEC
+  61C9'                  C      FD.END:
+  61C9'   CD 6AB9'       C      	CALL	UR.KRW
+  61CC'   CD 6AC3'       C      	CALL	UR.KRA
+  61CF'   C9             C      	RET
+  61D0'                  C      FD.FOLWR:
+  61D0'   21 58E7'       C      	LD	HL,UA.ZKDL	;DATEI UEBERSCHREIBEN?
+  61D3'   CD 6B59'       C      	CALL	UR.MIMO
+  61D6'   D8             C      	RET	C
+  61D7'   7E             C      	LD	A,(HL)
+  61D8'   FE 4A          C      	CP	'J'
+  61DA'   C0             C      	RET	NZ
+  61DB'   CD 5F44'       C      	CALL	FD.POSK
+  61DE'   CD 6057'       C      	CALL	FD.FDOWR
+  61E1'   CD 6214'       C      	CALL	FD.DSPBB
+  61E4'   CD 622E'       C      	CALL	FD.RDEND
+  61E7'   CD 6224'       C      	CALL	FD.DSPBG
+  61EA'   18 DD          C      	JR	$-33
+                         C      ;**********************************************************************
+                         C      ;      Eingabeprogramm
+                         C      ;**********************************************************************
+  61EC'   61EC'          C      	DW	$
+  61EE'   45 49 4E 20    C      	DB	'EIN '
+  61F2'                  C      FD.FDIN2:
+  61F2'   CD 60E9'       C      	CALL	FD.FSTRT
+  61F5'   3A 2B1C'       C      	LD	A,(UB.PAR1)
+  61F8'   FE 4A          C      	CP	'J'
+  61FA'   28 07          C      	JR	Z,$+9
+  61FC'   3E 91          C      	LD	A,91H
+  61FE'   CD 5697'       C      	CALL	UF.ERANZ
+'Ein-/Ausgabe im freien Format'	MACRO-80 3.44	09-Dec-81	PAGE	1-39
+
+
+  6201'   18 C6          C      	JR	FD.END
+  6203'   CD 5F44'       C      	CALL	FD.POSK
+  6206'   CD 5FB0'       C      	CALL	FD.FDINP
+  6209'   CD 6214'       C      	CALL	FD.DSPBB
+  620C'   CD 622E'       C      	CALL	FD.RDEND
+  620F'   CD 6224'       C      	CALL	FD.DSPBG
+  6212'   18 B5          C      	JR	FD.END
                          C      ;----------------------------------------------------------------------
-  61E9'                  C      FD.DSPBB:
-  61E9'   CD 6E7C'       C      	CALL	XY.LDDX
-  61EC'   11             C      	DB	17
-  61ED'   EB             C      	EX	DE,HL
-  61EE'   21 592A'       C      	LD	HL,UA.ZKBEL
-  61F1'   CD 6B2E'       C      	CALL	UR.MIMO
-  61F4'   EB             C      	EX	DE,HL
-  61F5'   CD 6F93'       C      	CALL	UC.CVBD3
-  61F8'   C9             C      	RET
-  61F9'                  C      FD.DSPBG:
-  61F9'   CD 6E7C'       C      	CALL	XY.LDDX
-  61FC'   11             C      	DB	17
-  61FD'   EB             C      	EX	DE,HL
-  61FE'   21 593D'       C      	LD	HL,UA.ZKBLG
-  6201'   18 EE          C      	JR	$-16
-  6203'                  C      FD.RDEND:
-  6203'   CD 7237'       C      	CALL	UK.KBW
-  6206'   DD 7E 02       C      	LD	A,(IX+2)	;Laenge = 1, dann BM
-  6209'   FE 01          C      	CP	1
-  620B'   C8             C      	RET	Z
-  620C'   18 F5          C      	JR	FD.RDEND
-  620E'                  C      FD.BMGF:
-  620E'   3E 95          C      	LD	A,95H
-  6210'   CD 5694'       C      	CALL	UF.ERANZ
-  6213'   D1             C      	POP	DE
-  6214'   D1             C      	POP	DE
-  6215'   C9             C      	RET
+  6214'                  C      FD.DSPBB:
+  6214'   CD 6EA7'       C      	CALL	XY.LDDX
+  6217'   11             C      	DB	17
+  6218'   EB             C      	EX	DE,HL
+  6219'   21 592D'       C      	LD	HL,UA.ZKBEL
+  621C'   CD 6B59'       C      	CALL	UR.MIMO
+  621F'   EB             C      	EX	DE,HL
+  6220'   CD 6FBE'       C      	CALL	UC.CVBD3
+  6223'   C9             C      	RET
+  6224'                  C      FD.DSPBG:
+  6224'   CD 6EA7'       C      	CALL	XY.LDDX
+  6227'   11             C      	DB	17
+  6228'   EB             C      	EX	DE,HL
+  6229'   21 5940'       C      	LD	HL,UA.ZKBLG
+  622C'   18 EE          C      	JR	$-16
+  622E'                  C      FD.RDEND:
+  622E'   CD 7262'       C      	CALL	UK.KBW
+  6231'   DD 7E 02       C      	LD	A,(IX+2)	;Laenge = 1, dann BM
+  6234'   FE 01          C      	CP	1
+  6236'   C8             C      	RET	Z
+  6237'   18 F5          C      	JR	FD.RDEND
+  6239'                  C      FD.BMGF:
+  6239'   3E 95          C      	LD	A,95H
+  623B'   CD 5697'       C      	CALL	UF.ERANZ
+  623E'   D1             C      	POP	DE
+  623F'   D1             C      	POP	DE
+  6240'   C9             C      	RET
                          C      ;----------------------------------------------------------------------
                          C      ;	END
                          C      	TITLE	'Laden von MRES-P-Dateien'
                          C      	PAGE
-'Laden von MRES-P-Dateien'	MACRO-80 3.44	09-Dec-81	PAGE	1-39
+'Laden von MRES-P-Dateien'	MACRO-80 3.44	09-Dec-81	PAGE	1-40
 
 
                          C      
@@ -2454,144 +2516,144 @@
                          C      ;        Laden von MRES-P-Dateien
                          C      ;
                          C      ;***********************************************************
-  6216'   6216'          C      	DW	$
-  6218'   4C 4F 41 44    C      	DB	'LOAD'
-  621C'   3A 3327        C      	LD	A,(UE.BWSA+327H)
-  621F'   CD 6E40'       C      	CALL	U1.TST
-  6222'   D8             C      	RET	C
-  6223'   CD 6D65'       C      	CALL	U1.KTINI
-  6226'   DD 77 04       C      	LD	(IX+4),A
-  6229'   CD 6E2C'       C      	CALL	U1.BILO
-  622C'   3E 0D          C      	LD	A,13
-  622E'   32 2B00'       C      	LD	(UB.ZN),A
-  6231'                  C      LD.DATN:
-  6231'   21 5885'       C      	LD	HL,UA.ZKDAT	;Dateiname ?
-  6234'   CD 6B2E'       C      	CALL	UR.MIMO
-  6237'   D8             C      	RET	C
-  6238'   CD 6A86'       C      	CALL	UR.KRE
-  623B'   CD 6A94'       C      	CALL	UR.KRWW
-  623E'   CD 6D19'       C      	CALL	U1.DSVG
-  6241'   3E 01          C      	LD	A,01H
-  6243'   B8             C      	CP	B
-  6244'   28 0A          C      	JR	Z,LD.LD21	;NEU INITIALISIERTE KASSETTE
-  6246'                  C      LD.LD2:
-  6246'   CD 7237'       C      	CALL	UK.KBW
-  6249'   CD 6D4A'       C      	CALL	U1.NMVGL	;Dateiname vergleichen
-  624C'   38 08          C      	JR	C,LD.DATFU	;---> Datei gefunden
-  624E'   10 F6          C      	DJNZ	LD.LD2
-  6250'                  C      LD.LD21:
-  6250'   3E 91          C      	LD	A,91H	;Datei nicht vorhanden
-  6252'   CD 5694'       C      	CALL	UF.ERANZ	;FEHLERANZEIGE
-  6255'   C9             C      	RET
-  6256'                  C      LD.DATFU:
-  6256'   3A 0E6C        C      	LD	A,(UE.PUF+6)	;TYP
-  6259'   FE 4F          C      	CP	'O'
-  625B'   F5             C      	PUSH	AF
-  625C'   21 0E7D        C      	LD	HL,UE.PUF+23
-  625F'   7E             C      	LD	A,(HL)
-  6260'   F5             C      	PUSH	AF
-  6261'   47             C      	LD	B,A
-  6262'   04             C      	INC	B
-  6263'   CD 6ACB'       C      	CALL	UR.POSIK	;Positionieren
-  6266'   CD 7237'       C      	CALL	UK.KBW
-  6269'   F1             C      	POP	AF
-  626A'   21 0E66        C      	LD	HL,UE.PUF
-  626D'   BE             C      	CP	(HL)
-  626E'   28 07          C      	JR	Z,LD.DATPO	;Datei richtig positioniert
-  6270'   F1             C      	POP	AF
-  6271'   3E 94          C      	LD	A,94H
-  6273'   CD 5694'       C      	CALL	UF.ERANZ
-  6276'   C9             C      	RET
-  6277'                  C      LD.DATPO:
-  6277'   F1             C      	POP	AF
-  6278'   CA 630D'       C      	JP	Z,RL.BEG
-  627B'   3A 3329        C      	LD	A,(UE.BWSA+329H)
-  627E'   FE 56          C      	CP	'V'
-  6280'   20 57          C      	JR	NZ,LD.LD3
-  6282'   21 5898'       C      	LD	HL,UA.ZKLAD	;Ladeadresse ?
-  6285'   CD 6B2E'       C      	CALL	UR.MIMO
-  6288'   DA 6231'       C      	JP	C,LD.DATN
-  628B'   CD 6E4A'       C      	CALL	U1.PRADR	;ADRESSE EINGEGEBEN
-  628E'   38 F2          C      	JR	C,$-12
-  6290'   EB             C      	EX	DE,HL
-  6291'   21 2B1C'       C      	LD	HL,UB.PAR1
-  6294'   CD 6F80'       C      	CALL	UC.CVXA
-  6297'                  C      LD.LD4:
-  6297'   CD 7214'       C      	CALL	UK.KLPFB
-  629A'   CD 71D7'       C      	CALL	UK.GETK
-  629D'   CD 71D7'       C      	CALL	UK.GETK
-  62A0'   67             C      	LD	H,A
-  62A1'   CD 71D7'       C      	CALL	UK.GETK
-  62A4'   6F             C      	LD	L,A
-  62A5'   7A             C      	LD	A,D
-  62A6'   B3             C      	OR	E
-  62A7'   28 09          C      	JR	Z,LD.LD5
-  62A9'   ED 5B 2B1C'    C      	LD	DE,(UB.PAR1)
-  62AD'   EB             C      	EX	DE,HL
-  62AE'   B7             C      	OR	A
-'Laden von MRES-P-Dateien'	MACRO-80 3.44	09-Dec-81	PAGE	1-40
+  6241'   6241'          C      	DW	$
+  6243'   4C 4F 41 44    C      	DB	'LOAD'
+  6247'   3A 3327        C      	LD	A,(UE.BWSA+327H)
+  624A'   CD 6E6B'       C      	CALL	U1.TST
+  624D'   D8             C      	RET	C
+  624E'   CD 6D90'       C      	CALL	U1.KTINI
+  6251'   DD 77 04       C      	LD	(IX+4),A
+  6254'   CD 6E57'       C      	CALL	U1.BILO
+  6257'   3E 0D          C      	LD	A,13
+  6259'   32 2B00'       C      	LD	(UB.ZN),A
+  625C'                  C      LD.DATN:
+  625C'   21 5888'       C      	LD	HL,UA.ZKDAT	;Dateiname ?
+  625F'   CD 6B59'       C      	CALL	UR.MIMO
+  6262'   D8             C      	RET	C
+  6263'   CD 6AB1'       C      	CALL	UR.KRE
+  6266'   CD 6ABF'       C      	CALL	UR.KRWW
+  6269'   CD 6D44'       C      	CALL	U1.DSVG
+  626C'   3E 01          C      	LD	A,01H
+  626E'   B8             C      	CP	B
+  626F'   28 0A          C      	JR	Z,LD.LD21	;NEU INITIALISIERTE KASSETTE
+  6271'                  C      LD.LD2:
+  6271'   CD 7262'       C      	CALL	UK.KBW
+  6274'   CD 6D75'       C      	CALL	U1.NMVGL	;Dateiname vergleichen
+  6277'   38 08          C      	JR	C,LD.DATFU	;---> Datei gefunden
+  6279'   10 F6          C      	DJNZ	LD.LD2
+  627B'                  C      LD.LD21:
+  627B'   3E 91          C      	LD	A,91H	;Datei nicht vorhanden
+  627D'   CD 5697'       C      	CALL	UF.ERANZ	;FEHLERANZEIGE
+  6280'   C9             C      	RET
+  6281'                  C      LD.DATFU:
+  6281'   3A 0E6C        C      	LD	A,(UE.PUF+6)	;TYP
+  6284'   FE 4F          C      	CP	'O'
+  6286'   F5             C      	PUSH	AF
+  6287'   21 0E7D        C      	LD	HL,UE.PUF+23
+  628A'   7E             C      	LD	A,(HL)
+  628B'   F5             C      	PUSH	AF
+  628C'   47             C      	LD	B,A
+  628D'   04             C      	INC	B
+  628E'   CD 6AF6'       C      	CALL	UR.POSIK	;Positionieren
+  6291'   CD 7262'       C      	CALL	UK.KBW
+  6294'   F1             C      	POP	AF
+  6295'   21 0E66        C      	LD	HL,UE.PUF
+  6298'   BE             C      	CP	(HL)
+  6299'   28 07          C      	JR	Z,LD.DATPO	;Datei richtig positioniert
+  629B'   F1             C      	POP	AF
+  629C'   3E 94          C      	LD	A,94H
+  629E'   CD 5697'       C      	CALL	UF.ERANZ
+  62A1'   C9             C      	RET
+  62A2'                  C      LD.DATPO:
+  62A2'   F1             C      	POP	AF
+  62A3'   CA 6338'       C      	JP	Z,RL.BEG
+  62A6'   3A 3329        C      	LD	A,(UE.BWSA+329H)
+  62A9'   FE 56          C      	CP	'V'
+  62AB'   20 57          C      	JR	NZ,LD.LD3
+  62AD'   21 589B'       C      	LD	HL,UA.ZKLAD	;Ladeadresse ?
+  62B0'   CD 6B59'       C      	CALL	UR.MIMO
+  62B3'   DA 625C'       C      	JP	C,LD.DATN
+  62B6'   CD 6E75'       C      	CALL	U1.PRADR	;ADRESSE EINGEGEBEN
+  62B9'   38 F2          C      	JR	C,$-12
+  62BB'   EB             C      	EX	DE,HL
+  62BC'   21 2B1C'       C      	LD	HL,UB.PAR1
+  62BF'   CD 6FAB'       C      	CALL	UC.CVXA
+  62C2'                  C      LD.LD4:
+  62C2'   CD 723F'       C      	CALL	UK.KLPFB
+  62C5'   CD 7202'       C      	CALL	UK.GETK
+  62C8'   CD 7202'       C      	CALL	UK.GETK
+  62CB'   67             C      	LD	H,A
+  62CC'   CD 7202'       C      	CALL	UK.GETK
+  62CF'   6F             C      	LD	L,A
+  62D0'   7A             C      	LD	A,D
+  62D1'   B3             C      	OR	E
+  62D2'   28 09          C      	JR	Z,LD.LD5
+  62D4'   ED 5B 2B1C'    C      	LD	DE,(UB.PAR1)
+  62D8'   EB             C      	EX	DE,HL
+  62D9'   B7             C      	OR	A
+'Laden von MRES-P-Dateien'	MACRO-80 3.44	09-Dec-81	PAGE	1-41
 
 
-  62AF'   ED 52          C      	SBC	HL,DE
-  62B1'   EB             C      	EX	DE,HL	;DE:= Verschiebung zur ersten
-  62B2'                  C      LD.LD5:
-  62B2'   CD 6ABC'       C      	CALL	UR.KBR
-  62B5'   CD 62DE'       C      	CALL	LD.LADER
-  62B8'   22 2B1E'       C      	LD	(UB.PAR2),HL
-  62BB'   21 3329        C      	LD	HL,UE.BWSA+329H
-  62BE'   06 04          C      	LD	B,4
-  62C0'   7E             C      	LD	A,(HL)
-  62C1'   FE 53          C      	CP	'S'
-  62C3'   28 0A          C      	JR	Z,LD.START
-  62C5'   23             C      	INC	HL
-  62C6'   10 F8          C      	DJNZ	$-6
-  62C8'   CD 6A8E'       C      	CALL	UR.KRW
-  62CB'   CD 6A98'       C      	CALL	UR.KRA
-  62CE'   C9             C      	RET
-  62CF'                  C      LD.START:
-  62CF'   CD 6A8E'       C      	CALL	UR.KRW
-  62D2'   CD 6A98'       C      	CALL	UR.KRA
-  62D5'   2A 2B1E'       C      	LD	HL,(UB.PAR2)
-  62D8'   E9             C      	JP	(HL)
-  62D9'                  C      LD.LD3:
-  62D9'   11 0000        C      	LD	DE,0
-  62DC'   18 B9          C      	JR	LD.LD4
+  62DA'   ED 52          C      	SBC	HL,DE
+  62DC'   EB             C      	EX	DE,HL	;DE:= Verschiebung zur ersten
+  62DD'                  C      LD.LD5:
+  62DD'   CD 6AE7'       C      	CALL	UR.KBR
+  62E0'   CD 6309'       C      	CALL	LD.LADER
+  62E3'   22 2B1E'       C      	LD	(UB.PAR2),HL
+  62E6'   21 3329        C      	LD	HL,UE.BWSA+329H
+  62E9'   06 04          C      	LD	B,4
+  62EB'   7E             C      	LD	A,(HL)
+  62EC'   FE 53          C      	CP	'S'
+  62EE'   28 0A          C      	JR	Z,LD.START
+  62F0'   23             C      	INC	HL
+  62F1'   10 F8          C      	DJNZ	$-6
+  62F3'   CD 6AB9'       C      	CALL	UR.KRW
+  62F6'   CD 6AC3'       C      	CALL	UR.KRA
+  62F9'   C9             C      	RET
+  62FA'                  C      LD.START:
+  62FA'   CD 6AB9'       C      	CALL	UR.KRW
+  62FD'   CD 6AC3'       C      	CALL	UR.KRA
+  6300'   2A 2B1E'       C      	LD	HL,(UB.PAR2)
+  6303'   E9             C      	JP	(HL)
+  6304'                  C      LD.LD3:
+  6304'   11 0000        C      	LD	DE,0
+  6307'   18 B9          C      	JR	LD.LD4
                          C      ;--------------------------------------------------------------
-  62DE'                  C      LD.LADER:
-  62DE'   CD 7214'       C      	CALL	UK.KLPFB
-  62E1'                  C      LD.LAD2:
-  62E1'   CD 71D7'       C      	CALL	UK.GETK
-  62E4'   FE 00          C      	CP	0
-  62E6'   28 16          C      	JR	Z,LD.LDEND
-  62E8'   47             C      	LD	B,A
-  62E9'   CD 71D7'       C      	CALL	UK.GETK
-  62EC'   67             C      	LD	H,A
-  62ED'   CD 71D7'       C      	CALL	UK.GETK
-  62F0'   6F             C      	LD	L,A
-  62F1'   19             C      	ADD	HL,DE
-  62F2'                  C      LD.LAD1:
-  62F2'   CD 71D7'       C      	CALL	UK.GETK
-  62F5'   77             C      	LD	(HL),A
-  62F6'   BE             C      	CP	(HL)
-  62F7'   20 0E          C      	JR	NZ,LD.LADF
-  62F9'   23             C      	INC	HL
-  62FA'   10 F6          C      	DJNZ	LD.LAD1
-  62FC'   18 E3          C      	JR	LD.LAD2
-  62FE'                  C      LD.LDEND:
-  62FE'   CD 71D7'       C      	CALL	UK.GETK
-  6301'   67             C      	LD	H,A
-  6302'   CD 71D7'       C      	CALL	UK.GETK
-  6305'   6F             C      	LD	L,A
-  6306'   C9             C      	RET
-  6307'                  C      LD.LADF:
-  6307'   3E 93          C      	LD	A,93H
-  6309'   CD 5694'       C      	CALL	UF.ERANZ
-  630C'   C9             C      	RET
+  6309'                  C      LD.LADER:
+  6309'   CD 723F'       C      	CALL	UK.KLPFB
+  630C'                  C      LD.LAD2:
+  630C'   CD 7202'       C      	CALL	UK.GETK
+  630F'   FE 00          C      	CP	0
+  6311'   28 16          C      	JR	Z,LD.LDEND
+  6313'   47             C      	LD	B,A
+  6314'   CD 7202'       C      	CALL	UK.GETK
+  6317'   67             C      	LD	H,A
+  6318'   CD 7202'       C      	CALL	UK.GETK
+  631B'   6F             C      	LD	L,A
+  631C'   19             C      	ADD	HL,DE
+  631D'                  C      LD.LAD1:
+  631D'   CD 7202'       C      	CALL	UK.GETK
+  6320'   77             C      	LD	(HL),A
+  6321'   BE             C      	CP	(HL)
+  6322'   20 0E          C      	JR	NZ,LD.LADF
+  6324'   23             C      	INC	HL
+  6325'   10 F6          C      	DJNZ	LD.LAD1
+  6327'   18 E3          C      	JR	LD.LAD2
+  6329'                  C      LD.LDEND:
+  6329'   CD 7202'       C      	CALL	UK.GETK
+  632C'   67             C      	LD	H,A
+  632D'   CD 7202'       C      	CALL	UK.GETK
+  6330'   6F             C      	LD	L,A
+  6331'   C9             C      	RET
+  6332'                  C      LD.LADF:
+  6332'   3E 93          C      	LD	A,93H
+  6334'   CD 5697'       C      	CALL	UF.ERANZ
+  6337'   C9             C      	RET
                          C      ;----------------------------------------------------------------------
                          C      ;	END
                          C      	TITLE	'Relativloader fuer O-Dateien'
                          C      	PAGE
-'Relativloader fuer O-Dateien'	MACRO-80 3.44	09-Dec-81	PAGE	1-41
+'Relativloader fuer O-Dateien'	MACRO-80 3.44	09-Dec-81	PAGE	1-42
 
 
                          C      
@@ -2601,188 +2663,188 @@
                          C      ;     RELATIVLOADER FUER O-DATEIEN
                          C      ;
                          C      ;----------------------------------------------------------------------
-  630D'                  C      RL.BEG:
-  630D'   21 58AB'       C      	LD	HL,UA.ZKBEG	;BEGINN ?
-  6310'   CD 6B2E'       C      	CALL	UR.MIMO
-  6313'   DA 6231'       C      	JP	C,LD.DATN
-  6316'   CD 6E4A'       C      	CALL	U1.PRADR
-  6319'   38 F2          C      	JR	C,RL.BEG
-  631B'   EB             C      	EX	DE,HL
-  631C'   21 2B26'       C      	LD	HL,UB.PATAB
-  631F'   CD 6F80'       C      	CALL	UC.CVXA
-  6322'                  C      RL.UG:
-  6322'   CD 7237'       C      	CALL	UK.KBW
-  6325'   2A 2B26'       C      	LD	HL,(UB.PATAB)	;BGADR---->HL
-  6328'   0E 01          C      	LD	C,001H	;LADEN BLOCKZAEHLER MIT
+  6338'                  C      RL.BEG:
+  6338'   21 58AE'       C      	LD	HL,UA.ZKBEG	;BEGINN ?
+  633B'   CD 6B59'       C      	CALL	UR.MIMO
+  633E'   DA 625C'       C      	JP	C,LD.DATN
+  6341'   CD 6E75'       C      	CALL	U1.PRADR
+  6344'   38 F2          C      	JR	C,RL.BEG
+  6346'   EB             C      	EX	DE,HL
+  6347'   21 2B26'       C      	LD	HL,UB.PATAB
+  634A'   CD 6FAB'       C      	CALL	UC.CVXA
+  634D'                  C      RL.UG:
+  634D'   CD 7262'       C      	CALL	UK.KBW
+  6350'   2A 2B26'       C      	LD	HL,(UB.PATAB)	;BGADR---->HL
+  6353'   0E 01          C      	LD	C,001H	;LADEN BLOCKZAEHLER MIT
                          C      			;ANFANGSWERT
-  632A'   CD 63B5'       C      	CALL	RL.UP6	; AUFRUF EINGABE-UP
+  6355'   CD 63E0'       C      	CALL	RL.UP6	; AUFRUF EINGABE-UP
                          C      ;********** TEST BEFEHLSKENNZEICHENBYTE *******************************
-  632D'                  C      RL.M16:
-  632D'   CB 5A          C      	BIT	3,D	;TEST ORG-BEFEHL
-  632F'   C2 6409'       C      	JP	NZ,RL.OB	;JA--->FEHLER
-  6332'   CB 62          C      	BIT	4,D	;TEST BER -BEFEHL
-  6334'   C2 639E'       C      	JP	NZ,RL.M10
-  6337'   3E 07          C      	LD	A,007H
-  6339'   A2             C      	AND	D	;TEST BEFEHLS LAENGE=0 ?
-  633A'   CA 63AF'       C      	JP	Z,RL.M11
-  633D'   47             C      	LD	B,A	;BEFEHLSLAENGE-->B
-  633E'                  C      RL.M12:
-  633E'   CD 63B5'       C      	CALL	RL.UP6
-  6341'   72             C      	LD	(HL),D
-  6342'   23             C      	INC	HL
-  6343'   10 F9          C      	DJNZ	RL.M12	;EINGABE BEFEHL
-  6345'   CD 63B5'       C      	CALL	RL.UP6
-  6348'   CB 7A          C      	BIT	7,D	;TEST BEFEHLSKENNZEICHENBYTE ?
-  634A'   20 E1          C      	JR	NZ,RL.M16	; JA
+  6358'                  C      RL.M16:
+  6358'   CB 5A          C      	BIT	3,D	;TEST ORG-BEFEHL
+  635A'   C2 6434'       C      	JP	NZ,RL.OB	;JA--->FEHLER
+  635D'   CB 62          C      	BIT	4,D	;TEST BER -BEFEHL
+  635F'   C2 63C9'       C      	JP	NZ,RL.M10
+  6362'   3E 07          C      	LD	A,007H
+  6364'   A2             C      	AND	D	;TEST BEFEHLS LAENGE=0 ?
+  6365'   CA 63DA'       C      	JP	Z,RL.M11
+  6368'   47             C      	LD	B,A	;BEFEHLSLAENGE-->B
+  6369'                  C      RL.M12:
+  6369'   CD 63E0'       C      	CALL	RL.UP6
+  636C'   72             C      	LD	(HL),D
+  636D'   23             C      	INC	HL
+  636E'   10 F9          C      	DJNZ	RL.M12	;EINGABE BEFEHL
+  6370'   CD 63E0'       C      	CALL	RL.UP6
+  6373'   CB 7A          C      	BIT	7,D	;TEST BEFEHLSKENNZEICHENBYTE ?
+  6375'   20 E1          C      	JR	NZ,RL.M16	; JA
                          C      ;******* TEST ADRESSKENNZEICHENBYTE ***********************************
-  634C'   CB 6A          C      	BIT	5,D	;TEST OB REL.ADR. FOLGT
-  634E'   CA 640D'       C      	JP	Z,RL.RA	;NEIN-->FEHLER
-  6351'   CB 72          C      	BIT	6,D	;FOLGT BEZUGNAHME AUF
+  6377'   CB 6A          C      	BIT	5,D	;TEST OB REL.ADR. FOLGT
+  6379'   CA 6438'       C      	JP	Z,RL.RA	;NEIN-->FEHLER
+  637C'   CB 72          C      	BIT	6,D	;FOLGT BEZUGNAHME AUF
                          C      			;SYMBOLVERZEICHNIS
-  6353'   C2 6411'       C      	JP	NZ,RL.SV	;JA--->FEHLER
-  6356'   CB 52          C      	BIT	2,D	;MINUS ?
-  6358'   C2 6415'       C      	JP	NZ,RL.MN
-  635B'                  C      RL.M17:
-  635B'   3E 03          C      	LD	A,003H
-  635D'   A2             C      	AND	D	;TEST ADRESSLAENGE
-  635E'   F5             C      	PUSH	AF
-  635F'   E5             C      	PUSH	HL
-  6360'   CD 63B5'       C      	CALL	RL.UP6
-  6363'   62             C      	LD	H,D	;ADRESSE ---->HL
-  6364'   CD 63B5'       C      	CALL	RL.UP6
-  6367'   6A             C      	LD	L,D
-  6368'   C5             C      	PUSH	BC
-  6369'   E5             C      	PUSH	HL
-  636A'   21 2B26'       C      	LD	HL,UB.PATAB
-  636D'   4E             C      	LD	C,(HL)	;BEGINN(LADE)ADRESSE--->BC
-  636E'   23             C      	INC	HL
-  636F'   46             C      	LD	B,(HL)
-  6370'   E1             C      	POP	HL
-  6371'   09             C      	ADD	HL,BC	;ERMITTELN SPEICHERADRESSE
-  6372'   EB             C      	EX	DE,HL	;SP.ADR.--->DE
-  6373'   C1             C      	POP	BC
-  6374'   E1             C      	POP	HL
-  6375'   F1             C      	POP	AF
-  6376'   28 04          C      	JR	Z,RL.M13
-  6378'   CB 47          C      	BIT	0,A	;NUR L-TEIL DER ADRESSE ?
-  637A'   28 10          C      	JR	Z,RL.M14	; JA
+  637E'   C2 643C'       C      	JP	NZ,RL.SV	;JA--->FEHLER
+  6381'   CB 52          C      	BIT	2,D	;MINUS ?
+  6383'   C2 6440'       C      	JP	NZ,RL.MN
+  6386'                  C      RL.M17:
+  6386'   3E 03          C      	LD	A,003H
+  6388'   A2             C      	AND	D	;TEST ADRESSLAENGE
+  6389'   F5             C      	PUSH	AF
+  638A'   E5             C      	PUSH	HL
+  638B'   CD 63E0'       C      	CALL	RL.UP6
+  638E'   62             C      	LD	H,D	;ADRESSE ---->HL
+  638F'   CD 63E0'       C      	CALL	RL.UP6
+  6392'   6A             C      	LD	L,D
+  6393'   C5             C      	PUSH	BC
+  6394'   E5             C      	PUSH	HL
+  6395'   21 2B26'       C      	LD	HL,UB.PATAB
+  6398'   4E             C      	LD	C,(HL)	;BEGINN(LADE)ADRESSE--->BC
+  6399'   23             C      	INC	HL
+  639A'   46             C      	LD	B,(HL)
+  639B'   E1             C      	POP	HL
+  639C'   09             C      	ADD	HL,BC	;ERMITTELN SPEICHERADRESSE
+  639D'   EB             C      	EX	DE,HL	;SP.ADR.--->DE
+  639E'   C1             C      	POP	BC
+  639F'   E1             C      	POP	HL
+  63A0'   F1             C      	POP	AF
+  63A1'   28 04          C      	JR	Z,RL.M13
+  63A3'   CB 47          C      	BIT	0,A	;NUR L-TEIL DER ADRESSE ?
+  63A5'   28 10          C      	JR	Z,RL.M14	; JA
                          C      ;********** ADRESSE IN SPEICHER EINTRAGEN *****************************
-  637C'                  C      RL.M13:
-  637C'   73             C      	LD	(HL),E
-  637D'   F5             C      	PUSH	AF
-  637E'   7B             C      	LD	A,E
-  637F'   BE             C      	CP	(HL)
-  6380'   C2 6400'       C      	JP	NZ,RL.ECHO
-  6383'   F1             C      	POP	AF
-  6384'   23             C      	INC	HL
-  6385'   FE 03          C      	CP	003H
-'Relativloader fuer O-Dateien'	MACRO-80 3.44	09-Dec-81	PAGE	1-42
-
-
-  6387'   28 03          C      	JR	Z,RL.M14
-  6389'   B7             C      	OR	A	;NUR H-TEIL DER ADRESSE ?
-  638A'   20 08          C      	JR	NZ,RL.M15	; JA
-  638C'                  C      RL.M14:
-  638C'   72             C      	LD	(HL),D
-  638D'   F5             C      	PUSH	AF
-  638E'   7A             C      	LD	A,D
-  638F'   BE             C      	CP	(HL)
-  6390'   20 6E          C      	JR	NZ,RL.ECHO
-  6392'   F1             C      	POP	AF
-  6393'   23             C      	INC	HL
-  6394'                  C      RL.M15:
-  6394'   CD 63B5'       C      	CALL	RL.UP6
-  6397'   CB 7A          C      	BIT	7,D	; TEST BEFEHLSKENNZEICHENBYTE
-  6399'   20 92          C      	JR	NZ,RL.M16
-  639B'   C3 6419'       C      	JP	RL.BF	; NEIN--->FEHLER
-                         C      ;----------------------------------------------------------------------
-  639E'                  C      RL.M10:
-  639E'   CD 63B5'       C      	CALL	RL.UP6	;BEI BER-BEFEHL ADDIEREN DER
-  63A1'   D5             C      	PUSH	DE	;DEF. BEREICHSLAENGE ZU
-  63A2'   CD 63B5'       C      	CALL	RL.UP6	;ADRESSE
-  63A5'   7A             C      	LD	A,D
-  63A6'   D1             C      	POP	DE
-  63A7'   5F             C      	LD	E,A
-  63A8'   19             C      	ADD	HL,DE
-  63A9'   CD 63B5'       C      	CALL	RL.UP6
-  63AC'   C3 632D'       C      	JP	RL.M16
-  63AF'                  C      RL.M11:
-  63AF'   CD 63B5'       C      	CALL	RL.UP6	;BEI BFL=0 SPRUNG ZUM TEST
-  63B2'   C3 635B'       C      	JP	RL.M17	;ADRESSKENNZEICHENBYTE
-                         C      ;******* UP ZUR ZEICHENWEISE EINGABE DER O-DATEI **********************
-  63B5'                  C      RL.UP6:
-  63B5'   CD 71D7'       C      	CALL	UK.GETK
-  63B8'   57             C      	LD	D,A
-  63B9'   0D             C      	DEC	C	;REDUZIEREN BLOCKLAENGE
-  63BA'   C0             C      	RET	NZ		;RET BEI UNGLEICH NULL
-  63BB'   A7             C      	AND	A	;IST NAECHSTE BLOCKLAENGE NULL ?
-  63BC'   28 04          C      	JR	Z,RL.M21	;JA-->VERZWEIGUNG ENDEBEH
-  63BE'   4F             C      	LD	C,A	;NEIN-->EINTRAGEN BLKLAENGE
-  63BF'   0C             C      	INC	C
-  63C0'   18 F3          C      	JR	RL.UP6
-                         C      ;*********** ENDEBEHANDLUNG *******************************************
-  63C2'                  C      RL.M21:
-  63C2'   D1             C      	POP	DE
-  63C3'   E5             C      	PUSH	HL
-  63C4'   3E 0F          C      	LD	A,15
-  63C6'   32 2B00'       C      	LD	(UB.ZN),A
-  63C9'   21 58C1'       C      	LD	HL,UA.ZKEND+3
-  63CC'   11 3460        C      	LD	DE,3460H
-  63CF'   01 0010        C      	LD	BC,16
-  63D2'   ED B0          C      	LDIR
-  63D4'   21 2B00'       C      	LD	HL,UB.ZN
-  63D7'   34             C      	INC	(HL)
-  63D8'   E1             C      	POP	HL
-  63D9'   2B             C      	DEC	HL
-  63DA'   11 3470        C      	LD	DE,3470H	;HINTER AUSSCHRIFT ENDE
-  63DD'   CD 6F3A'       C      	CALL	UC.CVHLX
-  63E0'   21 58D1'       C      	LD	HL,UA.STADR	;STARTADRESSE ?
-  63E3'   CD 6B2E'       C      	CALL	UR.MIMO
-  63E6'   D8             C      	RET	C
-  63E7'   EB             C      	EX	DE,HL
-  63E8'   21 2B28'       C      	LD	HL,UB.PATAB+2
-  63EB'   CD 6F80'       C      	CALL	UC.CVXA	;STARTADR.-->BINAER
-  63EE'   3A 3329        C      	LD	A,(UE.BWSA+329H)
-  63F1'   FE 53          C      	CP	'S'
-  63F3'   20 04          C      	JR	NZ,$+6
-  63F5'   2A 2B28'       C      	LD	HL,(UB.PATAB+2)
-  63F8'   E9             C      	JP	(HL)
-  63F9'   CD 6A8E'       C      	CALL	UR.KRW
-  63FC'   CD 6A98'       C      	CALL	UR.KRA
-  63FF'   C9             C      	RET
-                         C      ;---------------------------------------------------------------------
-  6400'                  C      RL.ECHO:
-  6400'   D1             C      	POP	DE
-  6401'   3E 93          C      	LD	A,93H
-  6403'   18 16          C      	JR	RL.FMELD
-  6405'                  C      RL.DATNV:
-  6405'   3E 91          C      	LD	A,91H
-  6407'   18 12          C      	JR	RL.FMELD
-  6409'                  C      RL.OB:
-  6409'   3E 96          C      	LD	A,96H
-  640B'   18 0E          C      	JR	RL.FMELD
-  640D'                  C      RL.RA:
+  63A7'                  C      RL.M13:
+  63A7'   73             C      	LD	(HL),E
+  63A8'   F5             C      	PUSH	AF
+  63A9'   7B             C      	LD	A,E
+  63AA'   BE             C      	CP	(HL)
+  63AB'   C2 642B'       C      	JP	NZ,RL.ECHO
+  63AE'   F1             C      	POP	AF
+  63AF'   23             C      	INC	HL
+  63B0'   FE 03          C      	CP	003H
 'Relativloader fuer O-Dateien'	MACRO-80 3.44	09-Dec-81	PAGE	1-43
 
 
-  640D'   3E 97          C      	LD	A,97H
-  640F'   18 0A          C      	JR	RL.FMELD
-  6411'                  C      RL.SV:
-  6411'   3E 98          C      	LD	A,98H
-  6413'   18 06          C      	JR	RL.FMELD
-  6415'                  C      RL.MN:
-  6415'   3E 99          C      	LD	A,99H
-  6417'   18 02          C      	JR	RL.FMELD
-  6419'                  C      RL.BF:
-  6419'   3E 9A          C      	LD	A,9AH
-  641B'                  C      RL.FMELD:
-  641B'   CD 5694'       C      	CALL	UF.ERANZ
-  641E'   C9             C      	RET
+  63B2'   28 03          C      	JR	Z,RL.M14
+  63B4'   B7             C      	OR	A	;NUR H-TEIL DER ADRESSE ?
+  63B5'   20 08          C      	JR	NZ,RL.M15	; JA
+  63B7'                  C      RL.M14:
+  63B7'   72             C      	LD	(HL),D
+  63B8'   F5             C      	PUSH	AF
+  63B9'   7A             C      	LD	A,D
+  63BA'   BE             C      	CP	(HL)
+  63BB'   20 6E          C      	JR	NZ,RL.ECHO
+  63BD'   F1             C      	POP	AF
+  63BE'   23             C      	INC	HL
+  63BF'                  C      RL.M15:
+  63BF'   CD 63E0'       C      	CALL	RL.UP6
+  63C2'   CB 7A          C      	BIT	7,D	; TEST BEFEHLSKENNZEICHENBYTE
+  63C4'   20 92          C      	JR	NZ,RL.M16
+  63C6'   C3 6444'       C      	JP	RL.BF	; NEIN--->FEHLER
+                         C      ;----------------------------------------------------------------------
+  63C9'                  C      RL.M10:
+  63C9'   CD 63E0'       C      	CALL	RL.UP6	;BEI BER-BEFEHL ADDIEREN DER
+  63CC'   D5             C      	PUSH	DE	;DEF. BEREICHSLAENGE ZU
+  63CD'   CD 63E0'       C      	CALL	RL.UP6	;ADRESSE
+  63D0'   7A             C      	LD	A,D
+  63D1'   D1             C      	POP	DE
+  63D2'   5F             C      	LD	E,A
+  63D3'   19             C      	ADD	HL,DE
+  63D4'   CD 63E0'       C      	CALL	RL.UP6
+  63D7'   C3 6358'       C      	JP	RL.M16
+  63DA'                  C      RL.M11:
+  63DA'   CD 63E0'       C      	CALL	RL.UP6	;BEI BFL=0 SPRUNG ZUM TEST
+  63DD'   C3 6386'       C      	JP	RL.M17	;ADRESSKENNZEICHENBYTE
+                         C      ;******* UP ZUR ZEICHENWEISE EINGABE DER O-DATEI **********************
+  63E0'                  C      RL.UP6:
+  63E0'   CD 7202'       C      	CALL	UK.GETK
+  63E3'   57             C      	LD	D,A
+  63E4'   0D             C      	DEC	C	;REDUZIEREN BLOCKLAENGE
+  63E5'   C0             C      	RET	NZ		;RET BEI UNGLEICH NULL
+  63E6'   A7             C      	AND	A	;IST NAECHSTE BLOCKLAENGE NULL ?
+  63E7'   28 04          C      	JR	Z,RL.M21	;JA-->VERZWEIGUNG ENDEBEH
+  63E9'   4F             C      	LD	C,A	;NEIN-->EINTRAGEN BLKLAENGE
+  63EA'   0C             C      	INC	C
+  63EB'   18 F3          C      	JR	RL.UP6
+                         C      ;*********** ENDEBEHANDLUNG *******************************************
+  63ED'                  C      RL.M21:
+  63ED'   D1             C      	POP	DE
+  63EE'   E5             C      	PUSH	HL
+  63EF'   3E 0F          C      	LD	A,15
+  63F1'   32 2B00'       C      	LD	(UB.ZN),A
+  63F4'   21 58C4'       C      	LD	HL,UA.ZKEND+3
+  63F7'   11 3460        C      	LD	DE,3460H
+  63FA'   01 0010        C      	LD	BC,16
+  63FD'   ED B0          C      	LDIR
+  63FF'   21 2B00'       C      	LD	HL,UB.ZN
+  6402'   34             C      	INC	(HL)
+  6403'   E1             C      	POP	HL
+  6404'   2B             C      	DEC	HL
+  6405'   11 3470        C      	LD	DE,3470H	;HINTER AUSSCHRIFT ENDE
+  6408'   CD 6F65'       C      	CALL	UC.CVHLX
+  640B'   21 58D4'       C      	LD	HL,UA.STADR	;STARTADRESSE ?
+  640E'   CD 6B59'       C      	CALL	UR.MIMO
+  6411'   D8             C      	RET	C
+  6412'   EB             C      	EX	DE,HL
+  6413'   21 2B28'       C      	LD	HL,UB.PATAB+2
+  6416'   CD 6FAB'       C      	CALL	UC.CVXA	;STARTADR.-->BINAER
+  6419'   3A 3329        C      	LD	A,(UE.BWSA+329H)
+  641C'   FE 53          C      	CP	'S'
+  641E'   20 04          C      	JR	NZ,$+6
+  6420'   2A 2B28'       C      	LD	HL,(UB.PATAB+2)
+  6423'   E9             C      	JP	(HL)
+  6424'   CD 6AB9'       C      	CALL	UR.KRW
+  6427'   CD 6AC3'       C      	CALL	UR.KRA
+  642A'   C9             C      	RET
+                         C      ;---------------------------------------------------------------------
+  642B'                  C      RL.ECHO:
+  642B'   D1             C      	POP	DE
+  642C'   3E 93          C      	LD	A,93H
+  642E'   18 16          C      	JR	RL.FMELD
+  6430'                  C      RL.DATNV:
+  6430'   3E 91          C      	LD	A,91H
+  6432'   18 12          C      	JR	RL.FMELD
+  6434'                  C      RL.OB:
+  6434'   3E 96          C      	LD	A,96H
+  6436'   18 0E          C      	JR	RL.FMELD
+  6438'                  C      RL.RA:
+'Relativloader fuer O-Dateien'	MACRO-80 3.44	09-Dec-81	PAGE	1-44
+
+
+  6438'   3E 97          C      	LD	A,97H
+  643A'   18 0A          C      	JR	RL.FMELD
+  643C'                  C      RL.SV:
+  643C'   3E 98          C      	LD	A,98H
+  643E'   18 06          C      	JR	RL.FMELD
+  6440'                  C      RL.MN:
+  6440'   3E 99          C      	LD	A,99H
+  6442'   18 02          C      	JR	RL.FMELD
+  6444'                  C      RL.BF:
+  6444'   3E 9A          C      	LD	A,9AH
+  6446'                  C      RL.FMELD:
+  6446'   CD 5697'       C      	CALL	UF.ERANZ
+  6449'   C9             C      	RET
                          C      ;----------------------------------------------------------------------
                          C      ;	END
                          C      	TITLE	'Retten von Maschinencodeprogrammen als MRES - P-Datei'
                          C      	PAGE
-'Retten von Maschinencodeprogrammen als MRES - P-Datei'	MACRO-80 3.44	09-Dec-81	PAGE	1-44
+'Retten von Maschinencodeprogrammen als MRES - P-Datei'	MACRO-80 3.44	09-Dec-81	PAGE	1-45
 
 
                          C      
@@ -2792,243 +2854,243 @@
                          C      ;      Retten von Maschinencodeprogrammen als MRES - P-Datei
                          C      ;
                          C      ;**********************************************************************
-  641F'   641F'          C      	DW	$
-  6421'   53 41 56 45    C      	DB	'SAVE'
-  6425'   3A 3327        C      	LD	A,(UE.BWSA+327H)
-  6428'   CD 6E40'       C      	CALL	U1.TST
-  642B'   D8             C      	RET	C
-  642C'   CD 6D65'       C      	CALL	U1.KTINI
-  642F'   DD 77 04       C      	LD	(IX+4),A
-  6432'   AF             C      	XOR	A
-  6433'   32 2B1D'       C      	LD	(UB.PAR1+1),A
-  6436'   CD 6E2C'       C      	CALL	U1.BILO	;BS LOESCHEN
-  6439'   CD 6A86'       C      	CALL	UR.KRE
-  643C'   DD CB 00 56    C      	BIT	2,(IX)
-  6440'   28 05          C      	JR	Z,$+7
-  6442'   3E 19          C      	LD	A,19H
-  6444'   CD 5694'       C      	CALL	UF.ERANZ
-  6447'   CD 6A94'       C      	CALL	UR.KRWW
-  644A'                  C      SV.SV20:
-  644A'   CD 6D19'       C      	CALL	U1.DSVG
-  644D'   C5             C      	PUSH	BC
-  644E'   79             C      	LD	A,C
-  644F'   32 2B1C'       C      	LD	(UB.PAR1),A	;NEXT RECORD
-  6452'   3E 0D          C      	LD	A,13
-  6454'   32 2B00'       C      	LD	(UB.ZN),A
-  6457'                  C      SV.DATN:
-  6457'   21 5885'       C      	LD	HL,UA.ZKDAT	;Dateiname ?
-  645A'   CD 6B2E'       C      	CALL	UR.MIMO
-  645D'   D8             C      	RET	C
-  645E'   C1             C      	POP	BC
-  645F'   05             C      	DEC	B
-  6460'   28 1A          C      	JR	Z,SV.SV30	;NEUE KASSETTE
-  6462'                  C      SV.SV21:
-  6462'   CD 7237'       C      	CALL	UK.KBW
-  6465'   CD 6D4A'       C      	CALL	U1.NMVGL
-  6468'   38 04          C      	JR	C,SV.DATV1	;Dateiname bereits vorhanden
-  646A'   10 F6          C      	DJNZ	SV.SV21
-  646C'   18 0E          C      	JR	SV.SV30
-  646E'                  C      SV.DATV1:
-  646E'   3E 01          C      	LD	A,01H
-  6470'   B8             C      	CP	B
-  6471'   CC 65BA'       C      	CALL	Z,SV.DALO1
-  6474'   28 0E          C      	JR	Z,SV.SV37
-  6476'                  C      SV.DATVO:
-  6476'   3E 92          C      	LD	A,92H
-  6478'   CD 5694'       C      	CALL	UF.ERANZ
-  647B'   C9             C      	RET
-  647C'                  C      SV.SV30:
-  647C'   3E 50          C      	LD	A,'P'
-  647E'   32 2B1E'       C      	LD	(UB.PAR2),A
-  6481'   CD 6DC9'       C      	CALL	U1.VZS
-  6484'                  C      SV.SV37:
-  6484'   3A 2B1D'       C      	LD	A,(UB.PAR1+1)
-  6487'   FE 4C          C      	CP	'L'
-  6489'   20 0B          C      	JR	NZ,SV.SV31
-  648B'   21 58E4'       C      	LD	HL,UA.ZKDL
-  648E'   CD 6B2E'       C      	CALL	UR.MIMO
-  6491'   7E             C      	LD	A,(HL)
-  6492'   FE 4A          C      	CP	'J'
-  6494'   20 E0          C      	JR	NZ,SV.DATVO
-  6496'                  C      SV.SV31:
-  6496'   3A 2B1C'       C      	LD	A,(UB.PAR1)	;NEXT RECORD
-  6499'   47             C      	LD	B,A
-  649A'   C5             C      	PUSH	BC
-  649B'   04             C      	INC	B
-  649C'   CD 6ACB'       C      	CALL	UR.POSIK
-  649F'   CD 7237'       C      	CALL	UK.KBW
-  64A2'   21 0E66        C      	LD	HL,UE.PUF
-  64A5'   C1             C      	POP	BC
-  64A6'   7E             C      	LD	A,(HL)
-  64A7'   B8             C      	CP	B
-  64A8'   28 06          C      	JR	Z,SV.SAVE3
-  64AA'   3E 94          C      	LD	A,94H
-  64AC'   CD 5694'       C      	CALL	UF.ERANZ
-  64AF'   C9             C      	RET
-  64B0'                  C      SV.SAVE3:
-  64B0'   21 58AB'       C      	LD	HL,UA.ZKBEG	;Beginn ?
-'Retten von Maschinencodeprogrammen als MRES - P-Datei'	MACRO-80 3.44	09-Dec-81	PAGE	1-45
-
-
-  64B3'   CD 6B2E'       C      	CALL	UR.MIMO
-  64B6'   DA 6457'       C      	JP	C,SV.DATN
-  64B9'   CD 6E4A'       C      	CALL	U1.PRADR
-  64BC'   38 F2          C      	JR	C,SV.SAVE3
-  64BE'   EB             C      	EX	DE,HL
-  64BF'   21 2B1E'       C      	LD	HL,UB.PAR2
-  64C2'   CD 6F80'       C      	CALL	UC.CVXA
-  64C5'                  C      SV.SAVE4:
-  64C5'   21 58BE'       C      	LD	HL,UA.ZKEND	;Ende ?
-  64C8'   CD 6B2E'       C      	CALL	UR.MIMO
-  64CB'   38 E3          C      	JR	C,SV.SAVE3
-  64CD'   CD 6E4A'       C      	CALL	U1.PRADR
-  64D0'   38 F3          C      	JR	C,SV.SAVE4
-  64D2'   EB             C      	EX	DE,HL
-  64D3'   21 2B20'       C      	LD	HL,UB.PAR3
-  64D6'   CD 6F80'       C      	CALL	UC.CVXA
-  64D9'   CD 6529'       C      	CALL	SV.BYANZ
-  64DC'   38 D2          C      	JR	C,SV.SAVE3
-  64DE'   28 D0          C      	JR	Z,SV.SAVE3
-  64E0'   CD 654E'       C      	CALL	SV.SAVE
-  64E3'   CD 6AAA'       C      	CALL	UR.KBM
-  64E6'   CD 6534'       C      	CALL	SV.DATS1	;1.DATEISATZ SCHREIBEN
-  64E9'   CD 6AB0'       C      	CALL	UR.KSL
-  64EC'   CD 6A94'       C      	CALL	UR.KRWW
-  64EF'   CD 6D19'       C      	CALL	U1.DSVG
-  64F2'   05             C      	DEC	B
-  64F3'   3A 2B1D'       C      	LD	A,(UB.PAR1+1)
-  64F6'   FE 4C          C      	CP	'L'
-  64F8'   28 13          C      	JR	Z,SV.SAVE5
-  64FA'   21 0E67        C      	LD	HL,UE.PUF+1
-  64FD'   34             C      	INC	(HL)	;NEXT RECORD+1
-  64FE'   21 0E69        C      	LD	HL,UE.PUF+3
-  6501'   46             C      	LD	B,(HL)
-  6502'   34             C      	INC	(HL)	;ANZ.VERZ.EINTR.+1
-  6503'                  C      SV.SAVE6:
-  6503'   CD 6ABC'       C      	CALL	UR.KBR
-  6506'   DD 36 05 08    C      	LD	(IX+5),08H	;NEUEN DS-SATZ AUSGEBEN
-  650A'   CD 5668'       C      	CALL	UF.EXEC
-  650D'                  C      SV.SAVE5:
-  650D'   CD 7237'       C      	CALL	UK.KBW
-  6510'   10 FB          C      	DJNZ	SV.SAVE5
-  6512'   CD 6ABC'       C      	CALL	UR.KBR
-  6515'   2A 2B24'       C      	LD	HL,(UB.PAR5)
-  6518'   22 0E7F        C      	LD	(UE.PUF+25),HL	;DATEILAENGE EINTRAGEN
-  651B'   DD 36 05 08    C      	LD	(IX+5),08H
-  651F'   CD 5668'       C      	CALL	UF.EXEC
-  6522'   CD 6A8E'       C      	CALL	UR.KRW
-  6525'   CD 6A98'       C      	CALL	UR.KRA
-  6528'   C9             C      	RET
-                         C      ;----------------------------------------------------------------------
-  6529'                  C      SV.BYANZ:
-  6529'   2A 2B20'       C      	LD	HL,(UB.PAR3)	;Byteanzahl berechnen
-  652C'   ED 5B 2B1E'    C      	LD	DE,(UB.PAR2)
-  6530'   B7             C      	OR	A
-  6531'   ED 52          C      	SBC	HL,DE
-  6533'   C9             C      	RET
-  6534'                  C      SV.DATS1:
-  6534'   21 0020        C      	LD	HL,32	;1. Dateisatz schreiben
-  6537'   CD 6EAC'       C      	CALL	XY.STIDX
-  653A'   09             C      	DB	9
-  653B'   CD 6D09'       C      	CALL	U1.VSX
-  653E'   21 0E66        C      	LD	HL,UE.PUF
-  6541'   3A 2B1C'       C      	LD	A,(UB.PAR1)	;NEXT RECORD
-  6544'   3C             C      	INC	A
-  6545'   77             C      	LD	(HL),A
-  6546'   DD 36 05 08    C      	LD	(IX+5),08H
-  654A'   CD 5668'       C      	CALL	UF.EXEC
-  654D'   C9             C      	RET
-  654E'                  C      SV.SAVE:
-  654E'   21 0000        C      	LD	HL,0
-  6551'   CD 6E9C'       C      	CALL	XY.STDX
-  6554'   11             C      	DB	17
-  6555'   21 0080        C      	LD	HL,80H	;Blocklaenge
-  6558'   CD 6EAC'       C      	CALL	XY.STIDX
-  655B'   09             C      	DB	9
-  655C'   CD 72A0'       C      	CALL	UK.KSPFB	;Pufferbereitstellung
-  655F'                  C      SV.SAVE1:
-  655F'   CD 6529'       C      	CALL	SV.BYANZ	;Byteanzahl berechnen
-  6562'   23             C      	INC	HL
-  6563'   E5             C      	PUSH	HL
-  6564'   7C             C      	LD	A,H
-  6565'   B5             C      	OR	L
-  6566'   E1             C      	POP	HL
+  644A'   644A'          C      	DW	$
+  644C'   53 41 56 45    C      	DB	'SAVE'
+  6450'   3A 3327        C      	LD	A,(UE.BWSA+327H)
+  6453'   CD 6E6B'       C      	CALL	U1.TST
+  6456'   D8             C      	RET	C
+  6457'   CD 6D90'       C      	CALL	U1.KTINI
+  645A'   DD 77 04       C      	LD	(IX+4),A
+  645D'   AF             C      	XOR	A
+  645E'   32 2B1D'       C      	LD	(UB.PAR1+1),A
+  6461'   CD 6E57'       C      	CALL	U1.BILO	;BS LOESCHEN
+  6464'   CD 6AB1'       C      	CALL	UR.KRE
+  6467'   DD CB 00 56    C      	BIT	2,(IX)
+  646B'   28 05          C      	JR	Z,$+7
+  646D'   3E 19          C      	LD	A,19H
+  646F'   CD 5697'       C      	CALL	UF.ERANZ
+  6472'   CD 6ABF'       C      	CALL	UR.KRWW
+  6475'                  C      SV.SV20:
+  6475'   CD 6D44'       C      	CALL	U1.DSVG
+  6478'   C5             C      	PUSH	BC
+  6479'   79             C      	LD	A,C
+  647A'   32 2B1C'       C      	LD	(UB.PAR1),A	;NEXT RECORD
+  647D'   3E 0D          C      	LD	A,13
+  647F'   32 2B00'       C      	LD	(UB.ZN),A
+  6482'                  C      SV.DATN:
+  6482'   21 5888'       C      	LD	HL,UA.ZKDAT	;Dateiname ?
+  6485'   CD 6B59'       C      	CALL	UR.MIMO
+  6488'   D8             C      	RET	C
+  6489'   C1             C      	POP	BC
+  648A'   05             C      	DEC	B
+  648B'   28 1A          C      	JR	Z,SV.SV30	;NEUE KASSETTE
+  648D'                  C      SV.SV21:
+  648D'   CD 7262'       C      	CALL	UK.KBW
+  6490'   CD 6D75'       C      	CALL	U1.NMVGL
+  6493'   38 04          C      	JR	C,SV.DATV1	;Dateiname bereits vorhanden
+  6495'   10 F6          C      	DJNZ	SV.SV21
+  6497'   18 0E          C      	JR	SV.SV30
+  6499'                  C      SV.DATV1:
+  6499'   3E 01          C      	LD	A,01H
+  649B'   B8             C      	CP	B
+  649C'   CC 65E5'       C      	CALL	Z,SV.DALO1
+  649F'   28 0E          C      	JR	Z,SV.SV37
+  64A1'                  C      SV.DATVO:
+  64A1'   3E 92          C      	LD	A,92H
+  64A3'   CD 5697'       C      	CALL	UF.ERANZ
+  64A6'   C9             C      	RET
+  64A7'                  C      SV.SV30:
+  64A7'   3E 50          C      	LD	A,'P'
+  64A9'   32 2B1E'       C      	LD	(UB.PAR2),A
+  64AC'   CD 6DF4'       C      	CALL	U1.VZS
+  64AF'                  C      SV.SV37:
+  64AF'   3A 2B1D'       C      	LD	A,(UB.PAR1+1)
+  64B2'   FE 4C          C      	CP	'L'
+  64B4'   20 0B          C      	JR	NZ,SV.SV31
+  64B6'   21 58E7'       C      	LD	HL,UA.ZKDL
+  64B9'   CD 6B59'       C      	CALL	UR.MIMO
+  64BC'   7E             C      	LD	A,(HL)
+  64BD'   FE 4A          C      	CP	'J'
+  64BF'   20 E0          C      	JR	NZ,SV.DATVO
+  64C1'                  C      SV.SV31:
+  64C1'   3A 2B1C'       C      	LD	A,(UB.PAR1)	;NEXT RECORD
+  64C4'   47             C      	LD	B,A
+  64C5'   C5             C      	PUSH	BC
+  64C6'   04             C      	INC	B
+  64C7'   CD 6AF6'       C      	CALL	UR.POSIK
+  64CA'   CD 7262'       C      	CALL	UK.KBW
+  64CD'   21 0E66        C      	LD	HL,UE.PUF
+  64D0'   C1             C      	POP	BC
+  64D1'   7E             C      	LD	A,(HL)
+  64D2'   B8             C      	CP	B
+  64D3'   28 06          C      	JR	Z,SV.SAVE3
+  64D5'   3E 94          C      	LD	A,94H
+  64D7'   CD 5697'       C      	CALL	UF.ERANZ
+  64DA'   C9             C      	RET
+  64DB'                  C      SV.SAVE3:
+  64DB'   21 58AE'       C      	LD	HL,UA.ZKBEG	;Beginn ?
 'Retten von Maschinencodeprogrammen als MRES - P-Datei'	MACRO-80 3.44	09-Dec-81	PAGE	1-46
 
 
-  6567'   28 13          C      	JR	Z,SV.SVLS2	;---> 0 Byte
-  6569'   01 007D        C      	LD	BC,UE.SVL	;Satzlaenge
-  656C'   B7             C      	OR	A
-  656D'   ED 42          C      	SBC	HL,BC
-  656F'   38 05          C      	JR	C,SV.SVLS	;---> letzter Satz
-  6571'   CD 65C5'       C      	CALL	SV.SVSZ
-  6574'   18 E9          C      	JR	SV.SAVE1
-  6576'                  C      SV.SVLS:
-  6576'   7D             C      	LD	A,L
-  6577'   C6 7D          C      	ADD	A,UE.SVL	;A:= Laenge des letzten Satzes
-  6579'   CD 65C7'       C      	CALL	SV.SVSZ2
-  657C'                  C      SV.SVLS2:
-  657C'   AF             C      	XOR	A
-  657D'   CD 727C'       C      	CALL	UK.PUTK
-  6580'   21 58D1'       C      	LD	HL,UA.STADR	;Startadresse
-  6583'   CD 6B2E'       C      	CALL	UR.MIMO
-  6586'   7E             C      	LD	A,(HL)
-  6587'   FE 20          C      	CP	' '
-  6589'   28 27          C      	JR	Z,SV.STAD0	;KEINE EINGABE (0000)
-  658B'   EB             C      	EX	DE,HL
-  658C'   21 2B22'       C      	LD	HL,UB.PAR4
-  658F'   CD 6F80'       C      	CALL	UC.CVXA
-  6592'                  C      SV.SVLS1:
-  6592'   2A 2B22'       C      	LD	HL,(UB.PAR4)
-  6595'   7C             C      	LD	A,H	;Startadresse ausgeben
-  6596'   CD 727C'       C      	CALL	UK.PUTK
-  6599'   7D             C      	LD	A,L
-  659A'   CD 727C'       C      	CALL	UK.PUTK
-  659D'   0E 03          C      	LD	C,3
-  659F'                  C      SV.SVEN2:
-  659F'   06 80          C      	LD	B,80H
-  65A1'   AF             C      	XOR	A
-  65A2'                  C      SV.SVEN1:
-  65A2'   CD 727C'       C      	CALL	UK.PUTK
-  65A5'   10 FB          C      	DJNZ	SV.SVEN1
-  65A7'   0D             C      	DEC	C
-  65A8'   20 F5          C      	JR	NZ,SV.SVEN2
-  65AA'   CD 6E7C'       C      	CALL	XY.LDDX
-  65AD'   11             C      	DB	17
-  65AE'   22 2B24'       C      	LD	(UB.PAR5),HL
-  65B1'   C9             C      	RET
-  65B2'                  C      SV.STAD0:
-  65B2'   21 0000        C      	LD	HL,0
-  65B5'   22 2B22'       C      	LD	(UB.PAR4),HL
-  65B8'   18 D8          C      	JR	SV.SVLS1
-  65BA'                  C      SV.DALO1:
-  65BA'   F5             C      	PUSH	AF
-  65BB'   21 2B1C'       C      	LD	HL,UB.PAR1
-  65BE'   35             C      	DEC	(HL)
-  65BF'   23             C      	INC	HL
-  65C0'   3E 4C          C      	LD	A,'L'
-  65C2'   77             C      	LD	(HL),A
-  65C3'   F1             C      	POP	AF
-  65C4'   C9             C      	RET
-  65C5'                  C      SV.SVSZ:
-  65C5'   3E 7D          C      	LD	A,UE.SVL
-  65C7'                  C      SV.SVSZ2:
-  65C7'   F5             C      	PUSH	AF
-  65C8'   CD 727C'       C      	CALL	UK.PUTK
-  65CB'   ED 5B 2B1E'    C      	LD	DE,(UB.PAR2)
-  65CF'   7A             C      	LD	A,D
-  65D0'   CD 727C'       C      	CALL	UK.PUTK
-  65D3'   7B             C      	LD	A,E
-  65D4'   CD 727C'       C      	CALL	UK.PUTK
-  65D7'   F1             C      	POP	AF
-  65D8'   47             C      	LD	B,A
-  65D9'                  C      SV.SVSZ1:
-  65D9'   1A             C      	LD	A,(DE)
-  65DA'   CD 727C'       C      	CALL	UK.PUTK
-  65DD'   13             C      	INC	DE
-  65DE'   10 F9          C      	DJNZ	SV.SVSZ1
-  65E0'   ED 53 2B1E'    C      	LD	(UB.PAR2),DE
-  65E4'   C9             C      	RET
+  64DE'   CD 6B59'       C      	CALL	UR.MIMO
+  64E1'   DA 6482'       C      	JP	C,SV.DATN
+  64E4'   CD 6E75'       C      	CALL	U1.PRADR
+  64E7'   38 F2          C      	JR	C,SV.SAVE3
+  64E9'   EB             C      	EX	DE,HL
+  64EA'   21 2B1E'       C      	LD	HL,UB.PAR2
+  64ED'   CD 6FAB'       C      	CALL	UC.CVXA
+  64F0'                  C      SV.SAVE4:
+  64F0'   21 58C1'       C      	LD	HL,UA.ZKEND	;Ende ?
+  64F3'   CD 6B59'       C      	CALL	UR.MIMO
+  64F6'   38 E3          C      	JR	C,SV.SAVE3
+  64F8'   CD 6E75'       C      	CALL	U1.PRADR
+  64FB'   38 F3          C      	JR	C,SV.SAVE4
+  64FD'   EB             C      	EX	DE,HL
+  64FE'   21 2B20'       C      	LD	HL,UB.PAR3
+  6501'   CD 6FAB'       C      	CALL	UC.CVXA
+  6504'   CD 6554'       C      	CALL	SV.BYANZ
+  6507'   38 D2          C      	JR	C,SV.SAVE3
+  6509'   28 D0          C      	JR	Z,SV.SAVE3
+  650B'   CD 6579'       C      	CALL	SV.SAVE
+  650E'   CD 6AD5'       C      	CALL	UR.KBM
+  6511'   CD 655F'       C      	CALL	SV.DATS1	;1.DATEISATZ SCHREIBEN
+  6514'   CD 6ADB'       C      	CALL	UR.KSL
+  6517'   CD 6ABF'       C      	CALL	UR.KRWW
+  651A'   CD 6D44'       C      	CALL	U1.DSVG
+  651D'   05             C      	DEC	B
+  651E'   3A 2B1D'       C      	LD	A,(UB.PAR1+1)
+  6521'   FE 4C          C      	CP	'L'
+  6523'   28 13          C      	JR	Z,SV.SAVE5
+  6525'   21 0E67        C      	LD	HL,UE.PUF+1
+  6528'   34             C      	INC	(HL)	;NEXT RECORD+1
+  6529'   21 0E69        C      	LD	HL,UE.PUF+3
+  652C'   46             C      	LD	B,(HL)
+  652D'   34             C      	INC	(HL)	;ANZ.VERZ.EINTR.+1
+  652E'                  C      SV.SAVE6:
+  652E'   CD 6AE7'       C      	CALL	UR.KBR
+  6531'   DD 36 05 08    C      	LD	(IX+5),08H	;NEUEN DS-SATZ AUSGEBEN
+  6535'   CD 5668'       C      	CALL	UF.EXEC
+  6538'                  C      SV.SAVE5:
+  6538'   CD 7262'       C      	CALL	UK.KBW
+  653B'   10 FB          C      	DJNZ	SV.SAVE5
+  653D'   CD 6AE7'       C      	CALL	UR.KBR
+  6540'   2A 2B24'       C      	LD	HL,(UB.PAR5)
+  6543'   22 0E7F        C      	LD	(UE.PUF+25),HL	;DATEILAENGE EINTRAGEN
+  6546'   DD 36 05 08    C      	LD	(IX+5),08H
+  654A'   CD 5668'       C      	CALL	UF.EXEC
+  654D'   CD 6AB9'       C      	CALL	UR.KRW
+  6550'   CD 6AC3'       C      	CALL	UR.KRA
+  6553'   C9             C      	RET
+                         C      ;----------------------------------------------------------------------
+  6554'                  C      SV.BYANZ:
+  6554'   2A 2B20'       C      	LD	HL,(UB.PAR3)	;Byteanzahl berechnen
+  6557'   ED 5B 2B1E'    C      	LD	DE,(UB.PAR2)
+  655B'   B7             C      	OR	A
+  655C'   ED 52          C      	SBC	HL,DE
+  655E'   C9             C      	RET
+  655F'                  C      SV.DATS1:
+  655F'   21 0020        C      	LD	HL,32	;1. Dateisatz schreiben
+  6562'   CD 6ED7'       C      	CALL	XY.STIDX
+  6565'   09             C      	DB	9
+  6566'   CD 6D34'       C      	CALL	U1.VSX
+  6569'   21 0E66        C      	LD	HL,UE.PUF
+  656C'   3A 2B1C'       C      	LD	A,(UB.PAR1)	;NEXT RECORD
+  656F'   3C             C      	INC	A
+  6570'   77             C      	LD	(HL),A
+  6571'   DD 36 05 08    C      	LD	(IX+5),08H
+  6575'   CD 5668'       C      	CALL	UF.EXEC
+  6578'   C9             C      	RET
+  6579'                  C      SV.SAVE:
+  6579'   21 0000        C      	LD	HL,0
+  657C'   CD 6EC7'       C      	CALL	XY.STDX
+  657F'   11             C      	DB	17
+  6580'   21 0080        C      	LD	HL,80H	;Blocklaenge
+  6583'   CD 6ED7'       C      	CALL	XY.STIDX
+  6586'   09             C      	DB	9
+  6587'   CD 72CB'       C      	CALL	UK.KSPFB	;Pufferbereitstellung
+  658A'                  C      SV.SAVE1:
+  658A'   CD 6554'       C      	CALL	SV.BYANZ	;Byteanzahl berechnen
+  658D'   23             C      	INC	HL
+  658E'   E5             C      	PUSH	HL
+  658F'   7C             C      	LD	A,H
+  6590'   B5             C      	OR	L
+  6591'   E1             C      	POP	HL
+'Retten von Maschinencodeprogrammen als MRES - P-Datei'	MACRO-80 3.44	09-Dec-81	PAGE	1-47
+
+
+  6592'   28 13          C      	JR	Z,SV.SVLS2	;---> 0 Byte
+  6594'   01 007D        C      	LD	BC,UE.SVL	;Satzlaenge
+  6597'   B7             C      	OR	A
+  6598'   ED 42          C      	SBC	HL,BC
+  659A'   38 05          C      	JR	C,SV.SVLS	;---> letzter Satz
+  659C'   CD 65F0'       C      	CALL	SV.SVSZ
+  659F'   18 E9          C      	JR	SV.SAVE1
+  65A1'                  C      SV.SVLS:
+  65A1'   7D             C      	LD	A,L
+  65A2'   C6 7D          C      	ADD	A,UE.SVL	;A:= Laenge des letzten Satzes
+  65A4'   CD 65F2'       C      	CALL	SV.SVSZ2
+  65A7'                  C      SV.SVLS2:
+  65A7'   AF             C      	XOR	A
+  65A8'   CD 72A7'       C      	CALL	UK.PUTK
+  65AB'   21 58D4'       C      	LD	HL,UA.STADR	;Startadresse
+  65AE'   CD 6B59'       C      	CALL	UR.MIMO
+  65B1'   7E             C      	LD	A,(HL)
+  65B2'   FE 20          C      	CP	' '
+  65B4'   28 27          C      	JR	Z,SV.STAD0	;KEINE EINGABE (0000)
+  65B6'   EB             C      	EX	DE,HL
+  65B7'   21 2B22'       C      	LD	HL,UB.PAR4
+  65BA'   CD 6FAB'       C      	CALL	UC.CVXA
+  65BD'                  C      SV.SVLS1:
+  65BD'   2A 2B22'       C      	LD	HL,(UB.PAR4)
+  65C0'   7C             C      	LD	A,H	;Startadresse ausgeben
+  65C1'   CD 72A7'       C      	CALL	UK.PUTK
+  65C4'   7D             C      	LD	A,L
+  65C5'   CD 72A7'       C      	CALL	UK.PUTK
+  65C8'   0E 03          C      	LD	C,3
+  65CA'                  C      SV.SVEN2:
+  65CA'   06 80          C      	LD	B,80H
+  65CC'   AF             C      	XOR	A
+  65CD'                  C      SV.SVEN1:
+  65CD'   CD 72A7'       C      	CALL	UK.PUTK
+  65D0'   10 FB          C      	DJNZ	SV.SVEN1
+  65D2'   0D             C      	DEC	C
+  65D3'   20 F5          C      	JR	NZ,SV.SVEN2
+  65D5'   CD 6EA7'       C      	CALL	XY.LDDX
+  65D8'   11             C      	DB	17
+  65D9'   22 2B24'       C      	LD	(UB.PAR5),HL
+  65DC'   C9             C      	RET
+  65DD'                  C      SV.STAD0:
+  65DD'   21 0000        C      	LD	HL,0
+  65E0'   22 2B22'       C      	LD	(UB.PAR4),HL
+  65E3'   18 D8          C      	JR	SV.SVLS1
+  65E5'                  C      SV.DALO1:
+  65E5'   F5             C      	PUSH	AF
+  65E6'   21 2B1C'       C      	LD	HL,UB.PAR1
+  65E9'   35             C      	DEC	(HL)
+  65EA'   23             C      	INC	HL
+  65EB'   3E 4C          C      	LD	A,'L'
+  65ED'   77             C      	LD	(HL),A
+  65EE'   F1             C      	POP	AF
+  65EF'   C9             C      	RET
+  65F0'                  C      SV.SVSZ:
+  65F0'   3E 7D          C      	LD	A,UE.SVL
+  65F2'                  C      SV.SVSZ2:
+  65F2'   F5             C      	PUSH	AF
+  65F3'   CD 72A7'       C      	CALL	UK.PUTK
+  65F6'   ED 5B 2B1E'    C      	LD	DE,(UB.PAR2)
+  65FA'   7A             C      	LD	A,D
+  65FB'   CD 72A7'       C      	CALL	UK.PUTK
+  65FE'   7B             C      	LD	A,E
+  65FF'   CD 72A7'       C      	CALL	UK.PUTK
+  6602'   F1             C      	POP	AF
+  6603'   47             C      	LD	B,A
+  6604'                  C      SV.SVSZ1:
+  6604'   1A             C      	LD	A,(DE)
+  6605'   CD 72A7'       C      	CALL	UK.PUTK
+  6608'   13             C      	INC	DE
+  6609'   10 F9          C      	DJNZ	SV.SVSZ1
+  660B'   ED 53 2B1E'    C      	LD	(UB.PAR2),DE
+  660F'   C9             C      	RET
                          C      ;----------------------------------------------------------------------
                          C      ;	END
                                 ;	
@@ -3038,7 +3100,7 @@
                          C      	INCLUDE K6.ASM	;Kopieren MRES
                          C      	TITLE	'Kopieren von MRES-Kassetten Teil 1'
                          C      	PAGE
-'Kopieren von MRES-Kassetten Teil 1'	MACRO-80 3.44	09-Dec-81	PAGE	1-47
+'Kopieren von MRES-Kassetten Teil 1'	MACRO-80 3.44	09-Dec-81	PAGE	1-48
 
 
                          C      
@@ -3048,183 +3110,183 @@
                          C      ;          KOPIEREN VON MRES-KASSETTEN       TEIL1
                          C      ;
                          C      ;----------------------------------------------------------------
-  65E5'   65E5'          C      	DW	$
-  65E7'   4B 4F 50 49    C      	DB	'KOPI'
-  65EB'   CD 6D65'       C      	CALL	U1.KTINI
-  65EE'   11 E000        C      	LD	DE,BC.TAB1
-  65F1'   21 3327        C      	LD	HL,UE.BWSA+327H
-  65F4'   7E             C      	LD	A,(HL)
-  65F5'   CD 6E40'       C      	CALL	U1.TST
-  65F8'   D8             C      	RET	C
-  65F9'   12             C      	LD	(DE),A
-  65FA'   23             C      	INC	HL
-  65FB'   EE 33          C      	XOR	33H
-  65FD'   BE             C      	CP	(HL)
-  65FE'   C0             C      	RET	NZ
-  65FF'   EE 30          C      	XOR	30H
-  6601'   13             C      	INC	DE
-  6602'   12             C      	LD	(DE),A
-  6603'   3A 3326        C      	LD	A,(UE.BWSA+326H)
-  6606'   FE 4A          C      	CP	'J'
-  6608'   28 05          C      	JR	Z,$+7	;BEI KOPIJ WERDEN WEITERE PARAMETER
-  660A'   23             C      	INC	HL	;IGNORIERT
-  660B'   23             C      	INC	HL
-  660C'   7E             C      	LD	A,(HL)
-  660D'   FE 20          C      	CP	20H
-  660F'   F5             C      	PUSH	AF
-  6610'   20 0C          C      	JR	NZ,$+14
-  6612'   CD 6CF0'       C      	CALL	U1.EIN
-  6615'   CD 6E61'       C      	CALL	U1.KRWE
-  6618'   CD 6CF9'       C      	CALL	U1.AUS
-  661B'   CD 6E61'       C      	CALL	U1.KRWE
-  661E'   CD 6759'       C      	CALL	KX.UPA
-  6621'   F1             C      	POP	AF
-  6622'   28 13          C      	JR	Z,$+21
-  6624'   FE 41          C      	CP	'A'
-  6626'   28 0A          C      	JR	Z,$+12
-  6628'   FE 4C          C      	CP	'L'
-  662A'   20 0B          C      	JR	NZ,$+13
-  662C'   CD 6CC7'       C      	CALL	U1.COPB
-  662F'   C3 66FF'       C      	JP	KX.RSPFR
-  6632'   CD 6CC3'       C      	CALL	U1.COPB2
-  6635'   18 FB          C      	JR	$-3
+  6610'   6610'          C      	DW	$
+  6612'   4B 4F 50 49    C      	DB	'KOPI'
+  6616'   CD 6D90'       C      	CALL	U1.KTINI
+  6619'   11 E000        C      	LD	DE,BC.TAB1
+  661C'   21 3327        C      	LD	HL,UE.BWSA+327H
+  661F'   7E             C      	LD	A,(HL)
+  6620'   CD 6E6B'       C      	CALL	U1.TST
+  6623'   D8             C      	RET	C
+  6624'   12             C      	LD	(DE),A
+  6625'   23             C      	INC	HL
+  6626'   EE 33          C      	XOR	33H
+  6628'   BE             C      	CP	(HL)
+  6629'   C0             C      	RET	NZ
+  662A'   EE 30          C      	XOR	30H
+  662C'   13             C      	INC	DE
+  662D'   12             C      	LD	(DE),A
+  662E'   3A 3326        C      	LD	A,(UE.BWSA+326H)
+  6631'   FE 4A          C      	CP	'J'
+  6633'   28 05          C      	JR	Z,$+7	;BEI KOPIJ WERDEN WEITERE PARAMETER
+  6635'   23             C      	INC	HL	;IGNORIERT
+  6636'   23             C      	INC	HL
+  6637'   7E             C      	LD	A,(HL)
+  6638'   FE 20          C      	CP	20H
+  663A'   F5             C      	PUSH	AF
+  663B'   20 0C          C      	JR	NZ,$+14
+  663D'   CD 6D1B'       C      	CALL	U1.EIN
+  6640'   CD 6E8C'       C      	CALL	U1.KRWE
+  6643'   CD 6D24'       C      	CALL	U1.AUS
+  6646'   CD 6E8C'       C      	CALL	U1.KRWE
+  6649'   CD 6784'       C      	CALL	KX.UPA
+  664C'   F1             C      	POP	AF
+  664D'   28 13          C      	JR	Z,$+21
+  664F'   FE 41          C      	CP	'A'
+  6651'   28 0A          C      	JR	Z,$+12
+  6653'   FE 4C          C      	CP	'L'
+  6655'   20 0B          C      	JR	NZ,$+13
+  6657'   CD 6CF2'       C      	CALL	U1.COPB
+  665A'   C3 672A'       C      	JP	KX.RSPFR
+  665D'   CD 6CEE'       C      	CALL	U1.COPB2
+  6660'   18 FB          C      	JR	$-3
                          C      ;-------------------------------------------------------------------
-  6637'   CD 6CF0'       C      	CALL	U1.EIN
-  663A'   CD 6D19'       C      	CALL	U1.DSVG
-  663D'   CD 6CA2'       C      	CALL	U1.KBR4
-  6640'   CD 6CAD'       C      	CALL	U1.BREAD
-  6643'   21 5797'       C      	LD	HL,UA.Z7E
-  6646'   11 3163        C      	LD	DE,3163H
-  6649'   01 001F        C      	LD	BC,31
-  664C'   ED B0          C      	LDIR
-  664E'   21 57B6'       C      	LD	HL,UA.GER
-  6651'   11 31EA        C      	LD	DE,31EAH
-  6654'   CD 6E26'       C      	CALL	U1.INFO
-  6657'   21 5761'       C      	LD	HL,UA.KNAME+3
-  665A'   11 323A        C      	LD	DE,323AH
-  665D'   CD 6E26'       C      	CALL	U1.INFO
-  6660'   21 5774'       C      	LD	HL,UA.NR+3
-  6663'   11 328A        C      	LD	DE,328AH
-  6666'   CD 6E26'       C      	CALL	U1.INFO
-  6669'   21 5787'       C      	LD	HL,UA.KOMMT+3
-  666C'   11 32DA        C      	LD	DE,32DAH
-  666F'   CD 6E26'       C      	CALL	U1.INFO
-  6672'   11 3203        C      	LD	DE,3203H
-  6675'   3A E000        C      	LD	A,(BC.TAB1)
-  6678'   CD 6F20'       C      	CALL	UC.CVBX+2
-  667B'   11 321B        C      	LD	DE,321BH
-  667E'   3A E001        C      	LD	A,(BC.TAB1+1)
-  6681'   CD 6F20'       C      	CALL	UC.CVBX+2
-  6684'   21 0E6A        C      	LD	HL,UE.PUF+4
-  6687'   11 3253        C      	LD	DE,3253H
-  668A'   06 06          C      	LD	B,6
-  668C'   CD 702B'       C      	CALL	UC.DKONV
-  668F'   21 0E8B        C      	LD	HL,UE.PUF+37
-  6692'   11 32A3        C      	LD	DE,32A3H
-  6695'   06 03          C      	LD	B,3
-  6697'   CD 702B'       C      	CALL	UC.DKONV
-'Kopieren von MRES-Kassetten Teil 1'	MACRO-80 3.44	09-Dec-81	PAGE	1-48
-
-
-  669A'   11 32F3        C      	LD	DE,32F3H
-  669D'   06 0B          C      	LD	B,11
-  669F'   CD 702B'       C      	CALL	UC.DKONV
-  66A2'   CD 6AB6'       C      	CALL	UR.KBV
-  66A5'   CD 6AB6'       C      	CALL	UR.KBV
-  66A8'   CD 6CAD'       C      	CALL	U1.BREAD
-  66AB'   3A 0E69        C      	LD	A,(UE.PUF+3)
-  66AE'   3D             C      	DEC	A
-  66AF'   CA 670A'       C      	JP	Z,KX.ENDR
-  66B2'   CD 6D93'       C      	CALL	U1.VERIN
-  66B5'   CD 6CF9'       C      	CALL	U1.AUS
-  66B8'   CD 6D19'       C      	CALL	U1.DSVG
-  66BB'   CD 6CA2'       C      	CALL	U1.KBR4
-  66BE'   DD 36 05 02    C      	LD	(IX+5),02H
-  66C2'   CD 5668'       C      	CALL	UF.EXEC
-  66C5'   21 0E6A        C      	LD	HL,UE.PUF+4
-  66C8'   11 326B        C      	LD	DE,326BH
-  66CB'   06 06          C      	LD	B,6
-  66CD'   CD 702B'       C      	CALL	UC.DKONV
-  66D0'   21 0E8B        C      	LD	HL,UE.PUF+37
-  66D3'   11 32BB        C      	LD	DE,32BBH
-  66D6'   06 03          C      	LD	B,3
-  66D8'   CD 702B'       C      	CALL	UC.DKONV
-  66DB'   11 330B        C      	LD	DE,330BH
-  66DE'   06 0B          C      	LD	B,11
-  66E0'   CD 702B'       C      	CALL	UC.DKONV
-  66E3'   CD 6AB6'       C      	CALL	UR.KBV
-  66E6'   CD 6AB6'       C      	CALL	UR.KBV
-  66E9'   DD 36 05 02    C      	LD	(IX+5),02H
-  66ED'   CD 5668'       C      	CALL	UF.EXEC
-  66F0'   CD 6E2C'       C      	CALL	U1.BILO
-  66F3'   11 E002        C      	LD	DE,BC.VTABA
-  66F6'   CD 6D9B'       C      	CALL	U1.VERNI
-  66F9'   CD 6DB5'       C      	CALL	U1.VORST
-  66FC'   C3 6776'       C      	JP	KY.MD
-  66FF'                  C      KX.RSPFR:
-  66FF'   F5             C      	PUSH	AF
-  6700'   23             C      	INC	HL
-  6701'   23             C      	INC	HL
-  6702'   7E             C      	LD	A,(HL)
-  6703'   B7             C      	OR	A
-  6704'   FE 52          C      	CP	'R'
-  6706'   20 06          C      	JR	NZ,$+8
-  6708'   18 01          C      	JR	$+3
-  670A'                  C      KX.ENDR:
-  670A'   F5             C      	PUSH	AF
-  670B'   37             C      	SCF
-  670C'   18 04          C      	JR	$+6
-  670E'   FE 46          C      	CP	'F'
-  6710'   20 15          C      	JR	NZ,$+23
-  6712'   CD 6CF0'       C      	CALL	U1.EIN
-  6715'   DC 6A8E'       C      	CALL	C,UR.KRW
-  6718'   CD 6A98'       C      	CALL	UR.KRA
-  671B'   CD 6CF9'       C      	CALL	U1.AUS
-  671E'   CD 6A86'       C      	CALL	UR.KRE
-  6721'   DC 6A94'       C      	CALL	C,UR.KRWW
-  6724'   CD 6A98'       C      	CALL	UR.KRA
-  6727'   F1             C      	POP	AF
-  6728'   C9             C      	RET
-  6729'                  C      KX.EXEC2:
-  6729'   F5             C      	PUSH	AF
-  672A'   DD CB 00 BE    C      	RES	7,(IX)
-  672E'   DD 36 01 00    C      	LD	(IX+1),0
-  6732'   CD 55D5'       C      	CALL	KR.KARO
-  6735'   DD CB 00 7E    C      	BIT	7,(IX)
-  6739'   28 0A          C      	JR	Z,$+12
-  673B'   DD 7E 01       C      	LD	A,(IX+1)
-  673E'   FE 14          C      	CP	14H
-  6740'   28 05          C      	JR	Z,$+7
-  6742'   CD 5694'       C      	CALL	UF.ERANZ
-  6745'   F1             C      	POP	AF
-  6746'   C9             C      	RET
-  6747'   DD CB 00 BE    C      	RES	7,(IX)
-  674B'   CD 6CF9'       C      	CALL	U1.AUS
-  674E'   CD 6AB0'       C      	CALL	UR.KSL
-  6751'   F1             C      	POP	AF
-  6752'   06 06          C      	LD	B,6
-  6754'   33             C      	INC	SP
-  6755'   10 FD          C      	DJNZ	$-1	;STACK BERICHTIGEN
-  6757'   18 A6          C      	JR	KX.RSPFR
-  6759'                  C      KX.UPA:
-  6759'   CD 6CF0'       C      	CALL	U1.EIN
-  675C'   CD 6A86'       C      	CALL	UR.KRE
+  6662'   CD 6D1B'       C      	CALL	U1.EIN
+  6665'   CD 6D44'       C      	CALL	U1.DSVG
+  6668'   CD 6CCD'       C      	CALL	U1.KBR4
+  666B'   CD 6CD8'       C      	CALL	U1.BREAD
+  666E'   21 579A'       C      	LD	HL,UA.Z7E
+  6671'   11 3163        C      	LD	DE,3163H
+  6674'   01 001F        C      	LD	BC,31
+  6677'   ED B0          C      	LDIR
+  6679'   21 57B9'       C      	LD	HL,UA.GER
+  667C'   11 31EA        C      	LD	DE,31EAH
+  667F'   CD 6E51'       C      	CALL	U1.INFO
+  6682'   21 5764'       C      	LD	HL,UA.KNAME+3
+  6685'   11 323A        C      	LD	DE,323AH
+  6688'   CD 6E51'       C      	CALL	U1.INFO
+  668B'   21 5777'       C      	LD	HL,UA.NR+3
+  668E'   11 328A        C      	LD	DE,328AH
+  6691'   CD 6E51'       C      	CALL	U1.INFO
+  6694'   21 578A'       C      	LD	HL,UA.KOMMT+3
+  6697'   11 32DA        C      	LD	DE,32DAH
+  669A'   CD 6E51'       C      	CALL	U1.INFO
+  669D'   11 3203        C      	LD	DE,3203H
+  66A0'   3A E000        C      	LD	A,(BC.TAB1)
+  66A3'   CD 6F4B'       C      	CALL	UC.CVBX+2
+  66A6'   11 321B        C      	LD	DE,321BH
+  66A9'   3A E001        C      	LD	A,(BC.TAB1+1)
+  66AC'   CD 6F4B'       C      	CALL	UC.CVBX+2
+  66AF'   21 0E6A        C      	LD	HL,UE.PUF+4
+  66B2'   11 3253        C      	LD	DE,3253H
+  66B5'   06 06          C      	LD	B,6
+  66B7'   CD 7056'       C      	CALL	UC.DKONV
+  66BA'   21 0E8B        C      	LD	HL,UE.PUF+37
+  66BD'   11 32A3        C      	LD	DE,32A3H
+  66C0'   06 03          C      	LD	B,3
+  66C2'   CD 7056'       C      	CALL	UC.DKONV
 'Kopieren von MRES-Kassetten Teil 1'	MACRO-80 3.44	09-Dec-81	PAGE	1-49
 
 
-  675F'   DD 36 00 00    C      	LD	(IX+0),0
-  6763'   CD 6CF9'       C      	CALL	U1.AUS
-  6766'   CD 6A86'       C      	CALL	UR.KRE
-  6769'   DD CB 00 56    C      	BIT	2,(IX)
-  676D'   28 05          C      	JR	Z,$+7
-  676F'   D1             C      	POP	DE
-  6770'   3E 19          C      	LD	A,19H
-  6772'   CD 5694'       C      	CALL	UF.ERANZ
-  6775'   C9             C      	RET
+  66C5'   11 32F3        C      	LD	DE,32F3H
+  66C8'   06 0B          C      	LD	B,11
+  66CA'   CD 7056'       C      	CALL	UC.DKONV
+  66CD'   CD 6AE1'       C      	CALL	UR.KBV
+  66D0'   CD 6AE1'       C      	CALL	UR.KBV
+  66D3'   CD 6CD8'       C      	CALL	U1.BREAD
+  66D6'   3A 0E69        C      	LD	A,(UE.PUF+3)
+  66D9'   3D             C      	DEC	A
+  66DA'   CA 6735'       C      	JP	Z,KX.ENDR
+  66DD'   CD 6DBE'       C      	CALL	U1.VERIN
+  66E0'   CD 6D24'       C      	CALL	U1.AUS
+  66E3'   CD 6D44'       C      	CALL	U1.DSVG
+  66E6'   CD 6CCD'       C      	CALL	U1.KBR4
+  66E9'   DD 36 05 02    C      	LD	(IX+5),02H
+  66ED'   CD 5668'       C      	CALL	UF.EXEC
+  66F0'   21 0E6A        C      	LD	HL,UE.PUF+4
+  66F3'   11 326B        C      	LD	DE,326BH
+  66F6'   06 06          C      	LD	B,6
+  66F8'   CD 7056'       C      	CALL	UC.DKONV
+  66FB'   21 0E8B        C      	LD	HL,UE.PUF+37
+  66FE'   11 32BB        C      	LD	DE,32BBH
+  6701'   06 03          C      	LD	B,3
+  6703'   CD 7056'       C      	CALL	UC.DKONV
+  6706'   11 330B        C      	LD	DE,330BH
+  6709'   06 0B          C      	LD	B,11
+  670B'   CD 7056'       C      	CALL	UC.DKONV
+  670E'   CD 6AE1'       C      	CALL	UR.KBV
+  6711'   CD 6AE1'       C      	CALL	UR.KBV
+  6714'   DD 36 05 02    C      	LD	(IX+5),02H
+  6718'   CD 5668'       C      	CALL	UF.EXEC
+  671B'   CD 6E57'       C      	CALL	U1.BILO
+  671E'   11 E002        C      	LD	DE,BC.VTABA
+  6721'   CD 6DC6'       C      	CALL	U1.VERNI
+  6724'   CD 6DE0'       C      	CALL	U1.VORST
+  6727'   C3 67A1'       C      	JP	KY.MD
+  672A'                  C      KX.RSPFR:
+  672A'   F5             C      	PUSH	AF
+  672B'   23             C      	INC	HL
+  672C'   23             C      	INC	HL
+  672D'   7E             C      	LD	A,(HL)
+  672E'   B7             C      	OR	A
+  672F'   FE 52          C      	CP	'R'
+  6731'   20 06          C      	JR	NZ,$+8
+  6733'   18 01          C      	JR	$+3
+  6735'                  C      KX.ENDR:
+  6735'   F5             C      	PUSH	AF
+  6736'   37             C      	SCF
+  6737'   18 04          C      	JR	$+6
+  6739'   FE 46          C      	CP	'F'
+  673B'   20 15          C      	JR	NZ,$+23
+  673D'   CD 6D1B'       C      	CALL	U1.EIN
+  6740'   DC 6AB9'       C      	CALL	C,UR.KRW
+  6743'   CD 6AC3'       C      	CALL	UR.KRA
+  6746'   CD 6D24'       C      	CALL	U1.AUS
+  6749'   CD 6AB1'       C      	CALL	UR.KRE
+  674C'   DC 6ABF'       C      	CALL	C,UR.KRWW
+  674F'   CD 6AC3'       C      	CALL	UR.KRA
+  6752'   F1             C      	POP	AF
+  6753'   C9             C      	RET
+  6754'                  C      KX.EXEC2:
+  6754'   F5             C      	PUSH	AF
+  6755'   DD CB 00 BE    C      	RES	7,(IX)
+  6759'   DD 36 01 00    C      	LD	(IX+1),0
+  675D'   CD 55D5'       C      	CALL	KR.KARO
+  6760'   DD CB 00 7E    C      	BIT	7,(IX)
+  6764'   28 0A          C      	JR	Z,$+12
+  6766'   DD 7E 01       C      	LD	A,(IX+1)
+  6769'   FE 14          C      	CP	14H
+  676B'   28 05          C      	JR	Z,$+7
+  676D'   CD 5697'       C      	CALL	UF.ERANZ
+  6770'   F1             C      	POP	AF
+  6771'   C9             C      	RET
+  6772'   DD CB 00 BE    C      	RES	7,(IX)
+  6776'   CD 6D24'       C      	CALL	U1.AUS
+  6779'   CD 6ADB'       C      	CALL	UR.KSL
+  677C'   F1             C      	POP	AF
+  677D'   06 06          C      	LD	B,6
+  677F'   33             C      	INC	SP
+  6780'   10 FD          C      	DJNZ	$-1	;STACK BERICHTIGEN
+  6782'   18 A6          C      	JR	KX.RSPFR
+  6784'                  C      KX.UPA:
+  6784'   CD 6D1B'       C      	CALL	U1.EIN
+  6787'   CD 6AB1'       C      	CALL	UR.KRE
+'Kopieren von MRES-Kassetten Teil 1'	MACRO-80 3.44	09-Dec-81	PAGE	1-50
+
+
+  678A'   DD 36 00 00    C      	LD	(IX+0),0
+  678E'   CD 6D24'       C      	CALL	U1.AUS
+  6791'   CD 6AB1'       C      	CALL	UR.KRE
+  6794'   DD CB 00 56    C      	BIT	2,(IX)
+  6798'   28 05          C      	JR	Z,$+7
+  679A'   D1             C      	POP	DE
+  679B'   3E 19          C      	LD	A,19H
+  679D'   CD 5697'       C      	CALL	UF.ERANZ
+  67A0'   C9             C      	RET
                          C      ;	END
                          C      	TITLE	'Kopieren von MRES-Kassetten Teil 2'
                          C      	PAGE
-'Kopieren von MRES-Kassetten Teil 2'	MACRO-80 3.44	09-Dec-81	PAGE	1-50
+'Kopieren von MRES-Kassetten Teil 2'	MACRO-80 3.44	09-Dec-81	PAGE	1-51
 
 
                          C      
@@ -3234,359 +3296,359 @@
                          C      ;          KOPIEREN VON MRES-KASSETTEN           TEIL 2
                          C      ;
                          C      ;--------------------------------------------------------------------
-  6776'                  C      KY.MD:
-  6776'   CD 6E2C'       C      	CALL	U1.BILO
-  6779'   21 57C5'       C      	LD	HL,UA.KOPFR
-  677C'   CD 69CF'       C      	CALL	KY.SATR
-  677F'   3E 0D          C      	LD	A,13
-  6781'   32 2B00'       C      	LD	(UB.ZN),A
-  6784'   21 ECA2        C      	LD	HL,BC.VTABE+32
-  6787'   FD 21 F902     C      	LD	IY,BC.TAB2
-  678B'   FD 36 00 FF    C      	LD	(IY+0),0FFH
-  678F'   3A EC85        C      	LD	A,(BC.VTABE+3)
-  6792'   47             C      	LD	B,A
-  6793'   05             C      	DEC	B
+  67A1'                  C      KY.MD:
+  67A1'   CD 6E57'       C      	CALL	U1.BILO
+  67A4'   21 57C8'       C      	LD	HL,UA.KOPFR
+  67A7'   CD 69FA'       C      	CALL	KY.SATR
+  67AA'   3E 0D          C      	LD	A,13
+  67AC'   32 2B00'       C      	LD	(UB.ZN),A
+  67AF'   21 ECA2        C      	LD	HL,BC.VTABE+32
+  67B2'   FD 21 F902     C      	LD	IY,BC.TAB2
+  67B6'   FD 36 00 FF    C      	LD	(IY+0),0FFH
+  67BA'   3A EC85        C      	LD	A,(BC.VTABE+3)
+  67BD'   47             C      	LD	B,A
+  67BE'   05             C      	DEC	B
                          C      ;--------------------------------ABFRAGEZYKLUS------------------------
-  6794'                  C      KY.DFR:
-  6794'   C5             C      	PUSH	BC
-  6795'   11 2B44'       C      	LD	DE,UB.SATZ+26
-  6798'   01 0006        C      	LD	BC,6
-  679B'   ED B0          C      	LDIR
-  679D'   13             C      	INC	DE
-  679E'   13             C      	INC	DE
-  679F'   01 0002        C      	LD	BC,2
-  67A2'   ED B0          C      	LDIR
-  67A4'   01 0018        C      	LD	BC,24
-  67A7'   09             C      	ADD	HL,BC
-  67A8'   E5             C      	PUSH	HL
-  67A9'   21 2B2A'       C      	LD	HL,UB.SATZ
-  67AC'   CD 6B2E'       C      	CALL	UR.MIMO
-  67AF'   DC 6A2B'       C      	CALL	C,KU.ZEIR
-  67B2'   CD 69C6'       C      	CALL	KY.JHL	;BEI KOPIJ WIRD J GESETZT
-  67B5'   7E             C      	LD	A,(HL)
-  67B6'   FE 4A          C      	CP	'J'
-  67B8'   C4 69F3'       C      	CALL	NZ,KU.TAB2L
-  67BB'   E1             C      	POP	HL
-  67BC'   01 0009        C      	LD	BC,9
-  67BF'   B7             C      	OR	A
-  67C0'   ED 42          C      	SBC	HL,BC
-  67C2'   7E             C      	LD	A,(HL)
-  67C3'   FD 77 00       C      	LD	(IY+0),A
-  67C6'   FD 23          C      	INC	IY
-  67C8'   FD 36 00 FF    C      	LD	(IY+0),0FFH
-  67CC'   09             C      	ADD	HL,BC
-  67CD'   3A E005        C      	LD	A,(BC.VTABA+3)
-  67D0'   FE 01          C      	CP	01H
-  67D2'   28 2E          C      	JR	Z,KY.EZYK1
-  67D4'   E5             C      	PUSH	HL
-  67D5'   01 0020        C      	LD	BC,32
-  67D8'   B7             C      	OR	A
-  67D9'   ED 42          C      	SBC	HL,BC
-  67DB'   EB             C      	EX	DE,HL
-  67DC'   E1             C      	POP	HL
-  67DD'   DD 21 E002     C      	LD	IX,BC.VTABA
-  67E1'   47             C      	LD	B,A
-  67E2'   05             C      	DEC	B
-  67E3'                  C      KY.VZVGL:
-  67E3'   C5             C      	PUSH	BC
-  67E4'   01 0020        C      	LD	BC,32
-  67E7'   DD 09          C      	ADD	IX,BC
-  67E9'   DD E5          C      	PUSH	IX
-  67EB'   06 07          C      	LD	B,7
-  67ED'   D5             C      	PUSH	DE
-  67EE'                  C      KY.SVGL:
-  67EE'   1A             C      	LD	A,(DE)
-  67EF'   DD BE 00       C      	CP	(IX+0)
-  67F2'   20 08          C      	JR	NZ,KY.NDA
-  67F4'   DD 23          C      	INC	IX
-  67F6'   13             C      	INC	DE
-  67F7'   10 F5          C      	DJNZ	KY.SVGL
-  67F9'   CD 6A5B'       C      	CALL	KU.DD	;DATEI SCHON VORHANDEN
-  67FC'                  C      KY.NDA:
-  67FC'   D1             C      	POP	DE
-  67FD'   DD E1          C      	POP	IX
-  67FF'   C1             C      	POP	BC
-  6800'   10 E1          C      	DJNZ	KY.VZVGL
-  6802'                  C      KY.EZYK1:
-  6802'   C1             C      	POP	BC
-'Kopieren von MRES-Kassetten Teil 2'	MACRO-80 3.44	09-Dec-81	PAGE	1-51
-
-
-  6803'   10 8F          C      	DJNZ	KY.DFR
-                         C      ;---------------------------------------------------------------------
-  6805'                  C      KY.ATAA:
-  6805'   06 03          C      	LD	B,3	;WARTESCHLEIFE FUER
-  6807'   21 FFFF        C      	LD	HL,0FFFFH
-  680A'   2B             C      	DEC	HL
-  680B'   7C             C      	LD	A,H
-  680C'   B5             C      	OR	L
-  680D'   20 FB          C      	JR	NZ,$-3
-  680F'   10 F6          C      	DJNZ	$-8
-  6811'   21 57FB'       C      	LD	HL,UA.EABFR
-  6814'   CD 69CF'       C      	CALL	KY.SATR
-  6817'   21 2B2A'       C      	LD	HL,UB.SATZ
-  681A'   CD 6B2E'       C      	CALL	UR.MIMO
-  681D'   38 F8          C      	JR	C,$-6
-  681F'   CD 69C6'       C      	CALL	KY.JHL
-  6822'   7E             C      	LD	A,(HL)
-  6823'   FE 4A          C      	CP	'J'
-  6825'   C2 6776'       C      	JP	NZ,KY.MD
-                         C      ;--------------------------------Labelnummern fuer Ausgabe ---------
-  6828'                  C      KY.ATAB:
-  6828'   06 00          C      	LD	B,0
-  682A'   21 F902        C      	LD	HL,BC.TAB2
-  682D'   11 F9D2        C      	LD	DE,BC.TAB3
-  6830'   7E             C      	LD	A,(HL)
-  6831'   FE FF          C      	CP	0FFH	;KEINE DATEI KOPIEREN
-  6833'   CA 670A'       C      	JP	Z,KX.ENDR
-  6836'   3A E003        C      	LD	A,(BC.VTABA+1)
-  6839'                  C      KY.ATABE:
-  6839'   12             C      	LD	(DE),A
-  683A'   23             C      	INC	HL
-  683B'   13             C      	INC	DE
-  683C'   04             C      	INC	B
-  683D'   F5             C      	PUSH	AF
-  683E'   7E             C      	LD	A,(HL)
-  683F'   FE FF          C      	CP	0FFH
-  6841'   28 04          C      	JR	Z,KY.WEI
-  6843'   F1             C      	POP	AF
-  6844'   3C             C      	INC	A
-  6845'   18 F2          C      	JR	KY.ATABE
-                         C      ;------------------------------TAB:NR DER VERZ.EINTRAGUNGEN (EING.)------
-  6847'                  C      KY.WEI:
-  6847'   F1             C      	POP	AF
-  6848'   C5             C      	PUSH	BC
-  6849'   AF             C      	XOR	A
-  684A'   57             C      	LD	D,A
-  684B'   3A EC85        C      	LD	A,(BC.VTABE+3)
-  684E'   47             C      	LD	B,A
-  684F'   05             C      	DEC	B
-  6850'   21 F902        C      	LD	HL,BC.TAB2
-  6853'   FD 21 F96A     C      	LD	IY,BC.TAB2A
-  6857'   DD 21 ECA2     C      	LD	IX,BC.VTABE+32
-  685B'                  C      KY.ZYK:
-  685B'   14             C      	INC	D
-  685C'   7E             C      	LD	A,(HL)
-  685D'   DD BE 17       C      	CP	(IX+23)
-  6860'   20 0B          C      	JR	NZ,KY.NE
-  6862'   7A             C      	LD	A,D
-  6863'   FD 77 00       C      	LD	(IY+0),A
-  6866'   FD 36 01 FF    C      	LD	(IY+1),0FFH
-  686A'   23             C      	INC	HL
-  686B'   FD 23          C      	INC	IY
-  686D'                  C      KY.NE:
-  686D'   C5             C      	PUSH	BC
-  686E'   01 0020        C      	LD	BC,32
-  6871'   DD 09          C      	ADD	IX,BC
-  6873'   C1             C      	POP	BC
-  6874'   10 E5          C      	DJNZ	KY.ZYK
-                         C      ;------------------------------------AUFBAU AUSGABEVERZ.-----
-  6876'   3A E005        C      	LD	A,(BC.VTABA+3)
-  6879'   47             C      	LD	B,A
-  687A'   FE 01          C      	CP	01H
-  687C'   28 08          C      	JR	Z,KY.EVZ
-  687E'   21 E002        C      	LD	HL,BC.VTABA
-  6881'   CD 69EA'       C      	CALL	KU.VVOR
-  6884'   18 03          C      	JR	KY.EVZ1
-  6886'                  C      KY.EVZ:
-  6886'   21 E022        C      	LD	HL,BC.VTABA+32
-  6889'                  C      KY.EVZ1:
-  6889'   DD 21 F96A     C      	LD	IX,BC.TAB2A
-  688D'   FD 21 F9D2     C      	LD	IY,BC.TAB3
-  6891'   EB             C      	EX	DE,HL
-  6892'   21 ECA2        C      	LD	HL,BC.VTABE+32
+  67BF'                  C      KY.DFR:
+  67BF'   C5             C      	PUSH	BC
+  67C0'   11 2B44'       C      	LD	DE,UB.SATZ+26
+  67C3'   01 0006        C      	LD	BC,6
+  67C6'   ED B0          C      	LDIR
+  67C8'   13             C      	INC	DE
+  67C9'   13             C      	INC	DE
+  67CA'   01 0002        C      	LD	BC,2
+  67CD'   ED B0          C      	LDIR
+  67CF'   01 0018        C      	LD	BC,24
+  67D2'   09             C      	ADD	HL,BC
+  67D3'   E5             C      	PUSH	HL
+  67D4'   21 2B2A'       C      	LD	HL,UB.SATZ
+  67D7'   CD 6B59'       C      	CALL	UR.MIMO
+  67DA'   DC 6A56'       C      	CALL	C,KU.ZEIR
+  67DD'   CD 69F1'       C      	CALL	KY.JHL	;BEI KOPIJ WIRD J GESETZT
+  67E0'   7E             C      	LD	A,(HL)
+  67E1'   FE 4A          C      	CP	'J'
+  67E3'   C4 6A1E'       C      	CALL	NZ,KU.TAB2L
+  67E6'   E1             C      	POP	HL
+  67E7'   01 0009        C      	LD	BC,9
+  67EA'   B7             C      	OR	A
+  67EB'   ED 42          C      	SBC	HL,BC
+  67ED'   7E             C      	LD	A,(HL)
+  67EE'   FD 77 00       C      	LD	(IY+0),A
+  67F1'   FD 23          C      	INC	IY
+  67F3'   FD 36 00 FF    C      	LD	(IY+0),0FFH
+  67F7'   09             C      	ADD	HL,BC
+  67F8'   3A E005        C      	LD	A,(BC.VTABA+3)
+  67FB'   FE 01          C      	CP	01H
+  67FD'   28 2E          C      	JR	Z,KY.EZYK1
+  67FF'   E5             C      	PUSH	HL
+  6800'   01 0020        C      	LD	BC,32
+  6803'   B7             C      	OR	A
+  6804'   ED 42          C      	SBC	HL,BC
+  6806'   EB             C      	EX	DE,HL
+  6807'   E1             C      	POP	HL
+  6808'   DD 21 E002     C      	LD	IX,BC.VTABA
+  680C'   47             C      	LD	B,A
+  680D'   05             C      	DEC	B
+  680E'                  C      KY.VZVGL:
+  680E'   C5             C      	PUSH	BC
+  680F'   01 0020        C      	LD	BC,32
+  6812'   DD 09          C      	ADD	IX,BC
+  6814'   DD E5          C      	PUSH	IX
+  6816'   06 07          C      	LD	B,7
+  6818'   D5             C      	PUSH	DE
+  6819'                  C      KY.SVGL:
+  6819'   1A             C      	LD	A,(DE)
+  681A'   DD BE 00       C      	CP	(IX+0)
+  681D'   20 08          C      	JR	NZ,KY.NDA
+  681F'   DD 23          C      	INC	IX
+  6821'   13             C      	INC	DE
+  6822'   10 F5          C      	DJNZ	KY.SVGL
+  6824'   CD 6A86'       C      	CALL	KU.DD	;DATEI SCHON VORHANDEN
+  6827'                  C      KY.NDA:
+  6827'   D1             C      	POP	DE
+  6828'   DD E1          C      	POP	IX
+  682A'   C1             C      	POP	BC
+  682B'   10 E1          C      	DJNZ	KY.VZVGL
+  682D'                  C      KY.EZYK1:
+  682D'   C1             C      	POP	BC
 'Kopieren von MRES-Kassetten Teil 2'	MACRO-80 3.44	09-Dec-81	PAGE	1-52
 
 
-  6895'   DD 7E 00       C      	LD	A,(IX+0)
-  6898'   FE 01          C      	CP	01H
-  689A'   28 05          C      	JR	Z,KY.VSTR
-  689C'   3D             C      	DEC	A
-  689D'   47             C      	LD	B,A
-  689E'   CD 69EA'       C      	CALL	KU.VVOR
-  68A1'                  C      KY.VSTR:
-  68A1'   01 0020        C      	LD	BC,32
-  68A4'   ED B0          C      	LDIR
-  68A6'   FD 7E 00       C      	LD	A,(IY+0)
-  68A9'   EB             C      	EX	DE,HL
-  68AA'   01 0009        C      	LD	BC,9
-  68AD'   B7             C      	OR	A
-  68AE'   ED 42          C      	SBC	HL,BC
-  68B0'   77             C      	LD	(HL),A
-  68B1'   09             C      	ADD	HL,BC
-  68B2'   EB             C      	EX	DE,HL
-  68B3'   DD 7E 01       C      	LD	A,(IX+1)
-  68B6'   FE FF          C      	CP	0FFH
-  68B8'   28 10          C      	JR	Z,KY.COPY
-  68BA'   DD 96 00       C      	SUB	(IX+0)
-  68BD'   3D             C      	DEC	A
-  68BE'   47             C      	LD	B,A
-  68BF'   FE 00          C      	CP	00H
-  68C1'   C4 69EA'       C      	CALL	NZ,KU.VVOR
-  68C4'   FD 23          C      	INC	IY
-  68C6'   DD 23          C      	INC	IX
-  68C8'   18 D7          C      	JR	KY.VSTR
-                         C      ;------------------------------------VERZ.SCHREIBEN (NUR NEUE SAETZE)---
-  68CA'                  C      KY.COPY:
-  68CA'   DD 21 2B01'    C      	LD	IX,UB.KTAB
-  68CE'   CD 6D7E'       C      	CALL	U1.KTIN1
-  68D1'   DD 36 0A 20    C      	LD	(IX+10),20H
-  68D5'   CD 6CF9'       C      	CALL	U1.AUS
-  68D8'   3A E005        C      	LD	A,(BC.VTABA+3)
-  68DB'   47             C      	LD	B,A
-  68DC'   CD 6AB6'       C      	CALL	UR.KBV	;AUSGABEKASSETTE
-  68DF'   3D             C      	DEC	A
-  68E0'   20 FA          C      	JR	NZ,$-4	;VORSTELLEN BIS HINTER LETZTEN ALTEN
-  68E2'   21 E002        C      	LD	HL,BC.VTABA	;VERZ.SATZ
-  68E5'   11 0020        C      	LD	DE,32
-  68E8'   19             C      	ADD	HL,DE
-  68E9'   10 FA          C      	DJNZ	$-4	;AUSGABEVERZ.ZEIGER
-  68EB'   C1             C      	POP	BC
-  68EC'   78             C      	LD	A,B
-  68ED'   F5             C      	PUSH	AF
-  68EE'                  C      KY.VSCHR:
-  68EE'   11 0E66        C      	LD	DE,UE.PUF
-  68F1'   01 0020        C      	LD	BC,32
-  68F4'   ED B0          C      	LDIR
-  68F6'   CD 6AB6'       C      	CALL	UR.KBV
-  68F9'   CD 6ABC'       C      	CALL	UR.KBR
-  68FC'   DD 36 05 08    C      	LD	(IX+5),08H
-  6900'   CD 5668'       C      	CALL	UF.EXEC
-  6903'   3D             C      	DEC	A
-  6904'   20 E8          C      	JR	NZ,KY.VSCHR
-                         C      ;----------------------------------------------------------------
-  6906'   11 33FA        C      	LD	DE,33FAH	;''ES WIRD KOPIERT''
-  6909'   21 69B6'       C      	LD	HL,KY.EWK
-  690C'   01 0010        C      	LD	BC,16
-  690F'   ED B0          C      	LDIR
-                         C      ;------------------------------KOPIEREN--------------------------
-  6911'   21 F902        C      	LD	HL,BC.TAB2
-  6914'   11 F9D2        C      	LD	DE,BC.TAB3
-  6917'   FD 21 F96A     C      	LD	IY,BC.TAB2A
-  691B'   1A             C      	LD	A,(DE)
-  691C'   47             C      	LD	B,A
-  691D'   04             C      	INC	B
-  691E'   CD 6ACB'       C      	CALL	UR.POSIK
-  6921'   7E             C      	LD	A,(HL)
-  6922'   47             C      	LD	B,A
-  6923'   04             C      	INC	B
-  6924'                  C      KY.KOPV:
-  6924'   CD 6CF0'       C      	CALL	U1.EIN
-  6927'   CD 6ACB'       C      	CALL	UR.POSIK
-  692A'                  C      KY.KOP:
-  692A'   CD 6CAD'       C      	CALL	U1.BREAD
-  692D'   7E             C      	LD	A,(HL)
-  692E'   FE 01          C      	CP	01H
-  6930'   CC 6D09'       C      	CALL	Z,U1.VSX
-                         C      ;------------------------ANZEIGE WELCHE DATEI KOPIERT WIRD-------------
-  6933'   E5             C      	PUSH	HL
-  6934'   D5             C      	PUSH	DE
+  682E'   10 8F          C      	DJNZ	KY.DFR
+                         C      ;---------------------------------------------------------------------
+  6830'                  C      KY.ATAA:
+  6830'   06 03          C      	LD	B,3	;WARTESCHLEIFE FUER
+  6832'   21 FFFF        C      	LD	HL,0FFFFH
+  6835'   2B             C      	DEC	HL
+  6836'   7C             C      	LD	A,H
+  6837'   B5             C      	OR	L
+  6838'   20 FB          C      	JR	NZ,$-3
+  683A'   10 F6          C      	DJNZ	$-8
+  683C'   21 57FE'       C      	LD	HL,UA.EABFR
+  683F'   CD 69FA'       C      	CALL	KY.SATR
+  6842'   21 2B2A'       C      	LD	HL,UB.SATZ
+  6845'   CD 6B59'       C      	CALL	UR.MIMO
+  6848'   38 F8          C      	JR	C,$-6
+  684A'   CD 69F1'       C      	CALL	KY.JHL
+  684D'   7E             C      	LD	A,(HL)
+  684E'   FE 4A          C      	CP	'J'
+  6850'   C2 67A1'       C      	JP	NZ,KY.MD
+                         C      ;--------------------------------Labelnummern fuer Ausgabe ---------
+  6853'                  C      KY.ATAB:
+  6853'   06 00          C      	LD	B,0
+  6855'   21 F902        C      	LD	HL,BC.TAB2
+  6858'   11 F9D2        C      	LD	DE,BC.TAB3
+  685B'   7E             C      	LD	A,(HL)
+  685C'   FE FF          C      	CP	0FFH	;KEINE DATEI KOPIEREN
+  685E'   CA 6735'       C      	JP	Z,KX.ENDR
+  6861'   3A E003        C      	LD	A,(BC.VTABA+1)
+  6864'                  C      KY.ATABE:
+  6864'   12             C      	LD	(DE),A
+  6865'   23             C      	INC	HL
+  6866'   13             C      	INC	DE
+  6867'   04             C      	INC	B
+  6868'   F5             C      	PUSH	AF
+  6869'   7E             C      	LD	A,(HL)
+  686A'   FE FF          C      	CP	0FFH
+  686C'   28 04          C      	JR	Z,KY.WEI
+  686E'   F1             C      	POP	AF
+  686F'   3C             C      	INC	A
+  6870'   18 F2          C      	JR	KY.ATABE
+                         C      ;------------------------------TAB:NR DER VERZ.EINTRAGUNGEN (EING.)------
+  6872'                  C      KY.WEI:
+  6872'   F1             C      	POP	AF
+  6873'   C5             C      	PUSH	BC
+  6874'   AF             C      	XOR	A
+  6875'   57             C      	LD	D,A
+  6876'   3A EC85        C      	LD	A,(BC.VTABE+3)
+  6879'   47             C      	LD	B,A
+  687A'   05             C      	DEC	B
+  687B'   21 F902        C      	LD	HL,BC.TAB2
+  687E'   FD 21 F96A     C      	LD	IY,BC.TAB2A
+  6882'   DD 21 ECA2     C      	LD	IX,BC.VTABE+32
+  6886'                  C      KY.ZYK:
+  6886'   14             C      	INC	D
+  6887'   7E             C      	LD	A,(HL)
+  6888'   DD BE 17       C      	CP	(IX+23)
+  688B'   20 0B          C      	JR	NZ,KY.NE
+  688D'   7A             C      	LD	A,D
+  688E'   FD 77 00       C      	LD	(IY+0),A
+  6891'   FD 36 01 FF    C      	LD	(IY+1),0FFH
+  6895'   23             C      	INC	HL
+  6896'   FD 23          C      	INC	IY
+  6898'                  C      KY.NE:
+  6898'   C5             C      	PUSH	BC
+  6899'   01 0020        C      	LD	BC,32
+  689C'   DD 09          C      	ADD	IX,BC
+  689E'   C1             C      	POP	BC
+  689F'   10 E5          C      	DJNZ	KY.ZYK
+                         C      ;------------------------------------AUFBAU AUSGABEVERZ.-----
+  68A1'   3A E005        C      	LD	A,(BC.VTABA+3)
+  68A4'   47             C      	LD	B,A
+  68A5'   FE 01          C      	CP	01H
+  68A7'   28 08          C      	JR	Z,KY.EVZ
+  68A9'   21 E002        C      	LD	HL,BC.VTABA
+  68AC'   CD 6A15'       C      	CALL	KU.VVOR
+  68AF'   18 03          C      	JR	KY.EVZ1
+  68B1'                  C      KY.EVZ:
+  68B1'   21 E022        C      	LD	HL,BC.VTABA+32
+  68B4'                  C      KY.EVZ1:
+  68B4'   DD 21 F96A     C      	LD	IX,BC.TAB2A
+  68B8'   FD 21 F9D2     C      	LD	IY,BC.TAB3
+  68BC'   EB             C      	EX	DE,HL
+  68BD'   21 ECA2        C      	LD	HL,BC.VTABE+32
 'Kopieren von MRES-Kassetten Teil 2'	MACRO-80 3.44	09-Dec-81	PAGE	1-53
 
 
-  6935'   FD 7E 00       C      	LD	A,(IY+0)
-  6938'   47             C      	LD	B,A
-  6939'   05             C      	DEC	B
-  693A'   21 ECA2        C      	LD	HL,BC.VTABE+32
-  693D'   FE 01          C      	CP	01H
-  693F'   28 03          C      	JR	Z,KY.KOPAN
-  6941'   CD 69EA'       C      	CALL	KU.VVOR
-  6944'                  C      KY.KOPAN:
-  6944'   11 34F0        C      	LD	DE,34F0H
-  6947'   01 0006        C      	LD	BC,6
-  694A'   ED B0          C      	LDIR
-  694C'   13             C      	INC	DE
-  694D'   13             C      	INC	DE
-  694E'   01 0002        C      	LD	BC,2
-  6951'   ED B0          C      	LDIR
-  6953'   FD 23          C      	INC	IY
-  6955'   D1             C      	POP	DE
-  6956'   E1             C      	POP	HL
-                         C      ;--------------------------------------------------------------------
-  6957'   1A             C      	LD	A,(DE)
-  6958'   FE 01          C      	CP	01H
-  695A'   CC 6D02'       C      	CALL	Z,U1.VS1
-  695D'   32 0E66        C      	LD	(UE.PUF),A
-  6960'   CD 6CB8'       C      	CALL	U1.BWRIT
-  6963'   CD 6CC7'       C      	CALL	U1.COPB
-  6966'   23             C      	INC	HL
-  6967'   7E             C      	LD	A,(HL)
-  6968'   FE FF          C      	CP	0FFH
-  696A'   28 0B          C      	JR	Z,KY.EOV
-  696C'   2B             C      	DEC	HL
-  696D'   96             C      	SUB	(HL)
-  696E'   23             C      	INC	HL
-  696F'   13             C      	INC	DE
-  6970'   47             C      	LD	B,A
-  6971'   FE 01          C      	CP	01H
-  6973'   20 AF          C      	JR	NZ,KY.KOPV
-  6975'   18 B3          C      	JR	KY.KOP
-                         C      ;-------------------------------------------------------------
-  6977'                  C      KY.EOV:
-  6977'   CD 6D09'       C      	CALL	U1.VSX
-  697A'   3A E003        C      	LD	A,(BC.VTABA+1)
-  697D'   47             C      	LD	B,A
-  697E'   F1             C      	POP	AF
-  697F'   F5             C      	PUSH	AF
-  6980'   80             C      	ADD	A,B
-  6981'   32 0E66        C      	LD	(UE.PUF),A
-  6984'   CD 6D7E'       C      	CALL	U1.KTIN1
-  6987'   DD 36 0A 20    C      	LD	(IX+10),20H
-  698B'   CD 6CB8'       C      	CALL	U1.BWRIT
-  698E'   CD 6AB0'       C      	CALL	UR.KSL
-  6991'   CD 670A'       C      	CALL	KX.ENDR
-  6994'   CD 6A86'       C      	CALL	UR.KRE
-  6997'   CD 6D19'       C      	CALL	U1.DSVG
-  699A'   F1             C      	POP	AF
-  699B'   F5             C      	PUSH	AF
-  699C'   81             C      	ADD	A,C	;NEXT RECORD UND
-  699D'   32 0E67        C      	LD	(UE.PUF+1),A
-  69A0'   F1             C      	POP	AF
-  69A1'   80             C      	ADD	A,B	;ANZAHL VERZ.EINTR. KORRIGIEREN
-  69A2'   32 0E69        C      	LD	(UE.PUF+3),A
-  69A5'   CD 6ABC'       C      	CALL	UR.KBR
-  69A8'   DD 36 05 08    C      	LD	(IX+5),08H
-  69AC'   CD 5668'       C      	CALL	UF.EXEC	;NEUEN DS-SATZ SCHREIBEN
-  69AF'   CD 6A8E'       C      	CALL	UR.KRW
-  69B2'   CD 6A98'       C      	CALL	UR.KRA
-  69B5'   C9             C      	RET
-                         C      ;---------------------------------------------------------------
-  69B6'                  C      KY.EWK:
-  69B6'   45 73 20 77    C      	DB	'Es wird kopiert:'
-  69BA'   69 72 64 20    C      
-  69BE'   6B 6F 70 69    C      
-  69C2'   65 72 74 3A    C      
-                         C      ;---------------------------------------------------------------
-  69C6'                  C      KY.JHL:
-  69C6'   3A 2B1E'       C      	LD	A,(UB.PAR2)
-  69C9'   FE 4A          C      	CP	'J'
-  69CB'   20 01          C      	JR	NZ,$+3
-  69CD'   77             C      	LD	(HL),A
-  69CE'   C9             C      	RET
-                         C      ;--------------------------------------------------------------
-  69CF'                  C      KY.SATR:
-  69CF'   11 2B2A'       C      	LD	DE,UB.SATZ
-  69D2'   01 0036        C      	LD	BC,54
+  68C0'   DD 7E 00       C      	LD	A,(IX+0)
+  68C3'   FE 01          C      	CP	01H
+  68C5'   28 05          C      	JR	Z,KY.VSTR
+  68C7'   3D             C      	DEC	A
+  68C8'   47             C      	LD	B,A
+  68C9'   CD 6A15'       C      	CALL	KU.VVOR
+  68CC'                  C      KY.VSTR:
+  68CC'   01 0020        C      	LD	BC,32
+  68CF'   ED B0          C      	LDIR
+  68D1'   FD 7E 00       C      	LD	A,(IY+0)
+  68D4'   EB             C      	EX	DE,HL
+  68D5'   01 0009        C      	LD	BC,9
+  68D8'   B7             C      	OR	A
+  68D9'   ED 42          C      	SBC	HL,BC
+  68DB'   77             C      	LD	(HL),A
+  68DC'   09             C      	ADD	HL,BC
+  68DD'   EB             C      	EX	DE,HL
+  68DE'   DD 7E 01       C      	LD	A,(IX+1)
+  68E1'   FE FF          C      	CP	0FFH
+  68E3'   28 10          C      	JR	Z,KY.COPY
+  68E5'   DD 96 00       C      	SUB	(IX+0)
+  68E8'   3D             C      	DEC	A
+  68E9'   47             C      	LD	B,A
+  68EA'   FE 00          C      	CP	00H
+  68EC'   C4 6A15'       C      	CALL	NZ,KU.VVOR
+  68EF'   FD 23          C      	INC	IY
+  68F1'   DD 23          C      	INC	IX
+  68F3'   18 D7          C      	JR	KY.VSTR
+                         C      ;------------------------------------VERZ.SCHREIBEN (NUR NEUE SAETZE)---
+  68F5'                  C      KY.COPY:
+  68F5'   DD 21 2B01'    C      	LD	IX,UB.KTAB
+  68F9'   CD 6DA9'       C      	CALL	U1.KTIN1
+  68FC'   DD 36 0A 20    C      	LD	(IX+10),20H
+  6900'   CD 6D24'       C      	CALL	U1.AUS
+  6903'   3A E005        C      	LD	A,(BC.VTABA+3)
+  6906'   47             C      	LD	B,A
+  6907'   CD 6AE1'       C      	CALL	UR.KBV	;AUSGABEKASSETTE
+  690A'   3D             C      	DEC	A
+  690B'   20 FA          C      	JR	NZ,$-4	;VORSTELLEN BIS HINTER LETZTEN ALTEN
+  690D'   21 E002        C      	LD	HL,BC.VTABA	;VERZ.SATZ
+  6910'   11 0020        C      	LD	DE,32
+  6913'   19             C      	ADD	HL,DE
+  6914'   10 FA          C      	DJNZ	$-4	;AUSGABEVERZ.ZEIGER
+  6916'   C1             C      	POP	BC
+  6917'   78             C      	LD	A,B
+  6918'   F5             C      	PUSH	AF
+  6919'                  C      KY.VSCHR:
+  6919'   11 0E66        C      	LD	DE,UE.PUF
+  691C'   01 0020        C      	LD	BC,32
+  691F'   ED B0          C      	LDIR
+  6921'   CD 6AE1'       C      	CALL	UR.KBV
+  6924'   CD 6AE7'       C      	CALL	UR.KBR
+  6927'   DD 36 05 08    C      	LD	(IX+5),08H
+  692B'   CD 5668'       C      	CALL	UF.EXEC
+  692E'   3D             C      	DEC	A
+  692F'   20 E8          C      	JR	NZ,KY.VSCHR
+                         C      ;----------------------------------------------------------------
+  6931'   11 33FA        C      	LD	DE,33FAH	;''ES WIRD KOPIERT''
+  6934'   21 69E1'       C      	LD	HL,KY.EWK
+  6937'   01 0010        C      	LD	BC,16
+  693A'   ED B0          C      	LDIR
+                         C      ;------------------------------KOPIEREN--------------------------
+  693C'   21 F902        C      	LD	HL,BC.TAB2
+  693F'   11 F9D2        C      	LD	DE,BC.TAB3
+  6942'   FD 21 F96A     C      	LD	IY,BC.TAB2A
+  6946'   1A             C      	LD	A,(DE)
+  6947'   47             C      	LD	B,A
+  6948'   04             C      	INC	B
+  6949'   CD 6AF6'       C      	CALL	UR.POSIK
+  694C'   7E             C      	LD	A,(HL)
+  694D'   47             C      	LD	B,A
+  694E'   04             C      	INC	B
+  694F'                  C      KY.KOPV:
+  694F'   CD 6D1B'       C      	CALL	U1.EIN
+  6952'   CD 6AF6'       C      	CALL	UR.POSIK
+  6955'                  C      KY.KOP:
+  6955'   CD 6CD8'       C      	CALL	U1.BREAD
+  6958'   7E             C      	LD	A,(HL)
+  6959'   FE 01          C      	CP	01H
+  695B'   CC 6D34'       C      	CALL	Z,U1.VSX
+                         C      ;------------------------ANZEIGE WELCHE DATEI KOPIERT WIRD-------------
+  695E'   E5             C      	PUSH	HL
+  695F'   D5             C      	PUSH	DE
 'Kopieren von MRES-Kassetten Teil 2'	MACRO-80 3.44	09-Dec-81	PAGE	1-54
 
 
-  69D5'   ED B0          C      	LDIR
-  69D7'   3A 3326        C      	LD	A,(UE.BWSA+326H)
-  69DA'   FE 4A          C      	CP	'J'
-  69DC'   CC 69E3'       C      	CALL	Z,KY.AJ
-  69DF'   32 2B1E'       C      	LD	(UB.PAR2),A
-  69E2'   C9             C      	RET
-  69E3'                  C      KY.AJ:
-  69E3'   F5             C      	PUSH	AF
-  69E4'   AF             C      	XOR	A
-  69E5'   32 2B2A'       C      	LD	(UB.SATZ),A
-  69E8'   F1             C      	POP	AF
-  69E9'   C9             C      	RET
+  6960'   FD 7E 00       C      	LD	A,(IY+0)
+  6963'   47             C      	LD	B,A
+  6964'   05             C      	DEC	B
+  6965'   21 ECA2        C      	LD	HL,BC.VTABE+32
+  6968'   FE 01          C      	CP	01H
+  696A'   28 03          C      	JR	Z,KY.KOPAN
+  696C'   CD 6A15'       C      	CALL	KU.VVOR
+  696F'                  C      KY.KOPAN:
+  696F'   11 34F0        C      	LD	DE,34F0H
+  6972'   01 0006        C      	LD	BC,6
+  6975'   ED B0          C      	LDIR
+  6977'   13             C      	INC	DE
+  6978'   13             C      	INC	DE
+  6979'   01 0002        C      	LD	BC,2
+  697C'   ED B0          C      	LDIR
+  697E'   FD 23          C      	INC	IY
+  6980'   D1             C      	POP	DE
+  6981'   E1             C      	POP	HL
+                         C      ;--------------------------------------------------------------------
+  6982'   1A             C      	LD	A,(DE)
+  6983'   FE 01          C      	CP	01H
+  6985'   CC 6D2D'       C      	CALL	Z,U1.VS1
+  6988'   32 0E66        C      	LD	(UE.PUF),A
+  698B'   CD 6CE3'       C      	CALL	U1.BWRIT
+  698E'   CD 6CF2'       C      	CALL	U1.COPB
+  6991'   23             C      	INC	HL
+  6992'   7E             C      	LD	A,(HL)
+  6993'   FE FF          C      	CP	0FFH
+  6995'   28 0B          C      	JR	Z,KY.EOV
+  6997'   2B             C      	DEC	HL
+  6998'   96             C      	SUB	(HL)
+  6999'   23             C      	INC	HL
+  699A'   13             C      	INC	DE
+  699B'   47             C      	LD	B,A
+  699C'   FE 01          C      	CP	01H
+  699E'   20 AF          C      	JR	NZ,KY.KOPV
+  69A0'   18 B3          C      	JR	KY.KOP
+                         C      ;-------------------------------------------------------------
+  69A2'                  C      KY.EOV:
+  69A2'   CD 6D34'       C      	CALL	U1.VSX
+  69A5'   3A E003        C      	LD	A,(BC.VTABA+1)
+  69A8'   47             C      	LD	B,A
+  69A9'   F1             C      	POP	AF
+  69AA'   F5             C      	PUSH	AF
+  69AB'   80             C      	ADD	A,B
+  69AC'   32 0E66        C      	LD	(UE.PUF),A
+  69AF'   CD 6DA9'       C      	CALL	U1.KTIN1
+  69B2'   DD 36 0A 20    C      	LD	(IX+10),20H
+  69B6'   CD 6CE3'       C      	CALL	U1.BWRIT
+  69B9'   CD 6ADB'       C      	CALL	UR.KSL
+  69BC'   CD 6735'       C      	CALL	KX.ENDR
+  69BF'   CD 6AB1'       C      	CALL	UR.KRE
+  69C2'   CD 6D44'       C      	CALL	U1.DSVG
+  69C5'   F1             C      	POP	AF
+  69C6'   F5             C      	PUSH	AF
+  69C7'   81             C      	ADD	A,C	;NEXT RECORD UND
+  69C8'   32 0E67        C      	LD	(UE.PUF+1),A
+  69CB'   F1             C      	POP	AF
+  69CC'   80             C      	ADD	A,B	;ANZAHL VERZ.EINTR. KORRIGIEREN
+  69CD'   32 0E69        C      	LD	(UE.PUF+3),A
+  69D0'   CD 6AE7'       C      	CALL	UR.KBR
+  69D3'   DD 36 05 08    C      	LD	(IX+5),08H
+  69D7'   CD 5668'       C      	CALL	UF.EXEC	;NEUEN DS-SATZ SCHREIBEN
+  69DA'   CD 6AB9'       C      	CALL	UR.KRW
+  69DD'   CD 6AC3'       C      	CALL	UR.KRA
+  69E0'   C9             C      	RET
+                         C      ;---------------------------------------------------------------
+  69E1'                  C      KY.EWK:
+  69E1'   45 73 20 77    C      	DB	'Es wird kopiert:'
+  69E5'   69 72 64 20    C      
+  69E9'   6B 6F 70 69    C      
+  69ED'   65 72 74 3A    C      
+                         C      ;---------------------------------------------------------------
+  69F1'                  C      KY.JHL:
+  69F1'   3A 2B1E'       C      	LD	A,(UB.PAR2)
+  69F4'   FE 4A          C      	CP	'J'
+  69F6'   20 01          C      	JR	NZ,$+3
+  69F8'   77             C      	LD	(HL),A
+  69F9'   C9             C      	RET
+                         C      ;--------------------------------------------------------------
+  69FA'                  C      KY.SATR:
+  69FA'   11 2B2A'       C      	LD	DE,UB.SATZ
+  69FD'   01 0036        C      	LD	BC,54
+'Kopieren von MRES-Kassetten Teil 2'	MACRO-80 3.44	09-Dec-81	PAGE	1-55
+
+
+  6A00'   ED B0          C      	LDIR
+  6A02'   3A 3326        C      	LD	A,(UE.BWSA+326H)
+  6A05'   FE 4A          C      	CP	'J'
+  6A07'   CC 6A0E'       C      	CALL	Z,KY.AJ
+  6A0A'   32 2B1E'       C      	LD	(UB.PAR2),A
+  6A0D'   C9             C      	RET
+  6A0E'                  C      KY.AJ:
+  6A0E'   F5             C      	PUSH	AF
+  6A0F'   AF             C      	XOR	A
+  6A10'   32 2B2A'       C      	LD	(UB.SATZ),A
+  6A13'   F1             C      	POP	AF
+  6A14'   C9             C      	RET
                          C      ;--------------------------------------------------------------
                          C      ;	END
                          C      	TITLE	'Unterprogramme fuer KOPI'
                          C      	PAGE
-'Unterprogramme fuer KOPI'	MACRO-80 3.44	09-Dec-81	PAGE	1-55
+'Unterprogramme fuer KOPI'	MACRO-80 3.44	09-Dec-81	PAGE	1-56
 
 
                          C      
@@ -3596,100 +3658,100 @@
                          C      ;          UNTERPROGRAMME FUER KOPI
                          C      ;
                          C      ;--------------------------------------------------------
-  69EA'                  C      KU.VVOR:
-  69EA'   C5             C      	PUSH	BC
-  69EB'   01 0020        C      	LD	BC,32
-  69EE'   09             C      	ADD	HL,BC
-  69EF'   C1             C      	POP	BC
-  69F0'   10 F8          C      	DJNZ	KU.VVOR
-  69F2'   C9             C      	RET
-  69F3'                  C      KU.TAB2L:
-  69F3'   D1             C      	POP	DE
-  69F4'   E1             C      	POP	HL
-  69F5'   FD 7E 00       C      	LD	A,(IY+0)
-  69F8'   FE FF          C      	CP	0FFH
-  69FA'   28 22          C      	JR	Z,$+36
-  69FC'   FD E5          C      	PUSH	IY
-  69FE'   06 00          C      	LD	B,00H
-  6A00'   FD 7E 00       C      	LD	A,(IY+0)
-  6A03'   FE FF          C      	CP	0FFH
-  6A05'   20 02          C      	JR	NZ,$+4
-  6A07'   18 05          C      	JR	$+7
-  6A09'   FD 23          C      	INC	IY
-  6A0B'   04             C      	INC	B
-  6A0C'   18 F2          C      	JR	$-12
-  6A0E'   FD E1          C      	POP	IY
-  6A10'   FD E5          C      	PUSH	IY
-  6A12'   FD 7E 01       C      	LD	A,(IY+1)
-  6A15'   FD 77 00       C      	LD	(IY+0),A
-  6A18'   FD 23          C      	INC	IY
-  6A1A'   10 F6          C      	DJNZ	$-8
-  6A1C'   FD E1          C      	POP	IY
-  6A1E'   C1             C      	POP	BC
-  6A1F'   05             C      	DEC	B
-  6A20'   78             C      	LD	A,B
-  6A21'   FE 00          C      	CP	00H
-  6A23'   28 03          C      	JR	Z,$+5
-  6A25'   C3 6794'       C      	JP	KY.DFR
-  6A28'   C3 6805'       C      	JP	KY.ATAA
-  6A2B'                  C      KU.ZEIR:
-  6A2B'   D1             C      	POP	DE
-  6A2C'   E1             C      	POP	HL
-  6A2D'   3A 2B00'       C      	LD	A,(UB.ZN)
-  6A30'   D6 02          C      	SUB	2
-  6A32'   FE 0D          C      	CP	13
-  6A34'   30 04          C      	JR	NC,$+6
-  6A36'   C1             C      	POP	BC
-  6A37'   C3 6776'       C      	JP	KY.MD
-  6A3A'   32 2B00'       C      	LD	(UB.ZN),A
-  6A3D'   01 0029        C      	LD	BC,41
-  6A40'   B7             C      	OR	A
-  6A41'   ED 42          C      	SBC	HL,BC
-  6A43'   FD 2B          C      	DEC	IY
-  6A45'   7E             C      	LD	A,(HL)
-  6A46'   FD BE 00       C      	CP	(IY+0)
-  6A49'   CC 6A58'       C      	CALL	Z,KU.DECIY
-  6A4C'   FD 23          C      	INC	IY
-  6A4E'   01 0017        C      	LD	BC,23
-  6A51'   B7             C      	OR	A
-  6A52'   ED 42          C      	SBC	HL,BC
-  6A54'   C1             C      	POP	BC
-  6A55'   04             C      	INC	B
-  6A56'   18 CA          C      	JR	$-52
-  6A58'                  C      KU.DECIY:
-  6A58'   FD 2B          C      	DEC	IY
-  6A5A'   C9             C      	RET
-  6A5B'                  C      KU.DD:
-  6A5B'   E5             C      	PUSH	HL
-  6A5C'   21 5831'       C      	LD	HL,UA.VORH
-  6A5F'   CD 6B2E'       C      	CALL	UR.MIMO
-  6A62'   38 17          C      	JR	C,$+25
-  6A64'   7E             C      	LD	A,(HL)
-  6A65'   FE 4A          C      	CP	'J'
-  6A67'   28 0C          C      	JR	Z,$+14
-  6A69'   FD 2B          C      	DEC	IY
-  6A6B'   FD 36 00 FF    C      	LD	(IY+0),0FFH
-  6A6F'   11 0050        C      	LD	DE,80
-  6A72'   B7             C      	OR	A
-'Unterprogramme fuer KOPI'	MACRO-80 3.44	09-Dec-81	PAGE	1-56
+  6A15'                  C      KU.VVOR:
+  6A15'   C5             C      	PUSH	BC
+  6A16'   01 0020        C      	LD	BC,32
+  6A19'   09             C      	ADD	HL,BC
+  6A1A'   C1             C      	POP	BC
+  6A1B'   10 F8          C      	DJNZ	KU.VVOR
+  6A1D'   C9             C      	RET
+  6A1E'                  C      KU.TAB2L:
+  6A1E'   D1             C      	POP	DE
+  6A1F'   E1             C      	POP	HL
+  6A20'   FD 7E 00       C      	LD	A,(IY+0)
+  6A23'   FE FF          C      	CP	0FFH
+  6A25'   28 22          C      	JR	Z,$+36
+  6A27'   FD E5          C      	PUSH	IY
+  6A29'   06 00          C      	LD	B,00H
+  6A2B'   FD 7E 00       C      	LD	A,(IY+0)
+  6A2E'   FE FF          C      	CP	0FFH
+  6A30'   20 02          C      	JR	NZ,$+4
+  6A32'   18 05          C      	JR	$+7
+  6A34'   FD 23          C      	INC	IY
+  6A36'   04             C      	INC	B
+  6A37'   18 F2          C      	JR	$-12
+  6A39'   FD E1          C      	POP	IY
+  6A3B'   FD E5          C      	PUSH	IY
+  6A3D'   FD 7E 01       C      	LD	A,(IY+1)
+  6A40'   FD 77 00       C      	LD	(IY+0),A
+  6A43'   FD 23          C      	INC	IY
+  6A45'   10 F6          C      	DJNZ	$-8
+  6A47'   FD E1          C      	POP	IY
+  6A49'   C1             C      	POP	BC
+  6A4A'   05             C      	DEC	B
+  6A4B'   78             C      	LD	A,B
+  6A4C'   FE 00          C      	CP	00H
+  6A4E'   28 03          C      	JR	Z,$+5
+  6A50'   C3 67BF'       C      	JP	KY.DFR
+  6A53'   C3 6830'       C      	JP	KY.ATAA
+  6A56'                  C      KU.ZEIR:
+  6A56'   D1             C      	POP	DE
+  6A57'   E1             C      	POP	HL
+  6A58'   3A 2B00'       C      	LD	A,(UB.ZN)
+  6A5B'   D6 02          C      	SUB	2
+  6A5D'   FE 0D          C      	CP	13
+  6A5F'   30 04          C      	JR	NC,$+6
+  6A61'   C1             C      	POP	BC
+  6A62'   C3 67A1'       C      	JP	KY.MD
+  6A65'   32 2B00'       C      	LD	(UB.ZN),A
+  6A68'   01 0029        C      	LD	BC,41
+  6A6B'   B7             C      	OR	A
+  6A6C'   ED 42          C      	SBC	HL,BC
+  6A6E'   FD 2B          C      	DEC	IY
+  6A70'   7E             C      	LD	A,(HL)
+  6A71'   FD BE 00       C      	CP	(IY+0)
+  6A74'   CC 6A83'       C      	CALL	Z,KU.DECIY
+  6A77'   FD 23          C      	INC	IY
+  6A79'   01 0017        C      	LD	BC,23
+  6A7C'   B7             C      	OR	A
+  6A7D'   ED 42          C      	SBC	HL,BC
+  6A7F'   C1             C      	POP	BC
+  6A80'   04             C      	INC	B
+  6A81'   18 CA          C      	JR	$-52
+  6A83'                  C      KU.DECIY:
+  6A83'   FD 2B          C      	DEC	IY
+  6A85'   C9             C      	RET
+  6A86'                  C      KU.DD:
+  6A86'   E5             C      	PUSH	HL
+  6A87'   21 5834'       C      	LD	HL,UA.VORH
+  6A8A'   CD 6B59'       C      	CALL	UR.MIMO
+  6A8D'   38 17          C      	JR	C,$+25
+  6A8F'   7E             C      	LD	A,(HL)
+  6A90'   FE 4A          C      	CP	'J'
+  6A92'   28 0C          C      	JR	Z,$+14
+  6A94'   FD 2B          C      	DEC	IY
+  6A96'   FD 36 00 FF    C      	LD	(IY+0),0FFH
+  6A9A'   11 0050        C      	LD	DE,80
+  6A9D'   B7             C      	OR	A
+'Unterprogramme fuer KOPI'	MACRO-80 3.44	09-Dec-81	PAGE	1-57
 
 
-  6A73'   ED 52          C      	SBC	HL,DE
-  6A75'   36 20          C      	LD	(HL),20H
-  6A77'   21 2B00'       C      	LD	HL,UB.ZN
-  6A7A'   35             C      	DEC	(HL)
-  6A7B'   E1             C      	POP	HL
-  6A7C'   C9             C      	RET
-  6A7D'   E1             C      	POP	HL
-  6A7E'   D1             C      	POP	DE
-  6A7F'   DD 21 2B01'    C      	LD	IX,UB.KTAB
-  6A83'   C3 670A'       C      	JP	KX.ENDR
+  6A9E'   ED 52          C      	SBC	HL,DE
+  6AA0'   36 20          C      	LD	(HL),20H
+  6AA2'   21 2B00'       C      	LD	HL,UB.ZN
+  6AA5'   35             C      	DEC	(HL)
+  6AA6'   E1             C      	POP	HL
+  6AA7'   C9             C      	RET
+  6AA8'   E1             C      	POP	HL
+  6AA9'   D1             C      	POP	DE
+  6AAA'   DD 21 2B01'    C      	LD	IX,UB.KTAB
+  6AAE'   C3 6735'       C      	JP	KX.ENDR
                          C      ;	END
                                 ;	
                          C      	INCLUDE K7.ASM	;Routinen fuer Kassette,Monitor UND Tastatur (UR.ASM)
                          C      	TITLE 'Routinen fuer Kassette,Monitor UND Tastatur'
                          C      	PAGE
-'Routinen fuer Kassette,Monitor UND Tastatur'	MACRO-80 3.44	09-Dec-81	PAGE	1-57
+'Routinen fuer Kassette,Monitor UND Tastatur'	MACRO-80 3.44	09-Dec-81	PAGE	1-58
 
 
                          C      
@@ -3702,365 +3764,365 @@
                          C      ;----------------------------------------------------------------------
                          C      ;   1.     KASSETTE
                          C      ;----------------------------------------------------------------------
-  6A86'                  C      UR.KRE:
-  6A86'   DD 36 05 31    C      	LD	(IX+5),31H
-  6A8A'                  C      UR.KRE1:
-  6A8A'   CD 5668'       C      	CALL	UF.EXEC
-  6A8D'   C9             C      	RET
-  6A8E'                  C      UR.KRW:
-  6A8E'   DD 36 05 21    C      	LD	(IX+5),21H
-  6A92'   18 F6          C      	JR	UR.KRE1	;Umspulen
-  6A94'                  C      UR.KRWW:
-  6A94'   CD 6A8E'       C      	CALL	UR.KRW
-  6A97'   C9             C      	RET
-  6A98'                  C      UR.KRA:
-  6A98'   DD 36 05 41    C      	LD	(IX+5),41H
-  6A9C'   18 EC          C      	JR	UR.KRE1	;Reservieren aus
-  6A9E'                  C      UR.KLV:
-  6A9E'   DD 36 05 71    C      	LD	(IX+5),71H
-  6AA2'   18 E6          C      	JR	UR.KRE1	;Label vorsetzen
-  6AA4'                  C      UR.KLR:
-  6AA4'   DD 36 05 75    C      	LD	(IX+5),75H
-  6AA8'   18 E0          C      	JR	UR.KRE1	;LABEL RUECKSETZEN
-  6AAA'                  C      UR.KBM:
-  6AAA'   DD 36 05 51    C      	LD	(IX+5),51H
-  6AAE'   18 DA          C      	JR	UR.KRE1	;BANDMARKE SCHREIBEN
-  6AB0'                  C      UR.KSL:
-  6AB0'   DD 36 05 61    C      	LD	(IX+5),61H
-  6AB4'   18 D4          C      	JR	UR.KRE1	;SCHLUSSLUECKE SCHREIBEN
-  6AB6'                  C      UR.KBV:
-  6AB6'   DD 36 05 11    C      	LD	(IX+5),11H
-  6ABA'   18 CE          C      	JR	UR.KRE1	;Block vorsetzen
-  6ABC'                  C      UR.KBR:
-  6ABC'   DD 36 05 15    C      	LD	(IX+5),15H
-  6AC0'   18 C8          C      	JR	UR.KRE1
+  6AB1'                  C      UR.KRE:
+  6AB1'   DD 36 05 31    C      	LD	(IX+5),31H
+  6AB5'                  C      UR.KRE1:
+  6AB5'   CD 5668'       C      	CALL	UF.EXEC
+  6AB8'   C9             C      	RET
+  6AB9'                  C      UR.KRW:
+  6AB9'   DD 36 05 21    C      	LD	(IX+5),21H
+  6ABD'   18 F6          C      	JR	UR.KRE1	;Umspulen
+  6ABF'                  C      UR.KRWW:
+  6ABF'   CD 6AB9'       C      	CALL	UR.KRW
+  6AC2'   C9             C      	RET
+  6AC3'                  C      UR.KRA:
+  6AC3'   DD 36 05 41    C      	LD	(IX+5),41H
+  6AC7'   18 EC          C      	JR	UR.KRE1	;Reservieren aus
+  6AC9'                  C      UR.KLV:
+  6AC9'   DD 36 05 71    C      	LD	(IX+5),71H
+  6ACD'   18 E6          C      	JR	UR.KRE1	;Label vorsetzen
+  6ACF'                  C      UR.KLR:
+  6ACF'   DD 36 05 75    C      	LD	(IX+5),75H
+  6AD3'   18 E0          C      	JR	UR.KRE1	;LABEL RUECKSETZEN
+  6AD5'                  C      UR.KBM:
+  6AD5'   DD 36 05 51    C      	LD	(IX+5),51H
+  6AD9'   18 DA          C      	JR	UR.KRE1	;BANDMARKE SCHREIBEN
+  6ADB'                  C      UR.KSL:
+  6ADB'   DD 36 05 61    C      	LD	(IX+5),61H
+  6ADF'   18 D4          C      	JR	UR.KRE1	;SCHLUSSLUECKE SCHREIBEN
+  6AE1'                  C      UR.KBV:
+  6AE1'   DD 36 05 11    C      	LD	(IX+5),11H
+  6AE5'   18 CE          C      	JR	UR.KRE1	;Block vorsetzen
+  6AE7'                  C      UR.KBR:
+  6AE7'   DD 36 05 15    C      	LD	(IX+5),15H
+  6AEB'   18 C8          C      	JR	UR.KRE1
                          C      ;--------------------------------------------------------------------
-  6AC2'                  C      UR.RPOS:
-  6AC2'   E5             C      	PUSH	HL
-  6AC3'   D5             C      	PUSH	DE
-  6AC4'   F5             C      	PUSH	AF
-  6AC5'   C5             C      	PUSH	BC
-  6AC6'   AF             C      	XOR	A
-  6AC7'   3D             C      	DEC	A
-  6AC8'   4F             C      	LD	C,A
-  6AC9'   18 06          C      	JR	POSIK1
-  6ACB'                  C      UR.POSIK:
-  6ACB'   E5             C      	PUSH	HL
-  6ACC'   D5             C      	PUSH	DE
-  6ACD'   F5             C      	PUSH	AF
-  6ACE'   C5             C      	PUSH	BC	;Positionieren
-  6ACF'   AF             C      	XOR	A
-  6AD0'   4F             C      	LD	C,A
-  6AD1'                  C      POSIK1:
-  6AD1'   06 00          C      	LD	B,0
-  6AD3'   11 0000        C      	LD	DE,0
-  6AD6'                  C      UR.LES:
-  6AD6'   DD 36 05 02    C      	LD	(IX+5),02H
-  6ADA'   CD 5668'       C      	CALL	UF.EXEC	;BLOCK LESEN
-  6ADD'   DD 7E 02       C      	LD	A,(IX+2)
-  6AE0'   FE 01          C      	CP	1	;BANDMARKE?
-  6AE2'   28 19          C      	JR	Z,UR.BM
-  6AE4'   04             C      	INC	B	;ANZAHL BLOECKE
-  6AE5'   78             C      	LD	A,B
-  6AE6'   FE 04          C      	CP	4
-  6AE8'   28 21          C      	JR	Z,UR.OK
-  6AEA'   21 0000        C      	LD	HL,0
-  6AED'   CD 6E8C'       C      	CALL	XY.LIDX
-  6AF0'   09             C      	DB	9	;HL<--BLOCKLAENGE
-  6AF1'   19             C      	ADD	HL,DE
-  6AF2'   EB             C      	EX	DE,HL
-  6AF3'   21 012C        C      	LD	HL,300
-  6AF6'   B7             C      	OR	A
-  6AF7'   ED 52          C      	SBC	HL,DE
-  6AF9'   38 10          C      	JR	C,UR.OK
-  6AFB'   18 D9          C      	JR	UR.LES
-'Routinen fuer Kassette,Monitor UND Tastatur'	MACRO-80 3.44	09-Dec-81	PAGE	1-58
-
-
-  6AFD'                  C      UR.BM:
-  6AFD'   AF             C      	XOR	A
-  6AFE'   B1             C      	OR	C
-  6AFF'   28 04          C      	JR	Z,$+6
-  6B01'   C1             C      	POP	BC
-  6B02'   04             C      	INC	B
-  6B03'   18 C9          C      	JR	UR.POSIK+3
-  6B05'   C1             C      	POP	BC
-  6B06'   05             C      	DEC	B
-  6B07'   28 21          C      	JR	Z,UR.RSP
-  6B09'   18 C3          C      	JR	UR.POSIK+3
-  6B0B'                  C      UR.OK:
-  6B0B'   AF             C      	XOR	A
-  6B0C'   B1             C      	OR	C
-  6B0D'   28 08          C      	JR	Z,$+10
-  6B0F'   DD 70 08       C      	LD	(IX+8),B
-  6B12'   CD 6AA4'       C      	CALL	UR.KLR
-  6B15'   18 13          C      	JR	UR.RSP
-  6B17'   DD 36 05 15    C      	LD	(IX+5),15H
-  6B1B'   CD 5668'       C      	CALL	UF.EXEC
-  6B1E'   10 F7          C      	DJNZ	$-7
-  6B20'   C1             C      	POP	BC
-  6B21'   05             C      	DEC	B
-  6B22'   28 06          C      	JR	Z,UR.RSP
-  6B24'   DD 70 08       C      	LD	(IX+8),B
-  6B27'   CD 6A9E'       C      	CALL	UR.KLV
-  6B2A'                  C      UR.RSP:
-  6B2A'   F1             C      	POP	AF
-  6B2B'   D1             C      	POP	DE
-  6B2C'   E1             C      	POP	HL
-  6B2D'   C9             C      	RET
-                         C      ;----------------------------------------------------------------------
-                         C      ;     2.     MONITOR
-                         C      ;----------------------------------------------------------------------
-  6B2E'                  C      UR.MIMO:
-  6B2E'   D5             C      	PUSH	DE	;Register DE, BC retten
-  6B2F'   C5             C      	PUSH	BC
-  6B30'   46             C      	LD	B,(HL)	;Anzahl einzugebender Zeichen
-  6B31'   23             C      	INC	HL
-  6B32'   4E             C      	LD	C,(HL)	;Laenge der Zeichenkette
-  6B33'   23             C      	INC	HL
-  6B34'   5E             C      	LD	E,(HL)	;Zeichenschluessel
-  6B35'   23             C      	INC	HL
-  6B36'   3A 2B00'       C      	LD	A,(UB.ZN)	;Zeilennummer
-  6B39'   57             C      	LD	D,A	;D:= Zeilennummer
-  6B3A'   AF             C      	XOR	A
-  6B3B'   B9             C      	CP	C
-  6B3C'   28 0C          C      	JR	Z,UR.MIMO1	;Anzeige entfaellt
-  6B3E'   D5             C      	PUSH	DE
-  6B3F'   CD 6B70'       C      	CALL	UR.DSPZK	;Anzeige
-  6B42'                  C      UR.MIMO2:
-  6B42'   D1             C      	POP	DE
-  6B43'   CD 6B7D'       C      	CALL	UR.ZINP	;Zeicheneingabe ueber Tastatur
-  6B46'   C1             C      	POP	BC
-  6B47'   D1             C      	POP	DE
-  6B48'   18 07          C      	JR	UR.MIMO3
-  6B4A'                  C      UR.MIMO1:
-  6B4A'   D5             C      	PUSH	DE
-  6B4B'   CD 6B60'       C      	CALL	UR.BBSAD	;BWS - Adresse berechnen
-  6B4E'   EB             C      	EX	DE,HL	;HL:= akt. Bildschirmposition
-  6B4F'   18 F1          C      	JR	UR.MIMO2
-  6B51'                  C      UR.MIMO3:
-  6B51'   F5             C      	PUSH	AF
-  6B52'   3A 2B00'       C      	LD	A,(UB.ZN)
-  6B55'   3C             C      	INC	A
-  6B56'   FE 18          C      	CP	24
-  6B58'   CC 6C60'       C      	CALL	Z,UR.BILRO	;Zeile 24 ---> Bild rollen
-  6B5B'   32 2B00'       C      	LD	(UB.ZN),A
-  6B5E'   F1             C      	POP	AF
-  6B5F'   C9             C      	RET
-  6B60'                  C      UR.BBSAD:
-  6B60'   E5             C      	PUSH	HL	;Berechnung der BWS-Adresse
-  6B61'   C5             C      	PUSH	BC	;IN:    D...Zeilennummer
-  6B62'   21 2FB0        C      	LD	HL,UE.BWSA-80	;OUT:   DE..BWS-Adresse
-  6B65'   01 0050        C      	LD	BC,80	;BC:= Zeichen/Zeile
-  6B68'                  C      UR.BBSA1:
-  6B68'   09             C      	ADD	HL,BC
-  6B69'   15             C      	DEC	D
-  6B6A'   20 FC          C      	JR	NZ,UR.BBSA1
-  6B6C'   EB             C      	EX	DE,HL
-  6B6D'   C1             C      	POP	BC
-  6B6E'   E1             C      	POP	HL
-  6B6F'   C9             C      	RET
+  6AED'                  C      UR.RPOS:
+  6AED'   E5             C      	PUSH	HL
+  6AEE'   D5             C      	PUSH	DE
+  6AEF'   F5             C      	PUSH	AF
+  6AF0'   C5             C      	PUSH	BC
+  6AF1'   AF             C      	XOR	A
+  6AF2'   3D             C      	DEC	A
+  6AF3'   4F             C      	LD	C,A
+  6AF4'   18 06          C      	JR	POSIK1
+  6AF6'                  C      UR.POSIK:
+  6AF6'   E5             C      	PUSH	HL
+  6AF7'   D5             C      	PUSH	DE
+  6AF8'   F5             C      	PUSH	AF
+  6AF9'   C5             C      	PUSH	BC	;Positionieren
+  6AFA'   AF             C      	XOR	A
+  6AFB'   4F             C      	LD	C,A
+  6AFC'                  C      POSIK1:
+  6AFC'   06 00          C      	LD	B,0
+  6AFE'   11 0000        C      	LD	DE,0
+  6B01'                  C      UR.LES:
+  6B01'   DD 36 05 02    C      	LD	(IX+5),02H
+  6B05'   CD 5668'       C      	CALL	UF.EXEC	;BLOCK LESEN
+  6B08'   DD 7E 02       C      	LD	A,(IX+2)
+  6B0B'   FE 01          C      	CP	1	;BANDMARKE?
+  6B0D'   28 19          C      	JR	Z,UR.BM
+  6B0F'   04             C      	INC	B	;ANZAHL BLOECKE
+  6B10'   78             C      	LD	A,B
+  6B11'   FE 04          C      	CP	4
+  6B13'   28 21          C      	JR	Z,UR.OK
+  6B15'   21 0000        C      	LD	HL,0
+  6B18'   CD 6EB7'       C      	CALL	XY.LIDX
+  6B1B'   09             C      	DB	9	;HL<--BLOCKLAENGE
+  6B1C'   19             C      	ADD	HL,DE
+  6B1D'   EB             C      	EX	DE,HL
+  6B1E'   21 012C        C      	LD	HL,300
+  6B21'   B7             C      	OR	A
+  6B22'   ED 52          C      	SBC	HL,DE
+  6B24'   38 10          C      	JR	C,UR.OK
+  6B26'   18 D9          C      	JR	UR.LES
 'Routinen fuer Kassette,Monitor UND Tastatur'	MACRO-80 3.44	09-Dec-81	PAGE	1-59
 
 
-  6B70'                  C      UR.DSPZK:
-  6B70'   D5             C      	PUSH	DE	;Anzeige
-  6B71'   C5             C      	PUSH	BC	;IN   HL...Anfangsadresse ZK
-  6B72'   CD 6B60'       C      	CALL	UR.BBSAD	;      D...Zeilennummer
-  6B75'   06 00          C      	LD	B,0	;      C...Zeichenkettenlaenge
-  6B77'   ED B0          C      	LDIR		;OUT  HL...akt. BWS-Adresse
-  6B79'   EB             C      	EX	DE,HL
-  6B7A'   C1             C      	POP	BC
-  6B7B'   D1             C      	POP	DE
-  6B7C'   C9             C      	RET
-  6B7D'                  C      UR.ZINP:
-  6B7D'   E5             C      	PUSH	HL	;Zeicheneingabe ueber Tastatur
-  6B7E'   AF             C      	XOR	A	;IN    B...Zeichenanzahl (max.)
-  6B7F'   50             C      	LD	D,B	;     HL...akt. Adresse
-  6B80'   B8             C      	CP	B	;      E...Zeichenschluessel
-  6B81'   28 3D          C      	JR	Z,UR.RET0	;keine Zeicheneingabe
-  6B83'                  C      UR.ZINP1:
-  6B83'   CD 4033        C      	CALL	SY.SETCHL	;Kursor setzen
-  6B86'                  C      UR.ZINP2:
-  6B86'   CD 6C5A'       C      	CALL	UR.TAREP	;Tastaturabfrage
-  6B89'   CD 6BCA'       C      	CALL	UR.TCL	; <---
-  6B8C'   CD 6BDF'       C      	CALL	UR.TCR	; --->
-  6B8F'   CD 6BF2'       C      	CALL	UR.TSYS	; SYS
-  6B92'   CD 6BFA'       C      	CALL	UR.TQUIT	; POS.QUIT
-  6B95'   CD 6C02'       C      	CALL	UR.ZKONT	;Zeichenkontrolle
-  6B98'   CD 4036        C      	CALL	SY.RESC	;Kursor loeschen
-  6B9B'   77             C      	LD	(HL),A	;Zeichen anzeigen
-  6B9C'   23             C      	INC	HL	;akt. Adresse erhoehen
-  6B9D'   10 E4          C      	DJNZ	UR.ZINP1	;B > 0, naechstes Zeichen
-  6B9F'   CD 4033        C      	CALL	SY.SETCHL	;Kursor setzen
-  6BA2'                  C      UR.ZINP5:
-  6BA2'   CD 6C5A'       C      	CALL	UR.TAREP
-  6BA5'   FE F7          C      	CP	UE.TACL
-  6BA7'   CC 6BC3'       C      	CALL	Z,UR.ZINP7
-  6BAA'   FE 1E          C      	CP	UE.TAQUI
-  6BAC'   28 06          C      	JR	Z,UR.ZINP3	;---> POS.QUIT
-  6BAE'   FE CD          C      	CP	UE.TASYS
-  6BB0'   28 08          C      	JR	Z,UR.ZINP4	;---> SYS
-  6BB2'   18 EE          C      	JR	UR.ZINP5
-  6BB4'                  C      UR.ZINP3:
-  6BB4'   CD 4036        C      	CALL	SY.RESC	;Kursor loeschen
-  6BB7'   E1             C      	POP	HL	;BWS - Adresse auskellern
-  6BB8'   AF             C      	XOR	A	;CY:= 0
-  6BB9'   C9             C      	RET
-  6BBA'                  C      UR.ZINP4:
-  6BBA'   CD 4036        C      	CALL	SY.RESC	;Kursor loeschen
-  6BBD'   E1             C      	POP	HL
-  6BBE'   37             C      	SCF		;CY:= 1
-  6BBF'   C9             C      	RET
-  6BC0'                  C      UR.RET0:
-  6BC0'   E1             C      	POP	HL	;keine Zeicheneingabe
-  6BC1'   AF             C      	XOR	A
-  6BC2'   C9             C      	RET
-  6BC3'                  C      UR.ZINP7:
-  6BC3'   CD 6BCA'       C      	CALL	UR.TCL
-  6BC6'   33             C      	INC	SP
-  6BC7'   33             C      	INC	SP
-  6BC8'   18 BC          C      	JR	UR.ZINP2
-  6BCA'                  C      UR.TCL:
-  6BCA'   FE F7          C      	CP	UE.TACL	;   <---
-  6BCC'   C0             C      	RET	NZ		;Taste nicht gedrueckt
-  6BCD'   F5             C      	PUSH	AF	;Tastencode retten
-  6BCE'   04             C      	INC	B
-  6BCF'   7A             C      	LD	A,D
-  6BD0'   B8             C      	CP	B
-  6BD1'   38 09          C      	JR	C,UR.TCLN	;Linksbewegung nicht zulaessig
-  6BD3'   CD 4036        C      	CALL	SY.RESC	;Kursor loeschen
-  6BD6'   2B             C      	DEC	HL	;BWS - Adresse decrementieren
-  6BD7'   CD 4033        C      	CALL	SY.SETCHL	;Kursor setzen
-  6BDA'   F1             C      	POP	AF	;Code auskellern
-  6BDB'   C9             C      	RET
-  6BDC'                  C      UR.TCLN:
-  6BDC'   05             C      	DEC	B
-  6BDD'   F1             C      	POP	AF
-  6BDE'   C9             C      	RET
-  6BDF'                  C      UR.TCR:
-  6BDF'   FE F9          C      	CP	UE.TACR	;   --->
-  6BE1'   C0             C      	RET	NZ
-  6BE2'   F5             C      	PUSH	AF
-  6BE3'   78             C      	LD	A,B
-  6BE4'   FE 02          C      	CP	2
-  6BE6'   38 08          C      	JR	C,UR.TCRN
-  6BE8'   05             C      	DEC	B
+  6B28'                  C      UR.BM:
+  6B28'   AF             C      	XOR	A
+  6B29'   B1             C      	OR	C
+  6B2A'   28 04          C      	JR	Z,$+6
+  6B2C'   C1             C      	POP	BC
+  6B2D'   04             C      	INC	B
+  6B2E'   18 C9          C      	JR	UR.POSIK+3
+  6B30'   C1             C      	POP	BC
+  6B31'   05             C      	DEC	B
+  6B32'   28 21          C      	JR	Z,UR.RSP
+  6B34'   18 C3          C      	JR	UR.POSIK+3
+  6B36'                  C      UR.OK:
+  6B36'   AF             C      	XOR	A
+  6B37'   B1             C      	OR	C
+  6B38'   28 08          C      	JR	Z,$+10
+  6B3A'   DD 70 08       C      	LD	(IX+8),B
+  6B3D'   CD 6ACF'       C      	CALL	UR.KLR
+  6B40'   18 13          C      	JR	UR.RSP
+  6B42'   DD 36 05 15    C      	LD	(IX+5),15H
+  6B46'   CD 5668'       C      	CALL	UF.EXEC
+  6B49'   10 F7          C      	DJNZ	$-7
+  6B4B'   C1             C      	POP	BC
+  6B4C'   05             C      	DEC	B
+  6B4D'   28 06          C      	JR	Z,UR.RSP
+  6B4F'   DD 70 08       C      	LD	(IX+8),B
+  6B52'   CD 6AC9'       C      	CALL	UR.KLV
+  6B55'                  C      UR.RSP:
+  6B55'   F1             C      	POP	AF
+  6B56'   D1             C      	POP	DE
+  6B57'   E1             C      	POP	HL
+  6B58'   C9             C      	RET
+                         C      ;----------------------------------------------------------------------
+                         C      ;     2.     MONITOR
+                         C      ;----------------------------------------------------------------------
+  6B59'                  C      UR.MIMO:
+  6B59'   D5             C      	PUSH	DE	;Register DE, BC retten
+  6B5A'   C5             C      	PUSH	BC
+  6B5B'   46             C      	LD	B,(HL)	;Anzahl einzugebender Zeichen
+  6B5C'   23             C      	INC	HL
+  6B5D'   4E             C      	LD	C,(HL)	;Laenge der Zeichenkette
+  6B5E'   23             C      	INC	HL
+  6B5F'   5E             C      	LD	E,(HL)	;Zeichenschluessel
+  6B60'   23             C      	INC	HL
+  6B61'   3A 2B00'       C      	LD	A,(UB.ZN)	;Zeilennummer
+  6B64'   57             C      	LD	D,A	;D:= Zeilennummer
+  6B65'   AF             C      	XOR	A
+  6B66'   B9             C      	CP	C
+  6B67'   28 0C          C      	JR	Z,UR.MIMO1	;Anzeige entfaellt
+  6B69'   D5             C      	PUSH	DE
+  6B6A'   CD 6B9B'       C      	CALL	UR.DSPZK	;Anzeige
+  6B6D'                  C      UR.MIMO2:
+  6B6D'   D1             C      	POP	DE
+  6B6E'   CD 6BA8'       C      	CALL	UR.ZINP	;Zeicheneingabe ueber Tastatur
+  6B71'   C1             C      	POP	BC
+  6B72'   D1             C      	POP	DE
+  6B73'   18 07          C      	JR	UR.MIMO3
+  6B75'                  C      UR.MIMO1:
+  6B75'   D5             C      	PUSH	DE
+  6B76'   CD 6B8B'       C      	CALL	UR.BBSAD	;BWS - Adresse berechnen
+  6B79'   EB             C      	EX	DE,HL	;HL:= akt. Bildschirmposition
+  6B7A'   18 F1          C      	JR	UR.MIMO2
+  6B7C'                  C      UR.MIMO3:
+  6B7C'   F5             C      	PUSH	AF
+  6B7D'   3A 2B00'       C      	LD	A,(UB.ZN)
+  6B80'   3C             C      	INC	A
+  6B81'   FE 18          C      	CP	24
+  6B83'   CC 6C8B'       C      	CALL	Z,UR.BILRO	;Zeile 24 ---> Bild rollen
+  6B86'   32 2B00'       C      	LD	(UB.ZN),A
+  6B89'   F1             C      	POP	AF
+  6B8A'   C9             C      	RET
+  6B8B'                  C      UR.BBSAD:
+  6B8B'   E5             C      	PUSH	HL	;Berechnung der BWS-Adresse
+  6B8C'   C5             C      	PUSH	BC	;IN:    D...Zeilennummer
+  6B8D'   21 2FB0        C      	LD	HL,UE.BWSA-80	;OUT:   DE..BWS-Adresse
+  6B90'   01 0050        C      	LD	BC,80	;BC:= Zeichen/Zeile
+  6B93'                  C      UR.BBSA1:
+  6B93'   09             C      	ADD	HL,BC
+  6B94'   15             C      	DEC	D
+  6B95'   20 FC          C      	JR	NZ,UR.BBSA1
+  6B97'   EB             C      	EX	DE,HL
+  6B98'   C1             C      	POP	BC
+  6B99'   E1             C      	POP	HL
+  6B9A'   C9             C      	RET
 'Routinen fuer Kassette,Monitor UND Tastatur'	MACRO-80 3.44	09-Dec-81	PAGE	1-60
 
 
-  6BE9'   CD 4036        C      	CALL	SY.RESC
-  6BEC'   23             C      	INC	HL
-  6BED'   CD 4033        C      	CALL	SY.SETCHL
-  6BF0'                  C      UR.TCRN:
-  6BF0'   F1             C      	POP	AF
-  6BF1'   C9             C      	RET
-  6BF2'                  C      UR.TSYS:
-  6BF2'   FE CD          C      	CP	UE.TASYS	; SYS-Taste
-  6BF4'   C0             C      	RET	NZ
-  6BF5'   33             C      	INC	SP
-  6BF6'   33             C      	INC	SP	;Returnadresse uebergehen
-  6BF7'   C3 6BBA'       C      	JP	UR.ZINP4
-  6BFA'                  C      UR.TQUIT:
-  6BFA'   FE 1E          C      	CP	UE.TAQUI	; POS.QUIT
-  6BFC'   C0             C      	RET	NZ
-  6BFD'   33             C      	INC	SP
-  6BFE'   33             C      	INC	SP
-  6BFF'   C3 6BB4'       C      	JP	UR.ZINP3
-  6C02'                  C      UR.ZKONT:
-  6C02'   FE 7F          C      	CP	7FH
-  6C04'   30 22          C      	JR	NC,UR.ZKON1
-  6C06'   CB 7B          C      	BIT	7,E	;Zeichenschluesselauswertung
-  6C08'   C0             C      	RET	NZ		;Bit 7 = L, alle Tasten erlaubt
-  6C09'   FE 20          C      	CP	20H
-  6C0B'   C8             C      	RET	Z		;Leertaste
-  6C0C'   CB 6B          C      	BIT	5,E
-  6C0E'   37             C      	SCF
-  6C0F'   C4 6C2D'       C      	CALL	NZ,UR.ALPHA
-  6C12'   D0             C      	RET	NC		;Bit 5 = L, nur Buchstaben
-  6C13'   CB 63          C      	BIT	4,E
-  6C15'   37             C      	SCF
-  6C16'   C4 6C38'       C      	CALL	NZ,UR.NUM
-  6C19'   D0             C      	RET	NC		;Bit 4 = L, nur Ziffern
-  6C1A'   CB 73          C      	BIT	6,E
-  6C1C'   37             C      	SCF
-  6C1D'   C4 6C41'       C      	CALL	NZ,UR.ALPNU
-  6C20'   D0             C      	RET	NC		;Bit 6 = L, Buchstaben und
-                         C      			;            Ziffern
-  6C21'   CB 5B          C      	BIT	3,E
-  6C23'   37             C      	SCF
-  6C24'   C4 6C4B'       C      	CALL	NZ,UR.HEXAZ
-  6C27'   D0             C      	RET	NC		;BIT 3 = L ,HEXAZEICHEN
-  6C28'                  C      UR.ZKON1:
-  6C28'   33             C      	INC	SP
-  6C29'   33             C      	INC	SP
-  6C2A'   C3 6B86'       C      	JP	UR.ZINP2	;unerlaubter Tastencode
-  6C2D'                  C      UR.ALPHA:
-  6C2D'   FE 41          C      	CP	41H
-  6C2F'   D8             C      	RET	C
-  6C30'   FE 5B          C      	CP	5BH
-  6C32'   38 02          C      	JR	C,UR.ALPH1
-  6C34'   37             C      	SCF
-  6C35'   C9             C      	RET
-  6C36'                  C      UR.ALPH1:
-  6C36'   3F             C      	CCF
-  6C37'   C9             C      	RET
-  6C38'                  C      UR.NUM:
-  6C38'   FE 30          C      	CP	30H
-  6C3A'   D8             C      	RET	C
-  6C3B'   FE 3A          C      	CP	3AH
-  6C3D'   38 F7          C      	JR	C,UR.ALPH1
-  6C3F'   37             C      	SCF
-  6C40'   C9             C      	RET
-  6C41'                  C      UR.ALPNU:
-  6C41'   CD 6C2D'       C      	CALL	UR.ALPHA
-  6C44'   D0             C      	RET	NC
-  6C45'   CD 6C38'       C      	CALL	UR.NUM
-  6C48'   D0             C      	RET	NC
-  6C49'   37             C      	SCF
-  6C4A'   C9             C      	RET
-  6C4B'                  C      UR.HEXAZ:
-  6C4B'   CD 6C38'       C      	CALL	UR.NUM
-  6C4E'   D0             C      	RET	NC
-  6C4F'   FE 41          C      	CP	'A'
-  6C51'   D8             C      	RET	C
-  6C52'   FE 47          C      	CP	'G'
-  6C54'   38 02          C      	JR	C,UR.HEXZ1
-  6C56'   37             C      	SCF
-  6C57'   C9             C      	RET
-  6C58'                  C      UR.HEXZ1:
-  6C58'   3F             C      	CCF
-  6C59'   C9             C      	RET
-                         C      
+  6B9B'                  C      UR.DSPZK:
+  6B9B'   D5             C      	PUSH	DE	;Anzeige
+  6B9C'   C5             C      	PUSH	BC	;IN   HL...Anfangsadresse ZK
+  6B9D'   CD 6B8B'       C      	CALL	UR.BBSAD	;      D...Zeilennummer
+  6BA0'   06 00          C      	LD	B,0	;      C...Zeichenkettenlaenge
+  6BA2'   ED B0          C      	LDIR		;OUT  HL...akt. BWS-Adresse
+  6BA4'   EB             C      	EX	DE,HL
+  6BA5'   C1             C      	POP	BC
+  6BA6'   D1             C      	POP	DE
+  6BA7'   C9             C      	RET
+  6BA8'                  C      UR.ZINP:
+  6BA8'   E5             C      	PUSH	HL	;Zeicheneingabe ueber Tastatur
+  6BA9'   AF             C      	XOR	A	;IN    B...Zeichenanzahl (max.)
+  6BAA'   50             C      	LD	D,B	;     HL...akt. Adresse
+  6BAB'   B8             C      	CP	B	;      E...Zeichenschluessel
+  6BAC'   28 3D          C      	JR	Z,UR.RET0	;keine Zeicheneingabe
+  6BAE'                  C      UR.ZINP1:
+  6BAE'   CD 4033        C      	CALL	SY.SETCHL	;Kursor setzen
+  6BB1'                  C      UR.ZINP2:
+  6BB1'   CD 6C85'       C      	CALL	UR.TAREP	;Tastaturabfrage
+  6BB4'   CD 6BF5'       C      	CALL	UR.TCL	; <---
+  6BB7'   CD 6C0A'       C      	CALL	UR.TCR	; --->
+  6BBA'   CD 6C1D'       C      	CALL	UR.TSYS	; SYS
+  6BBD'   CD 6C25'       C      	CALL	UR.TQUIT	; POS.QUIT
+  6BC0'   CD 6C2D'       C      	CALL	UR.ZKONT	;Zeichenkontrolle
+  6BC3'   CD 4036        C      	CALL	SY.RESC	;Kursor loeschen
+  6BC6'   77             C      	LD	(HL),A	;Zeichen anzeigen
+  6BC7'   23             C      	INC	HL	;akt. Adresse erhoehen
+  6BC8'   10 E4          C      	DJNZ	UR.ZINP1	;B > 0, naechstes Zeichen
+  6BCA'   CD 4033        C      	CALL	SY.SETCHL	;Kursor setzen
+  6BCD'                  C      UR.ZINP5:
+  6BCD'   CD 6C85'       C      	CALL	UR.TAREP
+  6BD0'   FE F7          C      	CP	UE.TACL
+  6BD2'   CC 6BEE'       C      	CALL	Z,UR.ZINP7
+  6BD5'   FE 1E          C      	CP	UE.TAQUI
+  6BD7'   28 06          C      	JR	Z,UR.ZINP3	;---> POS.QUIT
+  6BD9'   FE CD          C      	CP	UE.TASYS
+  6BDB'   28 08          C      	JR	Z,UR.ZINP4	;---> SYS
+  6BDD'   18 EE          C      	JR	UR.ZINP5
+  6BDF'                  C      UR.ZINP3:
+  6BDF'   CD 4036        C      	CALL	SY.RESC	;Kursor loeschen
+  6BE2'   E1             C      	POP	HL	;BWS - Adresse auskellern
+  6BE3'   AF             C      	XOR	A	;CY:= 0
+  6BE4'   C9             C      	RET
+  6BE5'                  C      UR.ZINP4:
+  6BE5'   CD 4036        C      	CALL	SY.RESC	;Kursor loeschen
+  6BE8'   E1             C      	POP	HL
+  6BE9'   37             C      	SCF		;CY:= 1
+  6BEA'   C9             C      	RET
+  6BEB'                  C      UR.RET0:
+  6BEB'   E1             C      	POP	HL	;keine Zeicheneingabe
+  6BEC'   AF             C      	XOR	A
+  6BED'   C9             C      	RET
+  6BEE'                  C      UR.ZINP7:
+  6BEE'   CD 6BF5'       C      	CALL	UR.TCL
+  6BF1'   33             C      	INC	SP
+  6BF2'   33             C      	INC	SP
+  6BF3'   18 BC          C      	JR	UR.ZINP2
+  6BF5'                  C      UR.TCL:
+  6BF5'   FE F7          C      	CP	UE.TACL	;   <---
+  6BF7'   C0             C      	RET	NZ		;Taste nicht gedrueckt
+  6BF8'   F5             C      	PUSH	AF	;Tastencode retten
+  6BF9'   04             C      	INC	B
+  6BFA'   7A             C      	LD	A,D
+  6BFB'   B8             C      	CP	B
+  6BFC'   38 09          C      	JR	C,UR.TCLN	;Linksbewegung nicht zulaessig
+  6BFE'   CD 4036        C      	CALL	SY.RESC	;Kursor loeschen
+  6C01'   2B             C      	DEC	HL	;BWS - Adresse decrementieren
+  6C02'   CD 4033        C      	CALL	SY.SETCHL	;Kursor setzen
+  6C05'   F1             C      	POP	AF	;Code auskellern
+  6C06'   C9             C      	RET
+  6C07'                  C      UR.TCLN:
+  6C07'   05             C      	DEC	B
+  6C08'   F1             C      	POP	AF
+  6C09'   C9             C      	RET
+  6C0A'                  C      UR.TCR:
+  6C0A'   FE F9          C      	CP	UE.TACR	;   --->
+  6C0C'   C0             C      	RET	NZ
+  6C0D'   F5             C      	PUSH	AF
+  6C0E'   78             C      	LD	A,B
+  6C0F'   FE 02          C      	CP	2
+  6C11'   38 08          C      	JR	C,UR.TCRN
+  6C13'   05             C      	DEC	B
 'Routinen fuer Kassette,Monitor UND Tastatur'	MACRO-80 3.44	09-Dec-81	PAGE	1-61
 
 
-  6C5A'                  C      UR.TAREP:
-  6C5A'   CD 4026        C      	CALL	TA.ABFR1	;TASTATURROUTINE FUER ATS
-  6C5D'   28 FB          C      	JR	Z,$-3	;ES LIEGT KEIN ZEICHEN AN
-  6C5F'   C9             C      	RET
+  6C14'   CD 4036        C      	CALL	SY.RESC
+  6C17'   23             C      	INC	HL
+  6C18'   CD 4033        C      	CALL	SY.SETCHL
+  6C1B'                  C      UR.TCRN:
+  6C1B'   F1             C      	POP	AF
+  6C1C'   C9             C      	RET
+  6C1D'                  C      UR.TSYS:
+  6C1D'   FE CD          C      	CP	UE.TASYS	; SYS-Taste
+  6C1F'   C0             C      	RET	NZ
+  6C20'   33             C      	INC	SP
+  6C21'   33             C      	INC	SP	;Returnadresse uebergehen
+  6C22'   C3 6BE5'       C      	JP	UR.ZINP4
+  6C25'                  C      UR.TQUIT:
+  6C25'   FE 1E          C      	CP	UE.TAQUI	; POS.QUIT
+  6C27'   C0             C      	RET	NZ
+  6C28'   33             C      	INC	SP
+  6C29'   33             C      	INC	SP
+  6C2A'   C3 6BDF'       C      	JP	UR.ZINP3
+  6C2D'                  C      UR.ZKONT:
+  6C2D'   FE 7F          C      	CP	7FH
+  6C2F'   30 22          C      	JR	NC,UR.ZKON1
+  6C31'   CB 7B          C      	BIT	7,E	;Zeichenschluesselauswertung
+  6C33'   C0             C      	RET	NZ		;Bit 7 = L, alle Tasten erlaubt
+  6C34'   FE 20          C      	CP	20H
+  6C36'   C8             C      	RET	Z		;Leertaste
+  6C37'   CB 6B          C      	BIT	5,E
+  6C39'   37             C      	SCF
+  6C3A'   C4 6C58'       C      	CALL	NZ,UR.ALPHA
+  6C3D'   D0             C      	RET	NC		;Bit 5 = L, nur Buchstaben
+  6C3E'   CB 63          C      	BIT	4,E
+  6C40'   37             C      	SCF
+  6C41'   C4 6C63'       C      	CALL	NZ,UR.NUM
+  6C44'   D0             C      	RET	NC		;Bit 4 = L, nur Ziffern
+  6C45'   CB 73          C      	BIT	6,E
+  6C47'   37             C      	SCF
+  6C48'   C4 6C6C'       C      	CALL	NZ,UR.ALPNU
+  6C4B'   D0             C      	RET	NC		;Bit 6 = L, Buchstaben und
+                         C      			;            Ziffern
+  6C4C'   CB 5B          C      	BIT	3,E
+  6C4E'   37             C      	SCF
+  6C4F'   C4 6C76'       C      	CALL	NZ,UR.HEXAZ
+  6C52'   D0             C      	RET	NC		;BIT 3 = L ,HEXAZEICHEN
+  6C53'                  C      UR.ZKON1:
+  6C53'   33             C      	INC	SP
+  6C54'   33             C      	INC	SP
+  6C55'   C3 6BB1'       C      	JP	UR.ZINP2	;unerlaubter Tastencode
+  6C58'                  C      UR.ALPHA:
+  6C58'   FE 41          C      	CP	41H
+  6C5A'   D8             C      	RET	C
+  6C5B'   FE 5B          C      	CP	5BH
+  6C5D'   38 02          C      	JR	C,UR.ALPH1
+  6C5F'   37             C      	SCF
+  6C60'   C9             C      	RET
+  6C61'                  C      UR.ALPH1:
+  6C61'   3F             C      	CCF
+  6C62'   C9             C      	RET
+  6C63'                  C      UR.NUM:
+  6C63'   FE 30          C      	CP	30H
+  6C65'   D8             C      	RET	C
+  6C66'   FE 3A          C      	CP	3AH
+  6C68'   38 F7          C      	JR	C,UR.ALPH1
+  6C6A'   37             C      	SCF
+  6C6B'   C9             C      	RET
+  6C6C'                  C      UR.ALPNU:
+  6C6C'   CD 6C58'       C      	CALL	UR.ALPHA
+  6C6F'   D0             C      	RET	NC
+  6C70'   CD 6C63'       C      	CALL	UR.NUM
+  6C73'   D0             C      	RET	NC
+  6C74'   37             C      	SCF
+  6C75'   C9             C      	RET
+  6C76'                  C      UR.HEXAZ:
+  6C76'   CD 6C63'       C      	CALL	UR.NUM
+  6C79'   D0             C      	RET	NC
+  6C7A'   FE 41          C      	CP	'A'
+  6C7C'   D8             C      	RET	C
+  6C7D'   FE 47          C      	CP	'G'
+  6C7F'   38 02          C      	JR	C,UR.HEXZ1
+  6C81'   37             C      	SCF
+  6C82'   C9             C      	RET
+  6C83'                  C      UR.HEXZ1:
+  6C83'   3F             C      	CCF
+  6C84'   C9             C      	RET
                          C      
-  6C60'                  C      UR.BILRO:
-  6C60'   C5             C      	PUSH	BC
-  6C61'   D5             C      	PUSH	DE
-  6C62'   E5             C      	PUSH	HL
-  6C63'   01 03C0        C      	LD	BC,960
-  6C66'   11 3370        C      	LD	DE,UE.BWSA+880
-  6C69'   21 33C0        C      	LD	HL,UE.BWSA+960
-  6C6C'   ED B0          C      	LDIR
-  6C6E'   3E 20          C      	LD	A,20H	;letzte Zeile loeschen
-  6C70'   06 50          C      	LD	B,80
-  6C72'                  C      UR.BILR1:
-  6C72'   12             C      	LD	(DE),A
-  6C73'   10 FD          C      	DJNZ	UR.BILR1
-  6C75'   E1             C      	POP	HL
-  6C76'   AF             C      	XOR	A
-  6C77'   01 0050        C      	LD	BC,80
-  6C7A'   ED 42          C      	SBC	HL,BC	;aktuelle BWS-Adresse nach  ROLL
-  6C7C'   3A 2B00'       C      	LD	A,(UB.ZN)
-  6C7F'   D1             C      	POP	DE
-  6C80'   C1             C      	POP	BC
-  6C81'   C9             C      	RET
+'Routinen fuer Kassette,Monitor UND Tastatur'	MACRO-80 3.44	09-Dec-81	PAGE	1-62
+
+
+  6C85'                  C      UR.TAREP:
+  6C85'   CD 4026        C      	CALL	TA.ABFR1	;TASTATURROUTINE FUER ATS
+  6C88'   28 FB          C      	JR	Z,$-3	;ES LIEGT KEIN ZEICHEN AN
+  6C8A'   C9             C      	RET
+                         C      
+  6C8B'                  C      UR.BILRO:
+  6C8B'   C5             C      	PUSH	BC
+  6C8C'   D5             C      	PUSH	DE
+  6C8D'   E5             C      	PUSH	HL
+  6C8E'   01 03C0        C      	LD	BC,960
+  6C91'   11 3370        C      	LD	DE,UE.BWSA+880
+  6C94'   21 33C0        C      	LD	HL,UE.BWSA+960
+  6C97'   ED B0          C      	LDIR
+  6C99'   3E 20          C      	LD	A,20H	;letzte Zeile loeschen
+  6C9B'   06 50          C      	LD	B,80
+  6C9D'                  C      UR.BILR1:
+  6C9D'   12             C      	LD	(DE),A
+  6C9E'   10 FD          C      	DJNZ	UR.BILR1
+  6CA0'   E1             C      	POP	HL
+  6CA1'   AF             C      	XOR	A
+  6CA2'   01 0050        C      	LD	BC,80
+  6CA5'   ED 42          C      	SBC	HL,BC	;aktuelle BWS-Adresse nach  ROLL
+  6CA7'   3A 2B00'       C      	LD	A,(UB.ZN)
+  6CAA'   D1             C      	POP	DE
+  6CAB'   C1             C      	POP	BC
+  6CAC'   C9             C      	RET
                          C      ;----------------------------------------------------------------------
                          C      ;	END
                                 ;	
@@ -4073,7 +4135,7 @@
                          C      	INCLUDE K8.ASM	;Allgemeine Unterprogramme
                          C      	TITLE	'Allgemeine Unterprogramme'
                          C      	PAGE
-'Allgemeine Unterprogramme'	MACRO-80 3.44	09-Dec-81	PAGE	1-62
+'Allgemeine Unterprogramme'	MACRO-80 3.44	09-Dec-81	PAGE	1-63
 
 
                          C      
@@ -4083,359 +4145,359 @@
                          C      ;        Allgemeine Unterprogramme
                          C      ;
                          C      ;----------------------------------------------------------------------
-  6C82'                  C      U1.RSAVE:
-  6C82'   E3             C      	EX	(SP),HL	;Register retten (nicht AF)
-  6C83'   D5             C      	PUSH	DE
-  6C84'   C5             C      	PUSH	BC
-  6C85'   FD E5          C      	PUSH	IY
-  6C87'   DD E5          C      	PUSH	IX
-  6C89'   E9             C      	JP	(HL)
-  6C8A'                  C      U1.RRST:
-  6C8A'   E1             C      	POP	HL	;Register wieder herstellen
-  6C8B'   DD E1          C      	POP	IX
-  6C8D'   FD E1          C      	POP	IY
-  6C8F'   C1             C      	POP	BC
-  6C90'   D1             C      	POP	DE
-  6C91'   E3             C      	EX	(SP),HL
-  6C92'   C9             C      	RET
-  6C93'                  C      U1.CLRB:
-  6C93'   E5             C      	PUSH	HL	;Bereich loeschen
-  6C94'   D5             C      	PUSH	DE
-  6C95'   C5             C      	PUSH	BC
-  6C96'   E5             C      	PUSH	HL	;IN:  HL= Bereichsanfang
-  6C97'   D1             C      	POP	DE	;     BC= Bereichslaenge
-  6C98'   13             C      	INC	DE
-  6C99'   AF             C      	XOR	A
-  6C9A'   77             C      	LD	(HL),A
-  6C9B'   0B             C      	DEC	BC
-  6C9C'   ED B0          C      	LDIR
-  6C9E'   C1             C      	POP	BC
-  6C9F'   D1             C      	POP	DE
-  6CA0'   E1             C      	POP	HL
-  6CA1'   C9             C      	RET
+  6CAD'                  C      U1.RSAVE:
+  6CAD'   E3             C      	EX	(SP),HL	;Register retten (nicht AF)
+  6CAE'   D5             C      	PUSH	DE
+  6CAF'   C5             C      	PUSH	BC
+  6CB0'   FD E5          C      	PUSH	IY
+  6CB2'   DD E5          C      	PUSH	IX
+  6CB4'   E9             C      	JP	(HL)
+  6CB5'                  C      U1.RRST:
+  6CB5'   E1             C      	POP	HL	;Register wieder herstellen
+  6CB6'   DD E1          C      	POP	IX
+  6CB8'   FD E1          C      	POP	IY
+  6CBA'   C1             C      	POP	BC
+  6CBB'   D1             C      	POP	DE
+  6CBC'   E3             C      	EX	(SP),HL
+  6CBD'   C9             C      	RET
+  6CBE'                  C      U1.CLRB:
+  6CBE'   E5             C      	PUSH	HL	;Bereich loeschen
+  6CBF'   D5             C      	PUSH	DE
+  6CC0'   C5             C      	PUSH	BC
+  6CC1'   E5             C      	PUSH	HL	;IN:  HL= Bereichsanfang
+  6CC2'   D1             C      	POP	DE	;     BC= Bereichslaenge
+  6CC3'   13             C      	INC	DE
+  6CC4'   AF             C      	XOR	A
+  6CC5'   77             C      	LD	(HL),A
+  6CC6'   0B             C      	DEC	BC
+  6CC7'   ED B0          C      	LDIR
+  6CC9'   C1             C      	POP	BC
+  6CCA'   D1             C      	POP	DE
+  6CCB'   E1             C      	POP	HL
+  6CCC'   C9             C      	RET
                          C      ;----------------------------------------------------------------------
-  6CA2'                  C      U1.KBR4:
-  6CA2'   C5             C      	PUSH	BC
-  6CA3'   06 04          C      	LD	B,4
-  6CA5'   CD 6ABC'       C      	CALL	UR.KBR
-  6CA8'   10 FB          C      	DJNZ	$-3
-  6CAA'   C1             C      	POP	BC
-  6CAB'   C9             C      	RET
+  6CCD'                  C      U1.KBR4:
+  6CCD'   C5             C      	PUSH	BC
+  6CCE'   06 04          C      	LD	B,4
+  6CD0'   CD 6AE7'       C      	CALL	UR.KBR
+  6CD3'   10 FB          C      	DJNZ	$-3
+  6CD5'   C1             C      	POP	BC
+  6CD6'   C9             C      	RET
                          C      ;----------------------------------------------------------------------
-  6CAC'                  C      U1.WAIT:
+  6CD7'                  C      U1.WAIT:
                          C      	; PUSH	AF
                          C      	; CALL	UE.BERT
                          C      	; JR	C,$-3
                          C      	; POP	AF
-  6CAC'   C9             C      	RET
+  6CD7'   C9             C      	RET
                          C      ;--------------------------------------------------------------------
-  6CAD'                  C      U1.BREAD:
-  6CAD'   CD 6CF0'       C      	CALL	U1.EIN	;BLOCK LESEN VON EINGABE
-  6CB0'   DD 36 05 02    C      	LD	(IX+5),02H
-  6CB4'   CD 5668'       C      	CALL	UF.EXEC
-  6CB7'   C9             C      	RET
-  6CB8'                  C      U1.BWRIT:
-  6CB8'   CD 6CF9'       C      	CALL	U1.AUS	;BLOCK SCHREIBEN AUF AUSGABE
-  6CBB'   DD 36 05 08    C      	LD	(IX+5),08H
-  6CBF'   CD 5668'       C      	CALL	UF.EXEC
-  6CC2'   C9             C      	RET
-  6CC3'                  C      U1.COPB2:
-  6CC3'   F5             C      	PUSH	AF
-  6CC4'   37             C      	SCF
-  6CC5'   18 02          C      	JR	$+4
-  6CC7'                  C      U1.COPB:
-  6CC7'   F5             C      	PUSH	AF
-  6CC8'   B7             C      	OR	A
-  6CC9'   CD 6CF0'       C      	CALL	U1.EIN
-  6CCC'   DD 36 05 02    C      	LD	(IX+5),02H
-  6CD0'   DC 6729'       C      	CALL	C,KX.EXEC2
-  6CD3'   D4 5668'       C      	CALL	NC,UF.EXEC
-  6CD6'   F5             C      	PUSH	AF
-  6CD7'   CD 6CF9'       C      	CALL	U1.AUS
-  6CDA'   DD 7E 09       C      	LD	A,(IX+9)
-  6CDD'   DD B6 0A       C      	OR	(IX+10)
-  6CE0'   28 08          C      	JR	Z,$+10
-  6CE2'   CD 6CB8'       C      	CALL	U1.BWRIT
-  6CE5'   F1             C      	POP	AF
-  6CE6'   38 DC          C      	JR	C,$-34
-'Allgemeine Unterprogramme'	MACRO-80 3.44	09-Dec-81	PAGE	1-63
-
-
-  6CE8'   30 DE          C      	JR	NC,$-32
-  6CEA'   CD 6AAA'       C      	CALL	UR.KBM
-  6CED'   F1             C      	POP	AF
-  6CEE'   F1             C      	POP	AF
-  6CEF'   C9             C      	RET
-  6CF0'                  C      U1.EIN:
-  6CF0'   F5             C      	PUSH	AF
-  6CF1'   3A E000        C      	LD	A,(BC.TAB1)
-  6CF4'   DD 77 03       C      	LD	(IX+3),A
-  6CF7'   F1             C      	POP	AF
-  6CF8'   C9             C      	RET
-  6CF9'                  C      U1.AUS:
-  6CF9'   F5             C      	PUSH	AF
-  6CFA'   3A E001        C      	LD	A,(BC.TAB1+1)
-  6CFD'   DD 77 03       C      	LD	(IX+3),A
-  6D00'   F1             C      	POP	AF
-  6D01'   C9             C      	RET
-                         C      ;----------------------------------------------------------------------
-  6D02'                  C      U1.VS1:
-  6D02'   E5             C      	PUSH	HL
-  6D03'   C5             C      	PUSH	BC
-  6D04'   F5             C      	PUSH	AF
-  6D05'   3E 01          C      	LD	A,01H	;1.DATEIVORSATZ IM PUFFER
-  6D07'   18 04          C      	JR	$+6
-  6D09'                  C      U1.VSX:
-  6D09'   E5             C      	PUSH	HL
-  6D0A'   C5             C      	PUSH	BC
-  6D0B'   F5             C      	PUSH	AF
-  6D0C'   AF             C      	XOR	A	;00-DATEIVORSATZ IM PUFFER
-  6D0D'   06 20          C      	LD	B,32
-  6D0F'   21 0E66        C      	LD	HL,UE.PUF
-  6D12'   CD 6E21'       C      	CALL	U1.TR
-  6D15'   F1             C      	POP	AF
-  6D16'   C1             C      	POP	BC
-  6D17'   E1             C      	POP	HL
-  6D18'   C9             C      	RET
-                         C      ;----------------------------------------------------------------------
-  6D19'                  C      U1.DSVG:
-  6D19'   E5             C      	PUSH	HL
-  6D1A'   D5             C      	PUSH	DE
-  6D1B'   F5             C      	PUSH	AF
-  6D1C'   06 07          C      	LD	B,7	;MRES KASSETTE ?
-  6D1E'   CD 6DBD'       C      	CALL	U1.VORS1
-  6D21'   11 0E6C        C      	LD	DE,UE.PUF+6
-  6D24'   21 5744'       C      	LD	HL,UA.DS+6
-  6D27'   06 0E          C      	LD	B,14
-  6D29'   1A             C      	LD	A,(DE)
-  6D2A'   BE             C      	CP	(HL)
-  6D2B'   20 10          C      	JR	NZ,$+18
-  6D2D'   13             C      	INC	DE
-  6D2E'   23             C      	INC	HL
-  6D2F'   10 F8          C      	DJNZ	$-6
-  6D31'   3A 0E67        C      	LD	A,(UE.PUF+1)
-  6D34'   4F             C      	LD	C,A	;C <-- NEXT RECORD
-  6D35'   3A 0E69        C      	LD	A,(UE.PUF+3)
-  6D38'   47             C      	LD	B,A	;B <-- ANZ.VERZ.EINTRAG.
-  6D39'   F1             C      	POP	AF
-  6D3A'   D1             C      	POP	DE
-  6D3B'   E1             C      	POP	HL
-  6D3C'   C9             C      	RET
-  6D3D'   F1             C      	POP	AF
-  6D3E'   D1             C      	POP	DE
-  6D3F'   E1             C      	POP	HL
-  6D40'   FD E1          C      	POP	IY
-  6D42'   3E 90          C      	LD	A,90H
-  6D44'   CD 5694'       C      	CALL	UF.ERANZ
-  6D47'   C3 000B        C      	JP	UE.SYSTB
-                         C      ;----------------------------------------------------------------------
-  6D4A'                  C      U1.NMVGL:
-  6D4A'   C5             C      	PUSH	BC
-  6D4B'   D5             C      	PUSH	DE
-  6D4C'   E5             C      	PUSH	HL
-  6D4D'   06 06          C      	LD	B,6
-  6D4F'   11 0E66        C      	LD	DE,UE.PUF
-  6D52'   1A             C      	LD	A,(DE)
-  6D53'   BE             C      	CP	(HL)	;HL:ZU SUCHENDER PROGR.NAME
-  6D54'   20 0C          C      	JR	NZ,$+14
-  6D56'   23             C      	INC	HL
-  6D57'   13             C      	INC	DE
-  6D58'   10 F8          C      	DJNZ	$-6
-  6D5A'   3A 0E7D        C      	LD	A,(UE.PUF+23)	;LABELNR. -->A
-  6D5D'   37             C      	SCF		;CY=1,WENN PROGR. GEFUNDEN
-  6D5E'   E1             C      	POP	HL
+  6CD8'                  C      U1.BREAD:
+  6CD8'   CD 6D1B'       C      	CALL	U1.EIN	;BLOCK LESEN VON EINGABE
+  6CDB'   DD 36 05 02    C      	LD	(IX+5),02H
+  6CDF'   CD 5668'       C      	CALL	UF.EXEC
+  6CE2'   C9             C      	RET
+  6CE3'                  C      U1.BWRIT:
+  6CE3'   CD 6D24'       C      	CALL	U1.AUS	;BLOCK SCHREIBEN AUF AUSGABE
+  6CE6'   DD 36 05 08    C      	LD	(IX+5),08H
+  6CEA'   CD 5668'       C      	CALL	UF.EXEC
+  6CED'   C9             C      	RET
+  6CEE'                  C      U1.COPB2:
+  6CEE'   F5             C      	PUSH	AF
+  6CEF'   37             C      	SCF
+  6CF0'   18 02          C      	JR	$+4
+  6CF2'                  C      U1.COPB:
+  6CF2'   F5             C      	PUSH	AF
+  6CF3'   B7             C      	OR	A
+  6CF4'   CD 6D1B'       C      	CALL	U1.EIN
+  6CF7'   DD 36 05 02    C      	LD	(IX+5),02H
+  6CFB'   DC 6754'       C      	CALL	C,KX.EXEC2
+  6CFE'   D4 5668'       C      	CALL	NC,UF.EXEC
+  6D01'   F5             C      	PUSH	AF
+  6D02'   CD 6D24'       C      	CALL	U1.AUS
+  6D05'   DD 7E 09       C      	LD	A,(IX+9)
+  6D08'   DD B6 0A       C      	OR	(IX+10)
+  6D0B'   28 08          C      	JR	Z,$+10
+  6D0D'   CD 6CE3'       C      	CALL	U1.BWRIT
+  6D10'   F1             C      	POP	AF
+  6D11'   38 DC          C      	JR	C,$-34
 'Allgemeine Unterprogramme'	MACRO-80 3.44	09-Dec-81	PAGE	1-64
 
 
-  6D5F'   D1             C      	POP	DE
-  6D60'   C1             C      	POP	BC
-  6D61'   C9             C      	RET
-  6D62'   B7             C      	OR	A
-  6D63'   18 F9          C      	JR	$-5
+  6D13'   30 DE          C      	JR	NC,$-32
+  6D15'   CD 6AD5'       C      	CALL	UR.KBM
+  6D18'   F1             C      	POP	AF
+  6D19'   F1             C      	POP	AF
+  6D1A'   C9             C      	RET
+  6D1B'                  C      U1.EIN:
+  6D1B'   F5             C      	PUSH	AF
+  6D1C'   3A E000        C      	LD	A,(BC.TAB1)
+  6D1F'   DD 77 03       C      	LD	(IX+3),A
+  6D22'   F1             C      	POP	AF
+  6D23'   C9             C      	RET
+  6D24'                  C      U1.AUS:
+  6D24'   F5             C      	PUSH	AF
+  6D25'   3A E001        C      	LD	A,(BC.TAB1+1)
+  6D28'   DD 77 03       C      	LD	(IX+3),A
+  6D2B'   F1             C      	POP	AF
+  6D2C'   C9             C      	RET
                          C      ;----------------------------------------------------------------------
-  6D65'                  C      U1.KTINI:
-  6D65'   E5             C      	PUSH	HL
-  6D66'   C5             C      	PUSH	BC
-  6D67'   F5             C      	PUSH	AF
-  6D68'   CD 6E2C'       C      	CALL	U1.BILO	;UNTERE HAELFTE BS LOESCHEN
-  6D6B'   DD 21 2B01'    C      	LD	IX,UB.KTAB	;ADR. STEUERTAB. F.KASS.ROUTINE
-  6D6F'   DD E5          C      	PUSH	IX
-  6D71'   E1             C      	POP	HL
-  6D72'   AF             C      	XOR	A
-  6D73'   06 1B          C      	LD	B,27
-  6D75'   CD 6E21'       C      	CALL	U1.TR	;TAB. AUF 00 LOESCHEN
-  6D78'   DD 36 03 30    C      	LD	(IX+3),30H
-                         C      ;	CALL	UE.KINI
-  6D7C'   18 03          C      	JR	$+5
-  6D7E'                  C      U1.KTIN1:
-  6D7E'   E5             C      	PUSH	HL
-  6D7F'   C5             C      	PUSH	BC
-  6D80'   F5             C      	PUSH	AF
-                         C      ;	LD	(IX+11),7	;ANZAHL LESE/SCHREIBWDHLGNN
-                         C      ;	LD	(IX+12),4	;ANZAHL
-  6D81'   21 0E66        C      	LD	HL,UE.PUF
-  6D84'   CD 6EAC'       C      	CALL	XY.STIDX
-  6D87'   07             C      	DB	7	;SYSTEMPUFFERADR.-->TAB
-  6D88'   21 8010        C      	LD	HL,UE.KPUFF
-  6D8B'   CD 6E9C'       C      	CALL	XY.STDX
-  6D8E'   19             C      	DB	25	;E/A PUFFERADR.-->TAB	;???
-  6D8F'   F1             C      	POP	AF
-  6D90'   C1             C      	POP	BC
-  6D91'   E1             C      	POP	HL
-  6D92'   C9             C      	RET
+  6D2D'                  C      U1.VS1:
+  6D2D'   E5             C      	PUSH	HL
+  6D2E'   C5             C      	PUSH	BC
+  6D2F'   F5             C      	PUSH	AF
+  6D30'   3E 01          C      	LD	A,01H	;1.DATEIVORSATZ IM PUFFER
+  6D32'   18 04          C      	JR	$+6
+  6D34'                  C      U1.VSX:
+  6D34'   E5             C      	PUSH	HL
+  6D35'   C5             C      	PUSH	BC
+  6D36'   F5             C      	PUSH	AF
+  6D37'   AF             C      	XOR	A	;00-DATEIVORSATZ IM PUFFER
+  6D38'   06 20          C      	LD	B,32
+  6D3A'   21 0E66        C      	LD	HL,UE.PUF
+  6D3D'   CD 6E4C'       C      	CALL	U1.TR
+  6D40'   F1             C      	POP	AF
+  6D41'   C1             C      	POP	BC
+  6D42'   E1             C      	POP	HL
+  6D43'   C9             C      	RET
                          C      ;----------------------------------------------------------------------
-  6D93'                  C      U1.VERIN:
-  6D93'   E5             C      	PUSH	HL
-  6D94'   C5             C      	PUSH	BC
-  6D95'   F5             C      	PUSH	AF
-  6D96'   11 EC82        C      	LD	DE,BC.VTABE	;VERZ. EINGABEGER. EINLESEN
-  6D99'   18 03          C      	JR	$+5
-  6D9B'                  C      U1.VERNI:
-  6D9B'   E5             C      	PUSH	HL
-  6D9C'   C5             C      	PUSH	BC
-  6D9D'   F5             C      	PUSH	AF
-  6D9E'   3A 0E69        C      	LD	A,(UE.PUF+3)	;ANZ. DATEIEN-->B
-  6DA1'   47             C      	LD	B,A
-  6DA2'   C5             C      	PUSH	BC
-  6DA3'   21 0E66        C      	LD	HL,UE.PUF
-  6DA6'   01 0020        C      	LD	BC,32
-  6DA9'   ED B0          C      	LDIR
-  6DAB'   CD 5668'       C      	CALL	UF.EXEC
-  6DAE'   C1             C      	POP	BC
-  6DAF'   10 F1          C      	DJNZ	$-13
-  6DB1'   F1             C      	POP	AF
-  6DB2'   C1             C      	POP	BC
-  6DB3'   E1             C      	POP	HL
-  6DB4'   C9             C      	RET
+  6D44'                  C      U1.DSVG:
+  6D44'   E5             C      	PUSH	HL
+  6D45'   D5             C      	PUSH	DE
+  6D46'   F5             C      	PUSH	AF
+  6D47'   06 07          C      	LD	B,7	;MRES KASSETTE ?
+  6D49'   CD 6DE8'       C      	CALL	U1.VORS1
+  6D4C'   11 0E6C        C      	LD	DE,UE.PUF+6
+  6D4F'   21 5747'       C      	LD	HL,UA.DS+6
+  6D52'   06 0E          C      	LD	B,14
+  6D54'   1A             C      	LD	A,(DE)
+  6D55'   BE             C      	CP	(HL)
+  6D56'   20 10          C      	JR	NZ,$+18
+  6D58'   13             C      	INC	DE
+  6D59'   23             C      	INC	HL
+  6D5A'   10 F8          C      	DJNZ	$-6
+  6D5C'   3A 0E67        C      	LD	A,(UE.PUF+1)
+  6D5F'   4F             C      	LD	C,A	;C <-- NEXT RECORD
+  6D60'   3A 0E69        C      	LD	A,(UE.PUF+3)
+  6D63'   47             C      	LD	B,A	;B <-- ANZ.VERZ.EINTRAG.
+  6D64'   F1             C      	POP	AF
+  6D65'   D1             C      	POP	DE
+  6D66'   E1             C      	POP	HL
+  6D67'   C9             C      	RET
+  6D68'   F1             C      	POP	AF
+  6D69'   D1             C      	POP	DE
+  6D6A'   E1             C      	POP	HL
+  6D6B'   FD E1          C      	POP	IY
+  6D6D'   3E 90          C      	LD	A,90H
+  6D6F'   CD 5697'       C      	CALL	UF.ERANZ
+  6D72'   C3 000B        C      	JP	UE.SYSTB
                          C      ;----------------------------------------------------------------------
-  6DB5'                  C      U1.VORST:
-  6DB5'   C5             C      	PUSH	BC
-  6DB6'   CD 6A94'       C      	CALL	UR.KRWW
-  6DB9'   06 06          C      	LD	B,6
-  6DBB'   18 01          C      	JR	$+3
-  6DBD'                  C      U1.VORS1:
-  6DBD'   C5             C      	PUSH	BC
-  6DBE'   DD 36 05 02    C      	LD	(IX+5),02H
-  6DC2'   CD 5668'       C      	CALL	UF.EXEC
-  6DC5'   10 FB          C      	DJNZ	$-3
-  6DC7'   C1             C      	POP	BC
-  6DC8'   C9             C      	RET
-                         C      ;----------------------------------------------------------------------
-  6DC9'                  C      U1.VZS:
-  6DC9'   D5             C      	PUSH	DE
-  6DCA'   C5             C      	PUSH	BC
-  6DCB'   E5             C      	PUSH	HL
-  6DCC'   F5             C      	PUSH	AF
-  6DCD'   CD 6AB6'       C      	CALL	UR.KBV
-  6DD0'   CD 6ABC'       C      	CALL	UR.KBR
-  6DD3'   11 0E66        C      	LD	DE,UE.PUF
-  6DD6'   01 0006        C      	LD	BC,6
+  6D75'                  C      U1.NMVGL:
+  6D75'   C5             C      	PUSH	BC
+  6D76'   D5             C      	PUSH	DE
+  6D77'   E5             C      	PUSH	HL
+  6D78'   06 06          C      	LD	B,6
+  6D7A'   11 0E66        C      	LD	DE,UE.PUF
+  6D7D'   1A             C      	LD	A,(DE)
+  6D7E'   BE             C      	CP	(HL)	;HL:ZU SUCHENDER PROGR.NAME
+  6D7F'   20 0C          C      	JR	NZ,$+14
+  6D81'   23             C      	INC	HL
+  6D82'   13             C      	INC	DE
+  6D83'   10 F8          C      	DJNZ	$-6
+  6D85'   3A 0E7D        C      	LD	A,(UE.PUF+23)	;LABELNR. -->A
+  6D88'   37             C      	SCF		;CY=1,WENN PROGR. GEFUNDEN
+  6D89'   E1             C      	POP	HL
 'Allgemeine Unterprogramme'	MACRO-80 3.44	09-Dec-81	PAGE	1-65
 
 
-  6DD9'   ED B0          C      	LDIR		;PROGR.NAME --> PUFFER
-  6DDB'   3A 2B1E'       C      	LD	A,(UB.PAR2)	;DATEITYP
-  6DDE'   12             C      	LD	(DE),A
-  6DDF'   13             C      	INC	DE
-  6DE0'   3E 44          C      	LD	A,'D'
-  6DE2'   12             C      	LD	(DE),A
-  6DE3'   13             C      	INC	DE
-  6DE4'   3A 2B20'       C      	LD	A,(UB.PAR3)
-  6DE7'   FE 7F          C      	CP	7FH
-  6DE9'   20 0F          C      	JR	NZ,$+17
-  6DEB'   21 5784'       C      	LD	HL,UA.KOMMT	;FRAGE KOMMENTAR WENN PAR3=7F
-  6DEE'   CD 6B2E'       C      	CALL	UR.MIMO
-  6DF1'   01 0006        C      	LD	BC,6
-  6DF4'   ED B0          C      	LDIR
-  6DF6'   06 09          C      	LD	B,9
-  6DF8'   18 02          C      	JR	$+4
-  6DFA'   06 0F          C      	LD	B,15
-  6DFC'   3E 20          C      	LD	A,' '
-  6DFE'   12             C      	LD	(DE),A
-  6DFF'   13             C      	INC	DE
-  6E00'   10 FC          C      	DJNZ	$-2
-  6E02'   3A 2B1C'       C      	LD	A,(UB.PAR1)
-  6E05'   12             C      	LD	(DE),A
-  6E06'   13             C      	INC	DE
-  6E07'   06 08          C      	LD	B,8
-  6E09'   AF             C      	XOR	A
-  6E0A'   12             C      	LD	(DE),A
-  6E0B'   13             C      	INC	DE
-  6E0C'   10 FC          C      	DJNZ	$-2
-  6E0E'   21 0020        C      	LD	HL,32
-  6E11'   CD 6EAC'       C      	CALL	XY.STIDX
-  6E14'   09             C      	DB	9
-  6E15'   DD 36 05 08    C      	LD	(IX+5),08H
-  6E19'   CD 5668'       C      	CALL	UF.EXEC
-  6E1C'   F1             C      	POP	AF
-  6E1D'   E1             C      	POP	HL
-  6E1E'   C1             C      	POP	BC
-  6E1F'   D1             C      	POP	DE
-  6E20'   C9             C      	RET
+  6D8A'   D1             C      	POP	DE
+  6D8B'   C1             C      	POP	BC
+  6D8C'   C9             C      	RET
+  6D8D'   B7             C      	OR	A
+  6D8E'   18 F9          C      	JR	$-5
                          C      ;----------------------------------------------------------------------
-  6E21'                  C      U1.TR:
-  6E21'   77             C      	LD	(HL),A	;A=INHALT
-  6E22'   23             C      	INC	HL
-  6E23'   10 FC          C      	DJNZ	U1.TR	;B=ANZAHL
-  6E25'   C9             C      	RET
+  6D90'                  C      U1.KTINI:
+  6D90'   E5             C      	PUSH	HL
+  6D91'   C5             C      	PUSH	BC
+  6D92'   F5             C      	PUSH	AF
+  6D93'   CD 6E57'       C      	CALL	U1.BILO	;UNTERE HAELFTE BS LOESCHEN
+  6D96'   DD 21 2B01'    C      	LD	IX,UB.KTAB	;ADR. STEUERTAB. F.KASS.ROUTINE
+  6D9A'   DD E5          C      	PUSH	IX
+  6D9C'   E1             C      	POP	HL
+  6D9D'   AF             C      	XOR	A
+  6D9E'   06 1B          C      	LD	B,27
+  6DA0'   CD 6E4C'       C      	CALL	U1.TR	;TAB. AUF 00 LOESCHEN
+  6DA3'   DD 36 03 30    C      	LD	(IX+3),30H
+                         C      ;	CALL	UE.KINI
+  6DA7'   18 03          C      	JR	$+5
+  6DA9'                  C      U1.KTIN1:
+  6DA9'   E5             C      	PUSH	HL
+  6DAA'   C5             C      	PUSH	BC
+  6DAB'   F5             C      	PUSH	AF
+                         C      ;	LD	(IX+11),7	;ANZAHL LESE/SCHREIBWDHLGNN
+                         C      ;	LD	(IX+12),4	;ANZAHL
+  6DAC'   21 0E66        C      	LD	HL,UE.PUF
+  6DAF'   CD 6ED7'       C      	CALL	XY.STIDX
+  6DB2'   07             C      	DB	7	;SYSTEMPUFFERADR.-->TAB
+  6DB3'   21 8010        C      	LD	HL,UE.KPUFF
+  6DB6'   CD 6EC7'       C      	CALL	XY.STDX
+  6DB9'   19             C      	DB	25	;E/A PUFFERADR.-->TAB	;???
+  6DBA'   F1             C      	POP	AF
+  6DBB'   C1             C      	POP	BC
+  6DBC'   E1             C      	POP	HL
+  6DBD'   C9             C      	RET
                          C      ;----------------------------------------------------------------------
-  6E26'                  C      U1.INFO:
-  6E26'   01 000E        C      	LD	BC,14
-  6E29'   ED B0          C      	LDIR
-  6E2B'   C9             C      	RET
-  6E2C'                  C      U1.BILO:
-  6E2C'   CD 6C82'       C      	CALL	U1.RSAVE
-  6E2F'   21 3370        C      	LD	HL,SD.BWSA + 11*80	;3370H
-  6E32'   01 040F        C      	LD	BC,13*80 - 1	;1120  ( -80 ... eine Zeile )
-  6E35'   36 20          C      	LD	(HL),20H
-  6E37'   54             C      	LD	D,H
-  6E38'   5D             C      	LD	E,L
-  6E39'   13             C      	INC	DE
-  6E3A'   ED B0          C      	LDIR
-  6E3C'   CD 6C8A'       C      	CALL	U1.RRST
-  6E3F'   C9             C      	RET
+  6DBE'                  C      U1.VERIN:
+  6DBE'   E5             C      	PUSH	HL
+  6DBF'   C5             C      	PUSH	BC
+  6DC0'   F5             C      	PUSH	AF
+  6DC1'   11 EC82        C      	LD	DE,BC.VTABE	;VERZ. EINGABEGER. EINLESEN
+  6DC4'   18 03          C      	JR	$+5
+  6DC6'                  C      U1.VERNI:
+  6DC6'   E5             C      	PUSH	HL
+  6DC7'   C5             C      	PUSH	BC
+  6DC8'   F5             C      	PUSH	AF
+  6DC9'   3A 0E69        C      	LD	A,(UE.PUF+3)	;ANZ. DATEIEN-->B
+  6DCC'   47             C      	LD	B,A
+  6DCD'   C5             C      	PUSH	BC
+  6DCE'   21 0E66        C      	LD	HL,UE.PUF
+  6DD1'   01 0020        C      	LD	BC,32
+  6DD4'   ED B0          C      	LDIR
+  6DD6'   CD 5668'       C      	CALL	UF.EXEC
+  6DD9'   C1             C      	POP	BC
+  6DDA'   10 F1          C      	DJNZ	$-13
+  6DDC'   F1             C      	POP	AF
+  6DDD'   C1             C      	POP	BC
+  6DDE'   E1             C      	POP	HL
+  6DDF'   C9             C      	RET
                          C      ;----------------------------------------------------------------------
-  6E40'                  C      U1.TST:
-  6E40'   B7             C      	OR	A
-  6E41'   D6 30          C      	SUB	30H
-  6E43'   47             C      	LD	B,A
-  6E44'   05             C      	DEC	B
-  6E45'   C8             C      	RET	Z
-  6E46'   05             C      	DEC	B
-  6E47'   C8             C      	RET	Z
-  6E48'   37             C      	SCF
-  6E49'   C9             C      	RET
+  6DE0'                  C      U1.VORST:
+  6DE0'   C5             C      	PUSH	BC
+  6DE1'   CD 6ABF'       C      	CALL	UR.KRWW
+  6DE4'   06 06          C      	LD	B,6
+  6DE6'   18 01          C      	JR	$+3
+  6DE8'                  C      U1.VORS1:
+  6DE8'   C5             C      	PUSH	BC
+  6DE9'   DD 36 05 02    C      	LD	(IX+5),02H
+  6DED'   CD 5668'       C      	CALL	UF.EXEC
+  6DF0'   10 FB          C      	DJNZ	$-3
+  6DF2'   C1             C      	POP	BC
+  6DF3'   C9             C      	RET
                          C      ;----------------------------------------------------------------------
-  6E4A'                  C      U1.PRADR:
-  6E4A'   E5             C      	PUSH	HL
-  6E4B'   C5             C      	PUSH	BC
-  6E4C'   06 04          C      	LD	B,4
-  6E4E'   7E             C      	LD	A,(HL)
-  6E4F'   FE 20          C      	CP	' '
-  6E51'   28 07          C      	JR	Z,$+9
-  6E53'   23             C      	INC	HL
-  6E54'   10 F8          C      	DJNZ	$-6
-  6E56'   B7             C      	OR	A
+  6DF4'                  C      U1.VZS:
+  6DF4'   D5             C      	PUSH	DE
+  6DF5'   C5             C      	PUSH	BC
+  6DF6'   E5             C      	PUSH	HL
+  6DF7'   F5             C      	PUSH	AF
+  6DF8'   CD 6AE1'       C      	CALL	UR.KBV
+  6DFB'   CD 6AE7'       C      	CALL	UR.KBR
+  6DFE'   11 0E66        C      	LD	DE,UE.PUF
+  6E01'   01 0006        C      	LD	BC,6
 'Allgemeine Unterprogramme'	MACRO-80 3.44	09-Dec-81	PAGE	1-66
 
 
-  6E57'   C1             C      	POP	BC
-  6E58'   E1             C      	POP	HL
-  6E59'   C9             C      	RET
-  6E5A'   37             C      	SCF
-  6E5B'   21 2B00'       C      	LD	HL,UB.ZN
-  6E5E'   35             C      	DEC	(HL)
-  6E5F'   18 F6          C      	JR	$-8
+  6E04'   ED B0          C      	LDIR		;PROGR.NAME --> PUFFER
+  6E06'   3A 2B1E'       C      	LD	A,(UB.PAR2)	;DATEITYP
+  6E09'   12             C      	LD	(DE),A
+  6E0A'   13             C      	INC	DE
+  6E0B'   3E 44          C      	LD	A,'D'
+  6E0D'   12             C      	LD	(DE),A
+  6E0E'   13             C      	INC	DE
+  6E0F'   3A 2B20'       C      	LD	A,(UB.PAR3)
+  6E12'   FE 7F          C      	CP	7FH
+  6E14'   20 0F          C      	JR	NZ,$+17
+  6E16'   21 5787'       C      	LD	HL,UA.KOMMT	;FRAGE KOMMENTAR WENN PAR3=7F
+  6E19'   CD 6B59'       C      	CALL	UR.MIMO
+  6E1C'   01 0006        C      	LD	BC,6
+  6E1F'   ED B0          C      	LDIR
+  6E21'   06 09          C      	LD	B,9
+  6E23'   18 02          C      	JR	$+4
+  6E25'   06 0F          C      	LD	B,15
+  6E27'   3E 20          C      	LD	A,' '
+  6E29'   12             C      	LD	(DE),A
+  6E2A'   13             C      	INC	DE
+  6E2B'   10 FC          C      	DJNZ	$-2
+  6E2D'   3A 2B1C'       C      	LD	A,(UB.PAR1)
+  6E30'   12             C      	LD	(DE),A
+  6E31'   13             C      	INC	DE
+  6E32'   06 08          C      	LD	B,8
+  6E34'   AF             C      	XOR	A
+  6E35'   12             C      	LD	(DE),A
+  6E36'   13             C      	INC	DE
+  6E37'   10 FC          C      	DJNZ	$-2
+  6E39'   21 0020        C      	LD	HL,32
+  6E3C'   CD 6ED7'       C      	CALL	XY.STIDX
+  6E3F'   09             C      	DB	9
+  6E40'   DD 36 05 08    C      	LD	(IX+5),08H
+  6E44'   CD 5668'       C      	CALL	UF.EXEC
+  6E47'   F1             C      	POP	AF
+  6E48'   E1             C      	POP	HL
+  6E49'   C1             C      	POP	BC
+  6E4A'   D1             C      	POP	DE
+  6E4B'   C9             C      	RET
+                         C      ;----------------------------------------------------------------------
+  6E4C'                  C      U1.TR:
+  6E4C'   77             C      	LD	(HL),A	;A=INHALT
+  6E4D'   23             C      	INC	HL
+  6E4E'   10 FC          C      	DJNZ	U1.TR	;B=ANZAHL
+  6E50'   C9             C      	RET
+                         C      ;----------------------------------------------------------------------
+  6E51'                  C      U1.INFO:
+  6E51'   01 000E        C      	LD	BC,14
+  6E54'   ED B0          C      	LDIR
+  6E56'   C9             C      	RET
+  6E57'                  C      U1.BILO:
+  6E57'   CD 6CAD'       C      	CALL	U1.RSAVE
+  6E5A'   21 3370        C      	LD	HL,SD.BWSA + 11*80	;3370H
+  6E5D'   01 040F        C      	LD	BC,13*80 - 1	;1120  ( -80 ... eine Zeile )
+  6E60'   36 20          C      	LD	(HL),20H
+  6E62'   54             C      	LD	D,H
+  6E63'   5D             C      	LD	E,L
+  6E64'   13             C      	INC	DE
+  6E65'   ED B0          C      	LDIR
+  6E67'   CD 6CB5'       C      	CALL	U1.RRST
+  6E6A'   C9             C      	RET
+                         C      ;----------------------------------------------------------------------
+  6E6B'                  C      U1.TST:
+  6E6B'   B7             C      	OR	A
+  6E6C'   D6 30          C      	SUB	30H
+  6E6E'   47             C      	LD	B,A
+  6E6F'   05             C      	DEC	B
+  6E70'   C8             C      	RET	Z
+  6E71'   05             C      	DEC	B
+  6E72'   C8             C      	RET	Z
+  6E73'   37             C      	SCF
+  6E74'   C9             C      	RET
+                         C      ;----------------------------------------------------------------------
+  6E75'                  C      U1.PRADR:
+  6E75'   E5             C      	PUSH	HL
+  6E76'   C5             C      	PUSH	BC
+  6E77'   06 04          C      	LD	B,4
+  6E79'   7E             C      	LD	A,(HL)
+  6E7A'   FE 20          C      	CP	' '
+  6E7C'   28 07          C      	JR	Z,$+9
+  6E7E'   23             C      	INC	HL
+  6E7F'   10 F8          C      	DJNZ	$-6
+  6E81'   B7             C      	OR	A
+'Allgemeine Unterprogramme'	MACRO-80 3.44	09-Dec-81	PAGE	1-67
+
+
+  6E82'   C1             C      	POP	BC
+  6E83'   E1             C      	POP	HL
+  6E84'   C9             C      	RET
+  6E85'   37             C      	SCF
+  6E86'   21 2B00'       C      	LD	HL,UB.ZN
+  6E89'   35             C      	DEC	(HL)
+  6E8A'   18 F6          C      	JR	$-8
                          C      ;---------------------------------------------------------------------
-  6E61'                  C      U1.KRWE:
-  6E61'   CD 6A86'       C      	CALL	UR.KRE
-  6E64'   CD 6A94'       C      	CALL	UR.KRWW
-  6E67'   C9             C      	RET
+  6E8C'                  C      U1.KRWE:
+  6E8C'   CD 6AB1'       C      	CALL	UR.KRE
+  6E8F'   CD 6ABF'       C      	CALL	UR.KRWW
+  6E92'   C9             C      	RET
                          C      ;---------------------------------------------------------------------
                          C      ;	END
                          C      	TITLE 'Handling f. IX/IY-adressierte Bereiche'
                          C      	PAGE
-'Handling f. IX/IY-adressierte Bereiche'	MACRO-80 3.44	09-Dec-81	PAGE	1-67
+'Handling f. IX/IY-adressierte Bereiche'	MACRO-80 3.44	09-Dec-81	PAGE	1-68
 
 
                          C      
@@ -4468,35 +4530,35 @@
                          C      ;                                  (HL):  Adresse 2.Parameter-Byte
                          C      ;        --------------------------------------------------------------
                          C      			;
-  6E68'                  C      XY.CALP1	EQU	$	; 1 Byte-Parameter
+  6E93'                  C      XY.CALP1	EQU	$	; 1 Byte-Parameter
                          C      			; ++++++++++++++++++++++++++++++
-  6E68'   E5             C      	PUSH	HL	; Retten HL
-  6E69'   E1             C      	POP	HL
+  6E93'   E5             C      	PUSH	HL	; Retten HL
+  6E94'   E1             C      	POP	HL
                          C      			;
-  6E6A'   EB             C      	EX	DE,HL	; DE <--> RET-Adr.f.CALPn
-  6E6B'   E3             C      	EX	(SP),HL
-  6E6C'   EB             C      	EX	DE,HL
+  6E95'   EB             C      	EX	DE,HL	; DE <--> RET-Adr.f.CALPn
+  6E96'   E3             C      	EX	(SP),HL
+  6E97'   EB             C      	EX	DE,HL
                          C      			;
-  6E6D'   E1             C      	POP	HL	; (SP) --> RET-Adr.f.ueberg.UP
+  6E98'   E1             C      	POP	HL	; (SP) --> RET-Adr.f.ueberg.UP
                          C      			;
-  6E6E'   E1             C      	POP	HL	; Laden u. korrig. ...
-  6E6F'   23             C      	INC	HL
-  6E70'   E5             C      	PUSH	HL
-  6E71'                  C      XY.CALPE:
-  6E71'   2B             C      	DEC	HL
+  6E99'   E1             C      	POP	HL	; Laden u. korrig. ...
+  6E9A'   23             C      	INC	HL
+  6E9B'   E5             C      	PUSH	HL
+  6E9C'                  C      XY.CALPE:
+  6E9C'   2B             C      	DEC	HL
                          C      			;
-  6E72'   3B             C      	DEC	SP	; (SP) --> (DE)
-  6E73'   3B             C      	DEC	SP
-  6E74'   3B             C      	DEC	SP	; (SP) --> (HL)
-  6E75'   3B             C      	DEC	SP
+  6E9D'   3B             C      	DEC	SP	; (SP) --> (DE)
+  6E9E'   3B             C      	DEC	SP
+  6E9F'   3B             C      	DEC	SP	; (SP) --> (HL)
+  6EA0'   3B             C      	DEC	SP
                          C      			;
-  6E76'   D5             C      	PUSH	DE	; RET-Adr.f.CALPn
+  6EA1'   D5             C      	PUSH	DE	; RET-Adr.f.CALPn
                          C      			;
-  6E77'   5E             C      	LD	E,(HL)	; Laden DE, HL
-  6E78'   16 00          C      	LD	D,0
-  6E7A'   23             C      	INC	HL
+  6EA2'   5E             C      	LD	E,(HL)	; Laden DE, HL
+  6EA3'   16 00          C      	LD	D,0
+  6EA5'   23             C      	INC	HL
                          C      			;
-  6E7B'   C9             C      	RET
+  6EA6'   C9             C      	RET
                          C      			;
                          C      			;
                          C      ;**********************************************************************
@@ -4509,26 +4571,26 @@
                          C      ;    DB    d                                              Stack: 4
                          C      ;    -----------   ----------------------------------------------------
                          C      			;
-  6E7C'                  C      XY.LDDX:
-  6E7C'   CD 6E68'       C      	CALL	XY.CALP1	; Uebernahme d
+  6EA7'                  C      XY.LDDX:
+  6EA7'   CD 6E93'       C      	CALL	XY.CALP1	; Uebernahme d
                          C      			;
-  6E7F'   DD E5          C      	PUSH	IX	; HL := IX+d
-  6E81'   E1             C      	POP	HL	;               <--- LDDY
-  6E82'   F5             C      	PUSH	AF
-  6E83'   19             C      	ADD	HL,DE
-  6E84'   F1             C      	POP	AF
+  6EAA'   DD E5          C      	PUSH	IX	; HL := IX+d
+  6EAC'   E1             C      	POP	HL	;               <--- LDDY
+  6EAD'   F5             C      	PUSH	AF
+  6EAE'   19             C      	ADD	HL,DE
+  6EAF'   F1             C      	POP	AF
                          C      			;
-  6E85'   5E             C      	LD	E,(HL)	; HL := (IX+d)
-  6E86'   23             C      	INC	HL
-'Handling f. IX/IY-adressierte Bereiche'	MACRO-80 3.44	09-Dec-81	PAGE	1-68
+  6EB0'   5E             C      	LD	E,(HL)	; HL := (IX+d)
+  6EB1'   23             C      	INC	HL
+'Handling f. IX/IY-adressierte Bereiche'	MACRO-80 3.44	09-Dec-81	PAGE	1-69
 
 
-  6E87'   56             C      	LD	D,(HL)
-  6E88'   EB             C      	EX	DE,HL
+  6EB2'   56             C      	LD	D,(HL)
+  6EB3'   EB             C      	EX	DE,HL
                          C      			;
-  6E89'   D1             C      	POP	DE	; Return
-  6E8A'   D1             C      	POP	DE
-  6E8B'   C9             C      	RET
+  6EB4'   D1             C      	POP	DE	; Return
+  6EB5'   D1             C      	POP	DE
+  6EB6'   C9             C      	RET
                          C      			;
                          C      ;**********************************************************************
                          C      ;
@@ -4536,23 +4598,23 @@
                          C      ;    DB    d                                              Stack: 4
                          C      ;    -----------   ----------------------------------------------------
                          C      			;
-  6E8C'                  C      XY.LIDX:
-  6E8C'   CD 6E68'       C      	CALL	XY.CALP1	; Uebernahme d
+  6EB7'                  C      XY.LIDX:
+  6EB7'   CD 6E93'       C      	CALL	XY.CALP1	; Uebernahme d
                          C      			;
-  6E8F'   DD E5          C      	PUSH	IX	; HL := IX+d
-  6E91'   E1             C      	POP	HL	;               <--- LIDY
-  6E92'   F5             C      	PUSH	AF
-  6E93'   19             C      	ADD	HL,DE
-  6E94'   F1             C      	POP	AF
+  6EBA'   DD E5          C      	PUSH	IX	; HL := IX+d
+  6EBC'   E1             C      	POP	HL	;               <--- LIDY
+  6EBD'   F5             C      	PUSH	AF
+  6EBE'   19             C      	ADD	HL,DE
+  6EBF'   F1             C      	POP	AF
                          C      			;
-  6E95'   56             C      	LD	D,(HL)	; LH := (IX+d)
-  6E96'   23             C      	INC	HL
-  6E97'   5E             C      	LD	E,(HL)
-  6E98'   EB             C      	EX	DE,HL
+  6EC0'   56             C      	LD	D,(HL)	; LH := (IX+d)
+  6EC1'   23             C      	INC	HL
+  6EC2'   5E             C      	LD	E,(HL)
+  6EC3'   EB             C      	EX	DE,HL
                          C      			;
-  6E99'   D1             C      	POP	DE	; Return
-  6E9A'   D1             C      	POP	DE
-  6E9B'   C9             C      	RET
+  6EC4'   D1             C      	POP	DE	; Return
+  6EC5'   D1             C      	POP	DE
+  6EC6'   C9             C      	RET
                          C      			;
                          C      ;**********************************************************************
                          C      ;
@@ -4560,23 +4622,23 @@
                          C      ;    DB    d                                                  Stack: 4
                          C      ;    -----------   ----------------------------------------------------
                          C      			;
-  6E9C'                  C      XY.STDX:
-  6E9C'   CD 6E68'       C      	CALL	XY.CALP1	; Uebernahme d
+  6EC7'                  C      XY.STDX:
+  6EC7'   CD 6E93'       C      	CALL	XY.CALP1	; Uebernahme d
                          C      			;
-  6E9F'   DD E5          C      	PUSH	IX	; HL := IX+d
-  6EA1'   E1             C      	POP	HL	;               <--- STDY
-  6EA2'   F5             C      	PUSH	AF
-  6EA3'   19             C      	ADD	HL,DE
-  6EA4'   F1             C      	POP	AF
+  6ECA'   DD E5          C      	PUSH	IX	; HL := IX+d
+  6ECC'   E1             C      	POP	HL	;               <--- STDY
+  6ECD'   F5             C      	PUSH	AF
+  6ECE'   19             C      	ADD	HL,DE
+  6ECF'   F1             C      	POP	AF
                          C      			;
-  6EA5'   D1             C      	POP	DE
-  6EA6'   73             C      	LD	(HL),E	; (IX+d) := HL
-  6EA7'   23             C      	INC	HL
-  6EA8'   72             C      	LD	(HL),D
-  6EA9'   EB             C      	EX	DE,HL
+  6ED0'   D1             C      	POP	DE
+  6ED1'   73             C      	LD	(HL),E	; (IX+d) := HL
+  6ED2'   23             C      	INC	HL
+  6ED3'   72             C      	LD	(HL),D
+  6ED4'   EB             C      	EX	DE,HL
                          C      			;
-  6EAA'   D1             C      	POP	DE	; Return
-  6EAB'   C9             C      	RET
+  6ED5'   D1             C      	POP	DE	; Return
+  6ED6'   C9             C      	RET
                          C      			;
                          C      ;**********************************************************************
                          C      ;
@@ -4584,58 +4646,58 @@
                          C      ;    DB    d                                                  Stack: 4
                          C      ;    -----------   ----------------------------------------------------
                          C      			;
-  6EAC'                  C      XY.STIDX:
-  6EAC'   CD 6E68'       C      	CALL	XY.CALP1	; Uebernahme d
+  6ED7'                  C      XY.STIDX:
+  6ED7'   CD 6E93'       C      	CALL	XY.CALP1	; Uebernahme d
                          C      			;
-  6EAF'   DD E5          C      	PUSH	IX	; HL := IX+d
-  6EB1'   E1             C      	POP	HL	;               <--- STIDY
-  6EB2'   F5             C      	PUSH	AF
-  6EB3'   19             C      	ADD	HL,DE
-  6EB4'   F1             C      	POP	AF
+  6EDA'   DD E5          C      	PUSH	IX	; HL := IX+d
+  6EDC'   E1             C      	POP	HL	;               <--- STIDY
+  6EDD'   F5             C      	PUSH	AF
+  6EDE'   19             C      	ADD	HL,DE
+  6EDF'   F1             C      	POP	AF
                          C      			;
-  6EB5'   D1             C      	POP	DE
-  6EB6'   72             C      	LD	(HL),D	; (IX+d) := LH
-  6EB7'   23             C      	INC	HL
-  6EB8'   73             C      	LD	(HL),E
-  6EB9'   EB             C      	EX	DE,HL
+  6EE0'   D1             C      	POP	DE
+  6EE1'   72             C      	LD	(HL),D	; (IX+d) := LH
+  6EE2'   23             C      	INC	HL
+  6EE3'   73             C      	LD	(HL),E
+  6EE4'   EB             C      	EX	DE,HL
                          C      			;
-  6EBA'   D1             C      	POP	DE	; Return
-  6EBB'   C9             C      	RET
+  6EE5'   D1             C      	POP	DE	; Return
+  6EE6'   C9             C      	RET
                          C      			;
                          C      ;**********************************************************************
                          C      ;
                          C      ;    CALL  INCDX    'Increment':        (IX+d) := (IX+d) + 1
                          C      ;    DB    d                                    Flags wie ADC HL,...
-'Handling f. IX/IY-adressierte Bereiche'	MACRO-80 3.44	09-Dec-81	PAGE	1-69
+'Handling f. IX/IY-adressierte Bereiche'	MACRO-80 3.44	09-Dec-81	PAGE	1-70
 
 
                          C      ;                                                             Stack: 4
                          C      ;    -----------   ----------------------------------------------------
                          C      			;
-  6EBC'                  C      XY.INCDX:
-  6EBC'   CD 6E68'       C      	CALL	XY.CALP1	; Uebernahme d
+  6EE7'                  C      XY.INCDX:
+  6EE7'   CD 6E93'       C      	CALL	XY.CALP1	; Uebernahme d
                          C      			;
-  6EBF'   DD E5          C      	PUSH	IX	; HL := IX+d
-  6EC1'   E1             C      	POP	HL	;               <--- INCDY
-  6EC2'   19             C      	ADD	HL,DE
+  6EEA'   DD E5          C      	PUSH	IX	; HL := IX+d
+  6EEC'   E1             C      	POP	HL	;               <--- INCDY
+  6EED'   19             C      	ADD	HL,DE
                          C      			;
-  6EC3'   5E             C      	LD	E,(HL)	; DE := (IX+d)
-  6EC4'   23             C      	INC	HL
-  6EC5'   56             C      	LD	D,(HL)
+  6EEE'   5E             C      	LD	E,(HL)	; DE := (IX+d)
+  6EEF'   23             C      	INC	HL
+  6EF0'   56             C      	LD	D,(HL)
                          C      			;
-  6EC6'   E5             C      	PUSH	HL	; DE := (IX+d) + 1
-  6EC7'   21 0001        C      	LD	HL,1
-  6ECA'   B7             C      	OR	A
-  6ECB'   ED 5A          C      	ADC	HL,DE
-  6ECD'   EB             C      	EX	DE,HL
-  6ECE'   E1             C      	POP	HL
-  6ECF'   72             C      	LD	(HL),D
-  6ED0'   2B             C      	DEC	HL
-  6ED1'   73             C      	LD	(HL),E
+  6EF1'   E5             C      	PUSH	HL	; DE := (IX+d) + 1
+  6EF2'   21 0001        C      	LD	HL,1
+  6EF5'   B7             C      	OR	A
+  6EF6'   ED 5A          C      	ADC	HL,DE
+  6EF8'   EB             C      	EX	DE,HL
+  6EF9'   E1             C      	POP	HL
+  6EFA'   72             C      	LD	(HL),D
+  6EFB'   2B             C      	DEC	HL
+  6EFC'   73             C      	LD	(HL),E
                          C      			;
-  6ED2'   E1             C      	POP	HL	; Return
-  6ED3'   D1             C      	POP	DE
-  6ED4'   C9             C      	RET
+  6EFD'   E1             C      	POP	HL	; Return
+  6EFE'   D1             C      	POP	DE
+  6EFF'   C9             C      	RET
                          C      			;
                          C      ;**********************************************************************
                          C      ;*                                                                    *
@@ -4649,30 +4711,30 @@
                          C      ;                                           Veraendert freie Stack-Pl.
                          C      ;    -----------   ----------------------------------------------------
                          C      			;
-  6ED5'                  C      XY.JMPDX:
-  6ED5'   CD 6E68'       C      	CALL	XY.CALP1	; Uebernahme d
+  6F00'                  C      XY.JMPDX:
+  6F00'   CD 6E93'       C      	CALL	XY.CALP1	; Uebernahme d
                          C      			;
-  6ED8'   DD E5          C      	PUSH	IX	; HL := IX+d
-  6EDA'   E1             C      	POP	HL	;               <--- JMPDY
-  6EDB'   F5             C      	PUSH	AF
-  6EDC'   19             C      	ADD	HL,DE
-  6EDD'   F1             C      	POP	AF
+  6F03'   DD E5          C      	PUSH	IX	; HL := IX+d
+  6F05'   E1             C      	POP	HL	;               <--- JMPDY
+  6F06'   F5             C      	PUSH	AF
+  6F07'   19             C      	ADD	HL,DE
+  6F08'   F1             C      	POP	AF
                          C      			;
-  6EDE'   5E             C      	LD	E,(HL)	; HL := (IX+d)
-  6EDF'   23             C      	INC	HL
-  6EE0'   56             C      	LD	D,(HL)
-  6EE1'   EB             C      	EX	DE,HL
+  6F09'   5E             C      	LD	E,(HL)	; HL := (IX+d)
+  6F0A'   23             C      	INC	HL
+  6F0B'   56             C      	LD	D,(HL)
+  6F0C'   EB             C      	EX	DE,HL
                          C      			;
-  6EE2'   D1             C      	POP	DE	; Return = Jump
-  6EE3'   E3             C      	EX	(SP),HL
-  6EE4'   EB             C      	EX	DE,HL
-  6EE5'   C9             C      	RET
+  6F0D'   D1             C      	POP	DE	; Return = Jump
+  6F0E'   E3             C      	EX	(SP),HL
+  6F0F'   EB             C      	EX	DE,HL
+  6F10'   C9             C      	RET
                          C      			;
                          C      ;**********************************************************************
                          C      ;	END
                          C      	TITLE 'Konvertierungen'
                          C      	PAGE
-'Konvertierungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-70
+'Konvertierungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-71
 
 
                          C      
@@ -4684,55 +4746,55 @@
                          C      ;----------------------------------------------------------------------
                          C      ;                            HL := HL * 10
                          C      ;                                      (ohne Kontrolle auf Uebertrag)
-  6EE6'                  C      UC.HL10N:
-  6EE6'   E5             C      	PUSH	HL
-  6EE7'   D1             C      	POP	DE	; alter Wert in DE
-  6EE8'   29             C      	ADD	HL,HL
-  6EE9'   29             C      	ADD	HL,HL
-  6EEA'   19             C      	ADD	HL,DE
-  6EEB'   29             C      	ADD	HL,HL
-  6EEC'   C9             C      	RET
+  6F11'                  C      UC.HL10N:
+  6F11'   E5             C      	PUSH	HL
+  6F12'   D1             C      	POP	DE	; alter Wert in DE
+  6F13'   29             C      	ADD	HL,HL
+  6F14'   29             C      	ADD	HL,HL
+  6F15'   19             C      	ADD	HL,DE
+  6F16'   29             C      	ADD	HL,HL
+  6F17'   C9             C      	RET
                          C      ;                            HL := HL * 10
                          C      ;                                            -->  C: Uebertrag in A
-  6EED'                  C      UC.HL10C:
-  6EED'   E5             C      	PUSH	HL
-  6EEE'   D1             C      	POP	DE	; alter Wert in DE
-  6EEF'   AF             C      	XOR	A
-  6EF0'   29             C      	ADD	HL,HL
-  6EF1'   30 01          C      	JR	NC,$+3
-  6EF3'   3C             C      	INC	A
-  6EF4'   87             C      	ADD	A,A
-  6EF5'   29             C      	ADD	HL,HL
-  6EF6'   30 01          C      	JR	NC,$+3
-  6EF8'   3C             C      	INC	A
-  6EF9'   19             C      	ADD	HL,DE
-  6EFA'   30 01          C      	JR	NC,$+3
-  6EFC'   3C             C      	INC	A
-  6EFD'   87             C      	ADD	A,A
-  6EFE'   29             C      	ADD	HL,HL
-  6EFF'   30 01          C      	JR	NC,$+3
-  6F01'   3C             C      	INC	A
-  6F02'   B7             C      	OR	A
-  6F03'   C8             C      	RET	Z
-  6F04'   37             C      	SCF
-  6F05'   C9             C      	RET
+  6F18'                  C      UC.HL10C:
+  6F18'   E5             C      	PUSH	HL
+  6F19'   D1             C      	POP	DE	; alter Wert in DE
+  6F1A'   AF             C      	XOR	A
+  6F1B'   29             C      	ADD	HL,HL
+  6F1C'   30 01          C      	JR	NC,$+3
+  6F1E'   3C             C      	INC	A
+  6F1F'   87             C      	ADD	A,A
+  6F20'   29             C      	ADD	HL,HL
+  6F21'   30 01          C      	JR	NC,$+3
+  6F23'   3C             C      	INC	A
+  6F24'   19             C      	ADD	HL,DE
+  6F25'   30 01          C      	JR	NC,$+3
+  6F27'   3C             C      	INC	A
+  6F28'   87             C      	ADD	A,A
+  6F29'   29             C      	ADD	HL,HL
+  6F2A'   30 01          C      	JR	NC,$+3
+  6F2C'   3C             C      	INC	A
+  6F2D'   B7             C      	OR	A
+  6F2E'   C8             C      	RET	Z
+  6F2F'   37             C      	SCF
+  6F30'   C9             C      	RET
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      ;                            Division mit Rest:  A  := HL / DE
                          C      ;                                                HL := Rest
                          C      			;      Cy(A) --->  A=255
                          C      			;-------------------------------
-  6F06'                  C      UC.DIVR:
-  6F06'   AF             C      	XOR	A
-  6F07'   ED 52          C      	SBC	HL,DE
-  6F09'   3C             C      	INC	A
-  6F0A'   20 03          C      	JR	NZ,$+5
-  6F0C'   3D             C      	DEC	A
-  6F0D'   38 03          C      	JR	C,$+5
-  6F0F'   30 F6          C      	JR	NC,$-8
-  6F11'   3D             C      	DEC	A
-  6F12'   19             C      	ADD	HL,DE
-  6F13'   C9             C      	RET
+  6F31'                  C      UC.DIVR:
+  6F31'   AF             C      	XOR	A
+  6F32'   ED 52          C      	SBC	HL,DE
+  6F34'   3C             C      	INC	A
+  6F35'   20 03          C      	JR	NZ,$+5
+  6F37'   3D             C      	DEC	A
+  6F38'   38 03          C      	JR	C,$+5
+  6F3A'   30 F6          C      	JR	NC,$-8
+  6F3C'   3D             C      	DEC	A
+  6F3D'   19             C      	ADD	HL,DE
+  6F3E'   C9             C      	RET
                          C      			;
                          C      ;**********************************************************************
                          C      ;*                                                                    *
@@ -4752,61 +4814,61 @@
                          C      			;
                          C      ;                            In A:      Binaer < 16 --> ASCII hexa
                          C      ;                            ------------------------------------------
-  6F14'                  C      UC.CVABX:
-  6F14'   E6 0F          C      	AND	0FH
-  6F16'   F6 30          C      	OR	30H
-  6F18'   FE 3A          C      	CP	3AH
-  6F1A'   D8             C      	RET	C
-'Konvertierungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-71
+  6F3F'                  C      UC.CVABX:
+  6F3F'   E6 0F          C      	AND	0FH
+  6F41'   F6 30          C      	OR	30H
+  6F43'   FE 3A          C      	CP	3AH
+  6F45'   D8             C      	RET	C
+'Konvertierungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-72
 
 
-  6F1B'   C6 07          C      	ADD	A,7H
-  6F1D'   C9             C      	RET
+  6F46'   C6 07          C      	ADD	A,7H
+  6F48'   C9             C      	RET
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      ;                            Byte binaer (HL) --> 2 ASCII hexa (DE)
                          C      ;                                                            HL+1, DE+2
                          C      ;                            ------------------------------------------
-  6F1E'                  C      UC.CVBX:
-  6F1E'   7E             C      	LD	A,(HL)
-  6F1F'   23             C      	INC	HL	; benutzt: A, 2 Stack-P.
+  6F49'                  C      UC.CVBX:
+  6F49'   7E             C      	LD	A,(HL)
+  6F4A'   23             C      	INC	HL	; benutzt: A, 2 Stack-P.
                          C      			;
-  6F20'   F5             C      	PUSH	AF	;ENTRY,WENN ZEICHEN IN A
-  6F21'   0F             C      	RRCA
-  6F22'   0F             C      	RRCA
-  6F23'   0F             C      	RRCA
-  6F24'   0F             C      	RRCA
-  6F25'   CD 6F29'       C      	CALL	$+4
-  6F28'   F1             C      	POP	AF
+  6F4B'   F5             C      	PUSH	AF	;ENTRY,WENN ZEICHEN IN A
+  6F4C'   0F             C      	RRCA
+  6F4D'   0F             C      	RRCA
+  6F4E'   0F             C      	RRCA
+  6F4F'   0F             C      	RRCA
+  6F50'   CD 6F54'       C      	CALL	$+4
+  6F53'   F1             C      	POP	AF
                          C      			;
-  6F29'   CD 6F14'       C      	CALL	UC.CVABX
-  6F2C'   12             C      	LD	(DE),A
-  6F2D'   13             C      	INC	DE
-  6F2E'   C9             C      	RET
+  6F54'   CD 6F3F'       C      	CALL	UC.CVABX
+  6F57'   12             C      	LD	(DE),A
+  6F58'   13             C      	INC	DE
+  6F59'   C9             C      	RET
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      ;                       Adresse (L,H) binaer (HL) --> 4 ASCII hexa (DE)
                          C      ;                                                            HL+2, DE+4
                          C      ;                       -----------------------------------------------
-  6F2F'                  C      UC.CVAX:
-  6F2F'   23             C      	INC	HL
-  6F30'   CD 6F1E'       C      	CALL	UC.CVBX	; benutzt: A, 3 Stack-P.
-  6F33'   2B             C      	DEC	HL
-  6F34'   2B             C      	DEC	HL
-  6F35'   CD 6F1E'       C      	CALL	UC.CVBX
-  6F38'   23             C      	INC	HL
-  6F39'   C9             C      	RET
+  6F5A'                  C      UC.CVAX:
+  6F5A'   23             C      	INC	HL
+  6F5B'   CD 6F49'       C      	CALL	UC.CVBX	; benutzt: A, 3 Stack-P.
+  6F5E'   2B             C      	DEC	HL
+  6F5F'   2B             C      	DEC	HL
+  6F60'   CD 6F49'       C      	CALL	UC.CVBX
+  6F63'   23             C      	INC	HL
+  6F64'   C9             C      	RET
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      ;                       Adresse aus HL, binaer    --> 4 ASCII hexa (DE)
                          C      ;                                                                  DE+4
                          C      ;                       -----------------------------------------------
-  6F3A'                  C      UC.CVHLX:
-  6F3A'   7C             C      	LD	A,H
-  6F3B'   CD 6F20'       C      	CALL	UC.CVBX+2	; benutzt: A, 3 Stack-P.
-  6F3E'   7D             C      	LD	A,L
-  6F3F'   CD 6F20'       C      	CALL	UC.CVBX+2
-  6F42'   C9             C      	RET
+  6F65'                  C      UC.CVHLX:
+  6F65'   7C             C      	LD	A,H
+  6F66'   CD 6F4B'       C      	CALL	UC.CVBX+2	; benutzt: A, 3 Stack-P.
+  6F69'   7D             C      	LD	A,L
+  6F6A'   CD 6F4B'       C      	CALL	UC.CVBX+2
+  6F6D'   C9             C      	RET
                          C      			;
                          C      			;
                          C      ;      ---------------------------------------------------------------
@@ -4814,19 +4876,19 @@
                          C      ;
                          C      ;                                       Datenfehler: Cy, A undefiniert
                          C      ;                            ------------------------------------------
-  6F43'                  C      UC.CVAXB:
-  6F43'   D6 30          C      	SUB	30H
-  6F45'   D8             C      	RET	C		;       (A) < '0'
-  6F46'   FE 0A          C      	CP	10
-  6F48'   3F             C      	CCF
-  6F49'   D0             C      	RET	NC
-  6F4A'   FE 11          C      	CP	11H
-  6F4C'   D8             C      	RET	C		; '9' < (A) < 'A'
-  6F4D'   FE 17          C      	CP	17H
-  6F4F'   3F             C      	CCF
-  6F50'   D8             C      	RET	C		; 'F' < (A)
-  6F51'   D6 07          C      	SUB	7H
-  6F53'   C9             C      	RET
+  6F6E'                  C      UC.CVAXB:
+  6F6E'   D6 30          C      	SUB	30H
+  6F70'   D8             C      	RET	C		;       (A) < '0'
+  6F71'   FE 0A          C      	CP	10
+  6F73'   3F             C      	CCF
+  6F74'   D0             C      	RET	NC
+  6F75'   FE 11          C      	CP	11H
+  6F77'   D8             C      	RET	C		; '9' < (A) < 'A'
+  6F78'   FE 17          C      	CP	17H
+  6F7A'   3F             C      	CCF
+  6F7B'   D8             C      	RET	C		; 'F' < (A)
+  6F7C'   D6 07          C      	SUB	7H
+  6F7E'   C9             C      	RET
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      ;                            2 ASCII hexa (DE) --> Byte binaer (HL)
@@ -4834,44 +4896,44 @@
                          C      ;
                          C      ;                                       mit Datenfehler-Behandlung
                          C      ;                            ------------------------------------------
-  6F54'                  C      UC.CVXB:
-  6F54'   C5             C      	PUSH	BC
+  6F7F'                  C      UC.CVXB:
+  6F7F'   C5             C      	PUSH	BC
                          C      			; benutzt: A, 3 Stack-P.
-  6F55'   CD 6F65'       C      	CALL	UC.CVX1B
-  6F58'   87             C      	ADD	A,A
-  6F59'   87             C      	ADD	A,A
-  6F5A'   87             C      	ADD	A,A
-  6F5B'   87             C      	ADD	A,A
-  6F5C'   4F             C      	LD	C,A
-'Konvertierungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-72
+  6F80'   CD 6F90'       C      	CALL	UC.CVX1B
+  6F83'   87             C      	ADD	A,A
+  6F84'   87             C      	ADD	A,A
+  6F85'   87             C      	ADD	A,A
+  6F86'   87             C      	ADD	A,A
+  6F87'   4F             C      	LD	C,A
+'Konvertierungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-73
 
 
                          C      			;
-  6F5D'   CD 6F65'       C      	CALL	UC.CVX1B
-  6F60'   81             C      	ADD	A,C
+  6F88'   CD 6F90'       C      	CALL	UC.CVX1B
+  6F8B'   81             C      	ADD	A,C
                          C      			;
-  6F61'   77             C      	LD	(HL),A
-  6F62'   23             C      	INC	HL
-  6F63'   C1             C      	POP	BC
-  6F64'   C9             C      	RET
+  6F8C'   77             C      	LD	(HL),A
+  6F8D'   23             C      	INC	HL
+  6F8E'   C1             C      	POP	BC
+  6F8F'   C9             C      	RET
                          C      			;
-  6F65'                  C      UC.CVX1B:
-  6F65'   1A             C      	LD	A,(DE)	; ASCII hexa (DE) --> A binaer,
-  6F66'   CD 6F43'       C      	CALL	UC.CVAXB	;                           DE+1
-  6F69'   DC 6F6E'       C      	CALL	C,UC.CVXER
-  6F6C'   13             C      	INC	DE
-  6F6D'   C9             C      	RET
+  6F90'                  C      UC.CVX1B:
+  6F90'   1A             C      	LD	A,(DE)	; ASCII hexa (DE) --> A binaer,
+  6F91'   CD 6F6E'       C      	CALL	UC.CVAXB	;                           DE+1
+  6F94'   DC 6F99'       C      	CALL	C,UC.CVXER
+  6F97'   13             C      	INC	DE
+  6F98'   C9             C      	RET
                          C      			;
-  6F6E'                  C      UC.CVXER:
-  6F6E'   EB             C      	EX	DE,HL       ; Datenfehler-Behandlung hexa
-  6F6F'   CD 4033        C      	CALL	SY.SETCHL      ;         set cursor
-  6F72'   CD 6C5A'       C          CALL  UR.TAREP  ; <-+     tast.request
-  6F75'   77             C          LD    (HL),A    ;   |     write in conv.-area
-  6F76'   CD 6F43'       C          CALL  UC.CVAXB  ;   |     conv.in A
-  6F79'   38 F7          C          JR    C,$-7     ; --+     on error ...
-  6F7B'   CD 4036        C          CALL	SY.RESC
-  6F7E'   EB             C          EX    DE,HL
-  6F7F'   C9             C          RET
+  6F99'                  C      UC.CVXER:
+  6F99'   EB             C      	EX	DE,HL       ; Datenfehler-Behandlung hexa
+  6F9A'   CD 4033        C      	CALL	SY.SETCHL      ;         set cursor
+  6F9D'   CD 6C85'       C          CALL  UR.TAREP  ; <-+     tast.request
+  6FA0'   77             C          LD    (HL),A    ;   |     write in conv.-area
+  6FA1'   CD 6F6E'       C          CALL  UC.CVAXB  ;   |     conv.in A
+  6FA4'   38 F7          C          JR    C,$-7     ; --+     on error ...
+  6FA6'   CD 4036        C          CALL	SY.RESC
+  6FA9'   EB             C          EX    DE,HL
+  6FAA'   C9             C          RET
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      ;                       4 ASCII hexa (DE) --> Adresse (L,H) binaer (HL)
@@ -4879,14 +4941,14 @@
                          C      ;
                          C      ;                                       mit Datenfehler-Behandlung
                          C      ;                       -----------------------------------------------
-  6F80'                  C      UC.CVXA:
-  6F80'   23             C      	INC	HL
-  6F81'   CD 6F54'       C      	CALL	UC.CVXB	; benutzt: A, 4 Stack-P.
-  6F84'   2B             C      	DEC	HL
-  6F85'   2B             C      	DEC	HL
-  6F86'   CD 6F54'       C      	CALL	UC.CVXB
-  6F89'   23             C      	INC	HL
-  6F8A'   C9             C      	RET
+  6FAB'                  C      UC.CVXA:
+  6FAB'   23             C      	INC	HL
+  6FAC'   CD 6F7F'       C      	CALL	UC.CVXB	; benutzt: A, 4 Stack-P.
+  6FAF'   2B             C      	DEC	HL
+  6FB0'   2B             C      	DEC	HL
+  6FB1'   CD 6F7F'       C      	CALL	UC.CVXB
+  6FB4'   23             C      	INC	HL
+  6FB5'   C9             C      	RET
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      ;                     2 Byte binaer in HL ---> 1...5-stellig dezi (DE),
@@ -4896,77 +4958,77 @@
                          C      ;                                  zu wenig Stellen -->
                          C      ;                                      '*' in der obersten angeg.Stelle
                          C      ;                      ------------------------------------------------
-  6F8B'                  C      UC.CVBD5:
-  6F8B'   3E 05          C      	LD	A,5	; benutzt: A, 7 Stack-P.
-  6F8D'   18 0E          C      	JR	$+16
-  6F8F'                  C      UC.CVBD4:
-  6F8F'   3E 04          C      	LD	A,4
-  6F91'   18 0A          C      	JR	$+12
-  6F93'                  C      UC.CVBD3:
-  6F93'   3E 03          C      	LD	A,3
-  6F95'   18 06          C      	JR	$+8
-  6F97'                  C      UC.CVBD2:
-  6F97'   3E 02          C      	LD	A,2
-  6F99'   18 02          C      	JR	$+4
-  6F9B'                  C      UC.CVBD1:
-  6F9B'   3E 01          C      	LD	A,1
+  6FB6'                  C      UC.CVBD5:
+  6FB6'   3E 05          C      	LD	A,5	; benutzt: A, 7 Stack-P.
+  6FB8'   18 0E          C      	JR	$+16
+  6FBA'                  C      UC.CVBD4:
+  6FBA'   3E 04          C      	LD	A,4
+  6FBC'   18 0A          C      	JR	$+12
+  6FBE'                  C      UC.CVBD3:
+  6FBE'   3E 03          C      	LD	A,3
+  6FC0'   18 06          C      	JR	$+8
+  6FC2'                  C      UC.CVBD2:
+  6FC2'   3E 02          C      	LD	A,2
+  6FC4'   18 02          C      	JR	$+4
+  6FC6'                  C      UC.CVBD1:
+  6FC6'   3E 01          C      	LD	A,1
                          C      			;
-  6F9D'   C5             C      UC.CVBD:	PUSH	BC	; Zeichenzahl in A
-  6F9E'   E5             C      	PUSH	HL
-  6F9F'   47             C      	LD	B,A
-  6FA0'   CD 6FA8'       C      	CALL	UC.CVBD0
-  6FA3'   10 FB          C      	DJNZ	$-3
-  6FA5'   E1             C      	POP	HL
-  6FA6'   C1             C      	POP	BC
-  6FA7'   C9             C      	RET
+  6FC8'   C5             C      UC.CVBD:	PUSH	BC	; Zeichenzahl in A
+  6FC9'   E5             C      	PUSH	HL
+  6FCA'   47             C      	LD	B,A
+  6FCB'   CD 6FD3'       C      	CALL	UC.CVBD0
+  6FCE'   10 FB          C      	DJNZ	$-3
+  6FD0'   E1             C      	POP	HL
+  6FD1'   C1             C      	POP	BC
+  6FD2'   C9             C      	RET
                          C      			;
                          C      ;                          Abspaltung B-te Stelle dezi von HL nach (DE)
                          C      ;                                                                  DE+1
                          C      ;                          B-te nicht fuehrende Stelle: '*' nach (DE)
                          C      ;                          --------------------------------------------
-  6FA8'                  C      UC.CVBD0:
-  6FA8'   C5             C      	PUSH	BC	; benutzt: A, 5 Stack-P.
+  6FD3'                  C      UC.CVBD0:
+  6FD3'   C5             C      	PUSH	BC	; benutzt: A, 5 Stack-P.
                          C      			; --------
-  6FA9'   7D             C      	LD	A,L
-  6FAA'   F6 30          C      	OR	'0'
-'Konvertierungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-73
+  6FD4'   7D             C      	LD	A,L
+  6FD5'   F6 30          C      	OR	'0'
+'Konvertierungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-74
 
 
-  6FAC'   05             C      	DEC	B
-  6FAD'   28 29          C          JR   Z,$+43	  ; -------+
+  6FD7'   05             C      	DEC	B
+  6FD8'   28 29          C          JR   Z,$+43	  ; -------+
                          C                        ;        |
-  6FAF'   D5             C          PUSH DE       ;        |
-  6FB0'   E5             C          PUSH HL       ; DE := (B-1)-te Zehner-Potenz
-  6FB1'   21 0001        C          LD   HL,1     ;        |
-  6FB4'   CD 6EE6'       C          CALL UC.HL10N ;        |
-  6FB7'   10 FB          C          DJNZ $-3      ;        |
-  6FB9'   EB             C          EX   DE,HL    ;        |
-  6FBA'   E1             C          POP  HL       ;        |
+  6FDA'   D5             C          PUSH DE       ;        |
+  6FDB'   E5             C          PUSH HL       ; DE := (B-1)-te Zehner-Potenz
+  6FDC'   21 0001        C          LD   HL,1     ;        |
+  6FDF'   CD 6F11'       C          CALL UC.HL10N ;        |
+  6FE2'   10 FB          C          DJNZ $-3      ;        |
+  6FE4'   EB             C          EX   DE,HL    ;        |
+  6FE5'   E1             C          POP  HL       ;        |
                          C                        ;        |
-  6FBB'   CD 6F06'       C          CALL UC.DIVR  ; A := HL / B-te Zehner-Potenz
-  6FBE'   D1             C          POP  DE       ;        |     HL := Rest
+  6FE6'   CD 6F31'       C          CALL UC.DIVR  ; A := HL / B-te Zehner-Potenz
+  6FE9'   D1             C          POP  DE       ;        |     HL := Rest
                          C                        ;        |
-  6FBF'   FE 0A          C          CP   10       ; test to decimal
-  6FC1'   38 04          C          JR   C,$+6    ; ---+   |
-  6FC3'   3E 2A          C          LD   A,'*'    ;    |   |
-  6FC5'   18 11          C          JR   $+19     ; -------+
+  6FEA'   FE 0A          C          CP   10       ; test to decimal
+  6FEC'   38 04          C          JR   C,$+6    ; ---+   |
+  6FEE'   3E 2A          C          LD   A,'*'    ;    |   |
+  6FF0'   18 11          C          JR   $+19     ; -------+
                          C                        ; <--+   |
-  6FC7'   F6 30          C          OR   '0'      ; conv.to decimal
+  6FF2'   F6 30          C          OR   '0'      ; conv.to decimal
                          C                        ;        |
-  6FC9'   FE 30          C          CP   '0'      ; Vor-Null ?
-  6FCB'   20 0B          C          JR   NZ,$+13  ; -------+
-  6FCD'   1B             C          DEC  DE       ;        |
-  6FCE'   4F             C          LD   C,A      ;        |
-  6FCF'   CD 7005'       C          CALL UC.CVD1B ;        |
-  6FD2'   79             C          LD   A,C      ;        |
-  6FD3'   13             C          INC  DE       ;        |
-  6FD4'   30 02          C          JR   NC,$+4   ;        |
-  6FD6'   3E 20          C          LD   A,' '    ;        |
+  6FF4'   FE 30          C          CP   '0'      ; Vor-Null ?
+  6FF6'   20 0B          C          JR   NZ,$+13  ; -------+
+  6FF8'   1B             C          DEC  DE       ;        |
+  6FF9'   4F             C          LD   C,A      ;        |
+  6FFA'   CD 7030'       C          CALL UC.CVD1B ;        |
+  6FFD'   79             C          LD   A,C      ;        |
+  6FFE'   13             C          INC  DE       ;        |
+  6FFF'   30 02          C          JR   NC,$+4   ;        |
+  7001'   3E 20          C          LD   A,' '    ;        |
                          C                        ; <------+
-  6FD8'   12             C      	LD	(DE),A
-  6FD9'   13             C      	INC	DE
-  6FDA'   C1             C      	POP	BC
-  6FDB'   C9             C      	RET
+  7003'   12             C      	LD	(DE),A
+  7004'   13             C      	INC	DE
+  7005'   C1             C      	POP	BC
+  7006'   C9             C      	RET
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      ;                      Dezi von (DE) bis (-->DE) nicht-dezi
@@ -4978,86 +5040,86 @@
                          C      ;                         Cy, Z:  Leere Zahl (1.Position keine Ziffer),
                          C      ;                                        -->     HL = 0
                          C      ;                      ------------------------------------------------
-  6FDC'                  C      UC.CVDB:
-  6FDC'   26 00          C      	LD	H,0
-  6FDE'   CD 7005'       C      	CALL	UC.CVD1B
-  6FE1'   6F             C      	LD	L,A
-  6FE2'   30 04          C      	JR	NC,$+6
-  6FE4'   AF             C      	XOR	A
-  6FE5'   6F             C      	LD	L,A
-  6FE6'   37             C      	SCF
-  6FE7'   C9             C      	RET		; ---> abend C, Z
+  7007'                  C      UC.CVDB:
+  7007'   26 00          C      	LD	H,0
+  7009'   CD 7030'       C      	CALL	UC.CVD1B
+  700C'   6F             C      	LD	L,A
+  700D'   30 04          C      	JR	NC,$+6
+  700F'   AF             C      	XOR	A
+  7010'   6F             C      	LD	L,A
+  7011'   37             C      	SCF
+  7012'   C9             C      	RET		; ---> abend C, Z
                          C      			;
-  6FE8'   13             C      	INC	DE
-  6FE9'   CD 7005'       C      	CALL	UC.CVD1B
-  6FEC'   3F             C      	CCF
-  6FED'   D0             C      	RET	NC		; ---> normal end
-  6FEE'   D5             C          PUSH  DE
-  6FEF'   F5             C          PUSH  AF
-  6FF0'   CD 6EED'       C          CALL  UC.HL10C
-  6FF3'   38 0B          C          JR    C,$+13    ; ----------+
-  6FF5'   F1             C          POP   AF        ;           |
-  6FF6'   85             C          ADD   A,L       ;           |
-  6FF7'   6F             C          LD    L,A       ;           |
-  6FF8'   30 03          C          JR    NC,$+5	; --+       |
-  6FFA'   24             C          INC   H         ;   |       |
-  6FFB'   28 04          C          JR    Z,$+6     ;   |    ---|--+
-  6FFD'   D1             C          POP   DE        ; <-+       |  |
-  6FFE'   18 E8          C          JR    $-22      ;           |  |
+  7013'   13             C      	INC	DE
+  7014'   CD 7030'       C      	CALL	UC.CVD1B
+  7017'   3F             C      	CCF
+  7018'   D0             C      	RET	NC		; ---> normal end
+  7019'   D5             C          PUSH  DE
+  701A'   F5             C          PUSH  AF
+  701B'   CD 6F18'       C          CALL  UC.HL10C
+  701E'   38 0B          C          JR    C,$+13    ; ----------+
+  7020'   F1             C          POP   AF        ;           |
+  7021'   85             C          ADD   A,L       ;           |
+  7022'   6F             C          LD    L,A       ;           |
+  7023'   30 03          C          JR    NC,$+5	; --+       |
+  7025'   24             C          INC   H         ;   |       |
+  7026'   28 04          C          JR    Z,$+6     ;   |    ---|--+
+  7028'   D1             C          POP   DE        ; <-+       |  |
+  7029'   18 E8          C          JR    $-22      ;           |  |
                          C                          ;      <----+  !
-  7000'   E1             C          POP   HL        ; abend Cy, NZ !
-  7001'   25             C          DEC   H         ;              |
-  7002'   EB             C          EX    DE,HL     ;        <-----+
-  7003'   D1             C          POP   DE
-  7004'   C9             C          RET
+  702B'   E1             C          POP   HL        ; abend Cy, NZ !
+  702C'   25             C          DEC   H         ;              |
+  702D'   EB             C          EX    DE,HL     ;        <-----+
+  702E'   D1             C          POP   DE
+  702F'   C9             C          RET
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      ;                            Ziffer dezi (DE) ---> binaer nach A, DE+1
                          C      ;                                                  Cy: nicht-dezi
                          C      ;                            ------------------------------------------
-'Konvertierungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-74
+'Konvertierungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-75
 
 
-  7005'                  C      UC.CVD1B:
-  7005'   1A             C      	LD	A,(DE)
-  7006'   D6 30          C      	SUB	30H
-  7008'   D8             C      	RET	C
-  7009'   FE 0A          C      	CP	10
-  700B'   3F             C      	CCF
-  700C'   C9             C      	RET
+  7030'                  C      UC.CVD1B:
+  7030'   1A             C      	LD	A,(DE)
+  7031'   D6 30          C      	SUB	30H
+  7033'   D8             C      	RET	C
+  7034'   FE 0A          C      	CP	10
+  7036'   3F             C      	CCF
+  7037'   C9             C      	RET
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      ;                    Byte binaer (HL) --> Byte ASCII-Symbol (DE)
                          C      ;                                         (sonst: 7FH )
                          C      ;                                                     HL+1, DE+1
                          C      ;                    --------------------------------------------------
-  700D'                  C      UC.CVBC:
-  700D'   7E             C      	LD	A,(HL)	; benutzt: A, 0 Stack-P.
-  700E'   23             C      	INC	HL	; --------
-  700F'   FE 20          C      	CP	20H
-  7011'   30 02          C      	JR	NC,$+4
-  7013'   3E 7F          C      	LD	A,7FH
-  7015'   FE 7F          C      	CP	7FH
-  7017'   38 02          C      	JR	C,$+4
-  7019'   3E 7F          C      	LD	A,7FH
-  701B'   12             C      	LD	(DE),A
-  701C'   13             C      	INC	DE
-  701D'   C9             C      	RET
+  7038'                  C      UC.CVBC:
+  7038'   7E             C      	LD	A,(HL)	; benutzt: A, 0 Stack-P.
+  7039'   23             C      	INC	HL	; --------
+  703A'   FE 20          C      	CP	20H
+  703C'   30 02          C      	JR	NC,$+4
+  703E'   3E 7F          C      	LD	A,7FH
+  7040'   FE 7F          C      	CP	7FH
+  7042'   38 02          C      	JR	C,$+4
+  7044'   3E 7F          C      	LD	A,7FH
+  7046'   12             C      	LD	(DE),A
+  7047'   13             C      	INC	DE
+  7048'   C9             C      	RET
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      ;                       Byte ASCII-Symbol (DE)   -->   Byte binaer (HL)
                          C      ;                                                      DE+1, HL+1
                          C      ;                       -----------------------------------------------
-  701E'                  C      UC.CVCB:
-  701E'   1A             C      	LD	A,(DE)	; benutzt: A, 0 Stack-P.
-  701F'   13             C      	INC	DE
-  7020'   FE 20          C      	CP	20H
-  7022'   38 05          C      	JR	C,$+7
-  7024'   FE 7E          C      	CP	7EH
-  7026'   30 01          C      	JR	NC,$+3
-  7028'   77             C      	LD	(HL),A
-  7029'   23             C      	INC	HL
-  702A'   C9             C      	RET
+  7049'                  C      UC.CVCB:
+  7049'   1A             C      	LD	A,(DE)	; benutzt: A, 0 Stack-P.
+  704A'   13             C      	INC	DE
+  704B'   FE 20          C      	CP	20H
+  704D'   38 05          C      	JR	C,$+7
+  704F'   FE 7E          C      	CP	7EH
+  7051'   30 01          C      	JR	NC,$+3
+  7053'   77             C      	LD	(HL),A
+  7054'   23             C      	INC	HL
+  7055'   C9             C      	RET
                          C      			;
                          C      
                          C      ;**********************************************************************
@@ -5066,203 +5128,203 @@
                          C      ;      KONVERTIERUNGEN
                          C      ;
                          C      ;----------------------------------------------------------------------
-  702B'                  C      UC.DKONV:
-  702B'   7E             C      	LD	A,(HL)	;DKOI--->ASCII
-  702C'   CD 703F'       C      	CALL	UC.DK1	;(HL)--->(DE)
-  702F'   12             C      	LD	(DE),A
-  7030'   23             C      	INC	HL
-  7031'   13             C      	INC	DE
-  7032'   10 F7          C      	DJNZ	UC.DKONV
-  7034'   C9             C      	RET
+  7056'                  C      UC.DKONV:
+  7056'   7E             C      	LD	A,(HL)	;DKOI--->ASCII
+  7057'   CD 706A'       C      	CALL	UC.DK1	;(HL)--->(DE)
+  705A'   12             C      	LD	(DE),A
+  705B'   23             C      	INC	HL
+  705C'   13             C      	INC	DE
+  705D'   10 F7          C      	DJNZ	UC.DKONV
+  705F'   C9             C      	RET
                          C      ;------------------------------------
-  7035'                  C      UC.KONV:
-  7035'   7E             C      	LD	A,(HL)	;ASCII--->DKOI
-  7036'   CD 704A'       C      	CALL	UC.CKONV	;(HL) --->(DE)
-  7039'   12             C      	LD	(DE),A
-  703A'   23             C      	INC	HL
-  703B'   13             C      	INC	DE
-  703C'   10 F7          C      	DJNZ	UC.KONV
-  703E'   C9             C      	RET
+  7060'                  C      UC.KONV:
+  7060'   7E             C      	LD	A,(HL)	;ASCII--->DKOI
+  7061'   CD 7075'       C      	CALL	UC.CKONV	;(HL) --->(DE)
+  7064'   12             C      	LD	(DE),A
+  7065'   23             C      	INC	HL
+  7066'   13             C      	INC	DE
+  7067'   10 F7          C      	DJNZ	UC.KONV
+  7069'   C9             C      	RET
                          C      ;-----------------------------
-  703F'                  C      UC.DK1:
-  703F'   E5             C      	PUSH	HL	;DKOI--->ASCII
-  7040'   D5             C      	PUSH	DE
-  7041'   C5             C      	PUSH	BC
-  7042'   21 706D'       C      	LD	HL,UC.ASCCO
-  7045'   11 70CD'       C      	LD	DE,UC.DKOI
-  7048'   18 09          C      	JR	UC.DK2
-  704A'                  C      UC.CKONV:
-  704A'   E5             C      	PUSH	HL	;ASCII ---> DKOI
-  704B'   D5             C      	PUSH	DE
-  704C'   C5             C      	PUSH	BC
-  704D'   21 70CD'       C      	LD	HL,UC.DKOI	;HL:= Anfangsadresse
-  7050'   11 706D'       C      	LD	DE,UC.ASCCO	;DE:= Anfangsadresse
-  7053'                  C      UC.DK2:
-  7053'   F5             C      	PUSH	AF	;Quellcodebyte retten
-  7054'   AF             C      	XOR	A	;CY = 0
-  7055'   ED 52          C      	SBC	HL,DE	;Tabellendistanz berechnen
-'Konvertierungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-75
-
-
-  7057'   2B             C      	DEC	HL
-  7058'   E5             C      	PUSH	HL
-  7059'   C1             C      	POP	BC	;BC:= Tabellendistanz - 1
-  705A'   EB             C      	EX	DE,HL	;HL:= Anfangsadresse
-  705B'   F1             C      	POP	AF	;Zeichen wieder herstellen
-  705C'   C5             C      	PUSH	BC	;Tabellendistanz retten
-  705D'   01 0060        C      	LD	BC,UE.COTAL	;BC:= Tabellenlaenge
-  7060'   ED B1          C      	CPIR		;Quellcodebyte suchen
-  7062'   37             C      	SCF		;CY = 1
-  7063'   C1             C      	POP	BC	;Tabellendistanz auskellern
-  7064'   20 03          C      	JR	NZ,UC.KONV2	;---> Quellcodebyte nicht
-  7066'   09             C      	ADD	HL,BC	;Zielcodeadresse berechnen
-  7067'   AF             C      	XOR	A	;CY = 0
-  7068'   7E             C      	LD	A,(HL)	;Zielcodebyte laden
-  7069'                  C      UC.KONV2:
-  7069'   C1             C      	POP	BC
-  706A'   D1             C      	POP	DE
-  706B'   E1             C      	POP	HL
-  706C'   C9             C      	RET
-                         C      ;****************************************************************
-                         C      ;         ASCII - Codetabelle
-                         C      ;****************************************************************
-  706D'                  C      UC.ASCCO:
-  706D'   20 21 22 23    C      	DB	' !"#$%&'
-  7071'   24 25 26       C      
-  7074'   27             C      	DB	27H	;'
-  7075'   28 29 2A 2B    C      	DB	'()*+,-./'
-  7079'   2C 2D 2E 2F    C      
-  707D'   30 31 32 33    C      	DB	'0123456789'
-  7081'   34 35 36 37    C      
-  7085'   38 39          C      
-  7087'   3A 3B 3C 3D    C      	DB	':;<=>?@'
-  708B'   3E 3F 40       C      
-  708E'   41 42 43 44    C      	DB	'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-  7092'   45 46 47 48    C      
-  7096'   49 4A 4B 4C    C      
-  709A'   4D 4E 4F 50    C      
-  709E'   51 52 53 54    C      
-  70A2'   55 56 57 58    C      
-  70A6'   59 5A          C      
-  70A8'   5B 5C 5D 5E    C      	DB	'[\]^_`'
-  70AC'   5F 60          C      
-  70AE'   61 62 63 64    C      	DB	'abcdefghijklmnopqrstuvwxyz'
-  70B2'   65 66 67 68    C      
-  70B6'   69 6A 6B 6C    C      
-  70BA'   6D 6E 6F 70    C      
-  70BE'   71 72 73 74    C      
-  70C2'   75 76 77 78    C      
-  70C6'   79 7A          C      
-  70C8'   7B 7C 7D 7E    C      	DB	'{|}~'
-  70CC'   7F             C      	DB	7FH	;DEL
-                         C      ;***************************************************************
-                         C      ;         DKOI - Codetabelle
-                         C      ;***************************************************************
-  70CD'                  C      UC.DKOI:
-  70CD'   40             C      	DB	40H	;blank
-  70CE'   4F             C      	DB	4FH	;!
-  70CF'   7F             C      	DB	7FH	;"
-  70D0'   7B             C      	DB	7BH	;#
-  70D1'   5B             C      	DB	5BH	;$
-  70D2'   6C             C      	DB	6CH	;%
-  70D3'   50             C      	DB	50H	;&
-  70D4'   7D             C      	DB	7DH	;'
-  70D5'   4D             C      	DB	4DH	;(
-  70D6'   5D             C      	DB	5DH	;)
-  70D7'   5C             C      	DB	5CH	;*
-  70D8'   4E             C      	DB	4EH	;+
-  70D9'   6B             C      	DB	6BH	;,
-  70DA'   60             C      	DB	60H	;-
-  70DB'   4B             C      	DB	4BH	;.
-  70DC'   61             C      	DB	61H	;/
-  70DD'   F0             C      	DB	0F0H	;0
-  70DE'   F1             C      	DB	0F1H	;1
-  70DF'   F2             C      	DB	0F2H	;2
-  70E0'   F3             C      	DB	0F3H	;3
-  70E1'   F4             C      	DB	0F4H	;4
-  70E2'   F5             C      	DB	0F5H	;5
-  70E3'   F6             C      	DB	0F6H	;6
-  70E4'   F7             C      	DB	0F7H	;7
-  70E5'   F8             C      	DB	0F8H	;8
-  70E6'   F9             C      	DB	0F9H	;9
-  70E7'   7A             C      	DB	7AH	;:
-  70E8'   5E             C      	DB	5EH	;;
+  706A'                  C      UC.DK1:
+  706A'   E5             C      	PUSH	HL	;DKOI--->ASCII
+  706B'   D5             C      	PUSH	DE
+  706C'   C5             C      	PUSH	BC
+  706D'   21 7098'       C      	LD	HL,UC.ASCCO
+  7070'   11 70F8'       C      	LD	DE,UC.DKOI
+  7073'   18 09          C      	JR	UC.DK2
+  7075'                  C      UC.CKONV:
+  7075'   E5             C      	PUSH	HL	;ASCII ---> DKOI
+  7076'   D5             C      	PUSH	DE
+  7077'   C5             C      	PUSH	BC
+  7078'   21 70F8'       C      	LD	HL,UC.DKOI	;HL:= Anfangsadresse
+  707B'   11 7098'       C      	LD	DE,UC.ASCCO	;DE:= Anfangsadresse
+  707E'                  C      UC.DK2:
+  707E'   F5             C      	PUSH	AF	;Quellcodebyte retten
+  707F'   AF             C      	XOR	A	;CY = 0
+  7080'   ED 52          C      	SBC	HL,DE	;Tabellendistanz berechnen
 'Konvertierungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-76
 
 
-  70E9'   4C             C      	DB	4CH	;<
-  70EA'   7E             C      	DB	7EH	;=
-  70EB'   6E             C      	DB	6EH	;>
-  70EC'   6F             C      	DB	6FH	;?
-  70ED'   7C             C      	DB	7CH	;@
-  70EE'   C1             C      	DB	0C1H	;A
-  70EF'   C2             C      	DB	0C2H	;B
-  70F0'   C3             C      	DB	0C3H	;C
-  70F1'   C4             C      	DB	0C4H	;D
-  70F2'   C5             C      	DB	0C5H	;E
-  70F3'   C6             C      	DB	0C6H	;F
-  70F4'   C7             C      	DB	0C7H	;G
-  70F5'   C8             C      	DB	0C8H	;H
-  70F6'   C9             C      	DB	0C9H	;I
-  70F7'   D1             C      	DB	0D1H	;J
-  70F8'   D2             C      	DB	0D2H	;K
-  70F9'   D3             C      	DB	0D3H	;L
-  70FA'   D4             C      	DB	0D4H	;M
-  70FB'   D5             C      	DB	0D5H	;N
-  70FC'   D6             C      	DB	0D6H	;O
-  70FD'   D7             C      	DB	0D7H	;P
-  70FE'   D8             C      	DB	0D8H	;Q
-  70FF'   D9             C      	DB	0D9H	;R
-  7100'   E2             C      	DB	0E2H	;S
-  7101'   E3             C      	DB	0E3H	;T
-  7102'   E4             C      	DB	0E4H	;U
-  7103'   E5             C      	DB	0E5H	;V
-  7104'   E6             C      	DB	0E6H	;W
-  7105'   E7             C      	DB	0E7H	;X
-  7106'   E8             C      	DB	0E8H	;Y
-  7107'   E9             C      	DB	0E9H	;Z
-  7108'   4A             C      	DB	4AH	;[
-  7109'   E0             C      	DB	0E0H	;\
-  710A'   5A             C      	DB	5AH	;]
-  710B'   5F             C      	DB	5FH	;^
-  710C'   6D             C      	DB	6DH	;_
-  710D'   79             C      	DB	79H	;`
-  710E'   81             C      	DB	81H	;a
-  710F'   82             C      	DB	82H	;b
-  7110'   83             C      	DB	83H	;c
-  7111'   84             C      	DB	84H	;d
-  7112'   85             C      	DB	85H	;e
-  7113'   86             C      	DB	86H	;f
-  7114'   87             C      	DB	87H	;g
-  7115'   88             C      	DB	88H	;h
-  7116'   89             C      	DB	89H	;i
-  7117'   91             C      	DB	91H	;j
-  7118'   92             C      	DB	92H	;k
-  7119'   93             C      	DB	93H	;l
-  711A'   94             C      	DB	94H	;m
-  711B'   95             C      	DB	95H	;n
-  711C'   96             C      	DB	96H	;o
-  711D'   97             C      	DB	97H	;p
-  711E'   98             C      	DB	98H	;q
-  711F'   99             C      	DB	99H	;r
-  7120'   A2             C      	DB	0A2H	;s
-  7121'   A3             C      	DB	0A3H	;t
-  7122'   A4             C      	DB	0A4H	;u
-  7123'   A5             C      	DB	0A5H	;v
-  7124'   A6             C      	DB	0A6H	;w
-  7125'   A7             C      	DB	0A7H	;x
-  7126'   A8             C      	DB	0A8H	;y
-  7127'   A9             C      	DB	0A9H	;z
-  7128'   C0             C      	DB	0C0H	;{
-  7129'   6A             C      	DB	6AH	;|
-  712A'   D0             C      	DB	0D0H	;}
-  712B'   A1             C      	DB	0A1H	;~
-  712C'   FF             C      	DB	0FFH	;DEL
+  7082'   2B             C      	DEC	HL
+  7083'   E5             C      	PUSH	HL
+  7084'   C1             C      	POP	BC	;BC:= Tabellendistanz - 1
+  7085'   EB             C      	EX	DE,HL	;HL:= Anfangsadresse
+  7086'   F1             C      	POP	AF	;Zeichen wieder herstellen
+  7087'   C5             C      	PUSH	BC	;Tabellendistanz retten
+  7088'   01 0060        C      	LD	BC,UE.COTAL	;BC:= Tabellenlaenge
+  708B'   ED B1          C      	CPIR		;Quellcodebyte suchen
+  708D'   37             C      	SCF		;CY = 1
+  708E'   C1             C      	POP	BC	;Tabellendistanz auskellern
+  708F'   20 03          C      	JR	NZ,UC.KONV2	;---> Quellcodebyte nicht
+  7091'   09             C      	ADD	HL,BC	;Zielcodeadresse berechnen
+  7092'   AF             C      	XOR	A	;CY = 0
+  7093'   7E             C      	LD	A,(HL)	;Zielcodebyte laden
+  7094'                  C      UC.KONV2:
+  7094'   C1             C      	POP	BC
+  7095'   D1             C      	POP	DE
+  7096'   E1             C      	POP	HL
+  7097'   C9             C      	RET
+                         C      ;****************************************************************
+                         C      ;         ASCII - Codetabelle
+                         C      ;****************************************************************
+  7098'                  C      UC.ASCCO:
+  7098'   20 21 22 23    C      	DB	' !"#$%&'
+  709C'   24 25 26       C      
+  709F'   27             C      	DB	27H	;'
+  70A0'   28 29 2A 2B    C      	DB	'()*+,-./'
+  70A4'   2C 2D 2E 2F    C      
+  70A8'   30 31 32 33    C      	DB	'0123456789'
+  70AC'   34 35 36 37    C      
+  70B0'   38 39          C      
+  70B2'   3A 3B 3C 3D    C      	DB	':;<=>?@'
+  70B6'   3E 3F 40       C      
+  70B9'   41 42 43 44    C      	DB	'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  70BD'   45 46 47 48    C      
+  70C1'   49 4A 4B 4C    C      
+  70C5'   4D 4E 4F 50    C      
+  70C9'   51 52 53 54    C      
+  70CD'   55 56 57 58    C      
+  70D1'   59 5A          C      
+  70D3'   5B 5C 5D 5E    C      	DB	'[\]^_`'
+  70D7'   5F 60          C      
+  70D9'   61 62 63 64    C      	DB	'abcdefghijklmnopqrstuvwxyz'
+  70DD'   65 66 67 68    C      
+  70E1'   69 6A 6B 6C    C      
+  70E5'   6D 6E 6F 70    C      
+  70E9'   71 72 73 74    C      
+  70ED'   75 76 77 78    C      
+  70F1'   79 7A          C      
+  70F3'   7B 7C 7D 7E    C      	DB	'{|}~'
+  70F7'   7F             C      	DB	7FH	;DEL
+                         C      ;***************************************************************
+                         C      ;         DKOI - Codetabelle
+                         C      ;***************************************************************
+  70F8'                  C      UC.DKOI:
+  70F8'   40             C      	DB	40H	;blank
+  70F9'   4F             C      	DB	4FH	;!
+  70FA'   7F             C      	DB	7FH	;"
+  70FB'   7B             C      	DB	7BH	;#
+  70FC'   5B             C      	DB	5BH	;$
+  70FD'   6C             C      	DB	6CH	;%
+  70FE'   50             C      	DB	50H	;&
+  70FF'   7D             C      	DB	7DH	;'
+  7100'   4D             C      	DB	4DH	;(
+  7101'   5D             C      	DB	5DH	;)
+  7102'   5C             C      	DB	5CH	;*
+  7103'   4E             C      	DB	4EH	;+
+  7104'   6B             C      	DB	6BH	;,
+  7105'   60             C      	DB	60H	;-
+  7106'   4B             C      	DB	4BH	;.
+  7107'   61             C      	DB	61H	;/
+  7108'   F0             C      	DB	0F0H	;0
+  7109'   F1             C      	DB	0F1H	;1
+  710A'   F2             C      	DB	0F2H	;2
+  710B'   F3             C      	DB	0F3H	;3
+  710C'   F4             C      	DB	0F4H	;4
+  710D'   F5             C      	DB	0F5H	;5
+  710E'   F6             C      	DB	0F6H	;6
+  710F'   F7             C      	DB	0F7H	;7
+  7110'   F8             C      	DB	0F8H	;8
+  7111'   F9             C      	DB	0F9H	;9
+  7112'   7A             C      	DB	7AH	;:
+  7113'   5E             C      	DB	5EH	;;
+'Konvertierungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-77
+
+
+  7114'   4C             C      	DB	4CH	;<
+  7115'   7E             C      	DB	7EH	;=
+  7116'   6E             C      	DB	6EH	;>
+  7117'   6F             C      	DB	6FH	;?
+  7118'   7C             C      	DB	7CH	;@
+  7119'   C1             C      	DB	0C1H	;A
+  711A'   C2             C      	DB	0C2H	;B
+  711B'   C3             C      	DB	0C3H	;C
+  711C'   C4             C      	DB	0C4H	;D
+  711D'   C5             C      	DB	0C5H	;E
+  711E'   C6             C      	DB	0C6H	;F
+  711F'   C7             C      	DB	0C7H	;G
+  7120'   C8             C      	DB	0C8H	;H
+  7121'   C9             C      	DB	0C9H	;I
+  7122'   D1             C      	DB	0D1H	;J
+  7123'   D2             C      	DB	0D2H	;K
+  7124'   D3             C      	DB	0D3H	;L
+  7125'   D4             C      	DB	0D4H	;M
+  7126'   D5             C      	DB	0D5H	;N
+  7127'   D6             C      	DB	0D6H	;O
+  7128'   D7             C      	DB	0D7H	;P
+  7129'   D8             C      	DB	0D8H	;Q
+  712A'   D9             C      	DB	0D9H	;R
+  712B'   E2             C      	DB	0E2H	;S
+  712C'   E3             C      	DB	0E3H	;T
+  712D'   E4             C      	DB	0E4H	;U
+  712E'   E5             C      	DB	0E5H	;V
+  712F'   E6             C      	DB	0E6H	;W
+  7130'   E7             C      	DB	0E7H	;X
+  7131'   E8             C      	DB	0E8H	;Y
+  7132'   E9             C      	DB	0E9H	;Z
+  7133'   4A             C      	DB	4AH	;[
+  7134'   E0             C      	DB	0E0H	;\
+  7135'   5A             C      	DB	5AH	;]
+  7136'   5F             C      	DB	5FH	;^
+  7137'   6D             C      	DB	6DH	;_
+  7138'   79             C      	DB	79H	;`
+  7139'   81             C      	DB	81H	;a
+  713A'   82             C      	DB	82H	;b
+  713B'   83             C      	DB	83H	;c
+  713C'   84             C      	DB	84H	;d
+  713D'   85             C      	DB	85H	;e
+  713E'   86             C      	DB	86H	;f
+  713F'   87             C      	DB	87H	;g
+  7140'   88             C      	DB	88H	;h
+  7141'   89             C      	DB	89H	;i
+  7142'   91             C      	DB	91H	;j
+  7143'   92             C      	DB	92H	;k
+  7144'   93             C      	DB	93H	;l
+  7145'   94             C      	DB	94H	;m
+  7146'   95             C      	DB	95H	;n
+  7147'   96             C      	DB	96H	;o
+  7148'   97             C      	DB	97H	;p
+  7149'   98             C      	DB	98H	;q
+  714A'   99             C      	DB	99H	;r
+  714B'   A2             C      	DB	0A2H	;s
+  714C'   A3             C      	DB	0A3H	;t
+  714D'   A4             C      	DB	0A4H	;u
+  714E'   A5             C      	DB	0A5H	;v
+  714F'   A6             C      	DB	0A6H	;w
+  7150'   A7             C      	DB	0A7H	;x
+  7151'   A8             C      	DB	0A8H	;y
+  7152'   A9             C      	DB	0A9H	;z
+  7153'   C0             C      	DB	0C0H	;{
+  7154'   6A             C      	DB	6AH	;|
+  7155'   D0             C      	DB	0D0H	;}
+  7156'   A1             C      	DB	0A1H	;~
+  7157'   FF             C      	DB	0FFH	;DEL
                          C      ;----------------------------------------------------------------------
                          C      ;	END
                          C      	TITLE	'Komprimierung'
                          C      	PAGE
-'Komprimierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-77
+'Komprimierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-78
 
 
                          C      
@@ -5272,7 +5334,7 @@
                          C      ;*                 EDIT - F/Q-Format   --->  MRES20 - Quelltextformat *
                          C      ;**********************************************************************
                          C      			;
-  712D'                  C      CP.COMPR	EQU	$	; A  Uebergabe/-nahme Zeichen
+  7158'                  C      CP.COMPR	EQU	$	; A  Uebergabe/-nahme Zeichen
                          C      			; HL: Status von COMPR
                          C      			; B:  dekr. Tabulator-Zaehler
                          C      			;-------------------------------
@@ -5280,121 +5342,121 @@
                          C      			;         (Zeichen in Reg. A)
                          C      ;----------------------------------------------------------------------
                          C      			;
-  712D'   FE 1E          C      	CP	1EH	; NL ?
-  712F'   28 01          C      	JR	Z,CP.NL
-  7131'   E9             C      	JP	(HL)
+  7158'   FE 1E          C      	CP	1EH	; NL ?
+  715A'   28 01          C      	JR	Z,CP.NL
+  715C'   E9             C      	JP	(HL)
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      			; Status "New-Line"
                          C      			;-------------------------------
-  7132'                  C      CP.NL:
-  7132'   CD 6EBC'       C      	CALL	XY.INCDX	;         Satz-Zaehler + 1
-  7135'   13             C      	DB	19
-  7136'   06 03          C      	LD	B,3	;         noch 3 TAB erlaubt
-  7138'   3E 0A          C      	LD	A,0AH	;         MRES20-NL
-  713A'   18 04          C      	JR	CP.OUTT
+  715D'                  C      CP.NL:
+  715D'   CD 6EE7'       C      	CALL	XY.INCDX	;         Satz-Zaehler + 1
+  7160'   13             C      	DB	19
+  7161'   06 03          C      	LD	B,3	;         noch 3 TAB erlaubt
+  7163'   3E 0A          C      	LD	A,0AH	;         MRES20-NL
+  7165'   18 04          C      	JR	CP.OUTT
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      			; Status "String"
                          C      			;-------------------------------
-  713C'                  C      CP.STRNG:
-  713C'   FE 27          C      	CP	27H	;         Apostroph
-  713E'   20 20          C      	JR	NZ,CP.OUT
+  7167'                  C      CP.STRNG:
+  7167'   FE 27          C      	CP	27H	;         Apostroph
+  7169'   20 20          C      	JR	NZ,CP.OUT
                          C      			;
-  7140'                  C      CP.OUTT:
-  7140'   21 7150'       C      	LD	HL,CP.TEXT	;         --> Status "Text"
-  7143'   18 1B          C      	JR	CP.OUT
+  716B'                  C      CP.OUTT:
+  716B'   21 717B'       C      	LD	HL,CP.TEXT	;         --> Status "Text"
+  716E'   18 1B          C      	JR	CP.OUT
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      			; Status "Space"
                          C      			;-------------------------------
-  7145'                  C      CP.SPACE:
-  7145'   FE 20          C      	CP	' '
-  7147'   C8             C      	RET	Z
-  7148'   FE 09          C      	CP	09H	;         Tabulator
-  714A'   C8             C      	RET	Z
-  714B'   21 7150'       C      	LD	HL,CP.TEXT	;         ---> Status "Text"
-  714E'   18 08          C      	JR	CP.TEXT+8
+  7170'                  C      CP.SPACE:
+  7170'   FE 20          C      	CP	' '
+  7172'   C8             C      	RET	Z
+  7173'   FE 09          C      	CP	09H	;         Tabulator
+  7175'   C8             C      	RET	Z
+  7176'   21 717B'       C      	LD	HL,CP.TEXT	;         ---> Status "Text"
+  7179'   18 08          C      	JR	CP.TEXT+8
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      			; Status "Text"
                          C      			;-------------------------------
-  7150'                  C      CP.TEXT:
-  7150'   FE 20          C      	CP	' '
-  7152'   28 2E          C      	JR	Z,CP.TAB
-  7154'   FE 09          C      	CP	09H	;         Tabulator
-  7156'   28 2A          C      	JR	Z,CP.TAB
-  7158'   FE 3B          C      	CP	';'
-  715A'   28 0B          C      	JR	Z,CP.SOKOM
-  715C'   FE 27          C      	CP	27H	;         Apostroph
-  715E'   28 1D          C      	JR	Z,CP.SOSTR
+  717B'                  C      CP.TEXT:
+  717B'   FE 20          C      	CP	' '
+  717D'   28 2E          C      	JR	Z,CP.TAB
+  717F'   FE 09          C      	CP	09H	;         Tabulator
+  7181'   28 2A          C      	JR	Z,CP.TAB
+  7183'   FE 3B          C      	CP	';'
+  7185'   28 0B          C      	JR	Z,CP.SOKOM
+  7187'   FE 27          C      	CP	27H	;         Apostroph
+  7189'   28 1D          C      	JR	Z,CP.SOSTR
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      			; Status "Kom"
                          C      			;-------------------------------
-  7160'                  C      CP.KOM	EQU	$
+  718B'                  C      CP.KOM	EQU	$
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      			; Einzelzeichen-Ausgabe u. Ret.
                          C      			;-------------------------------
-  7160'                  C      CP.OUT:
-  7160'   CD 727C'       C      	CALL	UK.PUTK
-  7163'   D9             C      	EXX
-  7164'   0B             C      	DEC	BC
-  7165'   D9             C      	EXX
-  7166'   C9             C      	RET
+  718B'                  C      CP.OUT:
+  718B'   CD 72A7'       C      	CALL	UK.PUTK
+  718E'   D9             C      	EXX
+  718F'   0B             C      	DEC	BC
+  7190'   D9             C      	EXX
+  7191'   C9             C      	RET
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      			; Start "Kommentar"
                          C      			;-------------------------------
-'Komprimierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-78
+'Komprimierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-79
 
 
-  7167'                  C      CP.SOKOM:
-  7167'   78             C          LD	A,B	;         0 oder 3 TAB vorher
-  7168'   FE 03          C          CP   3
-  716A'   28 0A          C          JR   Z,$+12
-  716C'   B7             C          OR   A
-  716D'   28 07          C          JR   Z,$+9      ;         ---+
-  716F'   3E 09          C          LD   A,09H      ;         <-+|
-  7171'   CD 7160'       C          CALL CP.OUT     ;           ||
-  7174'   10 F9          C          DJNZ $-5        ;         --+|
-  7176'   3E 3B          C          LD   A,';'      ;         <--+
-  7178'   21 7160'       C          LD   HL,CP.KOM
-  717B'   18 E3          C          JR   CP.OUT
+  7192'                  C      CP.SOKOM:
+  7192'   78             C          LD	A,B	;         0 oder 3 TAB vorher
+  7193'   FE 03          C          CP   3
+  7195'   28 0A          C          JR   Z,$+12
+  7197'   B7             C          OR   A
+  7198'   28 07          C          JR   Z,$+9      ;         ---+
+  719A'   3E 09          C          LD   A,09H      ;         <-+|
+  719C'   CD 718B'       C          CALL CP.OUT     ;           ||
+  719F'   10 F9          C          DJNZ $-5        ;         --+|
+  71A1'   3E 3B          C          LD   A,';'      ;         <--+
+  71A3'   21 718B'       C          LD   HL,CP.KOM
+  71A6'   18 E3          C          JR   CP.OUT
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      			; Start "String"
                          C      			;-------------------------------
-  717D'                  C      CP.SOSTR:
-  717D'   21 713C'       C      	LD	HL,CP.STRNG
-  7180'   18 DE          C      	JR	CP.OUT
+  71A8'                  C      CP.SOSTR:
+  71A8'   21 7167'       C      	LD	HL,CP.STRNG
+  71AB'   18 DE          C      	JR	CP.OUT
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      			; Tabulator-Behandlung
                          C      			;-------------------------------
-  7182'                  C      CP.TAB:
-  7182'   78             C      	LD	A,B
-  7183'   B7             C      	OR	A
-  7184'   3E 20          C      	LD	A,' '
-  7186'   28 D8          C      	JR	Z,CP.OUT
-  7188'   05             C      	DEC	B
-  7189'   3E 09          C      	LD	A,09H	;         Tabulator MRES20
-  718B'   21 7145'       C      	LD	HL,CP.SPACE
-  718E'   18 D0          C      	JR	CP.OUT
+  71AD'                  C      CP.TAB:
+  71AD'   78             C      	LD	A,B
+  71AE'   B7             C      	OR	A
+  71AF'   3E 20          C      	LD	A,' '
+  71B1'   28 D8          C      	JR	Z,CP.OUT
+  71B3'   05             C      	DEC	B
+  71B4'   3E 09          C      	LD	A,09H	;         Tabulator MRES20
+  71B6'   21 7170'       C      	LD	HL,CP.SPACE
+  71B9'   18 D0          C      	JR	CP.OUT
                          C      			;
                          C      ;**********************************************************************
                          C      			;
-  7190'                  C      CP.INIT:
-  7190'   06 03          C      	LD	B,3	; Initialisierung COMPR
-  7192'   21 7150'       C      	LD	HL,CP.TEXT
-  7195'   C9             C      	RET
+  71BB'                  C      CP.INIT:
+  71BB'   06 03          C      	LD	B,3	; Initialisierung COMPR
+  71BD'   21 717B'       C      	LD	HL,CP.TEXT
+  71C0'   C9             C      	RET
                          C      			;
                          C      ;**********************************************************************
                          C      ;	END
                          C      	TITLE	'Dekomprimierung'
                          C      	PAGE
-'Dekomprimierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-79
+'Dekomprimierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-80
 
 
                          C      
@@ -5404,7 +5466,7 @@
                          C      ;*                 MRES20-Quelltexte   --->   EDIT - Format F         *
                          C      ;**********************************************************************
                          C      			;
-  7196'                  C      DC.DCMPR	EQU	$
+  71C1'                  C      DC.DCMPR	EQU	$
                          C      			; A:  Uebergabe/-nahme Zeichen
                          C      			; HL: Status-Register DCMPR
                          C      			; B:  Position (Spalte)
@@ -5412,74 +5474,74 @@
                          C      			; INA: Einzelzeichen-Eingabe
                          C      			;      nach Reg. A
                          C      ;        --------------------------------------------------------------
-  7196'   04             C      	INC	B	;         Position + 1
-  7197'   E9             C      	JP	(HL)
+  71C1'   04             C      	INC	B	;         Position + 1
+  71C2'   E9             C      	JP	(HL)
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      			; Status "Neue Zeile"
                          C      			;-------------------------------
-  7198'                  C      DC.NL:
-  7198'   CD 6EBC'       C      	CALL	XY.INCDX	;         Satzzaehler + 1
-  719B'   13             C      	DB	19
-  719C'   3E 1E          C      	LD	A,1EH	;         EDIT-New-Line
-  719E'   06 01          C      	LD	B,1	;         Pos.=1
-  71A0'   21 71A4'       C      	LD	HL,DC.TEXT	;         Status "TEXT"
-  71A3'   C9             C      	RET
+  71C3'                  C      DC.NL:
+  71C3'   CD 6EE7'       C      	CALL	XY.INCDX	;         Satzzaehler + 1
+  71C6'   13             C      	DB	19
+  71C7'   3E 1E          C      	LD	A,1EH	;         EDIT-New-Line
+  71C9'   06 01          C      	LD	B,1	;         Pos.=1
+  71CB'   21 71CF'       C      	LD	HL,DC.TEXT	;         Status "TEXT"
+  71CE'   C9             C      	RET
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      			; Status "Text"
                          C      			;-------------------------------
-  71A4'                  C      DC.TEXT:
-  71A4'   CD 71D7'       C      	CALL	UK.GETK	;         Einzelzeichen-Eingabe
-  71A7'   B7             C      	OR	A
-  71A8'   C8             C      	RET	Z
-  71A9'   FE 0A          C      	CP	0AH	;         NL ?
-  71AB'   28 EB          C      	JR	Z,DC.NL
-  71AD'   FE 09          C      	CP	09H	;         TAB ?
-  71AF'   28 01          C      	JR	Z,DC.TAB
-  71B1'   C9             C      	RET
+  71CF'                  C      DC.TEXT:
+  71CF'   CD 7202'       C      	CALL	UK.GETK	;         Einzelzeichen-Eingabe
+  71D2'   B7             C      	OR	A
+  71D3'   C8             C      	RET	Z
+  71D4'   FE 0A          C      	CP	0AH	;         NL ?
+  71D6'   28 EB          C      	JR	Z,DC.NL
+  71D8'   FE 09          C      	CP	09H	;         TAB ?
+  71DA'   28 01          C      	JR	Z,DC.TAB
+  71DC'   C9             C      	RET
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      			; Tabulator-Behandlung
                          C      			;-------------------------------
-  71B2'                  C      DC.TAB:
-  71B2'   78             C      	LD	A,B
-  71B3'   FE 28          C      	CP	40
-  71B5'   D0             C      	RET	NC
-  71B6'   21 71BC'       C      	LD	HL,DC.SPACE	;         ---> Status "Space"
-  71B9'   3E 20          C      	LD	A,' '	;         anstelle TAB Space
-  71BB'   C9             C      	RET
+  71DD'                  C      DC.TAB:
+  71DD'   78             C      	LD	A,B
+  71DE'   FE 28          C      	CP	40
+  71E0'   D0             C      	RET	NC
+  71E1'   21 71E7'       C      	LD	HL,DC.SPACE	;         ---> Status "Space"
+  71E4'   3E 20          C      	LD	A,' '	;         anstelle TAB Space
+  71E6'   C9             C      	RET
                          C      			;
                          C      ;        --------------------------------------------------------------
                          C      			; Status "Space"
                          C      			;-------------------------------
-  71BC'                  C      DC.SPACE:
-  71BC'   78             C      	LD	A,B
-  71BD'   FE 0B          C      	CP	10+1
-  71BF'   28 0B          C      	JR	Z,DC.EOSPC
-  71C1'   FE 11          C      	CP	16+1
-  71C3'   28 07          C      	JR	Z,DC.EOSPC
-  71C5'   FE 24          C      	CP	35+1
-  71C7'   28 03          C      	JR	Z,DC.EOSPC
-  71C9'   3E 20          C      	LD	A,' '
-  71CB'   C9             C      	RET
+  71E7'                  C      DC.SPACE:
+  71E7'   78             C      	LD	A,B
+  71E8'   FE 0B          C      	CP	10+1
+  71EA'   28 0B          C      	JR	Z,DC.EOSPC
+  71EC'   FE 11          C      	CP	16+1
+  71EE'   28 07          C      	JR	Z,DC.EOSPC
+  71F0'   FE 24          C      	CP	35+1
+  71F2'   28 03          C      	JR	Z,DC.EOSPC
+  71F4'   3E 20          C      	LD	A,' '
+  71F6'   C9             C      	RET
                          C      			;
-  71CC'                  C      DC.EOSPC:
-  71CC'   21 71A4'       C      	LD	HL,DC.TEXT	; TAB-Position erreicht
-  71CF'   18 D3          C      	JR	DC.TEXT
+  71F7'                  C      DC.EOSPC:
+  71F7'   21 71CF'       C      	LD	HL,DC.TEXT	; TAB-Position erreicht
+  71FA'   18 D3          C      	JR	DC.TEXT
                          C      			;
                          C      			;
                          C      ;**********************************************************************
-  71D1'                  C      DC.INIT:
-  71D1'   21 71A4'       C      	LD	HL,DC.TEXT	; Initialisierung
-  71D4'   06 01          C      	LD	B,1
-  71D6'   C9             C      	RET
+  71FC'                  C      DC.INIT:
+  71FC'   21 71CF'       C      	LD	HL,DC.TEXT	; Initialisierung
+  71FF'   06 01          C      	LD	B,1
+  7201'   C9             C      	RET
                          C      			;
                          C      ;**********************************************************************
                          C      ;	END
                          C      	TITLE	'Einzelzeicheneingabe fuer KMBG'
                          C      	PAGE
-'Einzelzeicheneingabe fuer KMBG'	MACRO-80 3.44	09-Dec-81	PAGE	1-80
+'Einzelzeicheneingabe fuer KMBG'	MACRO-80 3.44	09-Dec-81	PAGE	1-81
 
 
                          C      
@@ -5490,50 +5552,50 @@
                          C      ;
                          C      ;----------------------------------------------------------------------
                          C      ;
-  71D7'                  C      UK.GETK:
-  71D7'   CD 6C82'       C      	CALL	U1.RSAVE
-  71DA'   CD 6E8C'       C      	CALL	XY.LIDX	;HL:= Blocklaenge
-  71DD'   07             C      	DB	7
-  71DE'   E5             C      	PUSH	HL
-  71DF'   CD 6E7C'       C      	CALL	XY.LDDX
-  71E2'   17             C      	DB	23
-  71E3'   EB             C      	EX	DE,HL	;DE:= Pufferzaehler
-  71E4'   AF             C      	XOR	A
-  71E5'   E1             C      	POP	HL	;HL:= Blocklaenge
-  71E6'   ED 52          C      	SBC	HL,DE
-  71E8'   E5             C      	PUSH	HL	;Restbyteanzahl retten
-  71E9'   7C             C      	LD	A,H
-  71EA'   B5             C      	OR	L
-  71EB'   CC 7237'       C      	CALL	Z,UK.KBW	;Block lesen
-  71EE'   E1             C      	POP	HL
-  71EF'   AF             C      	XOR	A
-  71F0'   BC             C      	CP	H
-  71F1'   20 05          C      	JR	NZ,UK.GETK2
-  71F3'   7D             C      	LD	A,L
-  71F4'   FE 01          C      	CP	1
-  71F6'   28 08          C      	JR	Z,UK.GETK3	;---> letztes Datenbyte des
-  71F8'                  C      UK.GETK2:
-  71F8'   CD 7206'       C      	CALL	UK.GETK4
-  71FB'   B7             C      	OR	A
-  71FC'                  C      UK.GETK5:
-  71FC'   CD 6C8A'       C      	CALL	U1.RRST
-  71FF'   C9             C      	RET
+  7202'                  C      UK.GETK:
+  7202'   CD 6CAD'       C      	CALL	U1.RSAVE
+  7205'   CD 6EB7'       C      	CALL	XY.LIDX	;HL:= Blocklaenge
+  7208'   07             C      	DB	7
+  7209'   E5             C      	PUSH	HL
+  720A'   CD 6EA7'       C      	CALL	XY.LDDX
+  720D'   17             C      	DB	23
+  720E'   EB             C      	EX	DE,HL	;DE:= Pufferzaehler
+  720F'   AF             C      	XOR	A
+  7210'   E1             C      	POP	HL	;HL:= Blocklaenge
+  7211'   ED 52          C      	SBC	HL,DE
+  7213'   E5             C      	PUSH	HL	;Restbyteanzahl retten
+  7214'   7C             C      	LD	A,H
+  7215'   B5             C      	OR	L
+  7216'   CC 7262'       C      	CALL	Z,UK.KBW	;Block lesen
+  7219'   E1             C      	POP	HL
+  721A'   AF             C      	XOR	A
+  721B'   BC             C      	CP	H
+  721C'   20 05          C      	JR	NZ,UK.GETK2
+  721E'   7D             C      	LD	A,L
+  721F'   FE 01          C      	CP	1
+  7221'   28 08          C      	JR	Z,UK.GETK3	;---> letztes Datenbyte des
+  7223'                  C      UK.GETK2:
+  7223'   CD 7231'       C      	CALL	UK.GETK4
+  7226'   B7             C      	OR	A
+  7227'                  C      UK.GETK5:
+  7227'   CD 6CB5'       C      	CALL	U1.RRST
+  722A'   C9             C      	RET
                          C      ;
                          C      ;
-  7200'                  C      UK.GETK3:
-  7200'   CD 7206'       C      	CALL	UK.GETK4
-  7203'   37             C      	SCF
-  7204'   18 F6          C      	JR	UK.GETK5
+  722B'                  C      UK.GETK3:
+  722B'   CD 7231'       C      	CALL	UK.GETK4
+  722E'   37             C      	SCF
+  722F'   18 F6          C      	JR	UK.GETK5
                          C      ;
-  7206'                  C      UK.GETK4:
-  7206'   CD 6E7C'       C      	CALL	XY.LDDX	;HL:= aktuelle Pufferadresse
-  7209'   15             C      	DB	21
-  720A'   7E             C      	LD	A,(HL)	;Datenbyte laden
-  720B'   CD 6EBC'       C      	CALL	XY.INCDX	;Pufferzeiger erhoehen
-  720E'   15             C      	DB	21
-  720F'   CD 6EBC'       C      	CALL	XY.INCDX	;Pufferzaehler erhoehen
-  7212'   17             C      	DB	23
-  7213'   C9             C      	RET
+  7231'                  C      UK.GETK4:
+  7231'   CD 6EA7'       C      	CALL	XY.LDDX	;HL:= aktuelle Pufferadresse
+  7234'   15             C      	DB	21
+  7235'   7E             C      	LD	A,(HL)	;Datenbyte laden
+  7236'   CD 6EE7'       C      	CALL	XY.INCDX	;Pufferzeiger erhoehen
+  7239'   15             C      	DB	21
+  723A'   CD 6EE7'       C      	CALL	XY.INCDX	;Pufferzaehler erhoehen
+  723D'   17             C      	DB	23
+  723E'   C9             C      	RET
                          C      ;
                          C      ;******************************************************************
                          C      ;
@@ -5541,22 +5603,22 @@
                          C      ;
                          C      ;*******************************************************************
                          C      ;
-  7214'                  C      UK.KLPFB:
-  7214'   CD 6C82'       C      	CALL	U1.RSAVE
-  7217'   CD 6D7E'       C      	CALL	U1.KTIN1
-  721A'   21 0100        C      	LD	HL,100H	;max. Blocklaenge Kassette
-  721D'   CD 6EAC'       C      	CALL	XY.STIDX	;max. Blocklaenge initialisieren
-  7220'   07             C      	DB	7
-  7221'   E5             C      	PUSH	HL
-  7222'   C1             C      	POP	BC	;BC:= Blocklaenge
-  7223'   CD 6E9C'       C      	CALL	XY.STDX	;Pufferzaehler "Leer"
-  7226'   17             C      	DB	23
-  7227'   21 0E66        C      	LD	HL,UE.PUF	;Systempuffer Kassette
-  722A'   CD 6C93'       C      	CALL	U1.CLRB	;Systempuffer loeschen
-  722D'   21 8010        C      	LD	HL,UE.KPUFF
-  7230'   CD 6C93'       C      	CALL	U1.CLRB
-  7233'   CD 6C8A'       C      	CALL	U1.RRST
-  7236'   C9             C      	RET
+  723F'                  C      UK.KLPFB:
+  723F'   CD 6CAD'       C      	CALL	U1.RSAVE
+  7242'   CD 6DA9'       C      	CALL	U1.KTIN1
+  7245'   21 0100        C      	LD	HL,100H	;max. Blocklaenge Kassette
+  7248'   CD 6ED7'       C      	CALL	XY.STIDX	;max. Blocklaenge initialisieren
+  724B'   07             C      	DB	7
+  724C'   E5             C      	PUSH	HL
+  724D'   C1             C      	POP	BC	;BC:= Blocklaenge
+  724E'   CD 6EC7'       C      	CALL	XY.STDX	;Pufferzaehler "Leer"
+  7251'   17             C      	DB	23
+  7252'   21 0E66        C      	LD	HL,UE.PUF	;Systempuffer Kassette
+  7255'   CD 6CBE'       C      	CALL	U1.CLRB	;Systempuffer loeschen
+  7258'   21 8010        C      	LD	HL,UE.KPUFF
+  725B'   CD 6CBE'       C      	CALL	U1.CLRB
+  725E'   CD 6CB5'       C      	CALL	U1.RRST
+  7261'   C9             C      	RET
                          C      ;
                          C      ;******************************************************************
                          C      ;
@@ -5564,47 +5626,47 @@
                          C      ;
                          C      ;         - Besonderheit gegenueber MBW: Blockinhalt wird vom
                          C      ;           Systempuffer in den E/A-Puffer uebertragen
-'Einzelzeicheneingabe fuer KMBG'	MACRO-80 3.44	09-Dec-81	PAGE	1-81
+'Einzelzeicheneingabe fuer KMBG'	MACRO-80 3.44	09-Dec-81	PAGE	1-82
 
 
                          C      ;
                          C      ;*******************************************************************
                          C      ;
-  7237'                  C      UK.KBW:
-  7237'   CD 6C82'       C      	CALL	U1.RSAVE
-  723A'   CD 7214'       C      	CALL	UK.KLPFB
-  723D'   DD 36 05 02    C      	LD	(IX+5),02H
-  7241'   CD 5668'       C      	CALL	UF.EXEC
-  7244'   DD 7E 09       C      	LD	A,(IX+9)
-  7247'   DD B6 0A       C      	OR	(IX+10)
-  724A'   28 2A          C      	JR	Z,UK.KBW1	;EOF
-  724C'   CD 6E7C'       C      	CALL	XY.LDDX	;HL:= Blockadresse
-  724F'   07             C      	DB	7
-  7250'   DD 46 09       C      	LD	B,(IX+9)	;BC:= Blocklaenge
-  7253'   DD 4E 0A       C      	LD	C,(IX+10)
-  7256'   E5             C      	PUSH	HL	;E/A-Puffer
-  7257'   CD 6E7C'       C      	CALL	XY.LDDX
-  725A'   19             C      	DB	25
-  725B'   EB             C      	EX	DE,HL
-  725C'   E1             C      	POP	HL
-  725D'   ED B0          C      	LDIR		;Transport in E/A-Puffer
-  725F'   CD 6E7C'       C      	CALL	XY.LDDX
-  7262'   19             C      	DB	25
-  7263'   CD 6E9C'       C      	CALL	XY.STDX	;Pufferzeiger auf Anfang
-  7266'   15             C      	DB	21
-  7267'   21 0000        C      	LD	HL,0
-  726A'   CD 6E9C'       C      	CALL	XY.STDX	;Pufferzaehler rueckstellen
-  726D'   17             C      	DB	23
-  726E'   CD 6EBC'       C      	CALL	XY.INCDX	;Blockzaehler incrementieren
-  7271'   11             C      	DB	17
-  7272'                  C      UK.KBW2:
-  7272'   CD 6C8A'       C      	CALL	U1.RRST
-  7275'   C9             C      	RET
+  7262'                  C      UK.KBW:
+  7262'   CD 6CAD'       C      	CALL	U1.RSAVE
+  7265'   CD 723F'       C      	CALL	UK.KLPFB
+  7268'   DD 36 05 02    C      	LD	(IX+5),02H
+  726C'   CD 5668'       C      	CALL	UF.EXEC
+  726F'   DD 7E 09       C      	LD	A,(IX+9)
+  7272'   DD B6 0A       C      	OR	(IX+10)
+  7275'   28 2A          C      	JR	Z,UK.KBW1	;EOF
+  7277'   CD 6EA7'       C      	CALL	XY.LDDX	;HL:= Blockadresse
+  727A'   07             C      	DB	7
+  727B'   DD 46 09       C      	LD	B,(IX+9)	;BC:= Blocklaenge
+  727E'   DD 4E 0A       C      	LD	C,(IX+10)
+  7281'   E5             C      	PUSH	HL	;E/A-Puffer
+  7282'   CD 6EA7'       C      	CALL	XY.LDDX
+  7285'   19             C      	DB	25
+  7286'   EB             C      	EX	DE,HL
+  7287'   E1             C      	POP	HL
+  7288'   ED B0          C      	LDIR		;Transport in E/A-Puffer
+  728A'   CD 6EA7'       C      	CALL	XY.LDDX
+  728D'   19             C      	DB	25
+  728E'   CD 6EC7'       C      	CALL	XY.STDX	;Pufferzeiger auf Anfang
+  7291'   15             C      	DB	21
+  7292'   21 0000        C      	LD	HL,0
+  7295'   CD 6EC7'       C      	CALL	XY.STDX	;Pufferzaehler rueckstellen
+  7298'   17             C      	DB	23
+  7299'   CD 6EE7'       C      	CALL	XY.INCDX	;Blockzaehler incrementieren
+  729C'   11             C      	DB	17
+  729D'                  C      UK.KBW2:
+  729D'   CD 6CB5'       C      	CALL	U1.RRST
+  72A0'   C9             C      	RET
                          C      ;
-  7276'                  C      UK.KBW1:
-  7276'   CD 6EBC'       C      	CALL	XY.INCDX	;Labelzaehler incrementieren
-  7279'   11             C      	DB	17
-  727A'   18 F6          C      	JR	UK.KBW2
+  72A1'                  C      UK.KBW1:
+  72A1'   CD 6EE7'       C      	CALL	XY.INCDX	;Labelzaehler incrementieren
+  72A4'   11             C      	DB	17
+  72A5'   18 F6          C      	JR	UK.KBW2
                          C      ;
                          C      ;********************************************************************
                          C      ;
@@ -5612,26 +5674,26 @@
                          C      ;
                          C      ;*********************************************************************
                          C      ;
-  727C'                  C      UK.PUTK:
-  727C'   CD 6C82'       C      	CALL	U1.RSAVE
-  727F'   F5             C      	PUSH	AF	;Zeichen retten
-  7280'   CD 6E7C'       C      	CALL	XY.LDDX	;HL:= Pufferzaehler
-  7283'   17             C      	DB	23
-  7284'   01 0132        C      	LD	BC,UE.KMPUL	;BC:= max. Pufferlaenge
-  7287'   B7             C      	OR	A
-  7288'   ED 42          C      	SBC	HL,BC
-  728A'   3F             C      	CCF
-  728B'   CC 72C5'       C      	CALL	Z,UK.KBA	;---> Puffer voll
-  728E'   F1             C      	POP	AF	;Zeichen auskellern
-  728F'   CD 6E7C'       C      	CALL	XY.LDDX
-  7292'   15             C      	DB	21
-  7293'   77             C      	LD	(HL),A	;Zeichen in Puffer eintragen
-  7294'   CD 6EBC'       C      	CALL	XY.INCDX	;Pufferzeiger erhoehen
-  7297'   15             C      	DB	21
-  7298'   CD 6EBC'       C      	CALL	XY.INCDX	;Pufferzaehler erhoehen
-  729B'   17             C      	DB	23
-  729C'   CD 6C8A'       C      	CALL	U1.RRST
-  729F'   C9             C      	RET
+  72A7'                  C      UK.PUTK:
+  72A7'   CD 6CAD'       C      	CALL	U1.RSAVE
+  72AA'   F5             C      	PUSH	AF	;Zeichen retten
+  72AB'   CD 6EA7'       C      	CALL	XY.LDDX	;HL:= Pufferzaehler
+  72AE'   17             C      	DB	23
+  72AF'   01 0132        C      	LD	BC,UE.KMPUL	;BC:= max. Pufferlaenge
+  72B2'   B7             C      	OR	A
+  72B3'   ED 42          C      	SBC	HL,BC
+  72B5'   3F             C      	CCF
+  72B6'   CC 72F0'       C      	CALL	Z,UK.KBA	;---> Puffer voll
+  72B9'   F1             C      	POP	AF	;Zeichen auskellern
+  72BA'   CD 6EA7'       C      	CALL	XY.LDDX
+  72BD'   15             C      	DB	21
+  72BE'   77             C      	LD	(HL),A	;Zeichen in Puffer eintragen
+  72BF'   CD 6EE7'       C      	CALL	XY.INCDX	;Pufferzeiger erhoehen
+  72C2'   15             C      	DB	21
+  72C3'   CD 6EE7'       C      	CALL	XY.INCDX	;Pufferzaehler erhoehen
+  72C6'   17             C      	DB	23
+  72C7'   CD 6CB5'       C      	CALL	U1.RRST
+  72CA'   C9             C      	RET
                          C      ;
                          C      ;******************************************************************
                          C      ;
@@ -5639,27 +5701,27 @@
                          C      ;
                          C      ;*******************************************************************
                          C      ;
-  72A0'                  C      UK.KSPFB:
-  72A0'   CD 6C82'       C      	CALL	U1.RSAVE
-  72A3'   CD 6D7E'       C      	CALL	U1.KTIN1
-  72A6'   CD 6E8C'       C      	CALL	XY.LIDX
-  72A9'   07             C      	DB	7
-  72AA'   E5             C      	PUSH	HL
-  72AB'   C1             C      	POP	BC	;BC:= Blocklaenge
-  72AC'   21 0000        C      	LD	HL,0
-  72AF'   CD 6E9C'       C      	CALL	XY.STDX	;Pufferzaehler = 0
-  72B2'   17             C      	DB	23
-  72B3'   CD 6E7C'       C      	CALL	XY.LDDX
-'Einzelzeicheneingabe fuer KMBG'	MACRO-80 3.44	09-Dec-81	PAGE	1-82
+  72CB'                  C      UK.KSPFB:
+  72CB'   CD 6CAD'       C      	CALL	U1.RSAVE
+  72CE'   CD 6DA9'       C      	CALL	U1.KTIN1
+  72D1'   CD 6EB7'       C      	CALL	XY.LIDX
+  72D4'   07             C      	DB	7
+  72D5'   E5             C      	PUSH	HL
+  72D6'   C1             C      	POP	BC	;BC:= Blocklaenge
+  72D7'   21 0000        C      	LD	HL,0
+  72DA'   CD 6EC7'       C      	CALL	XY.STDX	;Pufferzaehler = 0
+  72DD'   17             C      	DB	23
+  72DE'   CD 6EA7'       C      	CALL	XY.LDDX
+'Einzelzeicheneingabe fuer KMBG'	MACRO-80 3.44	09-Dec-81	PAGE	1-83
 
 
-  72B6'   19             C      	DB	25
-  72B7'   CD 6E9C'       C      	CALL	XY.STDX	;Pufferzeiger setzen
-  72BA'   15             C      	DB	21
-  72BB'   21 0E66        C      	LD	HL,UE.PUF
-  72BE'   CD 6C93'       C      	CALL	U1.CLRB
-  72C1'   CD 6C8A'       C      	CALL	U1.RRST
-  72C4'   C9             C      	RET
+  72E1'   19             C      	DB	25
+  72E2'   CD 6EC7'       C      	CALL	XY.STDX	;Pufferzeiger setzen
+  72E5'   15             C      	DB	21
+  72E6'   21 0E66        C      	LD	HL,UE.PUF
+  72E9'   CD 6CBE'       C      	CALL	U1.CLRB
+  72EC'   CD 6CB5'       C      	CALL	U1.RRST
+  72EF'   C9             C      	RET
                          C      ;
                          C      ;*******************************************************************
                          C      ;
@@ -5667,54 +5729,54 @@
                          C      ;
                          C      ;*******************************************************************
                          C      ;
-  72C5'                  C      UK.KBA:
-  72C5'   CD 6C82'       C      	CALL	U1.RSAVE
-  72C8'   CD 72A0'       C      	CALL	UK.KSPFB
-  72CB'   CD 6E7C'       C      	CALL	XY.LDDX
-  72CE'   07             C      	DB	7
-  72CF'   EB             C      	EX	DE,HL	;DE:= Blockadresse
-  72D0'   D5             C      	PUSH	DE	;Blockadresse retten
-  72D1'   CD 6E8C'       C      	CALL	XY.LIDX
-  72D4'   09             C      	DB	9
-  72D5'   E5             C      	PUSH	HL
-  72D6'   C1             C      	POP	BC	;BC:= Blocklaenge
-  72D7'   D1             C      	POP	DE	;DE:= Blockadresse
-  72D8'   C5             C      	PUSH	BC	;Blocklaenge retten
-  72D9'   CD 6E7C'       C      	CALL	XY.LDDX	;HL:= E/A-Pufferanfang
-  72DC'   19             C      	DB	25
-  72DD'   ED B0          C      	LDIR		;Block in Systempuffer
-  72DF'   C1             C      	POP	BC	;BC:= Blocklaenge
-  72E0'   E5             C      	PUSH	HL	;aktuelle Pufferadresse retten
-  72E1'   21 0132        C      	LD	HL,UE.KMPUL	;HL:= max. Laenge
-  72E4'   B7             C      	OR	A
-  72E5'   ED 42          C      	SBC	HL,BC	;HL:= Restbyteanzahl
-  72E7'   CD 6E9C'       C      	CALL	XY.STDX	;Pufferzaehler setzen
-  72EA'   17             C      	DB	23
-  72EB'   E5             C      	PUSH	HL
-  72EC'   C1             C      	POP	BC	;BC:= Restbyteanzahl
-  72ED'   CD 6E7C'       C      	CALL	XY.LDDX	;HL:= aktuelle Pufferadresse
-  72F0'   19             C      	DB	25
-  72F1'   EB             C      	EX	DE,HL	;DE:= Pufferanfang
-  72F2'   E1             C      	POP	HL
-  72F3'   ED B0          C      	LDIR
-  72F5'   EB             C      	EX	DE,HL	;HL:= aktuelle Pufferadresse
-  72F6'   CD 6E9C'       C      	CALL	XY.STDX	;Pufferzeiger setzen
-  72F9'   15             C      	DB	21
-  72FA'   DD 36 05 08    C      	LD	(IX+5),08H
-  72FE'   CD 5668'       C      	CALL	UF.EXEC	;physische Blockausgabe
-  7301'   F5             C      	PUSH	AF
-  7302'   CD 6EBC'       C      	CALL	XY.INCDX	;Blockzaehler erhoehen
-  7305'   11             C      	DB	17
-  7306'   F1             C      	POP	AF
-  7307'   CD 6C8A'       C      	CALL	U1.RRST
-  730A'   C9             C      	RET
+  72F0'                  C      UK.KBA:
+  72F0'   CD 6CAD'       C      	CALL	U1.RSAVE
+  72F3'   CD 72CB'       C      	CALL	UK.KSPFB
+  72F6'   CD 6EA7'       C      	CALL	XY.LDDX
+  72F9'   07             C      	DB	7
+  72FA'   EB             C      	EX	DE,HL	;DE:= Blockadresse
+  72FB'   D5             C      	PUSH	DE	;Blockadresse retten
+  72FC'   CD 6EB7'       C      	CALL	XY.LIDX
+  72FF'   09             C      	DB	9
+  7300'   E5             C      	PUSH	HL
+  7301'   C1             C      	POP	BC	;BC:= Blocklaenge
+  7302'   D1             C      	POP	DE	;DE:= Blockadresse
+  7303'   C5             C      	PUSH	BC	;Blocklaenge retten
+  7304'   CD 6EA7'       C      	CALL	XY.LDDX	;HL:= E/A-Pufferanfang
+  7307'   19             C      	DB	25
+  7308'   ED B0          C      	LDIR		;Block in Systempuffer
+  730A'   C1             C      	POP	BC	;BC:= Blocklaenge
+  730B'   E5             C      	PUSH	HL	;aktuelle Pufferadresse retten
+  730C'   21 0132        C      	LD	HL,UE.KMPUL	;HL:= max. Laenge
+  730F'   B7             C      	OR	A
+  7310'   ED 42          C      	SBC	HL,BC	;HL:= Restbyteanzahl
+  7312'   CD 6EC7'       C      	CALL	XY.STDX	;Pufferzaehler setzen
+  7315'   17             C      	DB	23
+  7316'   E5             C      	PUSH	HL
+  7317'   C1             C      	POP	BC	;BC:= Restbyteanzahl
+  7318'   CD 6EA7'       C      	CALL	XY.LDDX	;HL:= aktuelle Pufferadresse
+  731B'   19             C      	DB	25
+  731C'   EB             C      	EX	DE,HL	;DE:= Pufferanfang
+  731D'   E1             C      	POP	HL
+  731E'   ED B0          C      	LDIR
+  7320'   EB             C      	EX	DE,HL	;HL:= aktuelle Pufferadresse
+  7321'   CD 6EC7'       C      	CALL	XY.STDX	;Pufferzeiger setzen
+  7324'   15             C      	DB	21
+  7325'   DD 36 05 08    C      	LD	(IX+5),08H
+  7329'   CD 5668'       C      	CALL	UF.EXEC	;physische Blockausgabe
+  732C'   F5             C      	PUSH	AF
+  732D'   CD 6EE7'       C      	CALL	XY.INCDX	;Blockzaehler erhoehen
+  7330'   11             C      	DB	17
+  7331'   F1             C      	POP	AF
+  7332'   CD 6CB5'       C      	CALL	U1.RRST
+  7335'   C9             C      	RET
                          C      ;----------------------------------------------------------------------
                          C      ;	END
                                 ;
                          C      	INCLUDE KM.ASM
                          C      	TITLE	'Kmbg'
                          C      	PAGE
-'Kmbg'	MACRO-80 3.44	09-Dec-81	PAGE	1-83
+'Kmbg'	MACRO-80 3.44	09-Dec-81	PAGE	1-84
 
 
                          C      
@@ -5727,127 +5789,47 @@
                          C      ;*                  Stand        : 25.Februar 1985              *
                          C      ;****************************************************************
                          C      
-  730B'                  C      KM.ANF:
-  730B'   730B'          C      	DW	$
-  730D'   4B 6D 62 67    C      	DB	'Kmbg'
-  7311'   21 7501'       C      	LD	HL,KM.DEL	;Taste:   D E L
-  7314'   22 0D58        C      	LD	(SM.FKTAB+58H),HL
-  7317'   21 74BF'       C      	LD	HL,KM.ABS	;Taste:   A B S
-  731A'   22 0D24        C      	LD	(SM.FKTAB+24H),HL
-  731D'   21 7374'       C      	LD	HL,KM.HOME	;Taste:   H O M E
-  7320'   22 0D74        C      	LD	(SM.FKTAB+74H),HL
-  7323'   21 737E'       C      	LD	HL,KM.SL	;Taste:   SCH_LINKS
-  7326'   22 0D26        C      	LD	(SM.FKTAB+26H),HL
-  7329'   21 738B'       C      	LD	HL,KM.SR	;Taste:   SCH_RECHTS
-  732C'   22 0D36        C      	LD	(SM.FKTAB+36H),HL
-  732F'   21 736F'       C      	LD	HL,KM.CO	;Taste:   C_HOCH
-  7332'   22 0D06        C      	LD	(SM.FKTAB+06H),HL
-  7335'   21 7390'       C      	LD	HL,KM.CR	;Taste:   C_RECHTS
-  7338'   22 0D16        C      	LD	(SM.FKTAB+16H),HL
-  733B'   21 7379'       C      	LD	HL,KM.CU	;Taste:   C_RUNTER
-  733E'   22 0D18        C      	LD	(SM.FKTAB+18H),HL
-  7341'   21 7386'       C      	LD	HL,KM.CL	;Taste:   C_LINKS
-  7344'   22 0D08        C      	LD	(SM.FKTAB+08H),HL
-  7347'   21 7395'       C      	LD	HL,KM.CNZA	;Taste:   C N Z A
-  734A'   22 0D76        C      	LD	(SM.FKTAB+76H),HL
-  734D'   21 73C5'       C      	LD	HL,KM.NEWL	;Taste:   E T 1
-  7350'   22 0DAE        C      	LD	(KM.TNEWL),HL
-  7353'   21 73EA'       C      	LD	HL,KM.EINA	;alphanum. Tasten
-  7356'   22 0DB0        C      	LD	(KM.TEINA),HL
+  7336'                  C      KM.ANF:
+  7336'   7336'          C      	DW	$
+  7338'   4B 6D 62 67    C      	DB	'Kmbg'
+  733C'   21 752C'       C      	LD	HL,KM.DEL	;Taste:   D E L
+  733F'   22 0D58        C      	LD	(SM.FKTAB+58H),HL
+  7342'   21 74EA'       C      	LD	HL,KM.ABS	;Taste:   A B S
+  7345'   22 0D24        C      	LD	(SM.FKTAB+24H),HL
+  7348'   21 739F'       C      	LD	HL,KM.HOME	;Taste:   H O M E
+  734B'   22 0D74        C      	LD	(SM.FKTAB+74H),HL
+  734E'   21 73A9'       C      	LD	HL,KM.SL	;Taste:   SCH_LINKS
+  7351'   22 0D26        C      	LD	(SM.FKTAB+26H),HL
+  7354'   21 73B6'       C      	LD	HL,KM.SR	;Taste:   SCH_RECHTS
+  7357'   22 0D36        C      	LD	(SM.FKTAB+36H),HL
+  735A'   21 739A'       C      	LD	HL,KM.CO	;Taste:   C_HOCH
+  735D'   22 0D06        C      	LD	(SM.FKTAB+06H),HL
+  7360'   21 73BB'       C      	LD	HL,KM.CR	;Taste:   C_RECHTS
+  7363'   22 0D16        C      	LD	(SM.FKTAB+16H),HL
+  7366'   21 73A4'       C      	LD	HL,KM.CU	;Taste:   C_RUNTER
+  7369'   22 0D18        C      	LD	(SM.FKTAB+18H),HL
+  736C'   21 73B1'       C      	LD	HL,KM.CL	;Taste:   C_LINKS
+  736F'   22 0D08        C      	LD	(SM.FKTAB+08H),HL
+  7372'   21 73C0'       C      	LD	HL,KM.CNZA	;Taste:   C N Z A
+  7375'   22 0D76        C      	LD	(SM.FKTAB+76H),HL
+  7378'   21 73F0'       C      	LD	HL,KM.NEWL	;Taste:   E T 1
+  737B'   22 0DAE        C      	LD	(KM.TNEWL),HL
+  737E'   21 7415'       C      	LD	HL,KM.EINA	;alphanum. Tasten
+  7381'   22 0DB0        C      	LD	(KM.TEINA),HL
                          C      
-  7359'   21 758D'       C      	LD	HL,KM.UP13
-  735C'   11 FF80        C      	LD	DE,KM.RAM
-  735F'   01 007E        C      	LD	BC,KM.UPEND-KM.UP13
-  7362'   ED B0          C      	LDIR
+  7384'   21 75B8'       C      	LD	HL,KM.UP13
+  7387'   11 FF80        C      	LD	DE,KM.RAM
+  738A'   01 007E        C      	LD	BC,KM.UPEND-KM.UP13
+  738D'   ED B0          C      	LDIR
                          C      
-  7364'   DD 21 2B01     C      	LD	IX,KM.KMTAB
-  7368'   DD CB 00 7E    C      	BIT	7,(IX)
-  736C'   C2 FF9C        C      	JP	NZ,KM.UP4-KM.UP13+KM.RAM
+  738F'   DD 21 2B01     C      	LD	IX,KM.KMTAB
+  7393'   DD CB 00 7E    C      	BIT	7,(IX)
+  7397'   C2 FF9C        C      	JP	NZ,KM.UP4-KM.UP13+KM.RAM
                          C      
-  736F'                  C      KM.CO:
-  736F'   CD 750F'       C      	CALL	KM.UP2	;KMBG Reservieren EIN
-  7372'   31             C      	DB	31H
-  7373'   C9             C      	RET
-                         C      
-                         C      	PAGE
-'Kmbg'	MACRO-80 3.44	09-Dec-81	PAGE	1-84
-
-
-                         C      
-                         C      ;****************************************************************
-                         C      ;*                  Auswertung der Cursor-Tasten                *
-                         C      ;****************************************************************
-  7374'                  C      KM.HOME:
-  7374'   CD 750C'       C      	CALL	KM.UP1	;KMBG Kassette zurueckspulen
-  7377'   21             C      	DB	21H
-  7378'   C9             C      	RET
-                         C      
-  7379'                  C      KM.CU:
-  7379'   CD 750F'       C      	CALL	KM.UP2	;KMBG Reservieren AUS
-  737C'   41             C      	DB	41H
-  737D'   C9             C      	RET
-                         C      
-  737E'                  C      KM.SL:
-  737E'   CD 750F'       C      	CALL	KM.UP2	;KMBG vorh.  Datensatz anzeigen
-  7381'   15             C      	DB	15H
-  7382'   CD 750C'       C      	CALL	KM.UP1
-  7385'   02             C      	DB	2
-  7386'                  C      KM.CL:
-  7386'   CD 750F'       C      	CALL	KM.UP2	;KMBG einen  Datensatz zuruecksetzen
-  7389'   15             C      	DB	15H
-  738A'   C9             C      	RET
-                         C      
-  738B'                  C      KM.SR:
-  738B'   CD 750C'       C      	CALL	KM.UP1	;KMBG nachf. Datensatz anzeigen
-  738E'   02             C      	DB	2
-  738F'   C9             C      	RET
-                         C      
-  7390'                  C      KM.CR:
-  7390'   CD 750F'       C      	CALL	KM.UP2	;KMBG einen  Datensatz vorsetzen
-  7393'   11             C      	DB	11H
-  7394'   C9             C      	RET
-                         C      
-  7395'                  C      KM.CNZA:
-  7395'   DD CB 00 7E    C      	BIT	7,(IX)
-  7399'   C0             C      	RET	NZ
-  739A'   3A FFAE        C      	LD	A,(KM.TX2-KM.UP13+KM.RAM)
-  739D'   FE 6C          C      	CP	'l'
-  739F'   28 08          C      	JR	Z,KM.CNZA1
-  73A1'   DD 36 09 00    C      	LD	(IX+9),0
-  73A5'   DD 36 0A 01    C      	LD	(IX+10),1
-  73A9'                  C      KM.CNZA1:
-  73A9'   3E 60          C      	LD	A,60H
-  73AB'   DD B6 04       C      	OR	(IX+4)
-  73AE'   DD 77 04       C      	LD	(IX+4),A
-  73B1'   CD 7520'       C      	CALL	KM.UP5
-  73B4'   DD 7E 04       C      	LD	A,(IX+4)
-  73B7'   CD 750C'       C      	CALL	KM.UP1
-  73BA'   02             C      	DB	2
-  73BB'   CD 750F'       C      	CALL	KM.UP2
-  73BE'   15             C      	DB	15H
-  73BF'   DD 77 04       C      	LD	(IX+4),A
-  73C2'   C3 FF9C        C      	JP	KM.UP4-KM.UP13+KM.RAM
-                         C      ;****************************************************************
-                         C      ;*                  Routine fuer die Taste   E T 1              *
-                         C      ;****************************************************************
-  73C5'                  C      KM.NEWL:
-  73C5'   DD CB 00 7E    C      	BIT	7,(IX)
-  73C9'   C0             C      	RET	NZ
-  73CA'   21 0E66        C      	LD	HL,KM.PUFF
-  73CD'   22 2BE0        C      	LD	(KM.KMTAB+0DFH),HL	;2BE0
-  73D0'   DD 7E 0A       C      	LD	A,(IX+10)
-  73D3'   3D             C      	DEC	A
-  73D4'   E6 F0          C      	AND	0F0H
-  73D6'   07             C      	RLCA
-  73D7'   07             C      	RLCA
-  73D8'   07             C      	RLCA
-  73D9'   07             C      	RLCA
-  73DA'   3C             C      	INC	A
-  73DB'   32 2BEB        C      	LD	(KM.KMTAB+0EAH),A	;2BEB
-  73DE'   CD 2060        C      	CALL	KM.MHOME
-  73E1'   CD 23BA        C      	CALL	KM.MINSL
-  73E4'   CD 21EF        C      	CALL	ATACO
-  73E7'   C3 FF9C        C      	JP	KM.UP4-KM.UP13+KM.RAM
+  739A'                  C      KM.CO:
+  739A'   CD 753A'       C      	CALL	KM.UP2	;KMBG Reservieren EIN
+  739D'   31             C      	DB	31H
+  739E'   C9             C      	RET
                          C      
                          C      	PAGE
 'Kmbg'	MACRO-80 3.44	09-Dec-81	PAGE	1-85
@@ -5855,397 +5837,477 @@
 
                          C      
                          C      ;****************************************************************
-                         C      ;*                  Auswertung der alphanumerischen Tasten      *
+                         C      ;*                  Auswertung der Cursor-Tasten                *
                          C      ;****************************************************************
-  73EA'                  C      KM.EINA:
-  73EA'   79             C      	LD	A,C
-  73EB'   21 0000        C      	LD	HL,0
-  73EE'   FE 72          C      	CP	'r'
-  73F0'   20 03          C      	JR	NZ,KM.EINA1
-  73F2'   21 7454'       C      	LD	HL,KM.EINAB
-  73F5'                  C      KM.EINA1:
-  73F5'   FE 7A          C      	CP	'z'
-  73F7'   20 03          C      	JR	NZ,KM.EINA2
-  73F9'   21 7459'       C      	LD	HL,KM.EINAC
-  73FC'                  C      KM.EINA2:
-  73FC'   FE 70          C      	CP	'p'
-  73FE'   20 03          C      	JR	NZ,KM.EINA3
-  7400'   21 0000        C      	LD	HL,0
-  7403'                  C      KM.EINA3:
-  7403'   FE 63          C      	CP	'c'
-  7405'   20 03          C      	JR	NZ,KM.EINA4
-  7407'   21 0000        C      	LD	HL,0
-  740A'                  C      KM.EINA4:
-  740A'   22 0DA8        C      	LD	(KM.TTABU),HL
-  740D'   FE 30          C      	CP	'0'
-  740F'   38 04          C      	JR	C,KM.EINA5
-  7411'   FE 47          C      	CP	'G'
-  7413'   38 06          C      	JR	C,KM.EINA7
-  7415'                  C      KM.EINA5:
-  7415'   32 FFAE        C      	LD	(KM.TX2-KM.UP13+KM.RAM),A
-  7418'                  C      KM.EINA6:
-  7418'   C3 FF9C        C      	JP	KM.UP4-KM.UP13+KM.RAM
+  739F'                  C      KM.HOME:
+  739F'   CD 7537'       C      	CALL	KM.UP1	;KMBG Kassette zurueckspulen
+  73A2'   21             C      	DB	21H
+  73A3'   C9             C      	RET
                          C      
-  741B'                  C      KM.EINA7:
-  741B'   3A FFAE        C      	LD	A,(KM.TX2-KM.UP13+KM.RAM)
-  741E'   FE 67          C      	CP	'g'
-  7420'   20 10          C      	JR	NZ,KM.EINA8
-  7422'   79             C      	LD	A,C
-  7423'   D6 30          C      	SUB	30H
-  7425'   D8             C      	RET	C
-  7426'   C8             C      	RET	Z
-  7427'   FE 03          C      	CP	3
-  7429'   D0             C      	RET	NC
-  742A'   DD 77 03       C      	LD	(IX+3),A
-  742D'   CD 7480'       C      	CALL	KM.UP20
-  7430'   18 E6          C      	JR	KM.EINA6
+  73A4'                  C      KM.CU:
+  73A4'   CD 753A'       C      	CALL	KM.UP2	;KMBG Reservieren AUS
+  73A7'   41             C      	DB	41H
+  73A8'   C9             C      	RET
                          C      
-  7432'                  C      KM.EINA8:
-  7432'   FE 6C          C      	CP	'l'
-  7434'   20 1D          C      	JR	NZ,KM.EINAA
-  7436'   79             C      	LD	A,C
-  7437'   D6 30          C      	SUB	30H
-  7439'   FE 0A          C      	CP	00AH
-  743B'   38 02          C      	JR	C,KM.EINA9
-  743D'   D6 07          C      	SUB	7
-  743F'                  C      KM.EINA9:
-  743F'   5F             C      	LD	E,A
-  7440'   16 00          C      	LD	D,0
-  7442'   62             C      	LD	H,D
-  7443'   DD 6E 0A       C      	LD	L,(IX+10)
-  7446'   29             C      	ADD	HL,HL
-  7447'   29             C      	ADD	HL,HL
-  7448'   29             C      	ADD	HL,HL
-  7449'   29             C      	ADD	HL,HL
-  744A'   19             C      	ADD	HL,DE
-  744B'   DD 74 09       C      	LD	(IX+9),H
-  744E'   DD 75 0A       C      	LD	(IX+10),L
-  7451'   18 C5          C      	JR	KM.EINA6
+  73A9'                  C      KM.SL:
+  73A9'   CD 753A'       C      	CALL	KM.UP2	;KMBG vorh.  Datensatz anzeigen
+  73AC'   15             C      	DB	15H
+  73AD'   CD 7537'       C      	CALL	KM.UP1
+  73B0'   02             C      	DB	2
+  73B1'                  C      KM.CL:
+  73B1'   CD 753A'       C      	CALL	KM.UP2	;KMBG einen  Datensatz zuruecksetzen
+  73B4'   15             C      	DB	15H
+  73B5'   C9             C      	RET
                          C      
-  7453'                  C      KM.EINAA:
-  7453'   C9             C      	RET
+  73B6'                  C      KM.SR:
+  73B6'   CD 7537'       C      	CALL	KM.UP1	;KMBG nachf. Datensatz anzeigen
+  73B9'   02             C      	DB	2
+  73BA'   C9             C      	RET
                          C      
-  7454'                  C      KM.EINAB:
-  7454'   CD 750F'       C      	CALL	KM.UP2
-  7457'   08             C      	DB	8
-  7458'   C9             C      	RET
+  73BB'                  C      KM.CR:
+  73BB'   CD 753A'       C      	CALL	KM.UP2	;KMBG einen  Datensatz vorsetzen
+  73BE'   11             C      	DB	11H
+  73BF'   C9             C      	RET
                          C      
-  7459'                  C      KM.EINAC:
-  7459'   DD 36 0D 00    C      	LD	(IX+13),0
-  745D'                  C      KM.EINAD:
-  745D'   CD 750C'       C      	CALL	KM.UP1
-  7460'   02             C      	DB	2
+  73C0'                  C      KM.CNZA:
+  73C0'   DD CB 00 7E    C      	BIT	7,(IX)
+  73C4'   C0             C      	RET	NZ
+  73C5'   3A FFAE        C      	LD	A,(KM.TX2-KM.UP13+KM.RAM)
+  73C8'   FE 6C          C      	CP	'l'
+  73CA'   28 08          C      	JR	Z,KM.CNZA1
+  73CC'   DD 36 09 00    C      	LD	(IX+9),0
+  73D0'   DD 36 0A 01    C      	LD	(IX+10),1
+  73D4'                  C      KM.CNZA1:
+  73D4'   3E 60          C      	LD	A,60H
+  73D6'   DD B6 04       C      	OR	(IX+4)
+  73D9'   DD 77 04       C      	LD	(IX+4),A
+  73DC'   CD 754B'       C      	CALL	KM.UP5
+  73DF'   DD 7E 04       C      	LD	A,(IX+4)
+  73E2'   CD 7537'       C      	CALL	KM.UP1
+  73E5'   02             C      	DB	2
+  73E6'   CD 753A'       C      	CALL	KM.UP2
+  73E9'   15             C      	DB	15H
+  73EA'   DD 77 04       C      	LD	(IX+4),A
+  73ED'   C3 FF9C        C      	JP	KM.UP4-KM.UP13+KM.RAM
+                         C      ;****************************************************************
+                         C      ;*                  Routine fuer die Taste   E T 1              *
+                         C      ;****************************************************************
+  73F0'                  C      KM.NEWL:
+  73F0'   DD CB 00 7E    C      	BIT	7,(IX)
+  73F4'   C0             C      	RET	NZ
+  73F5'   21 0E66        C      	LD	HL,KM.PUFF
+  73F8'   22 2BE0        C      	LD	(KM.KMTAB+0DFH),HL	;2BE0
+  73FB'   DD 7E 0A       C      	LD	A,(IX+10)
+  73FE'   3D             C      	DEC	A
+  73FF'   E6 F0          C      	AND	0F0H
+  7401'   07             C      	RLCA
+  7402'   07             C      	RLCA
+  7403'   07             C      	RLCA
+  7404'   07             C      	RLCA
+  7405'   3C             C      	INC	A
+  7406'   32 2BEB        C      	LD	(KM.KMTAB+0EAH),A	;2BEB
+  7409'   CD 2060        C      	CALL	KM.MHOME
+  740C'   CD 23BA        C      	CALL	KM.MINSL
+  740F'   CD 21EF        C      	CALL	ATACO
+  7412'   C3 FF9C        C      	JP	KM.UP4-KM.UP13+KM.RAM
+                         C      
+                         C      	PAGE
 'Kmbg'	MACRO-80 3.44	09-Dec-81	PAGE	1-86
 
 
-  7461'   DD 7E 09       C      	LD	A,(IX+9)
-  7464'   DD B6 0A       C      	OR	(IX+10)
-  7467'   28 08          C      	JR	Z,KM.EINAE
-  7469'   DD 34 0D       C      	INC	(IX+13)
-  746C'   CD 7471'       C      	CALL	KM.EINAE
-  746F'   18 EC          C      	JR	KM.EINAD
                          C      
-  7471'                  C      KM.EINAE:
-  7471'   CD FF9C        C      	CALL	KM.UP4-KM.UP13+KM.RAM
-  7474'   11 35E0        C      	LD	DE,SD.BWSA + 18*80 + 64	;5E0H
-  7477'   CD 7544'       C      	CALL	KM.UP10
-  747A'   62 7A 3A       C      	DB	'bz:'
-  747D'   0D             C      	DB	00DH
-  747E'   A0             C      	DB	20H+80H
-  747F'   C9             C      	RET
+                         C      ;****************************************************************
+                         C      ;*                  Auswertung der alphanumerischen Tasten      *
+                         C      ;****************************************************************
+  7415'                  C      KM.EINA:
+  7415'   79             C      	LD	A,C
+  7416'   21 0000        C      	LD	HL,0
+  7419'   FE 72          C      	CP	'r'
+  741B'   20 03          C      	JR	NZ,KM.EINA1
+  741D'   21 747F'       C      	LD	HL,KM.EINAB
+  7420'                  C      KM.EINA1:
+  7420'   FE 7A          C      	CP	'z'
+  7422'   20 03          C      	JR	NZ,KM.EINA2
+  7424'   21 7484'       C      	LD	HL,KM.EINAC
+  7427'                  C      KM.EINA2:
+  7427'   FE 70          C      	CP	'p'
+  7429'   20 03          C      	JR	NZ,KM.EINA3
+  742B'   21 0000        C      	LD	HL,0
+  742E'                  C      KM.EINA3:
+  742E'   FE 63          C      	CP	'c'
+  7430'   20 03          C      	JR	NZ,KM.EINA4
+  7432'   21 0000        C      	LD	HL,0
+  7435'                  C      KM.EINA4:
+  7435'   22 0DA8        C      	LD	(KM.TTABU),HL
+  7438'   FE 30          C      	CP	'0'
+  743A'   38 04          C      	JR	C,KM.EINA5
+  743C'   FE 47          C      	CP	'G'
+  743E'   38 06          C      	JR	C,KM.EINA7
+  7440'                  C      KM.EINA5:
+  7440'   32 FFAE        C      	LD	(KM.TX2-KM.UP13+KM.RAM),A
+  7443'                  C      KM.EINA6:
+  7443'   C3 FF9C        C      	JP	KM.UP4-KM.UP13+KM.RAM
                          C      
-  7480'                  C      KM.UP20:
-  7480'   DD 4E 02       C      	LD	C,(IX+2)
-  7483'   0C             C      	INC	C
-  7484'   0C             C      	INC	C
-  7485'   0C             C      	INC	C
-  7486'   0C             C      	INC	C
-  7487'   ED 40          C      	IN	B,(C)
-  7489'   FE 01          C      	CP	1
-  748B'   20 04          C      	JR	NZ,KM.UP21
-  748D'   CB 48          C      	BIT	1,B
-  748F'   20 29          C      	JR	NZ,KM.UP25
-  7491'                  C      KM.UP21:
-  7491'   CB D8          C      	SET	3,B
-  7493'   18 06          C      	JR	KM.UP22
-  7495'   CB 40          C      	BIT	0,B
-  7497'   20 21          C      	JR	NZ,KM.UP25
-  7499'   CB D0          C      	SET	2,B
-  749B'                  C      KM.UP22:
-  749B'   ED 41          C      	OUT	(C),B
-  749D'   0C             C      	INC	C
-  749E'   ED 50          C      	IN	D,(C)
-  74A0'   0D             C      	DEC	C
-  74A1'   CB 90          C      	RES	2,B
-  74A3'   CB 98          C      	RES	3,B
-  74A5'   ED 41          C      	OUT	(C),B
-  74A7'   FE 01          C      	CP	1
-  74A9'   20 04          C      	JR	NZ,KM.UP23
-  74AB'   CB 62          C      	BIT	4,D
-  74AD'   18 02          C      	JR	KM.UP24
+  7446'                  C      KM.EINA7:
+  7446'   3A FFAE        C      	LD	A,(KM.TX2-KM.UP13+KM.RAM)
+  7449'   FE 67          C      	CP	'g'
+  744B'   20 10          C      	JR	NZ,KM.EINA8
+  744D'   79             C      	LD	A,C
+  744E'   D6 30          C      	SUB	30H
+  7450'   D8             C      	RET	C
+  7451'   C8             C      	RET	Z
+  7452'   FE 03          C      	CP	3
+  7454'   D0             C      	RET	NC
+  7455'   DD 77 03       C      	LD	(IX+3),A
+  7458'   CD 74AB'       C      	CALL	KM.UP20
+  745B'   18 E6          C      	JR	KM.EINA6
                          C      
-  74AF'                  C      KM.UP23:
-  74AF'   CB 5A          C      	BIT	3,D
-  74B1'                  C      KM.UP24:
-  74B1'   28 07          C      	JR	Z,KM.UP25
-  74B3'   DD 36 00 00    C      	LD	(IX+0),0
-  74B7'   C3 736F'       C      	JP	KM.CO
+  745D'                  C      KM.EINA8:
+  745D'   FE 6C          C      	CP	'l'
+  745F'   20 1D          C      	JR	NZ,KM.EINAA
+  7461'   79             C      	LD	A,C
+  7462'   D6 30          C      	SUB	30H
+  7464'   FE 0A          C      	CP	00AH
+  7466'   38 02          C      	JR	C,KM.EINA9
+  7468'   D6 07          C      	SUB	7
+  746A'                  C      KM.EINA9:
+  746A'   5F             C      	LD	E,A
+  746B'   16 00          C      	LD	D,0
+  746D'   62             C      	LD	H,D
+  746E'   DD 6E 0A       C      	LD	L,(IX+10)
+  7471'   29             C      	ADD	HL,HL
+  7472'   29             C      	ADD	HL,HL
+  7473'   29             C      	ADD	HL,HL
+  7474'   29             C      	ADD	HL,HL
+  7475'   19             C      	ADD	HL,DE
+  7476'   DD 74 09       C      	LD	(IX+9),H
+  7479'   DD 75 0A       C      	LD	(IX+10),L
+  747C'   18 C5          C      	JR	KM.EINA6
                          C      
-  74BA'                  C      KM.UP25:
-  74BA'   DD CB 00 FE    C      	SET	7,(IX+0)
-  74BE'   C9             C      	RET
+  747E'                  C      KM.EINAA:
+  747E'   C9             C      	RET
                          C      
-                         C      	PAGE
+  747F'                  C      KM.EINAB:
+  747F'   CD 753A'       C      	CALL	KM.UP2
+  7482'   08             C      	DB	8
+  7483'   C9             C      	RET
+                         C      
+  7484'                  C      KM.EINAC:
+  7484'   DD 36 0D 00    C      	LD	(IX+13),0
+  7488'                  C      KM.EINAD:
+  7488'   CD 7537'       C      	CALL	KM.UP1
+  748B'   02             C      	DB	2
 'Kmbg'	MACRO-80 3.44	09-Dec-81	PAGE	1-87
 
 
+  748C'   DD 7E 09       C      	LD	A,(IX+9)
+  748F'   DD B6 0A       C      	OR	(IX+10)
+  7492'   28 08          C      	JR	Z,KM.EINAE
+  7494'   DD 34 0D       C      	INC	(IX+13)
+  7497'   CD 749C'       C      	CALL	KM.EINAE
+  749A'   18 EC          C      	JR	KM.EINAD
                          C      
-  74BF'                  C      KM.ABS:
-  74BF'   21 3000        C      	LD	HL,SD.BWSA
-  74C2'   06 11          C      	LD	B,17
-  74C4'                  C      KM.ABS1:
-  74C4'   C5             C      	PUSH	BC
-  74C5'   CD 74CE'       C      	CALL	KM.UP30
-  74C8'   C1             C      	POP	BC
-  74C9'   10 F9          C      	DJNZ	KM.ABS1
-  74CB'   C3 74E1'       C      	JP	KM.UP36
+  749C'                  C      KM.EINAE:
+  749C'   CD FF9C        C      	CALL	KM.UP4-KM.UP13+KM.RAM
+  749F'   11 35E0        C      	LD	DE,SD.BWSA + 18*80 + 64	;5E0H
+  74A2'   CD 756F'       C      	CALL	KM.UP10
+  74A5'   62 7A 3A       C      	DB	'bz:'
+  74A8'   0D             C      	DB	00DH
+  74A9'   A0             C      	DB	20H+80H
+  74AA'   C9             C      	RET
                          C      
-  74CE'                  C      KM.UP30:
-  74CE'   CD 74ED'       C      	CALL	KM.UP34
-  74D1'   A0             C      	DB	0A0H
-  74D2'   28 15          C      	JR	Z,KM.UP33
-  74D4'   CD 74ED'       C      	CALL	KM.UP34
-  74D7'   50             C      	DB	050H
-  74D8'   28 0C          C      	JR	Z,KM.UP32
-  74DA'                  C      KM.UP31:
-  74DA'   7E             C      	LD	A,(HL)
-  74DB'   23             C      	INC	HL
-  74DC'   CD 4040        C      	CALL	PRINT
-  74DF'   10 F9          C      	DJNZ	KM.UP31
-  74E1'                  C      KM.UP36:
-  74E1'   3E 1E          C      	LD	A,1EH
-  74E3'   C3 4040        C      	JP	PRINT
+  74AB'                  C      KM.UP20:
+  74AB'   DD 4E 02       C      	LD	C,(IX+2)
+  74AE'   0C             C      	INC	C
+  74AF'   0C             C      	INC	C
+  74B0'   0C             C      	INC	C
+  74B1'   0C             C      	INC	C
+  74B2'   ED 40          C      	IN	B,(C)
+  74B4'   FE 01          C      	CP	1
+  74B6'   20 04          C      	JR	NZ,KM.UP21
+  74B8'   CB 48          C      	BIT	1,B
+  74BA'   20 29          C      	JR	NZ,KM.UP25
+  74BC'                  C      KM.UP21:
+  74BC'   CB D8          C      	SET	3,B
+  74BE'   18 06          C      	JR	KM.UP22
+  74C0'   CB 40          C      	BIT	0,B
+  74C2'   20 21          C      	JR	NZ,KM.UP25
+  74C4'   CB D0          C      	SET	2,B
+  74C6'                  C      KM.UP22:
+  74C6'   ED 41          C      	OUT	(C),B
+  74C8'   0C             C      	INC	C
+  74C9'   ED 50          C      	IN	D,(C)
+  74CB'   0D             C      	DEC	C
+  74CC'   CB 90          C      	RES	2,B
+  74CE'   CB 98          C      	RES	3,B
+  74D0'   ED 41          C      	OUT	(C),B
+  74D2'   FE 01          C      	CP	1
+  74D4'   20 04          C      	JR	NZ,KM.UP23
+  74D6'   CB 62          C      	BIT	4,D
+  74D8'   18 02          C      	JR	KM.UP24
                          C      
-  74E6'                  C      KM.UP32:
-  74E6'   CD 74E1'       C      	CALL	KM.UP36
-  74E9'                  C      KM.UP33:
-  74E9'   23             C      	INC	HL
-  74EA'   10 FD          C      	DJNZ	KM.UP33
-  74EC'   C9             C      	RET
+  74DA'                  C      KM.UP23:
+  74DA'   CB 5A          C      	BIT	3,D
+  74DC'                  C      KM.UP24:
+  74DC'   28 07          C      	JR	Z,KM.UP25
+  74DE'   DD 36 00 00    C      	LD	(IX+0),0
+  74E2'   C3 739A'       C      	JP	KM.CO
                          C      
-  74ED'                  C      KM.UP34:
-  74ED'   E3             C      	EX	(SP),HL
-  74EE'   46             C      	LD	B,(HL)
-  74EF'   23             C      	INC	HL
-  74F0'   E3             C      	EX	(SP),HL
-  74F1'   E5             C      	PUSH	HL
-  74F2'   CD 74F9'       C      	CALL	KM.UP35
-  74F5'   E1             C      	POP	HL
-  74F6'   06 50          C      	LD	B,80
-  74F8'   C9             C      	RET
-                         C      
-  74F9'                  C      KM.UP35:
-  74F9'   3E 20          C      	LD	A,' '
-  74FB'   BE             C      	CP	(HL)
-  74FC'   23             C      	INC	HL
-  74FD'   C0             C      	RET	NZ
-  74FE'   10 F9          C      	DJNZ	KM.UP35
-  7500'   C9             C      	RET
-                         C      
-  7501'                  C      KM.DEL:
-  7501'   DD CB 00 BE    C      	RES	7,(IX+0)
-  7505'   DD 36 01 00    C      	LD	(IX+1),0
-  7509'   C3 FF9C        C      	JP	KM.UP4-KM.UP13+KM.RAM
+  74E5'                  C      KM.UP25:
+  74E5'   DD CB 00 FE    C      	SET	7,(IX+0)
+  74E9'   C9             C      	RET
                          C      
                          C      	PAGE
 'Kmbg'	MACRO-80 3.44	09-Dec-81	PAGE	1-88
 
 
                          C      
-                         C      ;****************************************************************
-                         C      ;*                  Unterprogramme                              *
-                         C      ;****************************************************************
-  750C'                  C      KM.UP1:
-  750C'   CD 752C'       C      	CALL	KM.LOE1
-  750F'                  C      KM.UP2:
-  750F'   DD CB 00 7E    C      	BIT	7,(IX)
-  7513'   28 02          C      	JR	Z,KM.UP3
-  7515'   E1             C      	POP	HL
-  7516'   C0             C      	RET	NZ
-  7517'                  C      KM.UP3:
-  7517'   E3             C      	EX	(SP),HL
-  7518'   F5             C      	PUSH	AF
-  7519'   7E             C      	LD	A,(HL)
+  74EA'                  C      KM.ABS:
+  74EA'   21 3000        C      	LD	HL,SD.BWSA
+  74ED'   06 11          C      	LD	B,17
+  74EF'                  C      KM.ABS1:
+  74EF'   C5             C      	PUSH	BC
+  74F0'   CD 74F9'       C      	CALL	KM.UP30
+  74F3'   C1             C      	POP	BC
+  74F4'   10 F9          C      	DJNZ	KM.ABS1
+  74F6'   C3 750C'       C      	JP	KM.UP36
+                         C      
+  74F9'                  C      KM.UP30:
+  74F9'   CD 7518'       C      	CALL	KM.UP34
+  74FC'   A0             C      	DB	0A0H
+  74FD'   28 15          C      	JR	Z,KM.UP33
+  74FF'   CD 7518'       C      	CALL	KM.UP34
+  7502'   50             C      	DB	050H
+  7503'   28 0C          C      	JR	Z,KM.UP32
+  7505'                  C      KM.UP31:
+  7505'   7E             C      	LD	A,(HL)
+  7506'   23             C      	INC	HL
+  7507'   CD 4040        C      	CALL	PRINT
+  750A'   10 F9          C      	DJNZ	KM.UP31
+  750C'                  C      KM.UP36:
+  750C'   3E 1E          C      	LD	A,1EH
+  750E'   C3 4040        C      	JP	PRINT
+                         C      
+  7511'                  C      KM.UP32:
+  7511'   CD 750C'       C      	CALL	KM.UP36
+  7514'                  C      KM.UP33:
+  7514'   23             C      	INC	HL
+  7515'   10 FD          C      	DJNZ	KM.UP33
+  7517'   C9             C      	RET
+                         C      
+  7518'                  C      KM.UP34:
+  7518'   E3             C      	EX	(SP),HL
+  7519'   46             C      	LD	B,(HL)
   751A'   23             C      	INC	HL
-  751B'   DD 77 04       C      	LD	(IX+4),A
-  751E'   F1             C      	POP	AF
-  751F'   E3             C      	EX	(SP),HL
-  7520'                  C      KM.UP5:
-  7520'   CD 5A93        C      	CALL	KM.KARO
-  7523'   21 5C01        C      	LD	HL,05C01H			;? ? ?
-  7526'   22 0D8E        C      	LD	(SM.FKTAB+8EH),HL	;? ? ?
-  7529'   C3 FF9C        C      	JP	KM.UP4-KM.UP13+KM.RAM
+  751B'   E3             C      	EX	(SP),HL
+  751C'   E5             C      	PUSH	HL
+  751D'   CD 7524'       C      	CALL	KM.UP35
+  7520'   E1             C      	POP	HL
+  7521'   06 50          C      	LD	B,80
+  7523'   C9             C      	RET
                          C      
-  752C'                  C      KM.LOE1:
-  752C'   21 0E65        C      	LD	HL,KM.PUFF-1
-  752F'   36 00          C      	LD	(HL),0
-  7531'   01 0103        C      	LD	BC,103H
-  7534'   18 08          C      	JR	KM.LOE3
-  7536'                  C      KM.LOE2:
-  7536'   21 3000        C      	LD	HL,SD.BWSA
-  7539'   01 077F        C      	LD	BC,24*80 -1 ;007FFH ??? (25*80-1 = 07CFH; 07FFH-07CFH=30H=48)
-  753C'   36 20          C      	LD	(HL),' '
-  753E'                  C      KM.LOE3:
-  753E'   E5             C      	PUSH	HL
-  753F'   D1             C      	POP	DE
-  7540'   13             C      	INC	DE
-  7541'   ED B0          C      	LDIR
-  7543'   C9             C      	RET
+  7524'                  C      KM.UP35:
+  7524'   3E 20          C      	LD	A,' '
+  7526'   BE             C      	CP	(HL)
+  7527'   23             C      	INC	HL
+  7528'   C0             C      	RET	NZ
+  7529'   10 F9          C      	DJNZ	KM.UP35
+  752B'   C9             C      	RET
                          C      
-  7544'                  C      KM.UP10:
-  7544'   E3             C      	EX	(SP),HL
-  7545'                  C      KM.UP11:
-  7545'   7E             C      	LD	A,(HL)
-  7546'   E6 7F          C      	AND	07FH
-  7548'   FE 20          C      	CP	' '
-  754A'   38 02          C      	JR	C,KM.UP12
-  754C'   12             C      	LD	(DE),A
-  754D'   13             C      	INC	DE
-  754E'                  C      KM.UP12:
-  754E'   DC FF80        C      	CALL	C,KM.UP13-KM.UP13+KM.RAM
-  7551'   CB 7E          C      	BIT	7,(HL)
-  7553'   23             C      	INC	HL
-  7554'   28 EF          C      	JR	Z,KM.UP11
-  7556'   E3             C      	EX	(SP),HL
-  7557'   C9             C      	RET
+  752C'                  C      KM.DEL:
+  752C'   DD CB 00 BE    C      	RES	7,(IX+0)
+  7530'   DD 36 01 00    C      	LD	(IX+1),0
+  7534'   C3 FF9C        C      	JP	KM.UP4-KM.UP13+KM.RAM
                          C      
-  7558'                  C      KM.UP41:
-  7558'   11 3000        C      	LD	DE,SD.BWSA
-  755B'   DD 7E 0A       C      	LD	A,(IX+10)
-  755E'   B7             C      	OR	A
-  755F'   20 0C          C      	JR	NZ,KM.UP42
-  7561'   DD CB 09 46    C      	BIT	0,(IX+9)
-  7565'   C8             C      	RET	Z
-  7566'   F5             C      	PUSH	AF
-  7567'   CD 201D        C      	CALL	KM.MANZ
-  756A'   F1             C      	POP	AF
-  756B'   D6 10          C      	SUB	10H
-  756D'                  C      KM.UP42:
-  756D'   F5             C      	PUSH	AF
-  756E'   CD 201D        C      	CALL	KM.MANZ
-  7571'   F1             C      	POP	AF
-  7572'   D6 10          C      	SUB	10H
-  7574'   C8             C      	RET	Z
-  7575'   D8             C      	RET	C
-  7576'   18 F5          C      	JR	KM.UP42
-                         C      
-  7578'                  C      KM.UP43:
-  7578'   FE 1E          C      	CP	01EH
-  757A'   C8             C      	RET	Z
-  757B'   FE 0A          C      	CP	00AH
+                         C      	PAGE
 'Kmbg'	MACRO-80 3.44	09-Dec-81	PAGE	1-89
 
 
-  757D'   C8             C      	RET	Z
-  757E'   FE 0D          C      	CP	00DH
-  7580'   C8             C      	RET	Z
-  7581'   B7             C      	OR	A
-  7582'   C8             C      	RET	Z
-  7583'   FE 20          C      	CP	' '
-  7585'   38 03          C      	JR	C,KM.UP44
-  7587'   FE 80          C      	CP	080H
-  7589'   D8             C      	RET	C
-  758A'                  C      KM.UP44:
-  758A'   3E 7F          C      	LD	A,07FH
-  758C'   C9             C      	RET
+                         C      
+                         C      ;****************************************************************
+                         C      ;*                  Unterprogramme                              *
+                         C      ;****************************************************************
+  7537'                  C      KM.UP1:
+  7537'   CD 7557'       C      	CALL	KM.LOE1
+  753A'                  C      KM.UP2:
+  753A'   DD CB 00 7E    C      	BIT	7,(IX)
+  753E'   28 02          C      	JR	Z,KM.UP3
+  7540'   E1             C      	POP	HL
+  7541'   C0             C      	RET	NZ
+  7542'                  C      KM.UP3:
+  7542'   E3             C      	EX	(SP),HL
+  7543'   F5             C      	PUSH	AF
+  7544'   7E             C      	LD	A,(HL)
+  7545'   23             C      	INC	HL
+  7546'   DD 77 04       C      	LD	(IX+4),A
+  7549'   F1             C      	POP	AF
+  754A'   E3             C      	EX	(SP),HL
+  754B'                  C      KM.UP5:
+  754B'   CD 5A93        C      	CALL	KM.KARO
+  754E'   21 5C01        C      	LD	HL,05C01H			;? ? ?
+  7551'   22 0D8E        C      	LD	(SM.FKTAB+8EH),HL	;? ? ?
+  7554'   C3 FF9C        C      	JP	KM.UP4-KM.UP13+KM.RAM
+                         C      
+  7557'                  C      KM.LOE1:
+  7557'   21 0E65        C      	LD	HL,KM.PUFF-1
+  755A'   36 00          C      	LD	(HL),0
+  755C'   01 0103        C      	LD	BC,103H
+  755F'   18 08          C      	JR	KM.LOE3
+  7561'                  C      KM.LOE2:
+  7561'   21 3000        C      	LD	HL,SD.BWSA
+  7564'   01 077F        C      	LD	BC,24*80 -1 ;007FFH ??? (25*80-1 = 07CFH; 07FFH-07CFH=30H=48)
+  7567'   36 20          C      	LD	(HL),' '
+  7569'                  C      KM.LOE3:
+  7569'   E5             C      	PUSH	HL
+  756A'   D1             C      	POP	DE
+  756B'   13             C      	INC	DE
+  756C'   ED B0          C      	LDIR
+  756E'   C9             C      	RET
+                         C      
+  756F'                  C      KM.UP10:
+  756F'   E3             C      	EX	(SP),HL
+  7570'                  C      KM.UP11:
+  7570'   7E             C      	LD	A,(HL)
+  7571'   E6 7F          C      	AND	07FH
+  7573'   FE 20          C      	CP	' '
+  7575'   38 02          C      	JR	C,KM.UP12
+  7577'   12             C      	LD	(DE),A
+  7578'   13             C      	INC	DE
+  7579'                  C      KM.UP12:
+  7579'   DC FF80        C      	CALL	C,KM.UP13-KM.UP13+KM.RAM
+  757C'   CB 7E          C      	BIT	7,(HL)
+  757E'   23             C      	INC	HL
+  757F'   28 EF          C      	JR	Z,KM.UP11
+  7581'   E3             C      	EX	(SP),HL
+  7582'   C9             C      	RET
+                         C      
+  7583'                  C      KM.UP41:
+  7583'   11 3000        C      	LD	DE,SD.BWSA
+  7586'   DD 7E 0A       C      	LD	A,(IX+10)
+  7589'   B7             C      	OR	A
+  758A'   20 0C          C      	JR	NZ,KM.UP42
+  758C'   DD CB 09 46    C      	BIT	0,(IX+9)
+  7590'   C8             C      	RET	Z
+  7591'   F5             C      	PUSH	AF
+  7592'   CD 201D        C      	CALL	KM.MANZ
+  7595'   F1             C      	POP	AF
+  7596'   D6 10          C      	SUB	10H
+  7598'                  C      KM.UP42:
+  7598'   F5             C      	PUSH	AF
+  7599'   CD 201D        C      	CALL	KM.MANZ
+  759C'   F1             C      	POP	AF
+  759D'   D6 10          C      	SUB	10H
+  759F'   C8             C      	RET	Z
+  75A0'   D8             C      	RET	C
+  75A1'   18 F5          C      	JR	KM.UP42
+                         C      
+  75A3'                  C      KM.UP43:
+  75A3'   FE 1E          C      	CP	01EH
+  75A5'   C8             C      	RET	Z
+  75A6'   FE 0A          C      	CP	00AH
+'Kmbg'	MACRO-80 3.44	09-Dec-81	PAGE	1-90
+
+
+  75A8'   C8             C      	RET	Z
+  75A9'   FE 0D          C      	CP	00DH
+  75AB'   C8             C      	RET	Z
+  75AC'   B7             C      	OR	A
+  75AD'   C8             C      	RET	Z
+  75AE'   FE 20          C      	CP	' '
+  75B0'   38 03          C      	JR	C,KM.UP44
+  75B2'   FE 80          C      	CP	080H
+  75B4'   D8             C      	RET	C
+  75B5'                  C      KM.UP44:
+  75B5'   3E 7F          C      	LD	A,07FH
+  75B7'   C9             C      	RET
                          C      
                          C      	PAGE
-'Kmbg'	MACRO-80 3.44	09-Dec-81	PAGE	1-90
+'Kmbg'	MACRO-80 3.44	09-Dec-81	PAGE	1-91
 
 
                          C      
                          C      ;	ORG	00300H
                          C      
-  758D'   32 FF85        C      KM.UP13:	LD	(KM.UP15-KM.UP13+KM.RAM-1),A
-  7590'   DD 7E 01       C      	LD	A,(IX+1)	;<<<
-  7593'                  C      KM.UP15:
-  7593'   EB             C      	EX	DE,HL
-  7594'   77             C      	LD	(HL),A
-  7595'   3E 33          C      	LD	A,33H
-  7597'   ED 67          C      	RRD
-  7599'   EB             C      	EX	DE,HL
-  759A'   F5             C      	PUSH	AF
-  759B'   1A             C      	LD	A,(DE)
-  759C'   CD FF93        C      	CALL	KM.UP14-KM.UP13+KM.RAM
-  759F'   F1             C      	POP	AF
-  75A0'                  C      KM.UP14:
-  75A0'   FE 3A          C      	CP	03AH
-  75A2'   38 02          C      	JR	C,$+4	;---!
-  75A4'   C6 07          C      	ADD	A,7	;   !
-  75A6'   12             C      	LD	(DE),A	;<--!
-  75A7'   13             C      	INC	DE
-  75A8'   C9             C      	RET
+  75B8'   32 FF85        C      KM.UP13:	LD	(KM.UP15-KM.UP13+KM.RAM-1),A
+  75BB'   DD 7E 01       C      	LD	A,(IX+1)	;<<<
+  75BE'                  C      KM.UP15:
+  75BE'   EB             C      	EX	DE,HL
+  75BF'   77             C      	LD	(HL),A
+  75C0'   3E 33          C      	LD	A,33H
+  75C2'   ED 67          C      	RRD
+  75C4'   EB             C      	EX	DE,HL
+  75C5'   F5             C      	PUSH	AF
+  75C6'   1A             C      	LD	A,(DE)
+  75C7'   CD FF93        C      	CALL	KM.UP14-KM.UP13+KM.RAM
+  75CA'   F1             C      	POP	AF
+  75CB'                  C      KM.UP14:
+  75CB'   FE 3A          C      	CP	03AH
+  75CD'   38 02          C      	JR	C,$+4	;---!
+  75CF'   C6 07          C      	ADD	A,7	;   !
+  75D1'   12             C      	LD	(DE),A	;<--!
+  75D2'   13             C      	INC	DE
+  75D3'   C9             C      	RET
                          C      
-  75A9'                  C      KM.UP4:
-  75A9'   F5             C      	PUSH	AF
-  75AA'   CD 7536'       C      	CALL	KM.LOE2
-  75AD'   DD 7E 03       C      	LD	A,(IX+3)
-  75B0'   C6 30          C      	ADD	A,30H
-  75B2'   32 FFB2        C      	LD	(KM.TX1-KM.UP13+KM.RAM),A
-  75B5'   11 35A0        C      	LD	DE,SD.BWSA + 18*80 ;5A0H
-  75B8'   CD 7544'       C      	CALL	KM.UP10
-  75BB'                  C      KM.TX2:
-  75BB'   73 20 20 28    C      	DB	's  ('	;<<<
-  75BF'                  C      KM.TX1:
-  75BF'   32 29          C      	DB	'2)'	;<<<
-  75C1'   BA             C      	DB	3AH+80H	;":"
-  75C2'   11 35B4        C      	LD	DE,SD.BWSA + 18*80 +20	;5B4H
-  75C5'   CD 7544'       C      	CALL	KM.UP10
-  75C8'   6C 3A          C      	DB	'l:'
-  75CA'   09             C      	DB	9
-  75CB'   0A             C      	DB	10
-  75CC'   20 73 3A       C      	DB	' s:'
-  75CF'   00             C      	DB	0
-  75D0'   2F             C      	DB	'/'
-  75D1'   01             C      	DB	1
-  75D2'   20 20 20 20    C      	DB	'      '
-  75D6'   20 20          C      
-  75D8'   AD             C      	DB	2DH+80H	;"-"
-  75D9'   1B             C      	DEC	DE
-  75DA'   1B             C      	DEC	DE
-  75DB'   1B             C      	DEC	DE
-  75DC'   21 0E65        C      	LD	HL,KM.PUFF-1
-  75DF'   7E             C      	LD	A,(HL)
-  75E0'   23             C      	INC	HL
-  75E1'   CD FF86        C      	CALL	KM.UP15-KM.UP13+KM.RAM
-  75E4'   13             C      	INC	DE
-  75E5'   DD 46 0A       C      	LD	B,(IX+10)
-  75E8'   E5             C      	PUSH	HL
-  75E9'   23             C      	INC	HL
-  75EA'   10 FD          C      	DJNZ	$-1
-  75EC'   7E             C      	LD	A,(HL)
-  75ED'   CD FF86        C      	CALL	KM.UP15-KM.UP13+KM.RAM
-  75F0'   23             C      	INC	HL
-  75F1'   7E             C      	LD	A,(HL)
-  75F2'   CD FF86        C      	CALL	KM.UP15-KM.UP13+KM.RAM
-  75F5'   E1             C      	POP	HL
-  75F6'   E5             C      	PUSH	HL
-  75F7'   11 3640        C      	LD	DE,SD.BWSA + 20*80	;640H
-  75FA'   06 00          C      	LD	B,0
-  75FC'   7E             C      	LD	A,(HL)
-  75FD'   CD 7578'       C      	CALL	KM.UP43
-  7600'   12             C      	LD	(DE),A
-  7601'   23             C      	INC	HL
-  7602'   13             C      	INC	DE
-  7603'   10 F7          C      	DJNZ	$-7
-  7605'   E1             C      	POP	HL
-  7606'                  C      KM.UP40:
-  7606'   CD 7558'       C      	CALL	KM.UP41
-  7609'   F1             C      	POP	AF
-  760A'   C9             C      	RET
+  75D4'                  C      KM.UP4:
+  75D4'   F5             C      	PUSH	AF
+  75D5'   CD 7561'       C      	CALL	KM.LOE2
+  75D8'   DD 7E 03       C      	LD	A,(IX+3)
+  75DB'   C6 30          C      	ADD	A,30H
+  75DD'   32 FFB2        C      	LD	(KM.TX1-KM.UP13+KM.RAM),A
+  75E0'   11 35A0        C      	LD	DE,SD.BWSA + 18*80 ;5A0H
+  75E3'   CD 756F'       C      	CALL	KM.UP10
+  75E6'                  C      KM.TX2:
+  75E6'   73 20 20 28    C      	DB	's  ('	;<<<
+  75EA'                  C      KM.TX1:
+  75EA'   32 29          C      	DB	'2)'	;<<<
+  75EC'   BA             C      	DB	3AH+80H	;":"
+  75ED'   11 35B4        C      	LD	DE,SD.BWSA + 18*80 +20	;5B4H
+  75F0'   CD 756F'       C      	CALL	KM.UP10
+  75F3'   6C 3A          C      	DB	'l:'
+  75F5'   09             C      	DB	9
+  75F6'   0A             C      	DB	10
+  75F7'   20 73 3A       C      	DB	' s:'
+  75FA'   00             C      	DB	0
+  75FB'   2F             C      	DB	'/'
+  75FC'   01             C      	DB	1
+  75FD'   20 20 20 20    C      	DB	'      '
+  7601'   20 20          C      
+  7603'   AD             C      	DB	2DH+80H	;"-"
+  7604'   1B             C      	DEC	DE
+  7605'   1B             C      	DEC	DE
+  7606'   1B             C      	DEC	DE
+  7607'   21 0E65        C      	LD	HL,KM.PUFF-1
+  760A'   7E             C      	LD	A,(HL)
+  760B'   23             C      	INC	HL
+  760C'   CD FF86        C      	CALL	KM.UP15-KM.UP13+KM.RAM
+  760F'   13             C      	INC	DE
+  7610'   DD 46 0A       C      	LD	B,(IX+10)
+  7613'   E5             C      	PUSH	HL
+  7614'   23             C      	INC	HL
+  7615'   10 FD          C      	DJNZ	$-1
+  7617'   7E             C      	LD	A,(HL)
+  7618'   CD FF86        C      	CALL	KM.UP15-KM.UP13+KM.RAM
+  761B'   23             C      	INC	HL
+  761C'   7E             C      	LD	A,(HL)
+  761D'   CD FF86        C      	CALL	KM.UP15-KM.UP13+KM.RAM
+  7620'   E1             C      	POP	HL
+  7621'   E5             C      	PUSH	HL
+  7622'   11 3640        C      	LD	DE,SD.BWSA + 20*80	;640H
+  7625'   06 00          C      	LD	B,0
+  7627'   7E             C      	LD	A,(HL)
+  7628'   CD 75A3'       C      	CALL	KM.UP43
+  762B'   12             C      	LD	(DE),A
+  762C'   23             C      	INC	HL
+  762D'   13             C      	INC	DE
+  762E'   10 F7          C      	DJNZ	$-7
+  7630'   E1             C      	POP	HL
+  7631'                  C      KM.UP40:
+  7631'   CD 7583'       C      	CALL	KM.UP41
+  7634'   F1             C      	POP	AF
+  7635'   C9             C      	RET
                          C      
-  760B'                  C      KM.UPEND	EQU	$
-'Kmbg'	MACRO-80 3.44	09-Dec-81	PAGE	1-91
+  7636'                  C      KM.UPEND	EQU	$
+'Kmbg'	MACRO-80 3.44	09-Dec-81	PAGE	1-92
 
 
                          C      
@@ -6258,14 +6320,15 @@
   201D                   C      KM.MANZ   EQU	0201DH
   2060                   C      KM.MHOME  EQU	02060H
   23BA                   C      KM.MINSL  EQU	023BAH
-                         C      ;ATACO     EQU	024F8H
+                         C      ;ATACO    EQU	024F8H
                          C      
   2B01                   C      KM.KMTAB  EQU	02B01H
+  7636'                  C                DEFS  17,0
                          C      ;SD.BWSA  EQU	03000H
                          C      
   5A93                   C      KM.KARO   EQU	05A93H
                          C      
-                         C      ;DRUZ      EQU	07C00H
+                         C      ;DRUZ     EQU	07C00H
                          C      
   FF80                   C      KM.RAM    EQU	0FF80H
                          C      
@@ -6285,185 +6348,191 @@ Symbols:
 21EF 	ATACO           0001 	BC.AGG          0000 	BC.EGG          
 FA3A 	BC.END          E000 	BC.TAB1         F902 	BC.TAB2         
 F96A 	BC.TAB2A        F9D2 	BC.TAB3         E002 	BC.VTABA        
-EC82 	BC.VTABE        712D'	CP.COMPR        7190'	CP.INIT         
-7160'	CP.KOM          7132'	CP.NL           7160'	CP.OUT          
-7140'	CP.OUTT         7167'	CP.SOKOM        717D'	CP.SOSTR        
-7145'	CP.SPACE        713C'	CP.STRNG        7182'	CP.TAB          
-7150'	CP.TEXT         54F7'	CRC0            54FB'	CRC1            
-550E'	CRC2            7196'	DC.DCMPR        71CC'	DC.EOSPC        
-71D1'	DC.INIT         7198'	DC.NL           71BC'	DC.SPACE        
-71B2'	DC.TAB          71A4'	DC.TEXT         620E'	FD.BMGF         
-5F38'	FD.DASU         6072'	FD.DECBZ        6129'	FD.DECHL        
-61E9'	FD.DSPBB        61F9'	FD.DSPBG        619E'	FD.END          
-61C7'	FD.FDIN2        5F85'	FD.FDINP        5FD8'	FD.FDOUT        
-603C'	FD.FDOW1        6040'	FD.FDOW2        6065'	FD.FDOW3        
-6057'	FD.FDOW4        602C'	FD.FDOWR        607C'	FD.FDUP         
-61A5'	FD.FOLWR        6132'	FD.FOUT1        60BE'	FD.FSTRT        
-5F31'	FD.KO01         5F19'	FD.POSK         6203'	FD.RDEND        
-5FCC'	FD.SDIN         60AE'	FD.SDK0         60B8'	FD.SDK1         
-60A4'	FD.SDK2         6026'	FD.SDOUT        6094'	FD.SDOW         
-610B'	FD.SETJ         6123'	FD.SETN         60F6'	FD.STRT1        
-5F54'	FD.WRRES        5400'	K1.BRKMB        54F4'	K1.CRC          
-5441'	K1.KERN         5E42'	KH.ANZB1        5E3F'	KH.ANZBL        
-5E5E'	KH.AZ1Z         5E8F'	KH.AZ4B0        5EB0'	KH.AZ4B1        
-5E9F'	KH.AZ4B3        5E8B'	KH.AZ4BY        5E82'	KH.AZADR        
-5E4E'	KH.AZBL1        5E49'	KH.AZBLD        5F0B'	KH.BILO         
-5EC9'	KH.BLEV1        5ECB'	KH.BLEV2        5EB4'	KH.BLEVG        
-5F03'	KH.KBRS         5DBF'	KH.RD1          5E25'	KH.RD2          
-5DD4'	KH.RD3          5DE4'	KH.RD4          5DDD'	KH.RD6          
-5E2E'	KH.RDBM         5DB1'	KH.RDSTA        5DBC'	KH.RES          
-5E21'	KH.SYSRT        5EDD'	KH.WRSTA        5A51'	KI.KM           
-5A12'	KI.KN           5AB8'	KI.KO03         5A35'	KI.NMR          
-5AC3'	KI.RENA         5AE0'	KI.RENA9        5A9A'	KI.VERZ         
-74BF'	KM.ABS          74C4'	KM.ABS1         730B'	KM.ANF          
-7386'	KM.CL           7395'	KM.CNZA         73A9'	KM.CNZA1        
-736F'	KM.CO           7390'	KM.CR           7379'	KM.CU           
-7501'	KM.DEL          73EA'	KM.EINA         73F5'	KM.EINA1        
-73FC'	KM.EINA2        7403'	KM.EINA3        740A'	KM.EINA4        
-7415'	KM.EINA5        7418'	KM.EINA6        741B'	KM.EINA7        
-7432'	KM.EINA8        743F'	KM.EINA9        7453'	KM.EINAA        
-7454'	KM.EINAB        7459'	KM.EINAC        745D'	KM.EINAD        
-7471'	KM.EINAE        7374'	KM.HOME         5A93 	KM.KARO         
-2B01 	KM.KMTAB        752C'	KM.LOE1         7536'	KM.LOE2         
-753E'	KM.LOE3         201D 	KM.MANZ         2060 	KM.MHOME        
-23BA 	KM.MINSL        73C5'	KM.NEWL         0E66 	KM.PUFF         
-FF80 	KM.RAM          737E'	KM.SL           738B'	KM.SR           
-0DB0 	KM.TEINA        0DAE 	KM.TNEWL        0DA8 	KM.TTABU        
-75BF'	KM.TX1          75BB'	KM.TX2          750C'	KM.UP1          
-7544'	KM.UP10         7545'	KM.UP11         754E'	KM.UP12         
-758D'	KM.UP13         75A0'	KM.UP14         7593'	KM.UP15         
-750F'	KM.UP2          7480'	KM.UP20         7491'	KM.UP21         
-749B'	KM.UP22         74AF'	KM.UP23         74B1'	KM.UP24         
-74BA'	KM.UP25         7517'	KM.UP3          74CE'	KM.UP30         
-74DA'	KM.UP31         74E6'	KM.UP32         74E9'	KM.UP33         
-74ED'	KM.UP34         74F9'	KM.UP35         74E1'	KM.UP36         
-75A9'	KM.UP4          7606'	KM.UP40         7558'	KM.UP41         
-756D'	KM.UP42         7578'	KM.UP43         758A'	KM.UP44         
-7520'	KM.UP5          760B'	KM.UPEND        54EA'	KOMED           
-55D1'	KR.CKRA         5520'	KR.GR1          552A'	KR.GR2          
-552C'	KR.GR3          55D5'	KR.KARO         565D'	KR.TYPT         
-55D9'	KR.VORSP        6A5B'	KU.DD           6A58'	KU.DECIY        
-69F3'	KU.TAB2L        69EA'	KU.VVOR         6A2B'	KU.ZEIR         
-5B59'	KV.ANF          5D7C'	KV.ANZ          5C29'	KV.AUSG         
-5D92'	KV.AVZS         5D04'	KV.BSTR         5D67'	KV.DBCVM        
-5CEC'	KV.DRU          5CEA'	KV.DRU1         5CF9'	KV.KO02         
-5C9E'	KV.KRW          5CD2'	KV.P1           5D72'	KV.SBC          
-5D31'	KV.SPTR         5BC2'	KV.TABTR        5C08'	KV.ZEIHO        
-5B8D'	KV.ZLTR         670A'	KX.ENDR         6729'	KX.EXEC2        
-66FF'	KX.RSPFR        6759'	KX.UPA          69E3'	KY.AJ           
-6805'	KY.ATAA         6828'	KY.ATAB         6839'	KY.ATABE        
-68CA'	KY.COPY         6794'	KY.DFR          6977'	KY.EOV          
-6886'	KY.EVZ          6889'	KY.EVZ1         69B6'	KY.EWK          
-6802'	KY.EZYK1        69C6'	KY.JHL          692A'	KY.KOP          
-6944'	KY.KOPAN        6924'	KY.KOPV         6776'	KY.MD           
-67FC'	KY.NDA          686D'	KY.NE           69CF'	KY.SATR         
-67EE'	KY.SVGL         68EE'	KY.VSCHR        68A1'	KY.VSTR         
-67E3'	KY.VZVGL        6847'	KY.WEI          685B'	KY.ZYK          
-6256'	LD.DATFU        6231'	LD.DATN         6277'	LD.DATPO        
-62F2'	LD.LAD1         62E1'	LD.LAD2         62DE'	LD.LADER        
+EC82 	BC.VTABE        7158'	CP.COMPR        71BB'	CP.INIT         
+718B'	CP.KOM          715D'	CP.NL           718B'	CP.OUT          
+716B'	CP.OUTT         7192'	CP.SOKOM        71A8'	CP.SOSTR        
+7170'	CP.SPACE        7167'	CP.STRNG        71AD'	CP.TAB          
+717B'	CP.TEXT         54F7'	CRC0            54FB'	CRC1            
+550E'	CRC2            71C1'	DC.DCMPR        71F7'	DC.EOSPC        
+71FC'	DC.INIT         71C3'	DC.NL           71E7'	DC.SPACE        
+71DD'	DC.TAB          71CF'	DC.TEXT         6239'	FD.BMGF         
+5F63'	FD.DASU         609D'	FD.DECBZ        6154'	FD.DECHL        
+6214'	FD.DSPBB        6224'	FD.DSPBG        61C9'	FD.END          
+61F2'	FD.FDIN2        5FB0'	FD.FDINP        6003'	FD.FDOUT        
+6067'	FD.FDOW1        606B'	FD.FDOW2        6090'	FD.FDOW3        
+6082'	FD.FDOW4        6057'	FD.FDOWR        60A7'	FD.FDUP         
+61D0'	FD.FOLWR        615D'	FD.FOUT1        60E9'	FD.FSTRT        
+5F5C'	FD.KO01         5F44'	FD.POSK         622E'	FD.RDEND        
+5FF7'	FD.SDIN         60D9'	FD.SDK0         60E3'	FD.SDK1         
+60CF'	FD.SDK2         6051'	FD.SDOUT        60BF'	FD.SDOW         
+6136'	FD.SETJ         614E'	FD.SETN         6121'	FD.STRT1        
+5F7F'	FD.WRRES        5400'	K1.BRKMB        54F4'	K1.CRC          
+5441'	K1.KERN         5E90'	KH.ANZB1        5E9B'	KH.ANZB2        
+5EA3'	KH.ANZB3        5EA5'	KH.ANZB4        5E8D'	KH.ANZBL        
+5EC5'	KH.AZ1Z         5EF6'	KH.AZ4B0        5F17'	KH.AZ4B1        
+5F06'	KH.AZ4B3        5EF2'	KH.AZ4BY        5EE9'	KH.AZADR        
+5EAC'	KH.AZBL1        5EA9'	KH.AZBLD        5F36'	KH.BILO         
+5F30'	KH.BLEV1        5F32'	KH.BLEV2        5F1B'	KH.BLEVG        
+5E49'	KH.BMM          5E41'	KH.BMP          5E1B'	KH.KSRA         
+5DD6'	KH.KSRE         5E27'	KH.KSRM         5E2A'	KH.KSRP         
+5DD9'	KH.KSRW         5DD9'	KH.RD1          5EBC'	KH.RD2          
+5DE2'	KH.RD3          5E5A'	KH.RDBA         5E6B'	KH.RDBM         
+5E7C'	KH.RDSL         5DCB'	KH.RDSTA        5DD6'	KH.RES          
+5E54'	KH.SYSRT        5E50'	KH.WBM          5E4E'	KH.WREC         
+5E52'	KH.WSL          5A6B'	KI.KM           5A2C'	KI.KN           
+5AD2'	KI.KO03         5A4F'	KI.NMR          5ADD'	KI.RENA         
+5AFA'	KI.RENA9        5AB4'	KI.VERZ         74EA'	KM.ABS          
+74EF'	KM.ABS1         7336'	KM.ANF          73B1'	KM.CL           
+73C0'	KM.CNZA         73D4'	KM.CNZA1        739A'	KM.CO           
+73BB'	KM.CR           73A4'	KM.CU           752C'	KM.DEL          
+7415'	KM.EINA         7420'	KM.EINA1        7427'	KM.EINA2        
+742E'	KM.EINA3        7435'	KM.EINA4        7440'	KM.EINA5        
+7443'	KM.EINA6        7446'	KM.EINA7        745D'	KM.EINA8        
+746A'	KM.EINA9        747E'	KM.EINAA        747F'	KM.EINAB        
+7484'	KM.EINAC        7488'	KM.EINAD        749C'	KM.EINAE        
+739F'	KM.HOME         5A93 	KM.KARO         2B01 	KM.KMTAB        
+7557'	KM.LOE1         7561'	KM.LOE2         7569'	KM.LOE3         
+201D 	KM.MANZ         2060 	KM.MHOME        23BA 	KM.MINSL        
+73F0'	KM.NEWL         0E66 	KM.PUFF         FF80 	KM.RAM          
+73A9'	KM.SL           73B6'	KM.SR           0DB0 	KM.TEINA        
+0DAE 	KM.TNEWL        0DA8 	KM.TTABU        75EA'	KM.TX1          
+75E6'	KM.TX2          7537'	KM.UP1          756F'	KM.UP10         
+7570'	KM.UP11         7579'	KM.UP12         75B8'	KM.UP13         
+75CB'	KM.UP14         75BE'	KM.UP15         753A'	KM.UP2          
+74AB'	KM.UP20         74BC'	KM.UP21         74C6'	KM.UP22         
+74DA'	KM.UP23         74DC'	KM.UP24         74E5'	KM.UP25         
+7542'	KM.UP3          74F9'	KM.UP30         7505'	KM.UP31         
+7511'	KM.UP32         7514'	KM.UP33         7518'	KM.UP34         
+7524'	KM.UP35         750C'	KM.UP36         75D4'	KM.UP4          
+7631'	KM.UP40         7583'	KM.UP41         7598'	KM.UP42         
+75A3'	KM.UP43         75B5'	KM.UP44         754B'	KM.UP5          
+7636'	KM.UPEND        54EA'	KOMED           55D1'	KR.CKRA         
+5520'	KR.GR1          552A'	KR.GR2          552C'	KR.GR3          
+55D5'	KR.KARO         565D'	KR.TYPT         55D9'	KR.VORSP        
+6A86'	KU.DD           6A83'	KU.DECIY        6A1E'	KU.TAB2L        
+6A15'	KU.VVOR         6A56'	KU.ZEIR         5B73'	KV.ANF          
+5D96'	KV.ANZ          5C43'	KV.AUSG         5DAC'	KV.AVZS         
+5D1E'	KV.BSTR         5D81'	KV.DBCVM        5D06'	KV.DRU          
+5D04'	KV.DRU1         5D13'	KV.KO02         5CB8'	KV.KRW          
+5CEC'	KV.P1           5D8C'	KV.SBC          5D4B'	KV.SPTR         
+5BDC'	KV.TABTR        5C22'	KV.ZEIHO        5BA7'	KV.ZLTR         
+6735'	KX.ENDR         6754'	KX.EXEC2        672A'	KX.RSPFR        
+6784'	KX.UPA          6A0E'	KY.AJ           6830'	KY.ATAA         
+6853'	KY.ATAB         6864'	KY.ATABE        68F5'	KY.COPY         
+67BF'	KY.DFR          69A2'	KY.EOV          68B1'	KY.EVZ          
+68B4'	KY.EVZ1         69E1'	KY.EWK          682D'	KY.EZYK1        
+69F1'	KY.JHL          6955'	KY.KOP          696F'	KY.KOPAN        
+694F'	KY.KOPV         67A1'	KY.MD           6827'	KY.NDA          
+6898'	KY.NE           69FA'	KY.SATR         6819'	KY.SVGL         
 ''	MACRO-80 3.44	09-Dec-81	PAGE	S-1
 
 
-6307'	LD.LADF         6246'	LD.LD2          6250'	LD.LD21         
-62D9'	LD.LD3          6297'	LD.LD4          62B2'	LD.LD5          
-62FE'	LD.LDEND        62CF'	LD.START        6AD1'	POSIK1          
-4040 	PRINT           4070 	PUF.KASS        630D'	RL.BEG          
-6419'	RL.BF           6405'	RL.DATNV        6400'	RL.ECHO         
-641B'	RL.FMELD        639E'	RL.M10          63AF'	RL.M11          
-633E'	RL.M12          637C'	RL.M13          638C'	RL.M14          
-6394'	RL.M15          632D'	RL.M16          635B'	RL.M17          
-63C2'	RL.M21          6415'	RL.MN           6409'	RL.OB           
-640D'	RL.RA           6411'	RL.SV           6322'	RL.UG           
-63B5'	RL.UP6          54E2'	RLAD            54DD'	RRET            
-3000 	SD.BWSA         0D00 	SM.FKTAB        54D9'	STF07           
-54CF'	STF99           54D6'	STFRS           548D'	STT02           
-54AB'	STT08           5465'	STT11           5465'	STT15           
-5465'	STT21           5465'	STT31           5465'	STT41           
-547E'	STT5            5471'	STT51           5475'	STT61           
-5479'	STT71           5479'	STT75           6529'	SV.BYANZ        
-65BA'	SV.DALO1        6457'	SV.DATN         6534'	SV.DATS1        
-646E'	SV.DATV1        6476'	SV.DATVO        654E'	SV.SAVE         
-655F'	SV.SAVE1        64B0'	SV.SAVE3        64C5'	SV.SAVE4        
-650D'	SV.SAVE5        6503'	SV.SAVE6        65B2'	SV.STAD0        
-644A'	SV.SV20         6462'	SV.SV21         647C'	SV.SV30         
-6496'	SV.SV31         6484'	SV.SV37         65A2'	SV.SVEN1        
-659F'	SV.SVEN2        6576'	SV.SVLS         6592'	SV.SVLS1        
-657C'	SV.SVLS2        65C5'	SV.SVSZ         65D9'	SV.SVSZ1        
-65C7'	SV.SVSZ2        4036 	SY.RESC         4033 	SY.SETCHL       
-4026 	TA.ABFR1        6CF9'	U1.AUS          6E2C'	U1.BILO         
-6CAD'	U1.BREAD        6CB8'	U1.BWRIT        6C93'	U1.CLRB         
-6CC7'	U1.COPB         6CC3'	U1.COPB2        6D19'	U1.DSVG         
-6CF0'	U1.EIN          6E26'	U1.INFO         6CA2'	U1.KBR4         
-6E61'	U1.KRWE         6D7E'	U1.KTIN1        6D65'	U1.KTINI        
-6D4A'	U1.NMVGL        6E4A'	U1.PRADR        6C8A'	U1.RRST         
-6C82'	U1.RSAVE        6E21'	U1.TR           6E40'	U1.TST          
-6D93'	U1.VERIN        6D9B'	U1.VERNI        6DBD'	U1.VORS1        
-6DB5'	U1.VORST        6D02'	U1.VS1          6D09'	U1.VSX          
-6DC9'	U1.VZS          6CAC'	U1.WAIT         599D'	UA.ALTR         
-5984'	UA.ANZWD        586D'	UA.BMGF         587E'	UA.DF           
-5877'	UA.DOK          573E'	UA.DS           57FB'	UA.EABFR        
-5867'	UA.FRZ          57B6'	UA.GER          575E'	UA.KNAME        
-5784'	UA.KOMMT        57C5'	UA.KOPFR        5959'	UA.LD           
-5771'	UA.NR           58D1'	UA.STADR        5831'	UA.VORH         
-5797'	UA.Z7E          58AB'	UA.ZKBEG        592A'	UA.ZKBEL        
-593D'	UA.ZKBLG        5950'	UA.ZKBM         5885'	UA.ZKDAT        
-58E4'	UA.ZKDL         58BE'	UA.ZKEND        58F7'	UA.ZKF          
-5898'	UA.ZKLAD        5902'	UA.ZKRES        5915'	UA.ZKSDT        
-596B'	UA.ZRSCH        2B64'	UB.DTAB         2B8D'	UB.END          
+6919'	KY.VSCHR        68CC'	KY.VSTR         680E'	KY.VZVGL        
+6872'	KY.WEI          6886'	KY.ZYK          6281'	LD.DATFU        
+625C'	LD.DATN         62A2'	LD.DATPO        631D'	LD.LAD1         
+630C'	LD.LAD2         6309'	LD.LADER        6332'	LD.LADF         
+6271'	LD.LD2          627B'	LD.LD21         6304'	LD.LD3          
+62C2'	LD.LD4          62DD'	LD.LD5          6329'	LD.LDEND        
+62FA'	LD.START        6AFC'	POSIK1          4040 	PRINT           
+4070 	PUF.KASS        6338'	RL.BEG          6444'	RL.BF           
+6430'	RL.DATNV        642B'	RL.ECHO         6446'	RL.FMELD        
+63C9'	RL.M10          63DA'	RL.M11          6369'	RL.M12          
+63A7'	RL.M13          63B7'	RL.M14          63BF'	RL.M15          
+6358'	RL.M16          6386'	RL.M17          63ED'	RL.M21          
+6440'	RL.MN           6434'	RL.OB           6438'	RL.RA           
+643C'	RL.SV           634D'	RL.UG           63E0'	RL.UP6          
+54E2'	RLAD            54DD'	RRET            3000 	SD.BWSA         
+0D00 	SM.FKTAB        54D9'	STF07           54CF'	STF99           
+54D6'	STFRS           548D'	STT02           54AB'	STT08           
+5465'	STT11           5465'	STT15           5465'	STT21           
+5465'	STT31           5465'	STT41           547E'	STT5            
+5471'	STT51           5475'	STT61           5479'	STT71           
+5479'	STT75           6554'	SV.BYANZ        65E5'	SV.DALO1        
+6482'	SV.DATN         655F'	SV.DATS1        6499'	SV.DATV1        
+64A1'	SV.DATVO        6579'	SV.SAVE         658A'	SV.SAVE1        
+64DB'	SV.SAVE3        64F0'	SV.SAVE4        6538'	SV.SAVE5        
+652E'	SV.SAVE6        65DD'	SV.STAD0        6475'	SV.SV20         
+648D'	SV.SV21         64A7'	SV.SV30         64C1'	SV.SV31         
+64AF'	SV.SV37         65CD'	SV.SVEN1        65CA'	SV.SVEN2        
+65A1'	SV.SVLS         65BD'	SV.SVLS1        65A7'	SV.SVLS2        
+65F0'	SV.SVSZ         6604'	SV.SVSZ1        65F2'	SV.SVSZ2        
+4036 	SY.RESC         4033 	SY.SETCHL       000B 	SY.SYSTB        
+4026 	TA.ABFR1        6D24'	U1.AUS          6E57'	U1.BILO         
+6CD8'	U1.BREAD        6CE3'	U1.BWRIT        6CBE'	U1.CLRB         
+6CF2'	U1.COPB         6CEE'	U1.COPB2        6D44'	U1.DSVG         
+6D1B'	U1.EIN          6E51'	U1.INFO         6CCD'	U1.KBR4         
+6E8C'	U1.KRWE         6DA9'	U1.KTIN1        6D90'	U1.KTINI        
+6D75'	U1.NMVGL        6E75'	U1.PRADR        6CB5'	U1.RRST         
+6CAD'	U1.RSAVE        6E4C'	U1.TR           6E6B'	U1.TST          
+6DBE'	U1.VERIN        6DC6'	U1.VERNI        6DE8'	U1.VORS1        
+6DE0'	U1.VORST        6D2D'	U1.VS1          6D34'	U1.VSX          
+6DF4'	U1.VZS          6CD7'	U1.WAIT         59B7'	UA.ALTR         
+599E'	UA.ANZWD        5870'	UA.BMGF         5881'	UA.DF           
+587A'	UA.DOK          5741'	UA.DS           57FE'	UA.EABFR        
+586A'	UA.FRZ          57B9'	UA.GER          5761'	UA.KNAME        
+5787'	UA.KOMMT        57C8'	UA.KOPFR        5973'	UA.LD           
+5774'	UA.NR           58D4'	UA.STADR        5834'	UA.VORH         
+579A'	UA.Z7E          5953'	UA.ZKBA         58AE'	UA.ZKBEG        
+592D'	UA.ZKBEL        5940'	UA.ZKBLG        595D'	UA.ZKBM         
+5888'	UA.ZKDAT        58E7'	UA.ZKDL         5973'	UA.ZKEE         
+58C1'	UA.ZKEND        58FA'	UA.ZKF          589B'	UA.ZKLAD        
+5905'	UA.ZKRES        5918'	UA.ZKSDT        5966'	UA.ZKSL         
+5985'	UA.ZRSCH        2B64'	UB.DTAB         2B8D'	UB.END          
 2B01'	UB.KTAB         2B1C'	UB.PAR1         2B1E'	UB.PAR2         
 2B20'	UB.PAR3         2B22'	UB.PAR4         2B24'	UB.PAR5         
 2B26'	UB.PATAB        2B2A'	UB.SATZ         2B00'	UB.ZN           
-706D'	UC.ASCCO        704A'	UC.CKONV        6F14'	UC.CVABX        
-6F2F'	UC.CVAX         6F43'	UC.CVAXB        700D'	UC.CVBC         
-6F9D'	UC.CVBD         6FA8'	UC.CVBD0        6F9B'	UC.CVBD1        
-6F97'	UC.CVBD2        6F93'	UC.CVBD3        6F8F'	UC.CVBD4        
-6F8B'	UC.CVBD5        6F1E'	UC.CVBX         701E'	UC.CVCB         
-7005'	UC.CVD1B        6FDC'	UC.CVDB         6F3A'	UC.CVHLX        
-6F65'	UC.CVX1B        6F80'	UC.CVXA         6F54'	UC.CVXB         
-6F6E'	UC.CVXER        6F06'	UC.DIVR         703F'	UC.DK1          
-7053'	UC.DK2          70CD'	UC.DKOI         702B'	UC.DKONV        
-6EED'	UC.HL10C        6EE6'	UC.HL10N        7035'	UC.KONV         
-7069'	UC.KONV2        5400'	UE.BRKMB        3000 	UE.BWSA         
+7098'	UC.ASCCO        7075'	UC.CKONV        6F3F'	UC.CVABX        
+6F5A'	UC.CVAX         6F6E'	UC.CVAXB        7038'	UC.CVBC         
+6FC8'	UC.CVBD         6FD3'	UC.CVBD0        6FC6'	UC.CVBD1        
+6FC2'	UC.CVBD2        6FBE'	UC.CVBD3        6FBA'	UC.CVBD4        
+6FB6'	UC.CVBD5        6F49'	UC.CVBX         7049'	UC.CVCB         
+7030'	UC.CVD1B        7007'	UC.CVDB         6F65'	UC.CVHLX        
+6F90'	UC.CVX1B        6FAB'	UC.CVXA         6F7F'	UC.CVXB         
+6F99'	UC.CVXER        6F31'	UC.DIVR         706A'	UC.DK1          
+707E'	UC.DK2          70F8'	UC.DKOI         7056'	UC.DKONV        
+6F18'	UC.HL10C        6F11'	UC.HL10N        7060'	UC.KONV         
+7094'	UC.KONV2        5400'	UE.BRKMB        3000 	UE.BWSA         
 0060 	UE.COTAL        54F4'	UE.CRC          0DC4 	UE.EDEND        
 0132 	UE.KMPUL        8010 	UE.KPUFF        0E66 	UE.PUF          
 0CFE 	UE.STANF        007D 	UE.SVL          000B 	UE.SYSTB        
 00F7 	UE.TACL         00F9 	UE.TACR         001E 	UE.TAQUI        
 00CD 	UE.TASYS        8830 	UE.TEXAN        0E5A 	UE.ZEIN         
-56E0'	UF.AZVB         5715'	UF.BEHB         571D'	UF.BEHB1        
-5694'	UF.ERANZ        5668'	UF.EXEC         568E'	UF.EXEC1        
-568B'	UF.EXEC2        5732'	UF.FL14         5735'	UF.FL16         
-572F'	UF.FL17         5723'	UF.FL18         5663'	UF.RET          
-56D0'	UF.SYS          56DC'	UF.SYS1         71D7'	UK.GETK         
-71F8'	UK.GETK2        7200'	UK.GETK3        7206'	UK.GETK4        
-71FC'	UK.GETK5        72C5'	UK.KBA          7237'	UK.KBW          
-7276'	UK.KBW1         7272'	UK.KBW2         7214'	UK.KLPFB        
-72A0'	UK.KSPFB        727C'	UK.PUTK         6C36'	UR.ALPH1        
-6C2D'	UR.ALPHA        6C41'	UR.ALPNU        6B68'	UR.BBSA1        
-6B60'	UR.BBSAD        6C72'	UR.BILR1        6C60'	UR.BILRO        
-6AFD'	UR.BM           6B70'	UR.DSPZK        6C4B'	UR.HEXAZ        
-6C58'	UR.HEXZ1        6AAA'	UR.KBM          6ABC'	UR.KBR          
-6AB6'	UR.KBV          6AA4'	UR.KLR          6A9E'	UR.KLV          
-6A98'	UR.KRA          6A86'	UR.KRE          6A8A'	UR.KRE1         
-6A8E'	UR.KRW          6A94'	UR.KRWW         6AB0'	UR.KSL          
-6AD6'	UR.LES          6B2E'	UR.MIMO         6B4A'	UR.MIMO1        
-6B42'	UR.MIMO2        6B51'	UR.MIMO3        6C38'	UR.NUM          
+56E3'	UF.AZVB         5718'	UF.BEHB         5720'	UF.BEHB1        
+5697'	UF.ERANZ        5668'	UF.EXEC         568E'	UF.EXEC1        
+568B'	UF.EXEC2        5735'	UF.FL14         5738'	UF.FL16         
+5732'	UF.FL17         5726'	UF.FL18         5663'	UF.RET          
+56D3'	UF.SYS          56DF'	UF.SYS1         7202'	UK.GETK         
+7223'	UK.GETK2        722B'	UK.GETK3        7231'	UK.GETK4        
+7227'	UK.GETK5        72F0'	UK.KBA          7262'	UK.KBW          
+72A1'	UK.KBW1         729D'	UK.KBW2         723F'	UK.KLPFB        
+72CB'	UK.KSPFB        72A7'	UK.PUTK         6C61'	UR.ALPH1        
+6C58'	UR.ALPHA        6C6C'	UR.ALPNU        6B93'	UR.BBSA1        
+6B8B'	UR.BBSAD        6C9D'	UR.BILR1        6C8B'	UR.BILRO        
+6B28'	UR.BM           6B9B'	UR.DSPZK        6C76'	UR.HEXAZ        
+6C83'	UR.HEXZ1        6AD5'	UR.KBM          6AE7'	UR.KBR          
 ''	MACRO-80 3.44	09-Dec-81	PAGE	S-2
 
 
-6B0B'	UR.OK           6ACB'	UR.POSIK        6BC0'	UR.RET0         
-6AC2'	UR.RPOS         6B2A'	UR.RSP          6C5A'	UR.TAREP        
-6BCA'	UR.TCL          6BDC'	UR.TCLN         6BDF'	UR.TCR          
-6BF0'	UR.TCRN         6BFA'	UR.TQUIT        6BF2'	UR.TSYS         
-6B7D'	UR.ZINP         6B83'	UR.ZINP1        6B86'	UR.ZINP2        
-6BB4'	UR.ZINP3        6BBA'	UR.ZINP4        6BA2'	UR.ZINP5        
-6BC3'	UR.ZINP7        6C28'	UR.ZKON1        6C02'	UR.ZKONT        
-6E68'	XY.CALP1        6E71'	XY.CALPE        6EBC'	XY.INCDX        
-6ED5'	XY.JMPDX        6E7C'	XY.LDDX         6E8C'	XY.LIDX         
-6E9C'	XY.STDX         6EAC'	XY.STIDX        
+6AE1'	UR.KBV          6ACF'	UR.KLR          6AC9'	UR.KLV          
+6AC3'	UR.KRA          6AB1'	UR.KRE          6AB5'	UR.KRE1         
+6AB9'	UR.KRW          6ABF'	UR.KRWW         6ADB'	UR.KSL          
+6B01'	UR.LES          6B59'	UR.MIMO         6B75'	UR.MIMO1        
+6B6D'	UR.MIMO2        6B7C'	UR.MIMO3        6C63'	UR.NUM          
+6B36'	UR.OK           6AF6'	UR.POSIK        6BEB'	UR.RET0         
+6AED'	UR.RPOS         6B55'	UR.RSP          6C85'	UR.TAREP        
+6BF5'	UR.TCL          6C07'	UR.TCLN         6C0A'	UR.TCR          
+6C1B'	UR.TCRN         6C25'	UR.TQUIT        6C1D'	UR.TSYS         
+6BA8'	UR.ZINP         6BAE'	UR.ZINP1        6BB1'	UR.ZINP2        
+6BDF'	UR.ZINP3        6BE5'	UR.ZINP4        6BCD'	UR.ZINP5        
+6BEE'	UR.ZINP7        6C53'	UR.ZKON1        6C2D'	UR.ZKONT        
+6E93'	XY.CALP1        6E9C'	XY.CALPE        6EE7'	XY.INCDX        
+6F00'	XY.JMPDX        6EA7'	XY.LDDX         6EB7'	XY.LIDX         
+6EC7'	XY.STDX         6ED7'	XY.STIDX        
 
 
 
 No Fatal error(s)
 
 
-
+    6C0A'	UR.TCR          
+6C1B'	UR.TCRN         6C25

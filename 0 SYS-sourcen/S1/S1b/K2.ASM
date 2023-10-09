@@ -201,8 +201,9 @@ UF.EXEC:
 UF.EXEC2:	
 	CALL	KR.KARO
 UF.EXEC1:
-	BIT	7,(IX)
+	BIT	7,(IX)	;Status
 	JR	Z,UF.RET
+	LD	A,(IX+1)	;Fehlerschlüssel
 ;-------------------------Fehlerbehandlung---------------
 UF.ERANZ:
 	PUSH	HL
@@ -433,8 +434,13 @@ UA.ZKBLG:
 	DB	0
 	DB	'Bloecke gesamt: '
 ;----------------------------------------------------------------------
+UA.ZKBA:
+	DB	'Bandanfang'
 UA.ZKBM:
 	DB	'Bandmarke'
+UA.ZKSL:
+	DB	'Schlussluecke'
+UA.ZKEE:	
 ;----------------------------------------------------------------------
 UA.LD:
 	DB	38

@@ -2,13 +2,13 @@
 
 
                                 	TITLE	'Definitionen zum Betriebssystem'
-  5F0B                          KH.BILO   EQU   05F0BH
-  6B2E                          UR.MIMO   EQU   06B2EH
-  6F14                          UC.CVABX  EQU   06F14H
-  6F1E                          UC.CVBX   EQU   UC.CVABX + 0000AH	;06EECH
-  6F43                          UC.CVAXB  EQU   UC.CVABX + 0002FH	;06F11H
-  6F97                          UC.CVBD2  EQU   UC.CVABX + 00083H	;06F65H
-  6FDC                          UC.CVDB   EQU   UC.CVABX + 000C8H	;06FAAH
+  5F36                          KH.BILO   EQU   05F36H
+  6B59                          UR.MIMO   EQU   06B59H
+  6F3F                          UC.CVABX  EQU   06F3FH
+  6F49                          UC.CVBX   EQU   UC.CVABX + 0000AH	;06EECH
+  6F6E                          UC.CVAXB  EQU   UC.CVABX + 0002FH	;06F11H
+  6FC2                          UC.CVBD2  EQU   UC.CVABX + 00083H	;06F65H
+  7007                          UC.CVDB   EQU   UC.CVABX + 000C8H	;06FAAH
                                 
                                 	PAGE	87
 'Definitionen zum Betriebssystem'	MACRO-80 3.44	09-Dec-81	PAGE	1-1
@@ -224,24 +224,24 @@
   0005'   00             C      	NOP
   0006'   18 03          C      	JR	$+5
   0008'                  C      SY.RST8:
-  0008'   C3 00DC'       C      	JP	SY.INRE
+  0008'   C3 00CF'       C      	JP	SY.INRE
   000B'                  C      SY.SYSTB:
-  000B'   C3 0150'       C      	JP	SY.INSTB
+  000B'   C3 0143'       C      	JP	SY.INSTB
   000E'                  C      	DEFS	2,0
   0010'                  C      SY.RST10:
-  0010'   C3 00DC'       C      	JP	SY.INRE
+  0010'   C3 00CF'       C      	JP	SY.INRE
   0013'                  C      	DEFS	5,0
   0018'                  C      SY.RST18:
-  0018'   C3 00DC'       C      	JP	SY.INRE
+  0018'   C3 00CF'       C      	JP	SY.INRE
   001B'                  C      	DEFS	5,0
   0020'                  C      SY.RST20:
-  0020'   C3 00DC'       C      	JP	SY.INRE
+  0020'   C3 00CF'       C      	JP	SY.INRE
   0023'                  C      	DEFS	5,0
   0028'                  C      SY.RST28:
-  0028'   C3 00DC'       C      	JP	SY.INRE
+  0028'   C3 00CF'       C      	JP	SY.INRE
   002B'                  C      	DEFS	5,0
   0030'                  C      SY.RST30:
-  0030'   C3 00DC'       C      	JP	SY.INRE
+  0030'   C3 00CF'       C      	JP	SY.INRE
   0033'                  C      	DEFS	5,0
   0038'                  C      SY.RST38:
   0038'   C3 0FF9        C      	JP	SM.RST38
@@ -254,7 +254,7 @@
                          C      	ORG	00066H
                          C      			;NMI - Routine
   0066'                  C      SY.NMI:
-  0066'   21 014B'       C      	LD	HL,SY.INNMI
+  0066'   21 013E'       C      	LD	HL,SY.INNMI
   0069'   E3             C      	EX	(SP),HL
   006A'   FB             C      	EI
   006B'   ED 45          C      	RETN
@@ -282,47 +282,47 @@
                          C      	ORG	000A0H
                          C                                      ;Initialisierungen
   00A0'                  C      SY.INRE1:
-  00A0'   31 0D00        C      	LD	SP,SM.STACK	;- Zeichen in die 25.Zeile schreiben
-  00A3'   21 3780        C      	LD	HL,SD.BWSA + 24*80
-  00A6'   11 3781        C      	LD	DE,SD.BWSA + 24*80 +1
-  00A9'   01 004F        C      	LD	BC,79
-  00AC'   36 2D          C      	LD	(HL),'-'
-  00AE'   ED B0          C      	LDIR
+  00A0'   31 0D00        C      	LD	SP,SM.STACK
+                         C      	; LD	HL,SD.BWSA + 24*80	;- Zeichen in die 25.Zeile schreiben
+                         C      	; LD	DE,SD.BWSA + 24*80 +1
+                         C      	; LD	BC,79
+                         C      	; LD	(HL),'-'
+                         C      	; LDIR
                          C      
                          C      	IF	SD.GENE AND 00010000B	;DEG2000 Emulator
-  00B0'   01 04C0        C      	LD	BC,004C0H	;HS-Speicher auf Standard (1) umschalten
-  00B3'   21 00BA'       C      	LD	HL,SY.OUTB1
-  00B6'   ED B3          C      	OTIR
-  00B8'   18 04          C      	JR	SY.INRE2
-  00BA'                  C      SY.OUTB1:
-  00BA'   F0             C      	DB	0F0H	;Startbyte
-  00BB'   03             C      	DB	003H	;wahl
-  00BC'   04             C      	DB	004H	;SYS 1.2
-  00BD'   FF             C      	DB	0FFH	;Endbyte
+  00A3'   01 04C0        C      	LD	BC,004C0H	;HS-Speicher auf Standard (1) umschalten
+  00A6'   21 00AD'       C      	LD	HL,SY.OUTB1
+  00A9'   ED B3          C      	OTIR
+  00AB'   18 04          C      	JR	SY.INRE2
+  00AD'                  C      SY.OUTB1:
+  00AD'   F0             C      	DB	0F0H	;Startbyte
+  00AE'   03             C      	DB	003H	;wahl
+  00AF'   04             C      	DB	004H	;SYS 1.2
+  00B0'   FF             C      	DB	0FFH	;Endbyte
                          C      	ENDIF
                          C      
-  00BE'                  C      SY.INRE2:
-  00BE'   21 0F70'       C      	LD	HL,SM.EADRU	;E-/A-Tabellen loeschen
-  00C1'   11 0F71'       C      	LD	DE,SM.EADRU+1
-  00C4'   01 008F        C      	LD	BC,8FH
-  00C7'   36 00          C      	LD	(HL),0
-  00C9'   ED B0          C      	LDIR
-  00CB'   3E C3          C      	LD	A,0C3H	;Sprung zur RST38-Routine
-  00CD'   32 0FF9        C      	LD	(SM.RST38),A
-  00D0'   21 015B'       C      	LD	HL,SY.INSTC
-  00D3'   22 0FFA        C      	LD	(SM.RST38+1),HL
-  00D6'   21 FC00        C      	LD	HL,SM.PTSC	;setzen der Variablen SM.PTS
-  00D9'   22 0FF7        C      	LD	(SM.PTS),HL
-  00DC'                  C      SY.INRE:
-  00DC'   CD 0129'       C      	CALL	SY.INI	;Initialisierung der Speicher
-  00DF'   2A 4001'       C      	LD	HL,(TR.TINIT+1)	;Initialisierung der Tastatur
-  00E2'   CD 41A4'       C      	CALL	TA.MM1
-  00E5'   CD 429E'       C      	CALL	TA.E0IN
-  00E8'   CD 0135'       C      	CALL	SY.INI1	;Initialisierung der Bildanzeige
+  00B1'                  C      SY.INRE2:
+  00B1'   21 0F70'       C      	LD	HL,SM.EADRU	;E-/A-Tabellen loeschen
+  00B4'   11 0F71'       C      	LD	DE,SM.EADRU+1
+  00B7'   01 008F        C      	LD	BC,8FH
+  00BA'   36 00          C      	LD	(HL),0
+  00BC'   ED B0          C      	LDIR
+  00BE'   3E C3          C      	LD	A,0C3H	;Sprung zur RST38-Routine
+  00C0'   32 0FF9        C      	LD	(SM.RST38),A
+  00C3'   21 014E'       C      	LD	HL,SY.INSTC
+  00C6'   22 0FFA        C      	LD	(SM.RST38+1),HL
+  00C9'   21 FC00        C      	LD	HL,SM.PTSC	;setzen der Variablen SM.PTS
+  00CC'   22 0FF7        C      	LD	(SM.PTS),HL
+  00CF'                  C      SY.INRE:
+  00CF'   CD 011C'       C      	CALL	SY.INI	;Initialisierung der Speicher
+  00D2'   2A 4001'       C      	LD	HL,(TR.TINIT+1)	;Initialisierung der Tastatur
+  00D5'   CD 41A4'       C      	CALL	TA.MM1
+  00D8'   CD 429E'       C      	CALL	TA.E0IN
+  00DB'   CD 0128'       C      	CALL	SY.INI1	;Initialisierung der Bildanzeige
                          C      
-  00EB'   AF             C      	XOR	A
-  00EC'   32 0FFD        C      	LD	(SM.KGMER),A	;Grundstellung: Grossbuchstaben
-  00EF'   32 0FFE        C      	LD	(SM.IMERK),A
+  00DE'   AF             C      	XOR	A
+  00DF'   32 0FFD        C      	LD	(SM.KGMER),A	;Grundstellung: Grossbuchstaben
+  00E2'   32 0FFE        C      	LD	(SM.IMERK),A
                          C      
                          C      
                          C      SY.ZAN MACRO  Z
@@ -331,29 +331,29 @@
                          C          ENDM
                          C      
                          C      	SY.ZAN	'D'
-  00F2'   0E 44          C+         LD    C,'D'	;Zeichenausgabe
-  00F4'   CD 0702'       C+         CALL  SY.AEIN
+  00E5'   0E 44          C+         LD    C,'D'	;Zeichenausgabe
+  00E7'   CD 0702'       C+         CALL  SY.AEIN
                          C      	SY.ZAN	'A'
-  00F7'   0E 41          C+         LD    C,'A'	;Zeichenausgabe
-  00F9'   CD 0702'       C+         CALL  SY.AEIN
+  00EA'   0E 41          C+         LD    C,'A'	;Zeichenausgabe
+  00EC'   CD 0702'       C+         CALL  SY.AEIN
                          C      	SY.ZAN	'T'
-  00FC'   0E 54          C+         LD    C,'T'	;Zeichenausgabe
-  00FE'   CD 0702'       C+         CALL  SY.AEIN
+  00EF'   0E 54          C+         LD    C,'T'	;Zeichenausgabe
+  00F1'   CD 0702'       C+         CALL  SY.AEIN
                          C      	SY.ZAN	'E'
-  0101'   0E 45          C+         LD    C,'E'	;Zeichenausgabe
-  0103'   CD 0702'       C+         CALL  SY.AEIN
+  00F4'   0E 45          C+         LD    C,'E'	;Zeichenausgabe
+  00F6'   CD 0702'       C+         CALL  SY.AEIN
                          C      	SY.ZAN	' '
-  0106'   0E 20          C+         LD    C,' '	;Zeichenausgabe
-  0108'   CD 0702'       C+         CALL  SY.AEIN
-  010B'   3E 0B          C      	LD	A,11	;Systembildfenster setzen
-  010D'   32 0DB4'       C      	LD	(SM.ZMIN),A
-  0110'   32 0DB6'       C      	LD	(SM.ZMAX),A
-  0113'   3E 08          C      	LD	A,8
-  0115'   32 0DB5'       C      	LD	(SM.SMIN),A
-  0118'   3E 0F          C      	LD	A,15
-  011A'   32 0DB7'       C      	LD	(SM.SMAX),A
-  011D'   CD 04AE'       C      	CALL	SY.SETC	;Cursor setzen
-  0120'                  C      SY.ININ1	EQU	$
+  00F9'   0E 20          C+         LD    C,' '	;Zeichenausgabe
+  00FB'   CD 0702'       C+         CALL  SY.AEIN
+  00FE'   3E 0B          C      	LD	A,11	;Systembildfenster setzen
+  0100'   32 0DB4'       C      	LD	(SM.ZMIN),A
+  0103'   32 0DB6'       C      	LD	(SM.ZMAX),A
+  0106'   3E 08          C      	LD	A,8
+  0108'   32 0DB5'       C      	LD	(SM.SMIN),A
+  010B'   3E 0F          C      	LD	A,15
+  010D'   32 0DB7'       C      	LD	(SM.SMAX),A
+  0110'   CD 04AE'       C      	CALL	SY.SETC	;Cursor setzen
+  0113'                  C      SY.ININ1	EQU	$
                          C      
                          C      	IF	SD.GENE AND 00000001B
                          C      	OUT	(0C3H),A	;RESET - Sperre ein
@@ -362,14 +362,14 @@
 'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-6
 
 
-  0120'                  C      SY.ININ3:
-  0120'   21 0FF0        C      	LD	HL,SM.DATUM
-  0123'   CD 09F8'       C      	CALL	S1.ANZG
-  0126'   C3 41CF'       C      	JP	TA.TFE
+  0113'                  C      SY.ININ3:
+  0113'   21 0FF0        C      	LD	HL,SM.DATUM
+  0116'   CD 09F8'       C      	CALL	S1.ANZG
+  0119'   C3 41CF'       C      	JP	TA.TFE
                          C      
-  0129'                  C      SY.INI:
-  0129'   AF             C      	XOR	A
-  012A'   ED 47          C      	LD	I,A	;I - Register laden
+  011C'                  C      SY.INI:
+  011C'   AF             C      	XOR	A
+  011D'   ED 47          C      	LD	I,A	;I - Register laden
                          C      
                          C      	IF	SD.GENE AND 00000001B
                          C      	OUT	(0C4H),A	;RESET - Sperre aus ---   S B S T
@@ -378,104 +378,104 @@
                          C      	OUT	(0C0H),A
                          C      	ENDIF
                          C      
-  012C'   ED 5E          C      	IM	2		;Interrupt - Mode 2
-  012E'   FB             C      	EI
-  012F'   3E FF          C      	LD	A,-1
-  0131'   32 0FFF        C      	LD	(SM.SPMER),A
-  0134'   C9             C      	RET
+  011F'   ED 5E          C      	IM	2		;Interrupt - Mode 2
+  0121'   FB             C      	EI
+  0122'   3E FF          C      	LD	A,-1
+  0124'   32 0FFF        C      	LD	(SM.SPMER),A
+  0127'   C9             C      	RET
                          C      
-  0135'                  C      SY.INI1:
-  0135'   CD 06C0'       C      	CALL	SY.PRUEF
-  0138'   CD 068D'       C      	CALL	SY.MEMLA
-  013B'                  C      SY.INI2:
-  013B'   CD 0644'       C      	CALL	SY.BILO
-  013E'                  C      SY.INI3:
-  013E'   21 000A        C      	LD	HL,10
-  0141'   22 0DB2'       C      	LD	(SM.ZPOS),HL
-  0144'   CD 048D'       C      	CALL	SY.BILAD
-  0147'   CD 04AE'       C      	CALL	SY.SETC
-  014A'   C9             C      	RET
+  0128'                  C      SY.INI1:
+  0128'   CD 06C0'       C      	CALL	SY.PRUEF
+  012B'   CD 068D'       C      	CALL	SY.MEMLA
+  012E'                  C      SY.INI2:
+  012E'   CD 0644'       C      	CALL	SY.BILO
+  0131'                  C      SY.INI3:
+  0131'   21 000A        C      	LD	HL,10
+  0134'   22 0DB2'       C      	LD	(SM.ZPOS),HL
+  0137'   CD 048D'       C      	CALL	SY.BILAD
+  013A'   CD 04AE'       C      	CALL	SY.SETC
+  013D'   C9             C      	RET
                          C      
-  014B'                  C      SY.INNMI:
-  014B'   CD 013B'       C      	CALL	SY.INI2
-  014E'   18 D0          C      	JR	SY.ININ3
+  013E'                  C      SY.INNMI:
+  013E'   CD 012E'       C      	CALL	SY.INI2
+  0141'   18 D0          C      	JR	SY.ININ3
                          C      
-  0150'                  C      SY.INSTB:
-  0150'   31 0D00        C      	LD	SP,SM.STACK
-  0153'   CD 0129'       C      	CALL	SY.INI
-  0156'   CD 0135'       C      	CALL	SY.INI1
-  0159'   18 C5          C      	JR	SY.ININ1
+  0143'                  C      SY.INSTB:
+  0143'   31 0D00        C      	LD	SP,SM.STACK
+  0146'   CD 011C'       C      	CALL	SY.INI
+  0149'   CD 0128'       C      	CALL	SY.INI1
+  014C'   18 C5          C      	JR	SY.ININ1
                          C      
-  015B'                  C      SY.INSTC:
-  015B'   31 0D00        C      	LD	SP,SM.STACK
-  015E'   CD 013E'       C      	CALL	SY.INI3
-  0161'   18 BD          C      	JR	SY.ININ3
+  014E'                  C      SY.INSTC:
+  014E'   31 0D00        C      	LD	SP,SM.STACK
+  0151'   CD 0131'       C      	CALL	SY.INI3
+  0154'   18 BD          C      	JR	SY.ININ3
                          C      
-  0163'                  C      SY.INFKT:
-  0163'   22 0D68'       C      	LD	(SM.FKTAB+68H),HL
-  0166'   21 018B'       C      	LD	HL,SY.IFKT1	;Taste: HOME
-  0169'   22 0D74'       C      	LD	(SM.FKTAB+74H),HL
-  016C'   21 0198'       C      	LD	HL,SY.IFKT2	;Taste: CNZA
-  016F'   22 0D76'       C      	LD	(SM.FKTAB+76H),HL
-  0172'   21 01A3'       C      	LD	HL,SY.IFKT3	;Taste: 000 
-  0175'   22 0D48'       C      	LD	(SM.FKTAB+48H),HL
-  0178'   21 01AD'       C      	LD	HL,SY.IFKT4	;Taste: 00  
-  017B'   22 0D4C'       C      	LD	(SM.FKTAB+4CH),HL
+  0156'                  C      SY.INFKT:
+  0156'   22 0D68'       C      	LD	(SM.FKTAB+68H),HL
+  0159'   21 017E'       C      	LD	HL,SY.IFKT1	;Taste: HOME
+  015C'   22 0D74'       C      	LD	(SM.FKTAB+74H),HL
+  015F'   21 018B'       C      	LD	HL,SY.IFKT2	;Taste: CNZA
+  0162'   22 0D76'       C      	LD	(SM.FKTAB+76H),HL
+  0165'   21 0196'       C      	LD	HL,SY.IFKT3	;Taste: 000 
+  0168'   22 0D48'       C      	LD	(SM.FKTAB+48H),HL
+  016B'   21 01A0'       C      	LD	HL,SY.IFKT4	;Taste: 00  
+  016E'   22 0D4C'       C      	LD	(SM.FKTAB+4CH),HL
                          C      
                          C      	IF	SD.GENE AND 00000001B
-                         C      	LD	HL,PF.S2	;Taste: ABS 
+                         C      	LD	HL,PF.S2	;Taste: ABS	;Kommando 'S2  '
                          C      	LD	(SM.FKTAB+24H),HL
-                         C      	LD	HL,TE.TEST+6	;Taste: DEL 	;???
+                         C      	LD	HL,TE.TEST+6	;Taste: DEL	;Kommando 'TEST'
                          C      	LD	(SM.FKTAB+58H),HL
                          C      	ENDIF
                          C      
                          C      	IF	SD.GENE AND 00010001B
-  017E'   21 531F'       C      	LD	HL,PF.S3M	;PF1
-  0181'   22 0D00'       C      	LD	(SM.FKTAB+00H),HL
-  0184'   21 538B'       C      	LD	HL,PF.S4	;PF2
-  0187'   22 0D10'       C      	LD	(SM.FKTAB+10H),HL
+  0171'   21 531F'       C      	LD	HL,PF.S3M	;PF1
+  0174'   22 0D00'       C      	LD	(SM.FKTAB+00H),HL
+  0177'   21 538B'       C      	LD	HL,PF.S4	;PF2
+  017A'   22 0D10'       C      	LD	(SM.FKTAB+10H),HL
                          C      	ENDIF
                          C      
-  018A'   C9             C      	RET
+  017D'   C9             C      	RET
                          C      
-  018B'                  C      SY.IFKT1:
-  018B'   2A 0DB4'       C      	LD	HL,(SM.ZMIN)
-  018E'   22 0DB2'       C      	LD	(SM.ZPOS),HL
-  0191'   CD 05B4'       C      	CALL	SY.DZPOS
-  0194'   CD 05C1'       C      	CALL	SY.DSPOS
-  0197'   C9             C      	RET
+  017E'                  C      SY.IFKT1:
+  017E'   2A 0DB4'       C      	LD	HL,(SM.ZMIN)
+  0181'   22 0DB2'       C      	LD	(SM.ZPOS),HL
+  0184'   CD 05B4'       C      	CALL	SY.DZPOS
+  0187'   CD 05C1'       C      	CALL	SY.DSPOS
+  018A'   C9             C      	RET
                          C      
 'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-7
 
 
-  0198'                  C      SY.IFKT2:
-  0198'   3A 0DB5'       C      	LD	A,(SM.SMIN)
-  019B'   3D             C      	DEC	A
-  019C'   32 0DB3'       C      	LD	(SM.SPOS),A
-  019F'   CD 05D3'       C      	CALL	SY.IZPOS
-  01A2'   C9             C      	RET
+  018B'                  C      SY.IFKT2:
+  018B'   3A 0DB5'       C      	LD	A,(SM.SMIN)
+  018E'   3D             C      	DEC	A
+  018F'   32 0DB3'       C      	LD	(SM.SPOS),A
+  0192'   CD 05D3'       C      	CALL	SY.IZPOS
+  0195'   C9             C      	RET
                          C      
-  01A3'                  C      SY.IFKT3:
-  01A3'   CD 0580'       C      	CALL	SY.CPOS
-  01A6'   36 30          C      	LD	(HL),'0'
-  01A8'   CD 05FA'       C      	CALL	SY.ICPOS
-  01AB'   18 03          C      	JR	$+5
-  01AD'                  C      SY.IFKT4:
-  01AD'   CD 0580'       C      	CALL	SY.CPOS
-  01B0'   36 30          C      	LD	(HL),'0'
-  01B2'   CD 05FA'       C      	CALL	SY.ICPOS
-  01B5'   36 30          C      	LD	(HL),'0'
-  01B7'   CD 05FA'       C      	CALL	SY.ICPOS
-  01BA'   C9             C      	RET
+  0196'                  C      SY.IFKT3:
+  0196'   CD 0580'       C      	CALL	SY.CPOS
+  0199'   36 30          C      	LD	(HL),'0'
+  019B'   CD 05FA'       C      	CALL	SY.ICPOS
+  019E'   18 03          C      	JR	$+5
+  01A0'                  C      SY.IFKT4:
+  01A0'   CD 0580'       C      	CALL	SY.CPOS
+  01A3'   36 30          C      	LD	(HL),'0'
+  01A5'   CD 05FA'       C      	CALL	SY.ICPOS
+  01A8'   36 30          C      	LD	(HL),'0'
+  01AA'   CD 05FA'       C      	CALL	SY.ICPOS
+  01AD'   C9             C      	RET
                          C      
-  01BB'   01BB'          C      	DW	$
-  01BD'   44 50 54 53    C      	DB	'DPTS'
-  01C1'   CD 093B'       C      	CALL	S1.INPTR
-  01C4'   23             C      	INC	HL
-  01C5'   CD 0951'       C      	CALL	S1.HBKON
-  01C8'   5F             C      	LD	E,A
-  01C9'   ED 53 0FF7     C      	LD	(SM.PTS),DE
-  01CD'   C3 000B'       C      	JP	SY.SYSTB
+  01AE'   01AE'          C      	DW	$
+  01B0'   44 50 54 53    C      	DB	'DPTS'
+  01B4'   CD 093B'       C      	CALL	S1.INPTR
+  01B7'   23             C      	INC	HL
+  01B8'   CD 0951'       C      	CALL	S1.HBKON
+  01BB'   5F             C      	LD	E,A
+  01BC'   ED 53 0FF7     C      	LD	(SM.PTS),DE
+  01C0'   C3 000B'       C      	JP	SY.SYSTB
                          C      
                          C      	PAGE
 'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-8
@@ -850,8 +850,8 @@
   067D'   22 0D16'       C      	LD	(SM.FKTAB+16H),HL
   0680'   21 0636'       C      	LD	HL,SY.CNUS
   0683'   22 0D18'       C      	LD	(SM.FKTAB+18H),HL
-  0686'   21 0150'       C      	LD	HL,SY.INSTB
-  0689'   C3 0163'       C      	JP	SY.INFKT
+  0686'   21 0143'       C      	LD	HL,SY.INSTB
+  0689'   C3 0156'       C      	JP	SY.INFKT
   068C'   C9             C      	RET
                          C      			;ArbeitsRAM und Tabellen laden
   068D'                  C      SY.MEMLA:
@@ -1035,7 +1035,7 @@
   0768'   42 49 4C 44    C      	DB	'BILD'
                          C      
   076C'   11 3327        C      	LD	DE,SD.BWSA + 10*80 + 7	;327H
-  076F'   CD 6FDC        C      	CALL	UC.CVDB
+  076F'   CD 7007        C      	CALL	UC.CVDB
   0772'   D8             C      	RET	C
   0773'   AF             C      	XOR	A
   0774'   BC             C      	CP	H
@@ -1601,7 +1601,7 @@
   09DD'   C8             C      	RET	Z
   09DE'                  C      S1.EIN1:
   09DE'   E5             C      	PUSH	HL
-  09DF'   CD 6FDC        C      	CALL	UC.CVDB
+  09DF'   CD 7007        C      	CALL	UC.CVDB
   09E2'   38 11          C      	JR	C,S1.RET
   09E4'   AF             C      	XOR	A
   09E5'   BC             C      	CP	H
@@ -1632,7 +1632,7 @@
   0A05'   E5             C      	PUSH	HL
   0A06'   6E             C      	LD	L,(HL)
   0A07'   26 00          C      	LD	H,0
-  0A09'   CD 6F97        C      	CALL	UC.CVBD2
+  0A09'   CD 6FC2        C      	CALL	UC.CVBD2
   0A0C'   3E 2E          C      	LD	A,2EH
   0A0E'   12             C      	LD	(DE),A
 'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-24
@@ -2021,9 +2021,9 @@
   1179'   138D'          C      	DW	E1.PTS19
   117B'   13FE'          C      	DW	E1.GS
   117D'   140B'          C      	DW	E1.UND
-  117F'   01A3'          C      	DW	SY.IFKT3
+  117F'   0196'          C      	DW	SY.IFKT3
   1181'   1387'          C      	DW	E1.PTS13
-  1183'   01AD'          C      	DW	SY.IFKT4
+  1183'   01A0'          C      	DW	SY.IFKT4
   1185'   0000           C      	DW	0
                          C      
   1187'   1380'          C      	DW	E1.PTS6	;S6,Z1
@@ -2320,10 +2320,10 @@
   12FA'   CD 0636'       C      	CALL	SY.CNUS
   12FD'   18 08          C      	JR	E1.TCUR
   12FF'                  C      E1.TCNZA:
-  12FF'   CD 0198'       C      	CALL	SY.IFKT2
+  12FF'   CD 018B'       C      	CALL	SY.IFKT2
   1302'   18 03          C      	JR	E1.TCUR
   1304'                  C      E1.THOME:
-  1304'   CD 018B'       C      	CALL	SY.IFKT1
+  1304'   CD 017E'       C      	CALL	SY.IFKT1
   1307'                  C      E1.TCUR:
   1307'   CD 131A'       C      	CALL	E1.ZNUM
 'EDITOR --- Arbeitsphase'	MACRO-80 3.44	09-Dec-81	PAGE	1-34
@@ -4099,7 +4099,7 @@
   1D30'   06 04          C      	LD	B,4
   1D32'                  C      ME.AZ4B1:
   1D32'   7E             C      	LD	A,(HL)
-  1D33'   CD 6F20        C      	CALL	UC.CVBX+2
+  1D33'   CD 6F4B        C      	CALL	UC.CVBX+2
   1D36'   13             C      	INC	DE
   1D37'   23             C      	INC	HL
   1D38'   10 F8          C      	DJNZ	ME.AZ4B1
@@ -4737,7 +4737,7 @@
   20AA'   21 0000        C      	LD	HL,0
   20AD'   22 2BE7'       C      	LD	(ME.PUZEI),HL
   20B0'                  C      ME.INSLN:
-  20B0'   CD 5F0B        C      	CALL	KH.BILO
+  20B0'   CD 5F36        C      	CALL	KH.BILO
   20B3'   CD 1CF1'       C      	CALL	ME.AZBLD
   20B6'   CD 1D94'       C      	CALL	ME.BSADS
   20B9'   CD 22B6'       C      	CALL	ME.DSPAD
@@ -4912,7 +4912,7 @@
   2180'   32 2BE6'       C      	LD	(ME.BPZEI),A	;Position ASCII
   2183'   EB             C      	EX	DE,HL
   2184'   78             C      	LD	A,B
-  2185'   CD 6F20        C      	CALL	UC.CVBX+2	;Anzeige HEXA
+  2185'   CD 6F4B        C      	CALL	UC.CVBX+2	;Anzeige HEXA
   2188'   C9             C      	RET
                          C      ;
                          C      ;-------------------------------------------------------------
@@ -4921,7 +4921,7 @@
                          C      ;
   2189'                  C      ME.HEXMO:
   2189'   47             C      	LD	B,A	;Code retten
-  218A'   CD 6F43        C      	CALL	UC.CVAXB	;ASCII-Hexa ---> Binaer < 16
+  218A'   CD 6F6E        C      	CALL	UC.CVAXB	;ASCII-Hexa ---> Binaer < 16
   218D'   4F             C      	LD	C,A
   218E'   CD 1D72'       C      	CALL	ME.BSADR
   2191'   23             C      	INC	HL
@@ -4948,7 +4948,7 @@
   21A9'   28 12          C      	JR	Z,ME.HEXM0	;---> RAM
   21AB'   EB             C      	EX	DE,HL
   21AC'   79             C      	LD	A,C
-  21AD'   CD 6F20        C      	CALL	UC.CVBX+2	;alten Wert anzeigen
+  21AD'   CD 6F4B        C      	CALL	UC.CVBX+2	;alten Wert anzeigen
   21B0'   CD 1D94'       C      	CALL	ME.BSADS
   21B3'   C9             C      	RET
                          C      ;
@@ -4975,7 +4975,7 @@
   21D2'   CD 1D72'       C      	CALL	ME.BSADR
   21D5'   79             C      	LD	A,C
   21D6'   EB             C      	EX	DE,HL
-  21D7'   CD 6F20        C      	CALL	UC.CVBX+2
+  21D7'   CD 6F4B        C      	CALL	UC.CVBX+2
   21DA'                  C      ME.HEXM1:
   21DA'   CD 1E7D'       C      	CALL	ME.REFHA
   21DD'   CD 1D72'       C      	CALL	ME.BSADR
@@ -5118,9 +5118,9 @@
                          C      
   22CE'                  C      ME.CVAX:
   22CE'   7C             C      	LD	A,H
-  22CF'   CD 6F20        C      	CALL	UC.CVBX+2
+  22CF'   CD 6F4B        C      	CALL	UC.CVBX+2
   22D2'   7D             C      	LD	A,L
-  22D3'   CD 6F20        C      	CALL	UC.CVBX+2
+  22D3'   CD 6F4B        C      	CALL	UC.CVBX+2
   22D6'   C9             C      	RET
                          C      
   22D7'                  C      ME.CVXB:
@@ -5157,7 +5157,7 @@
 'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-70
 
 
-  22FA'   CD 6F43        C      	CALL	UC.CVAXB
+  22FA'   CD 6F6E        C      	CALL	UC.CVAXB
   22FD'   13             C      	INC	DE
   22FE'   C9             C      	RET
                          C      
@@ -5173,7 +5173,7 @@
   2308'   3E 14          C      	LD	A,20
   230A'   32 2B00        C      	LD	(ME.ZN),A
   230D'   21 2371'       C      	LD	HL,ME.ZKEIN
-  2310'   CD 6B2E        C      	CALL	UR.MIMO
+  2310'   CD 6B59        C      	CALL	UR.MIMO
   2313'   D8             C      	RET	C
                          C      
   2314'   EB             C      	EX	DE,HL
@@ -8352,7 +8352,7 @@
   49CC'   18 00          C      	JR	PF.OB
                          C      	
   49CE'                  C      PF.OB:
-  49CE'   ED 53 0E15'    C        	LD	(SM.PTSE),DE
+  49CE'   ED 53 0E15'    C      	LD	(SM.PTSE),DE
   49D2'   22 0E17'       C      	LD	(SM.PTSA),HL
   49D5'                  C      PF.OXEND:
   49D5'   C3 000B'       C      	JP	SY.SYSTB
@@ -8508,8 +8508,8 @@
   4BB2'   20 50 55 53    C      
   4BB6'   48 20 20 49    C      
   4BBA'   59             C      
-                         C      ; ----
   4BBB'   001E           C      	DW	CR
+                         C      ; ----
   4BBD'   20 20 20 20    C      	DB	'         POP   HL'                                                    ;PF04-1 PF16
   4BC1'   20 20 20 20    C      
   4BC5'   20 50 4F 50    C      
@@ -9502,7 +9502,7 @@ Symbols:
 1019'	ED.MEL2         1049'	ED.MEL3         100F'	ED.MEL5         
 1006'	ED.MELAN        1053'	ED.MELNL        1069'	ED.QUELL        
 111E'	ED.UMLKP        107C'	ED.VOLLF        11B7'	ED.ZED1         
-5F0B 	KH.BILO         4066'	KMBINI          4060'	KMBROB          
+5F36 	KH.BILO         4066'	KMBINI          4060'	KMBROB          
 4063'	KMBRUC          4507'	LR.ILBL         4499'	LR.ILBS         
 4460'	LR.IRLB         456F'	LR.IRLBL        44EF'	LR.IRLBS        
 4464'	LR.KONV         4474'	LR.KONV1        4486'	LR.KONV2        
@@ -9661,21 +9661,21 @@ Symbols:
 06FC'	SY.DEL1         06FB'	SY.DEL2         06F2'	SY.DELZL        
 0625'	SY.DESZ         05C1'	SY.DSPOS        05B4'	SY.DZPOS        
 0661'	SY.FKTLA        05FA'	SY.ICPOS        0072'	SY.ICTC1        
-0074'	SY.ICTC2        0076'	SY.ICTC3        018B'	SY.IFKT1        
-0198'	SY.IFKT2        01A3'	SY.IFKT3        01AD'	SY.IFKT4        
+0074'	SY.ICTC2        0076'	SY.ICTC3        017E'	SY.IFKT1        
+018B'	SY.IFKT2        0196'	SY.IFKT3        01A0'	SY.IFKT4        
 05F3'	SY.INC1         05EB'	SY.INC2         05F1'	SY.INC3         
-05F4'	SY.INC4         0163'	SY.INFKT        0129'	SY.INI          
-0135'	SY.INI1         013B'	SY.INI2         013E'	SY.INI3         
-0120'	SY.ININ1        0120'	SY.ININ3        014B'	SY.INNMI        
-00DC'	SY.INRE         00A0'	SY.INRE1        00BE'	SY.INRE2        
-0150'	SY.INSTB        015B'	SY.INSTC        0400'	SY.IO           
+05F4'	SY.INC4         0156'	SY.INFKT        011C'	SY.INI          
+0128'	SY.INI1         012E'	SY.INI2         0131'	SY.INI3         
+0113'	SY.ININ1        0113'	SY.ININ3        013E'	SY.INNMI        
+00CF'	SY.INRE         00A0'	SY.INRE1        00B1'	SY.INRE2        
+0143'	SY.INSTB        014E'	SY.INSTC        0400'	SY.IO           
 05E0'	SY.ISPOS        0058'	SY.ISRA0        0070'	SY.ISRA3        
 05D3'	SY.IZPOS        04A0'	SY.KOM          04F8'	SY.KOM1         
 0504'	SY.KOM2         0614'	SY.LCP1         0608'	SY.LCPOS        
 0008 	SY.LZSY1        000E 	SY.LZSY2        000B 	SY.LZSY3        
 0008 	SY.LZSY4        06EB'	SY.MELD         06E5'	SY.MELDE        
 0696'	SY.MEML1        068D'	SY.MEMLA        070D'	SY.NL           
-0066'	SY.NMI          00BA'	SY.OUTB1        058A'	SY.POS1         
+0066'	SY.NMI          00AD'	SY.OUTB1        058A'	SY.POS1         
 0583'	SY.POS3         0587'	SY.POS4         056F'	SY.POS5         
 0595'	SY.POS7         058C'	SY.POSA         06C0'	SY.PRUEF        
 054A'	SY.QTABL        06A6'	SY.RALO         06B1'	SY.RALO1        
@@ -9723,13 +9723,15 @@ Symbols:
 440F'	TR.TTA21        4411'	TR.TTA22        443B'	TR.TTBL1        
 443D'	TR.TTBL2        4435'	TR.TTEM1        4437'	TR.TTEM2        
 4439'	TR.TTEM3        4415'	TR.TTIM1        4417'	TR.TTIM2        
-442A'	TR.TTIM3        4427'	TR.TTIM4        6F14 	UC.CVABX        
-6F43 	UC.CVAXB        6F97 	UC.CVBD2        6F1E 	UC.CVBX         
-6FDC 	UC.CVDB         6B2E 	UR.MIMO         
+442A'	TR.TTIM3        4427'	TR.TTIM4        6F3F 	UC.CVABX        
+6F6E 	UC.CVAXB        6FC2 	UC.CVBD2        6F49 	UC.CVBX         
+7007 	UC.CVDB         6B59 	UR.MIMO         
 
 
 
 No Fatal error(s)
 
 
-
+    400F'	TR.TIM          
+4000'	TR.TINIT        4406'	TR.TTA11        4408'	TR.TTA12        
+440F'	
