@@ -1,0 +1,132 @@
+          TITLE 'Systemvariablen'
+          PAGE
+;	PN	SM01.Variablen___Version_1.2
+;****************************************************************
+;*                  S y s t e m v a r i a b l e n               *
+;*                  V e r s i o n   1 . 2                       *
+;****************************************************************
+          ORG   0
+          DEFS  0C00H,0FFH     ;ZRE --- ROM ab 0000H
+          DEFS  0400H,000H     ;    --- RAM ab 0C00H
+          DEFS  2000H,0FFH     ;OFS --- ROM ab 1000H
+          DEFS  1000H,SD.SPACE ;ABS --- RAM ab 3000H
+          DEFS  4000H,0FFH     ;PFS --- ROM ab 4000H
+
+SM.STACK  EQU   SD.RAM+100H    ;STACK Anfang
+
+          ORG   SM.STACK
+SM.FKTAB: DEFS  80H,0          ;Tabelle Fkt. fuer Tastaturroutine
+
+SM.TK:    DB    0              ;Speicher Alpha-Tastencode
+SM.FKT:   DB    0              ;Speicher Funktionsadresse
+          DEFS  12,0           ;TEMO
+SM.ZSMER: DB    0              ;Merker  Z-Schnellschreiben
+SM.ZSTC:  DB    0              ;Zaehler Z-schnell 0,5s
+SM.TC:    DB    0              ;Zeitzaehler C-blinken 0,3s
+SM.MERK:  DB    0              ;Zeichenmerker Cursorposition
+SM.GRZEI: DB    0              ;Merker Grafikzeichen
+SM.FSTAT: DB    0              ;Status Format
+SM.STAT:  DB    0              ;Status der virtuellen Tast.
+SM.MODE:  DB    0              ;Stauts der Betriebsart
+SM.ZEIZ:  DW    0              ;Zeilenzaehler Text
+SM.BZA:   DB    0              ;Zeilenzaehler Window--Text
+SM.WEITE: DW    0              ;Zeilen--Sprungweite
+SM.TABZ   EQU   $              ;Tabulatorzaehler
+
+          ORG   00DA5H         ;Bereich fuer Tabulatoren
+
+SM.UMERK: DB    0              ;Merker fuer Umschalter
+
+                               ;Funktionsmerker der Alphatastatur
+SM.USCH:  DW    0
+SM.TABU:  DW    0
+SM.DELZ:  DW    0
+SM.DEL:   DW    0
+SM.NEWL:  DW    0
+SM.EINA:  DW    0
+SM.ZPOS:  DB    0              ;Zeilennr.  Schreibcursor
+SM.SPOS:  DB    0              ;Spaltennr. Schreibcursor
+SM.LOE1   EQU   $-SM.UMERK
+SM.LOE    EQU   $-SM.ZSMER
+SM.ZMIN:  DB    0              ;Merker Anfangszeile
+SM.SMIN:  DB    0              ;Merker Anfangsspalte
+SM.ZMAX:  DB    0              ;Merker End    zeile
+SM.SMAX:  DB    0              ;Merker End    spalte
+SM.ZPOS2: DB    0              ;siehe oben (Zweitmerker)
+SM.SPOS2: DB    0
+SM.ZMIN2: DB    0
+SM.SMIN2: DB    0
+SM.ZMAX2: DB    0
+SM.SMAX2: DB    0
+SM.ZANZ:  DB    0              ;Merker BWS-Format
+SM.SPANZ: DB	0              ;Merker BWS-Format
+SM.WINA:  DW    0              ;Position Window--Anfang
+SM.WINE:  DW    0              ;Position Window--Ende
+SM.END:   DW    0              ;Position Textende
+SM.LZA:   DB    0              ;Laenge Zeichenkette alt
+SM.ZKA:   DEFS  75,SD.SPACE    ;Zeichenkette alt
+SM.LZN:   DB    0              ;Laenge Zeichenkette neu
+SM.ZKN:   DW    0              ;Merker Zeichenkette neu
+SM.PTSE:  DW    0              ;Merker Ende   programm. Speicher
+SM.PTSA:  DW    0              ;Merker AnFang    ''        ''
+
+SM.ZEIAD: DW    0              ;DBUG
+SM.ZEIZ2: DB    0              ;DBUG
+SM.START: DW    0              ;EXEC
+SM.ANFAD: DW    0              ;DBUG
+SM.PARAM: DW    0              ;DBUG
+          DW    0
+SM.BWSE:  DW    0              ;DATA
+
+                               ;Bereich fuer Nutzerkonstanten
+SM.NUTZK: DEFS  20H,0
+          DEFS  12,0
+
+;****************************************************************
+;*                  Arbeitsbereich KMBG (Programm KS01)         *
+SM.AEATB: DW    0              ;Adresse E/A-Tabelle
+SM.PZAUS: DW    0              ;Pufferzeiger Ausgabe
+SM.PZEIN: DW    0              ;Pufferzeiger Eingabe
+SM.ZAUS:  DW    0              ;Zaehler Ausgabe
+SM.ZEIN:  DW    0              ;Zaehler Eingabe
+SM.Z1:    DB    0              ;Zaehler Schreib-/Lese wdhg.
+SM.Z2:    DB    0              ;Zaehler Blocklueckenverl.
+SM.CRCZ:  DW    0              ;CRC-Zeichen
+SM.FEHLZ: DB    0              ;interner Fehleranzeiger
+SM.POS:   DW    0              ;Position des Fehlers im Datensatz
+SM.SDAT:  DB    0              ;Solldaten
+SM.IDAT:  DB    0              ;Ist daten
+SM.PUFFS: DEFS	260,0          ;Eingabepuffer
+
+;*                  Arbeitszellen fuer  CRC-Routine             *
+SM.KOMDO: DB    0              ;Kommando
+SM.ZEITK: DB    0              ;Zeitkonstante
+SM.ADR:   DW    0              ;Adresse
+SM.CONTR: DB    0              ;Ereigniskontrolle
+;*                                                              *
+;****************************************************************
+          DW    0
+                               ;E-/A-Tabelle
+SM.EADRU: DEFS  16,0           ;             fuer Drucker
+
+SM.EALBS: DEFS  32,0           ;             fuer Lochbandstanzer
+SM.EALBL: DEFS  32,0           ;             fuer Lochbandleser
+
+SM.EAAMB  EQU   00FE0H         ;             fuer Magnetbandgeraet
+
+
+                               ;weitere System-Konstanten
+SM.PTSC  EQU    0FC00H         ;Standardanfangsadr.   programm. PF-Tasten
+
+SM.DATUM EQU    00FF0H         ;aktuelles Datum  ( 3 Byte )
+SM.PTS   EQU    00FF7H         ;Merker Anfangsadresse programm. PF-Tasten
+SM.RST38 EQU    00FF9H         ;Sprung zur RST38-Routine
+SM.CTRL  EQU    00FFCH         ;Merker CTRL-Taste
+SM.KGMER EQU    00FFDH         ;Merker Klein-/Grossschreibung
+SM.IMERK EQU    00FFEH         ;Merker INS_MOD
+SM.SPMER EQU    00FFFH         ;Merker fuer Tastengruppen
+
+				;Stand: 28.Januar 85 - K EAW/wfvm..MSH
+
+;	END
+

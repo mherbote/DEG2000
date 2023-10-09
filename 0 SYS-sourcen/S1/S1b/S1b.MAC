@@ -1,0 +1,48 @@
+SM.FKTAB  EQU	00D00H
+ATACO     EQU	021EFH
+SD.BWSA   EQU	03000H
+TA.ABFR1  EQU   04026H
+SY.SETCHL EQU	04033H
+SY.RESC   EQU	04036H
+PRINT     EQU	04040H
+PUF.KASS  EQU   04070H
+
+	INCLUDE K0.ASM	;EQUAL - Anweisungen fuer Assembler
+;	
+	ORG	05400H
+	INCLUDE K1.ASM	;BAMOS/Emulator  ---  Kassettenmagnetband
+;
+;	INCLUDE	KR.ASM	;Kassettengrundroutinen
+;	INCLUDE	UF.ASM	;Fehleranzeige und Behandlung
+;	INCLUDE	UA.ASM	;Ausschriften
+	INCLUDE K2.ASM	;Grundroutinen
+;
+;	INCLUDE	KI.ASM	;Initialisieren von MRES Kassetten
+;	INCLUDE	KV.ASM	;Anzeigen und Aendern des MRES-Verzeichnisses
+;	INCLUDE	KH.ASM	;Kommandos: KRDx und KWRx
+;	INCLUDE	FD.ASM	;Ein-/Ausgabe im freien Format
+;	INCLUDE LD.ASM	;Laden von MRES-P-Dateien
+;	INCLUDE RL.ASM	;Relativloader fuer O-Dateien
+;	INCLUDE SV.ASM	;Retten von Maschinencodeprogrammen als MRES - P-Datei
+	INCLUDE K3.ASM	;MRES Routinen
+;	
+;	INCLUDE	KX.ASM	;Kopieren von MRES-Kassetten Teil 1
+;	INCLUDE	KY.ASM	;Kopieren von MRES-Kassetten Teil 2
+;	INCLUDE	KU.ASM	;Unterprogramme fuer KOPI
+	INCLUDE K6.ASM	;Kopieren MRES
+;	
+	INCLUDE K7.ASM	;Routinen fuer Kassette,Monitor UND Tastatur (UR.ASM)
+;	
+;	INCLUDE	U1.ASM	;Allgemeine Unterprogramme
+;	INCLUDE	XY.ASM	;Handling f. IX/IY-adressierte Bereiche
+;	INCLUDE	UC.ASM	;Konvertierungen
+;	INCLUDE	CP.ASM	;Komprimierung
+;	INCLUDE	DC.ASM	;Dekomprimierung
+;	INCLUDE	UK.ASM	;Einzelzeicheneingabe fuer KMBG
+	INCLUDE K8.ASM	;Allgemeine Unterprogramme
+;
+	INCLUDE KM.ASM
+
+	TITLE ''
+	END
+

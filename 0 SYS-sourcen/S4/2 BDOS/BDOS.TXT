@@ -1,0 +1,3 @@
+BDOS/P:2600
+BDOS/N/X
+/E

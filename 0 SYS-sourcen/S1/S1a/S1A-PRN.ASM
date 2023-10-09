@@ -1,0 +1,9735 @@
+'Definitionen zum Betriebssystem'	MACRO-80 3.44	09-Dec-81	PAGE	1
+
+
+                                	TITLE	'Definitionen zum Betriebssystem'
+  5F0B                          KH.BILO   EQU   05F0BH
+  6B2E                          UR.MIMO   EQU   06B2EH
+  6F14                          UC.CVABX  EQU   06F14H
+  6F1E                          UC.CVBX   EQU   UC.CVABX + 0000AH	;06EECH
+  6F43                          UC.CVAXB  EQU   UC.CVABX + 0002FH	;06F11H
+  6F97                          UC.CVBD2  EQU   UC.CVABX + 00083H	;06F65H
+  6FDC                          UC.CVDB   EQU   UC.CVABX + 000C8H	;06FAAH
+                                
+                                	PAGE	87
+'Definitionen zum Betriebssystem'	MACRO-80 3.44	09-Dec-81	PAGE	1-1
+
+
+                                
+                         C      	INCLUDE SD01.ASM
+                         C      	TITLE	'Definitionen zum Betriebssystem'
+                         C      ;	PN	SD01.Definitionen
+                         C      ;****************************************************************
+                         C      ;*                  Definitionen zum Betriebssystem             *
+                         C      ;*                  D E G 2 0 0 0    Version 1 . 2              *
+                         C      ;****************************************************************
+  0010                   C      SD.GENE    EQU  16            ;Geraetevariante
+                         C                                    ;  1 ...  TAP2/TAP3
+                         C                                    ;  2 ...  MiniTAP mit TRAM
+                         C                                    ;  4 ...  MiniTAP mit OPS ZWG
+                         C                                    ;  8 ...  MiniTAP mit OPS ROBOTRON
+                         C                                    ; 16 ...  DEG2000 Emulator
+                         C      
+  0000                   C      SD.SYSTA   EQU  0             ;Startadresse
+  3000                   C      SD.BWSA    EQU  03000H        ;Anf.adr. Bildwiederholspeicher
+  0C00                   C      SD.RAM     EQU  00C00H        ;Anf. ArbeitsRAM
+  0020                   C      SD.SPACE   EQU  020H
+  001E                   C      SD.NL      EQU  01EH          ;NEW LINE
+  0009                   C      SD.TAB     EQU  009H          ;Tabulator
+  0002                   C      SD.ZEIT1   EQU  2             ;Zeitkonst. Fkt.wdhlg.
+  0010                   C      SD.ZEIT2   EQU  16            ;    ''      ''   ''
+  0080                   C      SD.CTCK0   EQU  080H          ;CTC-Adresse Kanal 0
+  0002                   C      SD.CTCKA   EQU  2             ;CTC-Kanal 2 (fuer KMBG Robotron)
+  004F                   C      SD.AMB     EQU  04FH          ;Ausgabeadresse der   A M B
+                         C      
+                         C      ;DEFINITIONEN ZUM EDITOR
+                         C      
+  1000                   C      SD.EDITA   EQU  01000H        ;Startadresse
+  8000                   C      SD.VPI     EQU  08000H        ;Vorbereich  Eingabepuffer
+  8010                   C      SD.PFFI    EQU  08010H        ;            Eingabepuffer
+  8410                   C      SD.NPI     EQU  08410H        ;Nachbereich Eingabepuffer
+  8420                   C      SD.PFFA    EQU  08420H        ;            Ausgabepuffer
+  8820                   C      SD.NPA     EQU  08820H        ;Nachbereich Ausgabepuffer
+  0F70                   C      SD.DEAT    EQU  00F70H        ;Dynamische  E/A-Tabelle (RAM)
+  8830                   C      SD.TPA     EQU  08830H        ;Anf.adr. Textpuffer
+  FBFF                   C      SD.TPE     EQU  0FBFFH        ;Endeadr. Textpuffer
+  2C00                   C      SD.BPA     EQU  SD.BWSA-400H  ;Anf.adr. Bildpuffer
+  001C                   C      SD.PSANZ   EQU  28            ;Anzahl programm. PF-Tasten
+  000A                   C      SD.TABZA   EQU  10            ;Tabulatorenzahl
+  0000                   C      SD.QTAB1   EQU  0             ;1. Tabulator
+  0009                   C      SD.QTAB2   EQU  9             ;2.    ''
+  000F                   C      SD.QTAB3   EQU  15            ;3.    ''
+  0022                   C      SD.QTAB4   EQU  34            ;4.    ''
+                         C      
+                         C      			;Stand: 28.Januar 85 - K EAW/wfvm..MSH
+                         C      
+                         C      ;	END
+                         C      	INCLUDE SM01.ASM
+                         C      	TITLE	'Systemvariablen'
+                         C      	PAGE
+'Systemvariablen'	MACRO-80 3.44	09-Dec-81	PAGE	1-2
+
+
+                         C      
+                         C      ;	PN	SM01.Variablen___Version_1.2
+                         C      ;****************************************************************
+                         C      ;*                  S y s t e m v a r i a b l e n               *
+                         C      ;*                  V e r s i o n   1 . 2                       *
+                         C      ;****************************************************************
+                         C                  ORG   0
+  0000'                  C                  DEFS  0C00H,0FFH     ;ZRE --- ROM ab 0000H
+  0C00'                  C                  DEFS  0400H,000H     ;    --- RAM ab 0C00H
+  1000'                  C                  DEFS  2000H,0FFH     ;OFS --- ROM ab 1000H
+  3000'                  C                  DEFS  1000H,SD.SPACE ;ABS --- RAM ab 3000H
+  4000'                  C                  DEFS  4000H,0FFH     ;PFS --- ROM ab 4000H
+                         C      
+  0D00                   C      SM.STACK    EQU   SD.RAM+100H   ;STACK Anfang
+                         C      
+                         C                  ORG   SM.STACK
+  0D00'                  C      SM.FKTAB:   DEFS  80H,0         ;Tabelle Fkt. fuer Tastaturroutine
+                         C      
+  0D80'   00             C      SM.TK:      DB    0             ;Speicher Alpha-Tastencode
+  0D81'   00             C      SM.FKT:     DB    0             ;Speicher Funktionsadresse
+  0D82'                  C                  DEFS  12,0          ;TEMO
+  0D8E'   00             C      SM.ZSMER:   DB    0             ;Merker  Z-Schnellschreiben
+  0D8F'   00             C      SM.ZSTC:    DB    0             ;Zaehler Z-schnell 0,5s
+  0D90'   00             C      SM.TC:      DB    0             ;Zeitzaehler C-blinken 0,3s
+  0D91'   00             C      SM.MERK:    DB    0             ;Zeichenmerker Cursorposition
+  0D92'   00             C      SM.GRZEI:   DB    0             ;Merker Grafikzeichen
+  0D93'   00             C      SM.FSTAT:   DB    0             ;Status Format
+  0D94'   00             C      SM.STAT:    DB    0             ;Status der virtuellen Tast.
+  0D95'   00             C      SM.MODE:    DB    0             ;Stauts der Betriebsart
+  0D96'   0000           C      SM.ZEIZ:    DW    0             ;Zeilenzaehler Text
+  0D98'   00             C      SM.BZA:     DB    0             ;Zeilenzaehler Window--Text
+  0D99'   0000           C      SM.WEITE:   DW    0             ;Zeilen--Sprungweite
+  0D9B'                  C      SM.TABZ     EQU   $             ;Tabulatorzaehler
+                         C      
+                         C                  ORG   00DA5H        ;Bereich fuer Tabulatoren
+                         C      
+  0DA5'   00             C      SM.UMERK:   DB    0             ;Merker fuer Umschalter
+                         C      
+                         C                                      ;Funktionsmerker der Alphatastatur
+  0DA6'   0000           C      SM.USCH:    DW    0
+  0DA8'   0000           C      SM.TABU:    DW    0
+  0DAA'   0000           C      SM.DELZ:    DW    0
+  0DAC'   0000           C      SM.DEL:     DW    0
+  0DAE'   0000           C      SM.NEWL:    DW    0
+  0DB0'   0000           C      SM.EINA:    DW    0
+  0DB2'   00             C      SM.ZPOS:    DB    0             ;Zeilennr.  Schreibcursor
+  0DB3'   00             C      SM.SPOS:    DB    0             ;Spaltennr. Schreibcursor
+  000F                   C      SM.LOE1     EQU   $-SM.UMERK
+  0026                   C      SM.LOE      EQU   $-SM.ZSMER
+  0DB4'   00             C      SM.ZMIN:    DB    0             ;Merker Anfangszeile
+  0DB5'   00             C      SM.SMIN:    DB    0             ;Merker Anfangsspalte
+  0DB6'   00             C      SM.ZMAX:    DB    0             ;Merker End    zeile
+  0DB7'   00             C      SM.SMAX:    DB    0             ;Merker End    spalte
+  0DB8'   00             C      SM.ZPOS2:   DB    0             ;siehe oben (Zweitmerker)
+  0DB9'   00             C      SM.SPOS2:   DB    0
+  0DBA'   00             C      SM.ZMIN2:   DB    0
+  0DBB'   00             C      SM.SMIN2:   DB    0
+  0DBC'   00             C      SM.ZMAX2:   DB    0
+  0DBD'   00             C      SM.SMAX2:   DB    0
+  0DBE'   00             C      SM.ZANZ:    DB    0             ;Merker BWS-Format
+  0DBF'   00             C      SM.SPANZ:   DB    0             ;Merker BWS-Format
+  0DC0'   0000           C      SM.WINA:    DW    0             ;Position Window--Anfang
+  0DC2'   0000           C      SM.WINE:    DW    0             ;Position Window--Ende
+  0DC4'   0000           C      SM.END:     DW    0             ;Position Textende
+  0DC6'   00             C      SM.LZA:     DB    0             ;Laenge Zeichenkette alt
+  0DC7'                  C      SM.ZKA:     DEFS  75,SD.SPACE   ;Zeichenkette alt
+  0E12'   00             C      SM.LZN:     DB    0             ;Laenge Zeichenkette neu
+  0E13'   0000           C      SM.ZKN:     DW    0             ;Merker Zeichenkette neu
+  0E15'   0000           C      SM.PTSE:    DW    0             ;Merker Ende   programm. Speicher
+  0E17'   0000           C      SM.PTSA:    DW    0             ;Merker AnFang    ''        ''
+                         C      
+  0E19'   0000           C      SM.ZEIAD:   DW    0             ;DBUG
+  0E1B'   00             C      SM.ZEIZ2:   DB    0             ;DBUG
+  0E1C'   0000           C      SM.START:   DW    0             ;EXEC
+  0E1E'   0000           C      SM.ANFAD:   DW    0             ;DBUG
+  0E20'   0000           C      SM.PARAM:   DW    0             ;DBUG
+  0E22'   0000           C                  DW    0
+  0E24'   0000           C      SM.BWSE:    DW    0             ;DATA
+                         C      
+                         C      			;Bereich fuer Nutzerkonstanten
+  0E26'                  C      SM.NUTZK:   DEFS  20H,0
+  0E46'                  C                  DEFS  12,0
+'Systemvariablen'	MACRO-80 3.44	09-Dec-81	PAGE	1-3
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*                  Arbeitsbereich KMBG (Programm KS01)         *
+  0E52'   0000           C      SM.AEATB:   DW    0             ;Adresse E/A-Tabelle
+  0E54'   0000           C      SM.PZAUS:   DW    0             ;Pufferzeiger Ausgabe
+  0E56'   0000           C      SM.PZEIN:   DW    0             ;Pufferzeiger Eingabe
+  0E58'   0000           C      SM.ZAUS:    DW    0             ;Zaehler Ausgabe
+  0E5A'   0000           C      SM.ZEIN:    DW    0             ;Zaehler Eingabe
+  0E5C'   00             C      SM.Z1:      DB    0             ;Zaehler Schreib-/Lese wdhg.
+  0E5D'   00             C      SM.Z2:      DB    0             ;Zaehler Blocklueckenverl.
+  0E5E'   0000           C      SM.CRCZ:    DW    0             ;CRC-Zeichen
+  0E60'   00             C      SM.FEHLZ:   DB    0             ;interner Fehleranzeiger
+  0E61'   0000           C      SM.POS:     DW    0             ;Position des Fehlers im Datensatz
+  0E63'   00             C      SM.SDAT:    DB    0             ;Solldaten
+  0E64'   00             C      SM.IDAT:    DB    0             ;Ist daten
+  0E65'                  C      SM.PUFFS:   DEFS  260,0         ;Eingabepuffer
+                         C      
+                         C      ;*                  Arbeitszellen fuer  CRC-Routine             *
+  0F69'   00             C      SM.KOMDO:   DB    0             ;Kommando
+  0F6A'   00             C      SM.ZEITK:   DB    0             ;Zeitkonstante
+  0F6B'   0000           C      SM.ADR:     DW    0             ;Adresse
+  0F6D'   00             C      SM.CONTR:   DB    0             ;Ereigniskontrolle
+                         C      ;*                                                              *
+                         C      ;****************************************************************
+  0F6E'   0000           C                  DW    0
+                         C                                      ;E-/A-Tabelle
+  0F70'                  C      SM.EADRU:   DEFS  16,0          ;             fuer Drucker
+                         C      
+  0F80'                  C      SM.EALBS:   DEFS  32,0          ;             fuer Lochbandstanzer
+  0FA0'                  C      SM.EALBL:   DEFS  32,0          ;             fuer Lochbandleser
+                         C      
+  0FE0                   C      SM.EAAMB    EQU   00FE0H        ;             fuer Magnetbandgeraet
+                         C      
+                         C      
+                         C                                      ;weitere System-Konstanten
+  FC00                   C      SM.PTSC     EQU   0FC00H        ;Standardanfangsadr.   programm. PF-Tasten
+                         C      
+  0FF0                   C      SM.DATUM    EQU   00FF0H        ;aktuelles Datum  ( 3 Byte )
+  0FF7                   C      SM.PTS      EQU   00FF7H        ;Merker Anfangsadresse programm. PF-Tasten
+  0FF9                   C      SM.RST38    EQU   00FF9H        ;Sprung zur RST38-Routine
+  0FFC                   C      SM.CTRL     EQU   00FFCH        ;Merker CTRL-Taste
+  0FFD                   C      SM.KGMER    EQU   00FFDH        ;Merker Klein-/Grossschreibung
+  0FFE                   C      SM.IMERK    EQU   00FFEH        ;Merker INS_MOD
+  0FFF                   C      SM.SPMER    EQU   00FFFH        ;Merker fuer Tastengruppen
+                         C      
+                         C      			;Stand: 28.Januar 85 - K EAW/wfvm..MSH
+                         C      
+                         C      ;	END
+                         C      	INCLUDE SY01.ASM
+                         C      	TITLE	'Betriebssystemkern DEG2000 Version 1.2'
+                         C      	PAGE
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-4
+
+
+                         C      
+                         C      ;	PN	SY01.Betriebssystem___DEG20000__Version_1.2
+                         C      ;****************************************************************
+                         C      ;*                  Betriebssystemkern DEG2000 Version 1.2      *
+                         C      ;*  Version         --------------------------------------------*
+                         C      ;*                  Programmierer: M. Herbote  K EAW  ZFT (WFT) *
+                         C      ;*  V 1 . 2         --------------------------------------------*
+                         C      ;*                  Stand        : 28.Januar 1985               *
+                         C      ;****************************************************************
+                         C      	ORG	SD.SYSTA
+  0000'   F3             C      	DI
+  0001'   C3 00A0'       C      	JP	SY.INRE1
+  0004'   00             C      	NOP
+  0005'   00             C      	NOP
+  0006'   18 03          C      	JR	$+5
+  0008'                  C      SY.RST8:
+  0008'   C3 00DC'       C      	JP	SY.INRE
+  000B'                  C      SY.SYSTB:
+  000B'   C3 0150'       C      	JP	SY.INSTB
+  000E'                  C      	DEFS	2,0
+  0010'                  C      SY.RST10:
+  0010'   C3 00DC'       C      	JP	SY.INRE
+  0013'                  C      	DEFS	5,0
+  0018'                  C      SY.RST18:
+  0018'   C3 00DC'       C      	JP	SY.INRE
+  001B'                  C      	DEFS	5,0
+  0020'                  C      SY.RST20:
+  0020'   C3 00DC'       C      	JP	SY.INRE
+  0023'                  C      	DEFS	5,0
+  0028'                  C      SY.RST28:
+  0028'   C3 00DC'       C      	JP	SY.INRE
+  002B'                  C      	DEFS	5,0
+  0030'                  C      SY.RST30:
+  0030'   C3 00DC'       C      	JP	SY.INRE
+  0033'                  C      	DEFS	5,0
+  0038'                  C      SY.RST38:
+  0038'   C3 0FF9        C      	JP	SM.RST38
+                         C      ;****************************************************************
+                         C      	ORG	00058H
+                         C      			;Interrupt-Startadresse
+  0058'                  C      SY.ISRA0:
+  0058'   0400'          C      	DW	SY.IO
+                         C      ;****************************************************************
+                         C      	ORG	00066H
+                         C      			;NMI - Routine
+  0066'                  C      SY.NMI:
+  0066'   21 014B'       C      	LD	HL,SY.INNMI
+  0069'   E3             C      	EX	(SP),HL
+  006A'   FB             C      	EI
+  006B'   ED 45          C      	RETN
+                         C      ;****************************************************************
+                         C                ORG	00070H
+                         C                                      ;Programm KT01
+  0070'   0400'          C      SY.ISRA3: DW    SY.IO           ;Int. Beh. CTC- Kanal 0
+  0072'   0000           C      SY.ICTC1: DW    0               ;          CTC- Kanal 1
+  0074'   0000           C      SY.ICTC2: DW    0;48B1H         ;          CTC- Kanal 2     ;???
+  0076'   0000           C      SY.ICTC3: DW    0               ;          CTC- Kanal 3
+                         C      
+                         C      ; SY.IAUS:  DW    0446FH     ;???
+                         C      ; SY.IER:   DW    04513H     ;???
+                         C      ; SY.IEL:   DW    04562H     ;???
+                         C      ; SY.IST:   DW    04658H     ;???
+                         C      ; SY.IBE:   DW    04673H     ;???
+                         C      ; SY.IBE0:  DW    0468EH     ;???
+                         C      
+                         C      	PAGE
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-5
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      	ORG	000A0H
+                         C                                      ;Initialisierungen
+  00A0'                  C      SY.INRE1:
+  00A0'   31 0D00        C      	LD	SP,SM.STACK	;- Zeichen in die 25.Zeile schreiben
+  00A3'   21 3780        C      	LD	HL,SD.BWSA + 24*80
+  00A6'   11 3781        C      	LD	DE,SD.BWSA + 24*80 +1
+  00A9'   01 004F        C      	LD	BC,79
+  00AC'   36 2D          C      	LD	(HL),'-'
+  00AE'   ED B0          C      	LDIR
+                         C      
+                         C      	IF	SD.GENE AND 00010000B	;DEG2000 Emulator
+  00B0'   01 04C0        C      	LD	BC,004C0H	;HS-Speicher auf Standard (1) umschalten
+  00B3'   21 00BA'       C      	LD	HL,SY.OUTB1
+  00B6'   ED B3          C      	OTIR
+  00B8'   18 04          C      	JR	SY.INRE2
+  00BA'                  C      SY.OUTB1:
+  00BA'   F0             C      	DB	0F0H	;Startbyte
+  00BB'   03             C      	DB	003H	;wahl
+  00BC'   04             C      	DB	004H	;SYS 1.2
+  00BD'   FF             C      	DB	0FFH	;Endbyte
+                         C      	ENDIF
+                         C      
+  00BE'                  C      SY.INRE2:
+  00BE'   21 0F70'       C      	LD	HL,SM.EADRU	;E-/A-Tabellen loeschen
+  00C1'   11 0F71'       C      	LD	DE,SM.EADRU+1
+  00C4'   01 008F        C      	LD	BC,8FH
+  00C7'   36 00          C      	LD	(HL),0
+  00C9'   ED B0          C      	LDIR
+  00CB'   3E C3          C      	LD	A,0C3H	;Sprung zur RST38-Routine
+  00CD'   32 0FF9        C      	LD	(SM.RST38),A
+  00D0'   21 015B'       C      	LD	HL,SY.INSTC
+  00D3'   22 0FFA        C      	LD	(SM.RST38+1),HL
+  00D6'   21 FC00        C      	LD	HL,SM.PTSC	;setzen der Variablen SM.PTS
+  00D9'   22 0FF7        C      	LD	(SM.PTS),HL
+  00DC'                  C      SY.INRE:
+  00DC'   CD 0129'       C      	CALL	SY.INI	;Initialisierung der Speicher
+  00DF'   2A 4001'       C      	LD	HL,(TR.TINIT+1)	;Initialisierung der Tastatur
+  00E2'   CD 41A4'       C      	CALL	TA.MM1
+  00E5'   CD 429E'       C      	CALL	TA.E0IN
+  00E8'   CD 0135'       C      	CALL	SY.INI1	;Initialisierung der Bildanzeige
+                         C      
+  00EB'   AF             C      	XOR	A
+  00EC'   32 0FFD        C      	LD	(SM.KGMER),A	;Grundstellung: Grossbuchstaben
+  00EF'   32 0FFE        C      	LD	(SM.IMERK),A
+                         C      
+                         C      
+                         C      SY.ZAN MACRO  Z
+                         C          LD    C,Z	;Zeichenausgabe
+                         C          CALL  SY.AEIN
+                         C          ENDM
+                         C      
+                         C      	SY.ZAN	'D'
+  00F2'   0E 44          C+         LD    C,'D'	;Zeichenausgabe
+  00F4'   CD 0702'       C+         CALL  SY.AEIN
+                         C      	SY.ZAN	'A'
+  00F7'   0E 41          C+         LD    C,'A'	;Zeichenausgabe
+  00F9'   CD 0702'       C+         CALL  SY.AEIN
+                         C      	SY.ZAN	'T'
+  00FC'   0E 54          C+         LD    C,'T'	;Zeichenausgabe
+  00FE'   CD 0702'       C+         CALL  SY.AEIN
+                         C      	SY.ZAN	'E'
+  0101'   0E 45          C+         LD    C,'E'	;Zeichenausgabe
+  0103'   CD 0702'       C+         CALL  SY.AEIN
+                         C      	SY.ZAN	' '
+  0106'   0E 20          C+         LD    C,' '	;Zeichenausgabe
+  0108'   CD 0702'       C+         CALL  SY.AEIN
+  010B'   3E 0B          C      	LD	A,11	;Systembildfenster setzen
+  010D'   32 0DB4'       C      	LD	(SM.ZMIN),A
+  0110'   32 0DB6'       C      	LD	(SM.ZMAX),A
+  0113'   3E 08          C      	LD	A,8
+  0115'   32 0DB5'       C      	LD	(SM.SMIN),A
+  0118'   3E 0F          C      	LD	A,15
+  011A'   32 0DB7'       C      	LD	(SM.SMAX),A
+  011D'   CD 04AE'       C      	CALL	SY.SETC	;Cursor setzen
+  0120'                  C      SY.ININ1	EQU	$
+                         C      
+                         C      	IF	SD.GENE AND 00000001B
+                         C      	OUT	(0C3H),A	;RESET - Sperre ein
+                         C      	ENDIF
+                         C      
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-6
+
+
+  0120'                  C      SY.ININ3:
+  0120'   21 0FF0        C      	LD	HL,SM.DATUM
+  0123'   CD 09F8'       C      	CALL	S1.ANZG
+  0126'   C3 41CF'       C      	JP	TA.TFE
+                         C      
+  0129'                  C      SY.INI:
+  0129'   AF             C      	XOR	A
+  012A'   ED 47          C      	LD	I,A	;I - Register laden
+                         C      
+                         C      	IF	SD.GENE AND 00000001B
+                         C      	OUT	(0C4H),A	;RESET - Sperre aus ---   S B S T
+                         C      	OUT	(0C2H),A	;SYS 1 aktivieren
+                         C      	OUT	(0C1H),A
+                         C      	OUT	(0C0H),A
+                         C      	ENDIF
+                         C      
+  012C'   ED 5E          C      	IM	2		;Interrupt - Mode 2
+  012E'   FB             C      	EI
+  012F'   3E FF          C      	LD	A,-1
+  0131'   32 0FFF        C      	LD	(SM.SPMER),A
+  0134'   C9             C      	RET
+                         C      
+  0135'                  C      SY.INI1:
+  0135'   CD 06C0'       C      	CALL	SY.PRUEF
+  0138'   CD 068D'       C      	CALL	SY.MEMLA
+  013B'                  C      SY.INI2:
+  013B'   CD 0644'       C      	CALL	SY.BILO
+  013E'                  C      SY.INI3:
+  013E'   21 000A        C      	LD	HL,10
+  0141'   22 0DB2'       C      	LD	(SM.ZPOS),HL
+  0144'   CD 048D'       C      	CALL	SY.BILAD
+  0147'   CD 04AE'       C      	CALL	SY.SETC
+  014A'   C9             C      	RET
+                         C      
+  014B'                  C      SY.INNMI:
+  014B'   CD 013B'       C      	CALL	SY.INI2
+  014E'   18 D0          C      	JR	SY.ININ3
+                         C      
+  0150'                  C      SY.INSTB:
+  0150'   31 0D00        C      	LD	SP,SM.STACK
+  0153'   CD 0129'       C      	CALL	SY.INI
+  0156'   CD 0135'       C      	CALL	SY.INI1
+  0159'   18 C5          C      	JR	SY.ININ1
+                         C      
+  015B'                  C      SY.INSTC:
+  015B'   31 0D00        C      	LD	SP,SM.STACK
+  015E'   CD 013E'       C      	CALL	SY.INI3
+  0161'   18 BD          C      	JR	SY.ININ3
+                         C      
+  0163'                  C      SY.INFKT:
+  0163'   22 0D68'       C      	LD	(SM.FKTAB+68H),HL
+  0166'   21 018B'       C      	LD	HL,SY.IFKT1	;Taste: HOME
+  0169'   22 0D74'       C      	LD	(SM.FKTAB+74H),HL
+  016C'   21 0198'       C      	LD	HL,SY.IFKT2	;Taste: CNZA
+  016F'   22 0D76'       C      	LD	(SM.FKTAB+76H),HL
+  0172'   21 01A3'       C      	LD	HL,SY.IFKT3	;Taste: 000 
+  0175'   22 0D48'       C      	LD	(SM.FKTAB+48H),HL
+  0178'   21 01AD'       C      	LD	HL,SY.IFKT4	;Taste: 00  
+  017B'   22 0D4C'       C      	LD	(SM.FKTAB+4CH),HL
+                         C      
+                         C      	IF	SD.GENE AND 00000001B
+                         C      	LD	HL,PF.S2	;Taste: ABS 
+                         C      	LD	(SM.FKTAB+24H),HL
+                         C      	LD	HL,TE.TEST+6	;Taste: DEL 	;???
+                         C      	LD	(SM.FKTAB+58H),HL
+                         C      	ENDIF
+                         C      
+                         C      	IF	SD.GENE AND 00010001B
+  017E'   21 531F'       C      	LD	HL,PF.S3M	;PF1
+  0181'   22 0D00'       C      	LD	(SM.FKTAB+00H),HL
+  0184'   21 538B'       C      	LD	HL,PF.S4	;PF2
+  0187'   22 0D10'       C      	LD	(SM.FKTAB+10H),HL
+                         C      	ENDIF
+                         C      
+  018A'   C9             C      	RET
+                         C      
+  018B'                  C      SY.IFKT1:
+  018B'   2A 0DB4'       C      	LD	HL,(SM.ZMIN)
+  018E'   22 0DB2'       C      	LD	(SM.ZPOS),HL
+  0191'   CD 05B4'       C      	CALL	SY.DZPOS
+  0194'   CD 05C1'       C      	CALL	SY.DSPOS
+  0197'   C9             C      	RET
+                         C      
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-7
+
+
+  0198'                  C      SY.IFKT2:
+  0198'   3A 0DB5'       C      	LD	A,(SM.SMIN)
+  019B'   3D             C      	DEC	A
+  019C'   32 0DB3'       C      	LD	(SM.SPOS),A
+  019F'   CD 05D3'       C      	CALL	SY.IZPOS
+  01A2'   C9             C      	RET
+                         C      
+  01A3'                  C      SY.IFKT3:
+  01A3'   CD 0580'       C      	CALL	SY.CPOS
+  01A6'   36 30          C      	LD	(HL),'0'
+  01A8'   CD 05FA'       C      	CALL	SY.ICPOS
+  01AB'   18 03          C      	JR	$+5
+  01AD'                  C      SY.IFKT4:
+  01AD'   CD 0580'       C      	CALL	SY.CPOS
+  01B0'   36 30          C      	LD	(HL),'0'
+  01B2'   CD 05FA'       C      	CALL	SY.ICPOS
+  01B5'   36 30          C      	LD	(HL),'0'
+  01B7'   CD 05FA'       C      	CALL	SY.ICPOS
+  01BA'   C9             C      	RET
+                         C      
+  01BB'   01BB'          C      	DW	$
+  01BD'   44 50 54 53    C      	DB	'DPTS'
+  01C1'   CD 093B'       C      	CALL	S1.INPTR
+  01C4'   23             C      	INC	HL
+  01C5'   CD 0951'       C      	CALL	S1.HBKON
+  01C8'   5F             C      	LD	E,A
+  01C9'   ED 53 0FF7     C      	LD	(SM.PTS),DE
+  01CD'   C3 000B'       C      	JP	SY.SYSTB
+                         C      
+                         C      	PAGE
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-8
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      	ORG	00280H
+                         C      
+                         C      	IF	SD.GENE AND 00001110B
+                         C      	LD	HL,00000H	;ZRE umladen
+                         C      	LD	DE,08000H
+                         C      	LD	BC,00C00H
+                         C      	LDIR
+                         C      	LD	HL,01000H	;OFS umladen
+                         C      	LD	BC,01800H
+                         C      	LDIR
+                         C      	JP	0C267H
+                         C      	ENDIF
+                         C      
+                         C      	PAGE
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-9
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      	ORG	00400H
+                         C      			;Sprung zur Tastaturroutine
+                         C      ;SY.ABFR:
+                         C      ;	JP	TA.TAST
+                         C      ;
+                         C      ;
+                         C      ;
+  0400'                  C      SY.IO:
+  0400'   FB             C      	EI
+  0401'   ED 4D          C      	RETI
+                         C      ;****************************************************************
+                         C      	ORG	0048DH
+                         C      			;Bildausschrift Systemgrundzustand
+  048D'                  C      SY.BILAD:
+  048D'   21 0526'       C      	LD	HL,SY.ZSY2
+  0490'                  C      SY.BILA1:
+  0490'   E5             C      	PUSH	HL
+  0491'   CD 06E5'       C      	CALL	SY.MELDE
+  0494'   11 3020        C      	LD	DE,SD.BWSA+20H
+  0497'   E1             C      	POP	HL
+  0498'   CD 06EB'       C      	CALL	SY.MELD
+  049B'   18 67          C      	JR	SY.KOM2
+  049D'                  C      	DEFS	3,0
+  04A0'                  C      SY.KOM:
+  04A0'   0E 3A          C      	LD	C,':'
+  04A2'   CD 0702'       C      	CALL	SY.AEIN
+  04A5'   CD 05E0'       C      	CALL	SY.ISPOS
+  04A8'   3A 0DB3'       C      	LD	A,(SM.SPOS)
+  04AB'   3C             C      	INC	A
+  04AC'   18 4A          C      	JR	SY.KOM1
+                         C      
+  04AE'                  C      SY.SETC:
+  04AE'   F5             C      	PUSH	AF
+  04AF'   C5             C      	PUSH	BC
+  04B0'   E5             C      	PUSH	HL
+  04B1'   3A 0DB3'       C      	LD	A,(SM.SPOS)	;X-Koordinate
+  04B4'   32 04CE'       C      	LD	(SY.SETC1+2),A
+  04B7'   3A 0DB2'       C      	LD	A,(SM.ZPOS) ;Y-Koordinate
+  04BA'   32 04CF'       C      	LD	(SY.SETC1+3),A
+  04BD'   21 04CC'       C      	LD	HL,SY.SETC1
+  04C0'   01 0540        C      	LD	BC,00540H
+  04C3'   ED B3          C      	OTIR
+  04C5'   E1             C      	POP	HL
+  04C6'   C1             C      	POP	BC
+  04C7'   F1             C      	POP	AF
+  04C8'   CD 0580'       C      	CALL	SY.CPOS	;HL := Cursorposition
+  04CB'   C9             C      	RET
+  04CC'                  C      SY.SETC1:
+  04CC'   F0             C      	DB	0F0H
+  04CD'   01             C      	DB	001H	;Cursor Ein
+  04CE'   00             C      	DB	0		;X
+  04CF'   00             C      	DB	0		;Y
+  04D0'   FF             C      	DB	0FFH
+                         C      
+  04D1'                  C      SY.SETCHL:
+  04D1'   E5             C      	PUSH	HL
+  04D2'   C5             C      	PUSH	BC
+  04D3'   22 04E5'       C      	LD	(SY.SETCHL2),HL
+  04D6'   21 04E1'       C      	LD	HL,SY.SETCHL1
+  04D9'   01 0740        C      	LD	BC,00740H
+  04DC'   ED B3          C      	OTIR
+  04DE'   C1             C      	POP	BC
+  04DF'   E1             C      	POP	HL
+  04E0'   C9             C      	RET
+  04E1'                  C      SY.SETCHL1:
+  04E1'   F0             C      	DB	0F0H
+  04E2'   04             C      	DB	004H	;Cursor Ein mit HL
+  04E3'   3000           C      	DW	SD.BWSA
+  04E5'                  C      SY.SETCHL2:
+  04E5'   0000           C      	DW	0
+  04E7'   FF             C      	DB	0FFH
+                         C      
+  04E8'                  C      SY.RESC:
+  04E8'   C5             C      	PUSH	BC
+  04E9'   E5             C      	PUSH	HL
+  04EA'   21 04F5'       C      	LD	HL,SY.RESC1
+  04ED'   01 0340        C      	LD	BC,00340H
+  04F0'   ED B3          C      	OTIR
+  04F2'   E1             C      	POP	HL
+  04F3'   C1             C      	POP	BC
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-10
+
+
+  04F4'   C9             C      	RET
+  04F5'                  C      SY.RESC1:
+  04F5'   F0             C      	DB	0F0H
+  04F6'   02             C      	DB	002H	;Cursor Aus
+  04F7'   FF             C      	DB	0FFH
+                         C      
+  04F8'                  C      SY.KOM1:
+  04F8'   32 0DB5'       C      	LD	(SM.SMIN),A
+  04FB'   3E 0B          C      	LD	A,11	;Begrenzung Bildbereich Kommandozeile
+  04FD'   32 0DB4'       C      	LD	(SM.ZMIN),A
+  0500'   32 0DB6'       C      	LD	(SM.ZMAX),A
+  0503'   C9             C      	RET
+                         C      
+  0504'                  C      SY.KOM2:
+  0504'   21 0535'       C      	LD	HL,SY.ZSY3
+  0507'   11 3060        C      	LD	DE,SD.BWSA+060H
+  050A'   CD 06EB'       C      	CALL	SY.MELD
+  050D'   21 0541'       C      	LD	HL,SY.ZSY4
+  0510'   11 30B0        C      	LD	DE,SD.BWSA+0B0H
+  0513'   CD 06EB'       C      	CALL	SY.MELD
+  0516'   3E 0A          C      	LD	A,10
+  0518'   32 0DB2'       C      	LD	(SM.ZPOS),A
+  051B'   18 83          C      	JR	SY.KOM
+                         C      ;****************************************************************
+                         C      ;*                  Zeichenketten                               *
+                         C      ;****************************************************************
+  051D'                  C      SY.ZSY1:
+  051D'   08             C      	DB	LOW(SY.LZSY1)
+  051E'   44 45 47 20    C      	DB	'DEG 2000'
+  0522'   32 30 30 30    C      
+  0008                   C      SY.LZSY1	EQU	$-SY.ZSY1-1
+  0526'                  C      SY.ZSY2:
+  0526'   0E             C      	DB	LOW(SY.LZSY2)
+  0527'   42 65 74 72    C      	DB	'Betriebssystem'
+  052B'   69 65 62 73    C      
+  052F'   73 79 73 74    C      
+  0533'   65 6D          C      
+  000E                   C      SY.LZSY2	EQU	$-SY.ZSY2-1
+  0535'                  C      SY.ZSY3:
+  0535'   0B             C      	DB	LOW(SY.LZSY3)
+  0536'   56 65 72 73    C      	DB	'Version 1.2'
+  053A'   69 6F 6E 20    C      
+  053E'   31 2E 32       C      
+  000B                   C      SY.LZSY3	EQU	$-SY.ZSY3-1
+  0541'                  C      SY.ZSY4:
+  0541'   08             C      	DB	LOW(SY.LZSY4)
+  0542'   44 61 74 75    C      	DB	'Datum:  '
+  0546'   6D 3A 20 20    C      
+  0008                   C      SY.LZSY4	EQU	$-SY.ZSY4-1
+                         C      ;****************************************************************
+  054A'                  C      SY.QTABL:
+  054A'   21 0D9B'       C      	LD	HL,SM.TABZ
+  054D'   36 00          C      	LD	(HL),SD.QTAB1
+  054F'   23             C      	INC	HL
+  0550'   36 09          C      	LD	(HL),SD.QTAB2
+  0552'   23             C      	INC	HL
+  0553'   36 0F          C      	LD	(HL),SD.QTAB3
+  0555'   23             C      	INC	HL
+  0556'   36 22          C      	LD	(HL),SD.QTAB4
+  0558'   23             C      	INC	HL
+  0559'   36 FF          C      	LD	(HL),-1
+  055B'   E5             C      	PUSH	HL
+  055C'   D1             C      	POP	DE
+  055D'   13             C      	INC	DE
+  055E'   01 0005        C      	LD	BC,5
+  0561'   ED B0          C      	LDIR
+  0563'   2A 0FF7        C      	LD	HL,(SM.PTS)
+  0566'   C9             C      	RET
+                         C      ;****************************************************************
+                         C      ;	ORG	00548H
+  0567'                  C      SY.BWSAF:
+  0567'   CD 058C'       C      	CALL	SY.POSA	;Format--BWS--Anfang
+  056A'   18 03          C      	JR	SY.POS5
+  056C'                  C      SY.SPPOF:
+  056C'   CD 0592'       C      	CALL	SY.SPPOS	;Formatspaltenanfang
+  056F'                  C      SY.POS5:
+  056F'   F5             C      	PUSH	AF
+  0570'   3A 0DB4'       C      	LD	A,(SM.ZMIN)
+  0573'   3D             C      	DEC	A
+  0574'   18 11          C      	JR	SY.POS4
+  0576'                  C      SY.ZLPOF:
+  0576'   CD 058C'       C      	CALL	SY.POSA
+  0579'   18 08          C      	JR	SY.POS3
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-11
+
+
+  057B'                  C      SY.ZLPOS:
+  057B'   21 3000        C      	LD	HL,SD.BWSA	;Zeilenanfang
+  057E'   18 03          C      	JR	SY.POS3
+  0580'                  C      SY.CPOS:
+  0580'   CD 0592'       C      	CALL	SY.SPPOS	;Cursorposition
+  0583'                  C      SY.POS3:
+  0583'   F5             C      	PUSH	AF
+  0584'   3A 0DB2'       C      	LD	A,(SM.ZPOS)
+  0587'                  C      SY.POS4:
+  0587'   CD 05A8'       C      	CALL	SY.AMSZ
+  058A'                  C      SY.POS1:
+  058A'   F1             C      	POP	AF
+  058B'   C9             C      	RET
+  058C'                  C      SY.POSA:
+  058C'   2A 0DB5'       C      	LD	HL,(SM.SMIN)
+  058F'   2D             C      	DEC	L
+  0590'   18 03          C      	JR	SY.POS7
+  0592'                  C      SY.SPPOS:
+  0592'   2A 0DB3'       C      	LD	HL,(SM.SPOS)	;Spaltenanfang
+  0595'                  C      SY.POS7:
+  0595'   26 30          C      	LD	H,HIGH(SD.BWSA)
+  0597'   C9             C      	RET
+  0598'                  C      SY.BWSL:
+  0598'   E5             C      	PUSH	HL
+  0599'   21 0000        C      	LD	HL,0
+  059C'   CD 05A5'       C      	CALL	SY.ADDBL
+  059F'   E3             C      	EX	(SP),HL
+  05A0'   C1             C      	POP	BC	;BC=BWSL  A=0
+  05A1'   C9             C      	RET		;HL,DE unveraendert
+  05A2'                  C      SY.BWSE:
+  05A2'   21 2FFF        C      	LD	HL,SD.BWSA-1	;HL:=BWSE
+  05A5'                  C      SY.ADDBL:
+  05A5'   3A 0DBE'       C      	LD	A,(SM.ZANZ)	;HL=HL+BWSL
+  05A8'                  C      SY.AMSZ:
+  05A8'   B7             C      	OR	A	;HL:=HL+A*(SPANZ)
+  05A9'   C8             C      	RET	Z
+  05AA'   D5             C      	PUSH	DE
+  05AB'   CD 0625'       C      	CALL	SY.DESZ
+  05AE'                  C      SY.AMSZ1:
+  05AE'   19             C      	ADD	HL,DE
+  05AF'   3D             C      	DEC	A
+  05B0'   20 FC          C      	JR	NZ,SY.AMSZ1
+  05B2'   D1             C      	POP	DE
+  05B3'   C9             C      	RET
+  05B4'                  C      SY.DZPOS:
+  05B4'   C5             C      	PUSH	BC	;Zeilennr. decrementieren
+  05B5'   21 0DB2'       C      	LD	HL,SM.ZPOS
+  05B8'   3A 0DB6'       C      	LD	A,(SM.ZMAX)
+  05BB'   47             C      	LD	B,A
+  05BC'   3A 0DB4'       C      	LD	A,(SM.ZMIN)
+  05BF'   18 0B          C      	JR	SY.DEC2
+  05C1'                  C      SY.DSPOS:
+  05C1'   C5             C      	PUSH	BC	;Spaltennr. decrementieren
+  05C2'   21 0DB3'       C      	LD	HL,SM.SPOS
+  05C5'   3A 0DB7'       C      	LD	A,(SM.SMAX)
+  05C8'   47             C      	LD	B,A
+  05C9'   3A 0DB5'       C      	LD	A,(SM.SMIN)
+  05CC'                  C      SY.DEC2:
+  05CC'   3D             C      	DEC	A
+  05CD'   BE             C      	CP	M
+  05CE'   28 21          C      	JR	Z,SY.INC3	;Z=1,CY=0 falls Uebertrag
+  05D0'   35             C      	DEC	M
+  05D1'   18 21          C      	JR	SY.INC4
+  05D3'                  C      SY.IZPOS:
+  05D3'   C5             C      	PUSH	BC	;Zeilennr. incrementieren
+  05D4'   21 0DB2'       C      	LD	HL,SM.ZPOS
+  05D7'   3A 0DB4'       C      	LD	A,(SM.ZMIN)
+  05DA'   47             C      	LD	B,A
+  05DB'   3A 0DB6'       C      	LD	A,(SM.ZMAX)
+  05DE'   18 0B          C      	JR	SY.INC2
+  05E0'                  C      SY.ISPOS:
+  05E0'   C5             C      	PUSH	BC	;Spaltennr. incrementieren
+  05E1'   3A 0DB5'       C      	LD	A,(SM.SMIN)
+  05E4'   47             C      	LD	B,A
+  05E5'   3A 0DB7'       C      	LD	A,(SM.SMAX)
+  05E8'   21 0DB3'       C      	LD	HL,SM.SPOS
+  05EB'                  C      SY.INC2:
+  05EB'   4F             C      	LD	C,A
+  05EC'   7E             C      	LD	A,M
+  05ED'   3C             C      	INC	A
+  05EE'   B9             C      	CP	C
+  05EF'   38 02          C      	JR	C,SY.INC1
+  05F1'                  C      SY.INC3:
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-12
+
+
+  05F1'   05             C      	DEC	B
+  05F2'   78             C      	LD	A,B
+  05F3'                  C      SY.INC1:
+  05F3'   77             C      	LD	M,A
+  05F4'                  C      SY.INC4:
+  05F4'   CD 0580'       C      	CALL	SY.CPOS
+  05F7'   C1             C      	POP	BC
+  05F8'   3F             C      	CCF
+  05F9'   C9             C      	RET		;Z=CY=1 falls Uebertrag
+  05FA'                  C      SY.ICPOS:
+  05FA'   CD 05E0'       C      	CALL	SY.ISPOS	;Schreibcursorpos. increment.
+  05FD'   DC 05D3'       C      	CALL	C,SY.IZPOS
+  0600'   C9             C      	RET		;Z=CY=1 falls CPOS=SD.BWSA
+  0601'                  C      SY.DCPOS:
+  0601'   CD 05C1'       C      	CALL	SY.DSPOS	;Schreibcursorpos. decrement.
+  0604'   DC 05B4'       C      	CALL	C,SY.DZPOS
+  0607'   C9             C      	RET		;Z=CY=1 falls CPOS=BWSEnde
+  0608'                  C      SY.LCPOS:
+  0608'   E5             C      	PUSH	HL	;HL-->ZPOS/SPOS
+  0609'   D5             C      	PUSH	DE
+  060A'   11 3000        C      	LD	DE,SD.BWSA
+  060D'   B7             C      	OR	A
+  060E'   ED 52          C      	SBC	HL,DE
+  0610'   CD 0625'       C      	CALL	SY.DESZ
+  0613'   AF             C      	XOR	A
+  0614'                  C      SY.LCP1:
+  0614'   ED 52          C      	SBC	HL,DE
+  0616'   3C             C      	INC	A
+  0617'   30 FB          C      	JR	NC,SY.LCP1
+  0619'   19             C      	ADD	HL,DE
+  061A'   3D             C      	DEC	A
+  061B'   32 0DB2'       C      	LD	(SM.ZPOS),A
+  061E'   7D             C      	LD	A,L
+  061F'   32 0DB3'       C      	LD	(SM.SPOS),A
+  0622'   D1             C      	POP	DE
+  0623'   E1             C      	POP	HL
+  0624'   C9             C      	RET
+  0625'                  C      SY.DESZ:
+  0625'   ED 5B 0DBF'    C      	LD	DE,(SM.SPANZ)
+  0629'   16 00          C      	LD	D,0
+  062B'   C9             C      	RET
+                         C      			;Schreibcursor Operationen
+  062C'                  C      SY.CNRS:
+  062C'   CD 05FA'       C      	CALL	SY.ICPOS	;-->
+  062F'   18 0D          C      	JR	SY.CURS
+  0631'                  C      SY.CNLS:
+  0631'   CD 0601'       C      	CALL	SY.DCPOS	;<--
+  0634'   18 08          C      	JR	SY.CURS
+  0636'                  C      SY.CNUS:
+  0636'   CD 05D3'       C      	CALL	SY.IZPOS	;Runter
+  0639'   18 03          C      	JR	SY.CURS
+  063B'                  C      SY.CNOS:
+  063B'   CD 05B4'       C      	CALL	SY.DZPOS	;Hoch
+  063E'                  C      SY.CURS:
+  063E'   3E 01          C      	LD	A,1
+  0640'   32 0D8E'       C      	LD	(SM.ZSMER),A
+  0643'   C9             C      	RET
+                         C      			;Bild loeschen
+  0644'                  C      SY.BILO:
+  0644'   21 3000        C      	LD	HL,SD.BWSA
+  0647'   11 3001        C      	LD	DE,SD.BWSA+1
+  064A'   CD 0598'       C      	CALL	SY.BWSL
+  064D'   0B             C      	DEC	BC
+  064E'   C5             C      	PUSH	BC
+  064F'   36 20          C      	LD	M,SD.SPACE
+  0651'   ED B0          C      	LDIR
+  0653'   C1             C      	POP	BC
+  0654'   3A 0DBE'       C      	LD	A,(SM.ZANZ)
+  0657'   FE 20          C      	CP	32
+  0659'   C0             C      	RET	NZ
+  065A'   23             C      	INC	HL
+  065B'   13             C      	INC	DE
+  065C'   36 00          C      	LD	M,0	;SD.SW
+  065E'   ED B0          C      	LDIR
+  0660'   C9             C      	RET
+                         C      			;Funktionsadressen laden
+  0661'                  C      SY.FKTLA:
+  0661'   21 0D00'       C      	LD	HL,SM.FKTAB
+  0664'   36 00          C      	LD	M,0
+  0666'   11 0D01'       C      	LD	DE,SM.FKTAB+1
+  0669'   01 007F        C      	LD	BC,SM.TK-SM.FKTAB-1
+  066C'   ED B0          C      	LDIR
+  066E'   21 063B'       C      	LD	HL,SY.CNOS
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-13
+
+
+  0671'   22 0D06'       C      	LD	(SM.FKTAB+6),HL
+  0674'   21 0631'       C      	LD	HL,SY.CNLS
+  0677'   22 0D08'       C      	LD	(SM.FKTAB+8),HL
+  067A'   21 062C'       C      	LD	HL,SY.CNRS
+  067D'   22 0D16'       C      	LD	(SM.FKTAB+16H),HL
+  0680'   21 0636'       C      	LD	HL,SY.CNUS
+  0683'   22 0D18'       C      	LD	(SM.FKTAB+18H),HL
+  0686'   21 0150'       C      	LD	HL,SY.INSTB
+  0689'   C3 0163'       C      	JP	SY.INFKT
+  068C'   C9             C      	RET
+                         C      			;ArbeitsRAM und Tabellen laden
+  068D'                  C      SY.MEMLA:
+  068D'   CD 0661'       C      	CALL	SY.FKTLA
+  0690'   CD 06A6'       C      	CALL	SY.RALO
+  0693'   21 070D'       C      	LD	HL,SY.NL
+  0696'                  C      SY.MEML1:
+  0696'   22 0DAE'       C      	LD	(SM.NEWL),HL
+  0699'   21 0702'       C      	LD	HL,SY.AEIN
+  069C'   22 0DB0'       C      	LD	(SM.EINA),HL
+  069F'   21 06F2'       C      	LD	HL,SY.DELZL
+  06A2'   22 0DAA'       C      	LD	(SM.DELZ),HL
+  06A5'   C9             C      	RET
+                         C      			;ArbeitsRAM loeschen
+  06A6'                  C      SY.RALO:
+  06A6'   21 0D8E'       C      	LD	HL,SM.ZSMER
+  06A9'   36 00          C      	LD	M,0
+  06AB'   11 0D8F'       C      	LD	DE,SM.ZSMER+1
+  06AE'   C3 06C7'       C      	JP	SY.RALO2	;LD    BC,SM.LOE-1
+  06B1'                  C      SY.RALO1:
+  06B1'   ED B0          C      	LDIR
+  06B3'   23             C      	INC	HL	;Format = volles Bild
+  06B4'   36 01          C      	LD	M,1
+  06B6'   23             C      	INC	HL
+  06B7'   36 01          C      	LD	M,1
+  06B9'   2A 0DBE'       C      	LD	HL,(SM.ZANZ)	;H=(SPANZ) L=(ZANZ)
+  06BC'   22 0DB6'       C      	LD	(SM.ZMAX),HL	;(SMAX)=L  (ZMAX)=H
+  06BF'   C9             C      	RET
+                         C      			;ABS K7024
+  06C0'                  C      SY.PRUEF:
+  06C0'   21 5018        C      	LD	HL,5018H	;H=80 L=24
+  06C3'   22 0DBE'       C      	LD	(SM.ZANZ),HL	;(SPANZ):=H (ZANZ):=L
+  06C6'   C9             C      	RET
+                         C      
+  06C7'                  C      SY.RALO2:
+  06C7'   01 000C        C      	LD	BC,12
+  06CA'   ED B0          C      	LDIR
+  06CC'   21 0DA5'       C      	LD	HL,SM.UMERK
+  06CF'   11 0DA6'       C      	LD	DE,SM.USCH
+  06D2'   01 000E        C      	LD	BC,14
+  06D5'   36 00          C      	LD	(HL),0
+  06D7'   C3 06B1'       C      	JP	SY.RALO1
+                         C      
+  06DA'                  C      	DEFS	3,0	;Adresskorrektur
+                         C      			;pruefen RAM-Bereich
+  06DD'                  C      SY.RAMPR:
+  06DD'   23             C      	INC	HL
+  06DE'   7E             C      	LD	A,M
+  06DF'   34             C      	INC	M
+  06E0'   BE             C      	CP	M
+  06E1'   77             C      	LD	M,A
+  06E2'   20 F9          C      	JR	NZ,SY.RAMPR
+  06E4'   C9             C      	RET		;HL=RAMEnde+1
+  06E5'                  C      SY.MELDE:
+  06E5'   11 3010        C      	LD	DE,SD.BWSA+10H
+  06E8'   21 051D'       C      	LD	HL,SY.ZSY1
+  06EB'                  C      SY.MELD:
+  06EB'   06 00          C      	LD	B,0	;Zeichenkette uebertragen
+  06ED'   4E             C      	LD	C,M
+  06EE'   23             C      	INC	HL
+  06EF'   ED B0          C      	LDIR
+  06F1'   C9             C      	RET
+  06F2'                  C      SY.DELZL:
+  06F2'   CD 0576'       C      	CALL	SY.ZLPOF
+  06F5'   CD 0608'       C      	CALL	SY.LCPOS
+  06F8'   CD 0752'       C      	CALL	SY.SZAHL
+  06FB'                  C      SY.DEL2:
+  06FB'   47             C      	LD	B,A
+  06FC'                  C      SY.DEL1:
+  06FC'   36 20          C      	LD	M,SD.SPACE
+  06FE'   23             C      	INC	HL
+  06FF'   10 FB          C      	DJNZ	SY.DEL1
+  0701'   C9             C      	RET
+  0702'                  C      SY.AEIN:
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-14
+
+
+  0702'   CD 0580'       C      	CALL	SY.CPOS	;<A> --> Cursorposition
+  0705'   71             C      	LD	M,C
+  0706'   CD 05E0'       C      	CALL	SY.ISPOS
+  0709'   DC 05C1'       C      	CALL	C,SY.DSPOS
+  070C'   C9             C      	RET
+  070D'                  C      SY.NL:
+  070D'   CD 057B'       C      	CALL	SY.ZLPOS	;Startroutine (NEWLINE Taste)
+  0710'   7E             C      	LD	A,M
+  0711'   FE 3A          C      	CP	':'
+  0713'   C0             C      	RET	NZ
+  0714'   CD 0745'       C      	CALL	SY.SZEI
+  0717'   C8             C      	RET	Z
+  0718'   EB             C      	EX	DE,HL
+  0719'                  C      SY.SUCHE:
+  0719'   21 0000        C      	LD	HL,0
+  071C'   E5             C      	PUSH	HL
+  071D'   E5             C      	PUSH	HL
+  071E'                  C      SY.SUCH2:
+  071E'   C1             C      	POP	BC
+  071F'   E1             C      	POP	HL
+  0720'                  C      SY.SUCH1:
+  0720'   7D             C      	LD	A,L
+  0721'   ED A1          C      	CPI
+  0723'   E2 0006        C      	JP	PO,SD.SYSTA+6
+  0726'   20 F8          C      	JR	NZ,SY.SUCH1
+  0728'   7C             C      	LD	A,H
+  0729'   BE             C      	CP	M
+  072A'   20 F4          C      	JR	NZ,SY.SUCH1
+  072C'   E5             C      	PUSH	HL
+  072D'   C5             C      	PUSH	BC
+  072E'   06 04          C      	LD	B,4	;Programmanfang suchen
+  0730'   23             C      	INC	HL
+  0731'   CD 073A'       C      	CALL	SY.VERGL
+  0734'   20 E8          C      	JR	NZ,SY.SUCH2
+  0736'   C1             C      	POP	BC
+  0737'   D1             C      	POP	DE
+  0738'   FB             C      	EI
+  0739'   E9             C      	JP	(HL)
+  073A'                  C      SY.VERGL:
+  073A'   D5             C      	PUSH	DE	;DE = gegebene  ZK
+  073B'                  C      SY.VERG1:
+  073B'   1A             C      	LD	A,(DE)	;B  = Laenge
+  073C'   BE             C      	CP	M	;HL = vermutete ZK
+  073D'   20 04          C      	JR	NZ,SY.VERG2
+  073F'   13             C      	INC	DE
+  0740'   23             C      	INC	HL
+  0741'   10 F8          C      	DJNZ	SY.VERG1
+  0743'                  C      SY.VERG2:
+  0743'   D1             C      	POP	DE	;Z=1: Kette gefunden B=0
+  0744'   C9             C      	RET		;HL=Kette+1  DE:=DE
+  0745'                  C      SY.SZEI:
+  0745'   3A 0DBF'       C      	LD	A,(SM.SPANZ)	;Zeichen suchen
+  0748'                  C      SY.SZEI1:
+  0748'   47             C      	LD	B,A
+  0749'   05             C      	DEC	B
+  074A'                  C      SY.SZEI3:
+  074A'   23             C      	INC	HL
+  074B'                  C      SY.SZEI4:
+  074B'   7E             C      	LD	A,M
+  074C'   FE 20          C      	CP	SD.SPACE
+  074E'   C0             C      	RET	NZ
+  074F'                  C      SY.SZEI2:
+  074F'   10 F9          C      	DJNZ	SY.SZEI3
+  0751'   C9             C      	RET		;Z=0 falls kein Zeichen
+  0752'                  C      SY.SZAHL:
+  0752'   E5             C      	PUSH	HL
+  0753'   2A 0DB5'       C      	LD	HL,(SM.SMIN)
+  0756'                  C      SY.SZA1:
+  0756'   3A 0DB7'       C      	LD	A,(SM.SMAX)
+  0759'   18 07          C      	JR	SY.ZAHL
+  075B'                  C      SY.ZZAHL:
+  075B'   E5             C      	PUSH	HL
+  075C'   2A 0DB4'       C      	LD	HL,(SM.ZMIN)
+  075F'                  C      SY.ZZA1:
+  075F'   3A 0DB6'       C      	LD	A,(SM.ZMAX)
+  0762'                  C      SY.ZAHL:
+  0762'   95             C      	SUB	L
+  0763'   3C             C      	INC	A
+  0764'   E1             C      	POP	HL
+  0765'   C9             C      	RET		;A=Zeilen- bzw. Spaltenanzahl
+                         C      
+                         C      			;Stand: 28.Januar 85 - K EAW/wfvm..MSH
+                         C      
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-15
+
+
+                         C      ;	END
+                         C      	INCLUDE S101.ASM
+                         C      	TITLE	'Systemroutinen  DEG 2000    Version 1.2'
+                         C      	PAGE
+'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-16
+
+
+                         C      
+                         C      ;	PN	S101
+                         C      ;****************************************************************
+                         C      ;*                  Systemroutinen  DEG2000    Version 1.2      *
+                         C      ;*  Version         --------------------------------------------*
+                         C      ;*                  Programmierer: M. Herbote  K EAW  ZFT (WFT) *
+                         C      ;*  V 1 . 2         --------------------------------------------*
+                         C      ;*                  Stand        : 30.Januar 1985               *
+                         C      ;****************************************************************
+  0766'   0766'          C      	DW	$
+  0768'   42 49 4C 44    C      	DB	'BILD'
+                         C      
+  076C'   11 3327        C      	LD	DE,SD.BWSA + 10*80 + 7	;327H
+  076F'   CD 6FDC        C      	CALL	UC.CVDB
+  0772'   D8             C      	RET	C
+  0773'   AF             C      	XOR	A
+  0774'   BC             C      	CP	H
+  0775'   C0             C      	RET	NZ
+  0776'   3E 10          C      	LD	A,16
+  0778'   BD             C      	CP	L
+  0779'   D8             C      	RET	C
+  077A'   45             C      	LD	B,L
+  077B'   C5             C      	PUSH	BC
+  077C'   21 8830        C      	LD	HL,SD.TPA
+  077F'   E5             C      	PUSH	HL
+  0780'   11 8831        C      	LD	DE,SD.TPA+1
+  0783'   36 20          C      	LD	(HL),20H
+  0785'   01 73CE        C      	LD	BC,SD.TPE-SD.TPA-1
+  0788'   ED B0          C      	LDIR
+  078A'   E1             C      	POP	HL
+  078B'   C1             C      	POP	BC
+  078C'                  C      S1.BI1:
+  078C'   C5             C      	PUSH	BC
+  078D'   CD 07AC'       C      	CALL	S1.STR
+  0790'   06 14          C      	LD	B,20
+  0792'   11 004E        C      	LD	DE,78
+  0795'                  C      S1.BI2:
+  0795'   36 7C          C      	LD	(HL),7CH
+  0797'   19             C      	ADD	HL,DE
+  0798'   36 7C          C      	LD	(HL),7CH
+  079A'   23             C      	INC	HL
+  079B'   36 1E          C      	LD	(HL),1EH
+  079D'   23             C      	INC	HL
+  079E'   10 F5          C      	DJNZ	S1.BI2
+  07A0'   CD 07AC'       C      	CALL	S1.STR
+  07A3'   C1             C      	POP	BC
+  07A4'   10 E6          C      	DJNZ	S1.BI1
+  07A6'   22 0DC4'       C      	LD	(SM.END),HL
+  07A9'   C3 000B'       C      	JP	SY.SYSTB
+                         C      
+  07AC'                  C      S1.STR:
+  07AC'   E5             C      	PUSH	HL
+  07AD'   D1             C      	POP	DE
+  07AE'   13             C      	INC	DE
+  07AF'   01 004F        C      	LD	BC,79
+  07B2'   36 2D          C      	LD	(HL),2DH
+  07B4'   ED B0          C      	LDIR
+  07B6'   36 1E          C      	LD	(HL),1EH
+  07B8'   23             C      	INC	HL
+  07B9'   C9             C      	RET
+                         C      
+                         C      	PAGE
+'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-17
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*                  Hardcopy-Tastenfunktion Version 1.1         *
+                         C      ;****************************************************************
+  07BA'                  C      S1.COPG:
+  07BA'   F5             C      	PUSH	AF
+  07BB'   C5             C      	PUSH	BC
+  07BC'   E5             C      	PUSH	HL
+  07BD'   06 16          C      	LD	B,22	;Anzahl der Zeilen
+  07BF'   0E 50          C      	LD	C,80	;Anzahl der Spalten
+  07C1'   21 3000        C      	LD	HL,SD.BWSA	;Bildschirmanfang
+  07C4'   CD 07D3'       C      	CALL	S1.HCP
+  07C7'   3E 1E          C      	LD	A,1EH
+  07C9'   CD 486B'       C      	CALL	P1.PRINT
+  07CC'   CD 486B'       C      	CALL	P1.PRINT
+  07CF'   E1             C      	POP	HL
+  07D0'   C1             C      	POP	BC
+  07D1'   F1             C      	POP	AF
+  07D2'   C9             C      	RET
+                         C      
+  07D3'                  C      S1.HCP:
+  07D3'   F5             C      	PUSH	AF
+  07D4'   C5             C      	PUSH	BC
+  07D5'   D5             C      	PUSH	DE
+  07D6'   E5             C      	PUSH	HL
+  07D7'   11 0050        C      	LD	DE,80
+  07DA'                  C      S1.M1:
+  07DA'   C5             C      	PUSH	BC
+  07DB'   E5             C      	PUSH	HL
+  07DC'   41             C      	LD	B,C	;Spaltenanzahl
+                         C      
+  07DD'                  C      S1.M2:
+  07DD'   7E             C      	LD	A,(HL)
+  07DE'   CD 07F6'       C      	CALL	S1.KODE
+  07E1'   CD 486B'       C      	CALL	P1.PRINT
+  07E4'   23             C      	INC	HL
+  07E5'   10 F6          C      	DJNZ	S1.M2
+                         C      
+  07E7'   3E 1E          C      	LD	A,1EH
+  07E9'   CD 486B'       C      	CALL	P1.PRINT
+  07EC'   E1             C      	POP	HL
+  07ED'   19             C      	ADD	HL,DE
+  07EE'   C1             C      	POP	BC
+  07EF'   10 E9          C      	DJNZ	S1.M1
+                         C      
+  07F1'   E1             C      	POP	HL
+  07F2'   D1             C      	POP	DE
+  07F3'   C1             C      	POP	BC
+  07F4'   F1             C      	POP	AF
+  07F5'   C9             C      	RET
+                         C      
+  07F6'                  C      S1.KODE:
+  07F6'   CB BF          C      	RES	7,A
+  07F8'   FE 7F          C      	CP	7FH
+  07FA'   20 02          C      	JR	NZ,S1.KODE1
+  07FC'   3E 2E          C      	LD	A,2EH
+  07FE'                  C      S1.KODE1:
+  07FE'   FE 20          C      	CP	20H
+  0800'   D0             C      	RET	NC
+  0801'   3E 20          C      	LD	A,20H
+  0803'   C9             C      	RET
+                         C      
+  0804'                  C      	DEFS	8,0
+                         C      
+                         C      	PAGE
+'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-18
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*                  PF-Tastendefinition 2.ROM-Ber. fuer  EDIT   *
+                         C      ;****************************************************************
+  080C'                  C      S1.PFO1:
+  080C'   21 5073'       C      	LD	HL,PF.O2END	;6FD5H
+  080F'   22 0E15'       C      	LD	(SM.PTSE),HL
+  0812'   21 4C8F'       C      	LD	HL,PF.O2ANF	;6D20H
+  0815'   22 0E17'       C      	LD	(SM.PTSA),HL
+  0818'   C9             C      	RET
+                         C      
+  0819'                  C      	DEFS	3,0
+                         C      
+                         C      ;****************************************************************
+                         C      	ORG	00800H
+                         C      			;
+  0800'                  C      S1.STANL:
+  0800'   CD 0814'       C      	CALL	S1.SPOSN
+  0803'   CD 0580'       C      	CALL	SY.CPOS
+  0806'   CD 06FB'       C      	CALL	SY.DEL2	;RESTZEILE LOESCHEN
+  0809'   CD 0576'       C      	CALL	SY.ZLPOF
+  080C'   CD 0752'       C      	CALL	SY.SZAHL
+  080F'   47             C      	LD	B,A
+  0810'   CD 074B'       C      	CALL	SY.SZEI4	;ZEICHEN SUCHEN
+  0813'   C9             C      	RET		;A=ZEICH. SONST Z=0
+                         C      
+                         C      ;ZEILENLAENGE HINTER EINSCHLIESSLICH CPOS
+                         C      
+  0814'                  C      S1.SPOSN:
+  0814'   C5             C      	PUSH	BC
+  0815'   ED 4B 0DB3'    C      	LD	BC,(SM.SPOS)
+  0819'   3A 0DB7'       C      	LD	A,(SM.SMAX)
+  081C'   91             C      	SUB	C
+  081D'   C1             C      	POP	BC
+  081E'   C9             C      	RET		;A=SPALTENZAHL DER RESTZEILE
+                         C      
+                         C      ;FORMATZEILENENDE
+                         C      
+  081F'                  C      S1.ZENDF:
+  081F'   CD 057B'       C      	CALL	SY.ZLPOS
+  0822'                  C      S1.ENDF2:
+  0822'   ED 5B 0DB7'    C      	LD	DE,(SM.SMAX)
+  0826'                  C      S1.ENDF1:
+  0826'   16 00          C      	LD	D,0
+  0828'   1D             C      	DEC	E
+  0829'   19             C      	ADD	HL,DE	;HL=ADR.ZEILENENDE
+  082A'   C9             C      	RET
+                         C      
+                         C      ;AUSTAUSCH FORMATMERKER <--> ZWEITMERKER
+                         C      
+  082B'                  C      S1.FOEX:
+  082B'   21 0DB2'       C      	LD	HL,SM.ZPOS
+  082E'   11 0DB8'       C      	LD	DE,SM.ZPOS2
+  0831'   06 06          C      	LD	B,6
+  0833'                  C      S1.FOEX1:
+  0833'   4E             C      	LD	C,M
+  0834'   1A             C      	LD	A,(DE)
+  0835'   77             C      	LD	M,A
+  0836'   79             C      	LD	A,C
+  0837'   12             C      	LD	(DE),A
+  0838'   23             C      	INC	HL
+  0839'   13             C      	INC	DE
+  083A'   10 F7          C      	DJNZ	S1.FOEX1
+  083C'   C9             C      	RET
+                         C      
+                         C      ;KONVERTIERUNG HEXA.WERT IN HL --> ISO.-DEZ.ZAHL AB (DE)
+                         C      
+  083D'                  C      S1.HDI:
+  083D'   01 2710        C      	LD	BC,10000
+  0840'   CD 085B'       C      	CALL	S1.HDI1
+  0843'   01 03E8        C      	LD	BC,1000
+  0846'   CD 085B'       C      	CALL	S1.HDI1
+  0849'   01 0064        C      	LD	BC,100
+  084C'   CD 085B'       C      	CALL	S1.HDI1
+  084F'   01 000A        C      	LD	BC,10
+  0852'   CD 085B'       C      	CALL	S1.HDI1
+  0855'   7D             C      	LD	A,L
+  0856'   F6 30          C      	OR	30H
+  0858'   13             C      	INC	DE
+  0859'   12             C      	LD	(DE),A
+  085A'   C9             C      	RET
+  085B'                  C      S1.HDI1:
+'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-19
+
+
+  085B'   CD 086E'       C      	CALL	S1.DIV
+  085E'   F6 30          C      	OR	30H
+  0860'   FE 30          C      	CP	30H
+  0862'   20 07          C      	JR	NZ,S1.HDI3
+  0864'   47             C      	LD	B,A
+  0865'   1A             C      	LD	A,(DE)
+  0866'   FE 20          C      	CP	SD.SPACE
+  0868'   28 01          C      	JR	Z,S1.HDI3
+  086A'   78             C      	LD	A,B
+  086B'                  C      S1.HDI3:
+  086B'   13             C      	INC	DE
+  086C'   12             C      	LD	(DE),A
+  086D'   C9             C      	RET
+                         C      
+                         C      ;DIVISION HL/BC
+                         C      
+  086E'                  C      S1.DIV:
+  086E'   AF             C      	XOR	A
+  086F'                  C      S1.DIV1:
+  086F'   ED 42          C      	SBC	HL,BC
+  0871'   3C             C      	INC	A
+  0872'   30 FB          C      	JR	NC,S1.DIV1
+  0874'   09             C      	ADD	HL,BC
+  0875'   3D             C      	DEC	A	;A:=HL/BC  HL:=REST
+  0876'   C9             C      	RET
+                         C      
+                         C      ;KONVERTIERUNG ISO.-DEZ.-ZAHL AB (DE) --> HEXA.-WERT IN HL
+                         C      ;ZAHL <10000H
+                         C      
+  0877'                  C      S1.IDH:
+  0877'   0E 06          C      	LD	C,6
+  0879'   CD 0896'       C      	CALL	S1.IDH1
+  087C'   D8             C      	RET	C	;CY=1 FEHLER: KEINE ZAHL AB (DE)
+  087D'   26 00          C      	LD	H,0
+  087F'                  C      S1.IDH2:
+  087F'   6F             C      	LD	L,A
+  0880'   13             C      	INC	DE
+  0881'   0D             C      	DEC	C
+  0882'   C8             C      	RET	Z		;Z=1 FEHLER: STELLENZAHL >5
+  0883'                  C      S1.IDH3:
+  0883'   CD 0896'       C      	CALL	S1.IDH1
+  0886'   38 0A          C      	JR	C,S1.IDHE	;CY=1 WENN ZAHL ZUENDE
+  0888'   CD 08A5'       C      	CALL	S1.MUL10
+  088B'   38 03          C      	JR	C,S1.IDHF	;CY=1 WENN ZAHL >FFFFH
+  088D'   C3 098F'       C      	JP	S1.IDH41
+  0890'                  C      S1.IDHF:
+  0890'   AF             C      	XOR	A
+  0891'   C9             C      	RET		;Z=1 FEHLER: ZAHL >FFFFH
+  0892'                  C      S1.IDHE:
+  0892'   3E 01          C      	LD	A,1
+  0894'   B7             C      	OR	A
+  0895'   C9             C      	RET		;Z=CY=0 KEIN FEHLER
+                         C      
+  0896'                  C      S1.IDH1:
+  0896'   1A             C      	LD	A,(DE)
+  0897'   CD 089E'       C      	CALL	S1.SIEBD
+  089A'   D8             C      	RET	C
+  089B'   E6 0F          C      	AND	0FH
+  089D'   C9             C      	RET
+                         C      
+                         C      ;TEST: ISOZEICHEN = ZIFFER ?
+                         C      
+  089E'                  C      S1.SIEBD:
+  089E'   FE 30          C      	CP	'0'
+  08A0'   D8             C      	RET	C
+  08A1'   FE 3A          C      	CP	3AH
+  08A3'   3F             C      	CCF
+  08A4'   C9             C      	RET		;CY=1 WENN A KEINE DEZ. ZIFFER
+                         C      
+                         C      ;MULTIPLIKATION HL*10
+                         C      
+  08A5'                  C      S1.MUL10:
+  08A5'   D5             C      	PUSH	DE
+  08A6'   E5             C      	PUSH	HL
+  08A7'   D1             C      	POP	DE
+  08A8'   29             C      	ADD	HL,HL
+  08A9'   29             C      	ADD	HL,HL
+  08AA'   19             C      	ADD	HL,DE
+  08AB'   29             C      	ADD	HL,HL
+  08AC'   D1             C      	POP	DE
+  08AD'   C9             C      	RET		;HL:=HL*10
+                         C      
+                         C      ;MELDUNGEN
+'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-20
+
+
+                         C      ;DE=AUSZUGEBENDE ZEICHENKETTE, HL=DEZIMAL AUSZUGEBENDE HEXA-
+                         C      ;ZAHL, A=ZEILENNUMMER, BC=DISTANZ VON ZEILENANFANG (AUCH
+                         C      ;NEGATIV ZUGELASSEN
+                         C      
+  08AE'                  C      S1.MELDN:
+  08AE'   3D             C      	DEC	A	;A=ZEILENNUMMER
+  08AF'                  C      S1.MELDE:
+  08AF'   E5             C      	PUSH	HL	;A=ZEILENNUMMER-1
+  08B0'   21 3000        C      	LD	HL,SD.BWSA
+  08B3'   09             C      	ADD	HL,BC
+  08B4'   CD 05A8'       C      	CALL	SY.AMSZ
+  08B7'   EB             C      	EX	DE,HL	;DE=BWSA+BC+ A*(SPANZ)
+  08B8'   CD 06EB'       C      	CALL	SY.MELD	;HL=ZEICHENKETTE
+  08BB'   E1             C      	POP	HL	;HL=ZAHL
+  08BC'   C3 083D'       C      	JP	S1.HDI
+                         C      
+                         C      ;FEHLERMELDUNGEN
+                         C      
+  08BF'                  C      S1.ERROR:
+  08BF'   CD 0608'       C      	CALL	SY.LCPOS
+  08C2'                  C      S1.ERRO:
+  08C2'   26 00          C      	LD	H,0
+  08C4'   69             C      	LD	L,C
+  08C5'   3A 0DB2'       C      	LD	A,(SM.ZPOS)
+  08C8'   3C             C      	INC	A
+  08C9'   01 FFF5        C      	LD	BC,-11
+  08CC'   11 08D1'       C      	LD	DE,S1.ZS11
+  08CF'   18 DE          C      	JR	S1.MELDE
+                         C      
+                         C      ;ZEICHENKETTEN FUER MELDUNGEN
+                         C      
+  08D1'                  C      S1.ZS11:
+  08D1'   05             C      	DB	LOW(S1.LZS11)
+  08D2'   45 52 52 4F    C      	DB	'ERROR'
+  08D6'   52             C      
+  0005                   C      S1.LZS11	EQU	$-S1.ZS11-1
+  08D7'                  C      S1.ZS12:
+  08D7'   05             C      	DB	LOW(S1.LZS12)
+  08D8'   5A 45 49 4C    C      	DB	'ZEILE'
+  08DC'   45             C      
+  0005                   C      S1.LZS12	EQU	$-S1.ZS12-1
+  08DD'                  C      S1.ZS13:
+  08DD'   0E             C      	DB	LOW(S1.LZS13)
+  08DE'   4D 45 4D 4F    C      	DB	'MEMORY RESERVE'
+  08E2'   52 59 20 52    C      
+  08E6'   45 53 45 52    C      
+  08EA'   56 45          C      
+  000E                   C      S1.LZS13	EQU	$-S1.ZS13-1
+                         C      
+                         C      ;ZEICHENKETTE LAENGE ERMITTELN
+                         C      
+  08EC'                  C      S1.KETTE:
+  08EC'   48             C      	LD	C,B	;B=LAENGE SUCHBEREICH
+  08ED'   18 04          C      	JR	S1.KET3
+  08EF'                  C      S1.KET1:
+  08EF'   23             C      	INC	HL
+  08F0'   BE             C      	CP	M
+  08F1'   28 04          C      	JR	Z,S1.KET2
+  08F3'                  C      S1.KET3:
+  08F3'   10 FA          C      	DJNZ	S1.KET1
+  08F5'   37             C      	SCF
+  08F6'   C9             C      	RET		;CY=1=FEHLER
+  08F7'                  C      S1.KET2:
+  08F7'   79             C      	LD	A,C
+  08F8'   3D             C      	DEC	A
+  08F9'   90             C      	SUB	B	;A=LAENGE ZEICHENKETTE
+  08FA'   C9             C      	RET
+                         C      
+                         C      ;ZEICHEN SUCHEN  (DE),(DE+1),...=SUCHBEREICH, B=LAENGE
+                         C      
+  08FB'                  C      S1.SUZEI:
+  08FB'   EB             C      	EX	DE,HL
+  08FC'   CD 074F'       C      	CALL	SY.SZEI2
+  08FF'   EB             C      	EX	DE,HL	;A=ZEICHEN,DE=ADR.
+  0900'   C9             C      	RET		;Z=1 WENN KEIN ZEICHEN
+                         C      
+                         C      ;ZAHL SUCHEN (DE),(DE+1),...=SUCHBEREICH, B=LAENGE
+                         C      
+  0901'                  C      S1.SUZA:
+  0901'   CD 08FB'       C      	CALL	S1.SUZEI
+  0904'   C8             C      	RET	Z		;Z=1: KEIN ZEICHEN
+  0905'                  C      S1.SUZA1:
+  0905'   CD 0877'       C      	CALL	S1.IDH
+'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-21
+
+
+  0908'   D8             C      	RET	C	;Z=0 CY=1: FALSCHE ZAHL
+  0909'   C0             C      	RET	NZ		;CY=Z=0: HL=ZAHL
+  090A'                  C      S1.SUZA3:
+  090A'   3E 01          C      	LD	A,1
+  090C'   B7             C      	OR	A
+  090D'   37             C      	SCF
+  090E'   C9             C      	RET		;Z=0 CY=1: FALSCHE ZAHL
+                         C      
+                         C      ;ZAHL LESEN U. PRUEFEN: A'< ZAHL =< (IX+0)
+                         C      ;FALLS BEDINGUNG ERFUELLT: L=ZAHL Z=CY=0
+                         C      ;FALLS KEINE ZEICHEN: Z=1
+                         C      ;FALLS FALSCHE ZAHL: CY=1
+                         C      
+  090F'                  C      S1.LT1Z:
+  090F'   CD 0901'       C      	CALL	S1.SUZA
+  0912'   D8             C      	RET	C
+  0913'   C8             C      	RET	Z
+  0914'   7C             C      	LD	A,H
+  0915'   B7             C      	OR	A
+  0916'   20 F2          C      	JR	NZ,S1.SUZA3
+  0918'   DD 7E 00       C      	LD	A,(IX+0)
+  091B'   BD             C      	CP	L
+  091C'   D8             C      	RET	C
+  091D'   08             C      	EX	AF,AF'
+  091E'   BD             C      	CP	L
+  091F'   3F             C      	CCF
+  0920'   C9             C      	RET
+                         C      
+  0921'                  C      S1.MX:
+  0921'   DD E9          C      	JP	(IX)
+                         C      
+  0923'                  C      S1.RNR:
+  0923'   E5             C      	PUSH	HL	;RECHTSROTIEREN VOR (HL)
+  0924'   D1             C      	POP	DE	;BC=ANZAHL
+  0925'   1A             C      	LD	A,(DE)
+  0926'   2B             C      	DEC	HL
+  0927'   ED B8          C      	LDDR
+  0929'   12             C      	LD	(DE),A
+  092A'   C9             C      	RET
+                         C      
+  092B'                  C      S1.RNL:
+  092B'   E5             C      	PUSH	HL	;LINKSROTIEREN HINTER (HL)
+  092C'   D1             C      	POP	DE	;BC=ANZAHL
+  092D'   1A             C      	LD	A,(DE)
+  092E'   23             C      	INC	HL
+  092F'   ED B0          C      	LDIR
+  0931'   12             C      	LD	(DE),A
+  0932'   C9             C      	RET
+                         C      
+                         C      ;UMSCHALTEN AUF KLEINBUCHSTABEN
+                         C      
+  0933'                  C      S1.UMS:
+  0933'   21 0DA5'       C      	LD	HL,SM.UMERK
+  0936'   7E             C      	LD	A,M
+  0937'   EE 20          C      	XOR	20H
+  0939'   77             C      	LD	M,A
+  093A'   C9             C      	RET
+                         C      
+                         C      ;INPTR --UNTERPROGRAMM BESTIMMT PARAMETER NACH BEFEHLSNAME
+                         C      ;D=PARAMETER BINAER
+                         C      ;SM.PARAM -- SM.PARAM + 3 = PARAMETER HEXA
+                         C      ;
+  093B'                  C      S1.INPTR:
+  093B'   21 3327        C      	LD	HL,SD.BWSA + 10*80 + 7	;327H
+  093E'   01 0004        C      	LD	BC,4
+  0941'   11 0E20'       C      	LD	DE,SM.PARAM
+  0944'   ED B0          C      	LDIR
+  0946'   CD 0644'       C      	CALL	SY.BILO
+  0949'   21 0E20'       C      	LD	HL,SM.PARAM
+  094C'   CD 0951'       C      	CALL	S1.HBKON
+  094F'   57             C      	LD	D,A
+  0950'   C9             C      	RET
+                         C      ;
+                         C      ;HBKON -- HEXADEZIMAL BINAER KONVERTIERUNG
+                         C      ;         HL = ANFANGSADRESSE DES HEXAZEICHEN
+                         C      ;         A = BINAERZEICHEN
+                         C      ;
+  0951'                  C      S1.HBKON:
+  0951'   C5             C      	PUSH	BC
+  0952'   7E             C      	LD	A,(HL)	;1.ZEICHEN
+  0953'   06 00          C      	LD	B,0
+  0955'   CD 0968'       C      	CALL	S1.KON1
+  0958'   CB 10          C      	RL	B
+'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-22
+
+
+  095A'   CB 10          C      	RL	B
+  095C'   CB 10          C      	RL	B
+  095E'   CB 10          C      	RL	B
+  0960'   23             C      	INC	HL
+  0961'   7E             C      	LD	A,(HL)
+  0962'   CD 0968'       C      	CALL	S1.KON1
+  0965'   78             C      	LD	A,B
+  0966'   C1             C      	POP	BC
+  0967'   C9             C      	RET
+                         C      ;
+  0968'                  C      S1.KON1:
+  0968'   D6 30          C      	SUB	30H
+  096A'   FE 0A          C      	CP	10	;CHARACTER?
+  096C'   38 04          C      	JR	C,S1.ZAHL
+  096E'   E6 0F          C      	AND	0FH	;NO
+  0970'   C6 09          C      	ADD	A,9
+  0972'                  C      S1.ZAHL:
+  0972'   B0             C      	OR	B
+  0973'   47             C      	LD	B,A
+  0974'   C9             C      	RET
+                         C      ;
+                         C      ;BHKON -- KONVERTIERE 8 BIT VON REG. A IN ASCII HEXA AUF (HL)
+                         C      ;
+  0975'                  C      S1.BHKON:
+  0975'   F5             C      	PUSH	AF	;RETTE A
+  0976'   1F             C      	RRA
+  0977'   1F             C      	RRA
+  0978'   1F             C      	RRA
+  0979'   1F             C      	RRA
+  097A'   CD 0983'       C      	CALL	S1.KON2	;KONVERTIERE HIGH ORDER 4 BITS
+  097D'   F1             C      	POP	AF
+  097E'   23             C      	INC	HL
+  097F'   CD 0983'       C      	CALL	S1.KON2	;KONVERTIERE LOW ORDER 4 BITS
+  0982'   C9             C      	RET
+                         C      ;
+  0983'                  C      S1.KON2:
+  0983'   E6 0F          C      	AND	0FH	;MASKE FUER LOW ORDER 4 BITS
+  0985'   FE 0A          C      	CP	10
+  0987'   38 02          C      	JR	C,S1.HB10
+  0989'   C6 07          C      	ADD	A,7
+  098B'                  C      S1.HB10:
+  098B'   C6 30          C      	ADD	A,30H
+  098D'   77             C      	LD	(HL),A
+  098E'   C9             C      	RET
+                         C      ;
+  098F'                  C      S1.IDH41:
+  098F'   85             C      	ADD	A,L
+  0990'   D2 087F'       C      	JP	NC,S1.IDH2
+  0993'   24             C      	INC	H
+  0994'   C3 087F'       C      	JP	S1.IDH2
+                         C      
+                         C      	PAGE
+'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-23
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*                  E X E C --- Starten eines Programmes        *
+                         C      ;****************************************************************
+  0997'   0997'          C      	DW	$
+  0999'   45 58 45 43    C      	DB	'EXEC'
+  099D'   CD 093B'       C      	CALL	S1.INPTR
+  09A0'   23             C      	INC	HL
+  09A1'   CD 0951'       C      	CALL	S1.HBKON
+  09A4'   5F             C      	LD	E,A
+  09A5'   31 0D00        C      	LD	SP,SM.STACK
+  09A8'   01 000B'       C      	LD	BC,SY.SYSTB
+  09AB'   C5             C      	PUSH	BC
+  09AC'   D5             C      	PUSH	DE
+  09AD'   C9             C      	RET
+                         C      ;****************************************************************
+                         C      
+  09AE'   09AE'          C      	DW	$
+  09B0'   44 41 54 45    C      	DB	'DATE'
+  09B4'   11 3327        C      	LD	DE,SD.BWSA + 10*80 + 7	;327H
+  09B7'   1A             C      	LD	A,(DE)
+  09B8'   FE 20          C      	CP	20H
+  09BA'   20 0A          C      	JR	NZ,S1.DA1
+                         C      ;			;Kein Parameter, dann akt. Datum holen
+  09BC'   21 0A3C'       C      	LD	HL,S1.STAB	;Date location
+  09BF'   01 03FE        C      	LD	BC,003FEH	;actual Date ermitteln
+  09C2'   ED B2          C      	INIR
+  09C4'   18 09          C      	JR	S1.DA2
+                         C      ;
+  09C6'                  C      S1.DA1:
+  09C6'   21 0FF0        C      	LD	HL,SM.DATUM
+  09C9'   E5             C      	PUSH	HL
+  09CA'   CD 09D5'       C      	CALL	S1.EING
+  09CD'   E1             C      	POP	HL
+  09CE'   D8             C      	RET	C
+                         C      ;
+  09CF'                  C      S1.DA2:
+  09CF'   CD 09F8'       C      	CALL	S1.ANZG
+  09D2'   C3 000B'       C      	JP	SY.SYSTB
+                         C      ;
+  09D5'                  C      S1.EING:
+  09D5'   06 03          C      	LD	B,3
+  09D7'   11 3327        C      	LD	DE,SD.BWSA + 10*80 + 7	;327H
+  09DA'   1A             C      	LD	A,(DE)
+  09DB'   FE 20          C      	CP	20H
+  09DD'   C8             C      	RET	Z
+  09DE'                  C      S1.EIN1:
+  09DE'   E5             C      	PUSH	HL
+  09DF'   CD 6FDC        C      	CALL	UC.CVDB
+  09E2'   38 11          C      	JR	C,S1.RET
+  09E4'   AF             C      	XOR	A
+  09E5'   BC             C      	CP	H
+  09E6'   20 0D          C      	JR	NZ,S1.RET
+  09E8'   7D             C      	LD	A,L
+  09E9'   FE 64          C      	CP	100
+  09EB'   30 08          C      	JR	NC,S1.RET
+  09ED'   E1             C      	POP	HL
+  09EE'   77             C      	LD	(HL),A
+  09EF'   23             C      	INC	HL
+  09F0'   13             C      	INC	DE
+  09F1'   10 EB          C      	DJNZ	S1.EIN1
+  09F3'   AF             C      	XOR	A
+  09F4'   C9             C      	RET
+  09F5'                  C      S1.RET:
+  09F5'   E1             C      	POP	HL
+  09F6'   37             C      	SCF
+  09F7'   C9             C      	RET
+                         C      
+  09F8'                  C      S1.ANZG:
+  09F8'   E5             C      	PUSH	HL
+  09F9'   CD 0A19'       C      	CALL	S1.TEST
+  09FC'   DC 0A30'       C      	CALL	C,S1.STAND
+  09FF'   E1             C      	POP	HL
+  0A00'   11 30B8        C      	LD	DE,SD.BWSA + 2*80 + 24 ;0B8H
+  0A03'   06 03          C      	LD	B,3
+  0A05'                  C      S1.ANZ1:
+  0A05'   E5             C      	PUSH	HL
+  0A06'   6E             C      	LD	L,(HL)
+  0A07'   26 00          C      	LD	H,0
+  0A09'   CD 6F97        C      	CALL	UC.CVBD2
+  0A0C'   3E 2E          C      	LD	A,2EH
+  0A0E'   12             C      	LD	(DE),A
+'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-24
+
+
+  0A0F'   13             C      	INC	DE
+  0A10'   E1             C      	POP	HL
+  0A11'   23             C      	INC	HL
+  0A12'   10 F1          C      	DJNZ	S1.ANZ1
+  0A14'   1B             C      	DEC	DE
+  0A15'   3E 20          C      	LD	A,20H
+  0A17'   12             C      	LD	(DE),A
+  0A18'   C9             C      	RET
+                         C      
+  0A19'                  C      S1.TEST:
+  0A19'   AF             C      	XOR	A
+  0A1A'   BE             C      	CP	(HL)
+  0A1B'   28 11          C      	JR	Z,S1.TE1
+  0A1D'   3E 1F          C      	LD	A,31
+  0A1F'   BE             C      	CP	(HL)
+  0A20'   38 0C          C      	JR	C,S1.TE1
+  0A22'   23             C      	INC	HL
+  0A23'   AF             C      	XOR	A
+  0A24'   BE             C      	CP	(HL)
+  0A25'   28 07          C      	JR	Z,S1.TE1
+  0A27'   3E 0C          C      	LD	A,12
+  0A29'   BE             C      	CP	(HL)
+  0A2A'   38 02          C      	JR	C,S1.TE1
+  0A2C'   AF             C      	XOR	A
+  0A2D'   C9             C      	RET
+  0A2E'                  C      S1.TE1:
+  0A2E'   37             C      	SCF
+  0A2F'   C9             C      	RET
+                         C      
+  0A30'                  C      S1.STAND:
+  0A30'   21 0A3C'       C      	LD	HL,S1.STAB
+  0A33'   11 0FF0        C      	LD	DE,SM.DATUM
+  0A36'   01 0003        C      	LD	BC,3
+  0A39'   ED B0          C      	LDIR
+  0A3B'   C9             C      	RET
+                         C      
+  0A3C'                  C      S1.STAB:
+  0A3C'   0F             C      	DB	15
+  0A3D'   02             C      	DB	2
+  0A3E'   55             C      	DB	85
+                         C      
+                         C      
+                         C      	PAGE
+'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-25
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*                  Editorkommandos  'EDN'  und  'ED'           *
+                         C      ;****************************************************************
+  0A3F'                  C      S1.EDN:
+  0A3F'   0A3F'          C      	DW	$
+  0A41'   45 44 4E 20    C      	DB	'EDN '
+  0A45'   F3             C      	DI
+  0A46'   AF             C      	XOR	A
+  0A47'   2A 0DC4'       C      	LD	HL,(SM.END)
+  0A4A'   11 8830        C      	LD	DE,SD.TPA
+  0A4D'   ED 52          C      	SBC	HL,DE
+  0A4F'   DA 000B'       C      	JP	C,SY.SYSTB
+                         C      
+  0A52'   3E 1C          C      	LD	A,01CH
+  0A54'   32 0E26'       C      	LD	(SM.NUTZK),A
+                         C      
+  0A57'   D5             C      	PUSH	DE
+  0A58'   2A 0FF7        C      	LD	HL,(SM.PTS)
+  0A5B'   01 03FF        C      	LD	BC,03FFH	;0400H loescht sonst 0000H ein Byte
+  0A5E'   E5             C      	PUSH	HL
+  0A5F'   C5             C      	PUSH	BC
+  0A60'   ED 5B 0FF7     C      	LD	DE,(SM.PTS)
+  0A64'   13             C      	INC	DE
+  0A65'   36 00          C      	LD	(HL),0
+  0A67'   ED B0          C      	LDIR
+  0A69'   C1             C      	POP	BC
+  0A6A'   D1             C      	POP	DE
+  0A6B'   E1             C      	POP	HL
+                         C      
+  0A6C'                  C      S1.ED1:
+  0A6C'   3E 3A          C      	LD	A,03AH
+  0A6E'   BE             C      	CP	(HL)
+  0A6F'   23             C      	INC	HL
+  0A70'   28 05          C      	JR	Z,S1.ED11
+  0A72'   CD 0AB9'       C      	CALL	S1.ETEST
+  0A75'   18 F5          C      	JR	S1.ED1
+                         C      
+  0A77'                  C      S1.ED11:
+  0A77'   23             C      	INC	HL
+  0A78'   CD 0AB9'       C      	CALL	S1.ETEST
+  0A7B'                  C      S1.ED2:
+  0A7B'   AF             C      	XOR	A
+  0A7C'   BE             C      	CP	(HL)
+  0A7D'   28 0D          C      	JR	Z,S1.ED3
+  0A7F'                  C      S1.ED6:
+  0A7F'   ED A0          C      	LDI
+  0A81'   E2 0A97'       C      	JP	PO,S1.ED4
+  0A84'   CD 0AB9'       C      	CALL	S1.ETEST
+  0A87'   B7             C      	OR	A
+  0A88'   20 E2          C      	JR	NZ,S1.ED1
+  0A8A'   18 EF          C      	JR	S1.ED2
+                         C      
+  0A8C'                  C      S1.ED3:
+  0A8C'   3A 0E26'       C      	LD	A,(SM.NUTZK)
+  0A8F'   3D             C      	DEC	A
+  0A90'   32 0E26'       C      	LD	(SM.NUTZK),A
+  0A93'   20 EA          C      	JR	NZ,S1.ED6
+  0A95'   18 09          C      	JR	S1.ED5
+  0A97'                  C      S1.ED4:
+  0A97'   3A 0E26'       C      	LD	A,(SM.NUTZK)
+  0A9A'   47             C      	LD	B,A
+  0A9B'   AF             C      	XOR	A
+  0A9C'                  C      S1.ED7:
+  0A9C'   1B             C      	DEC	DE
+  0A9D'   12             C      	LD	(DE),A
+  0A9E'   10 FC          C      	DJNZ	S1.ED7
+  0AA0'                  C      S1.ED5:
+  0AA0'   2A 0FF7        C      	LD	HL,(SM.PTS)
+  0AA3'   22 0E17'       C      	LD	(SM.PTSA),HL
+  0AA6'   21 FFFF        C      	LD	HL,0FFFFH
+  0AA9'   22 0E15'       C      	LD	(SM.PTSE),HL
+  0AAC'   C3 101C'       C      	JP	ED.MEL1
+                         C      
+  0AAF'                  C      S1.ED:
+  0AAF'   0AAF'          C      	DW	$
+  0AB1'   45 44 20 20    C      	DB	'ED  '
+  0AB5'   F3             C      	DI
+  0AB6'   C3 101C'       C      	JP	ED.MEL1
+                         C      
+  0AB9'                  C      S1.ETEST:
+  0AB9'   D5             C      	PUSH	DE
+'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-26
+
+
+  0ABA'   E5             C      	PUSH	HL
+  0ABB'   B7             C      	OR	A
+  0ABC'   ED 5B 0DC4'    C      	LD	DE,(SM.END)
+  0AC0'   ED 52          C      	SBC	HL,DE
+  0AC2'   E1             C      	POP	HL
+  0AC3'   D1             C      	POP	DE
+  0AC4'   D8             C      	RET	C
+  0AC5'   E1             C      	POP	HL
+  0AC6'   18 D8          C      	JR	S1.ED5
+                         C      
+                         C      			;Stand: 30.Januar 85 - K EAW/wfvm..MSH
+                         C      
+                         C      ;	END
+                                
+                                ;	INCLUDE ED01.ASM
+                                ;	INCLUDE E101.ASM
+                                ;	INCLUDE E201.ASM
+                                ;	INCLUDE E301.ASM
+                                ;	INCLUDE E401.ASM; 
+                         C      	INCLUDE ED01.ASM	; Editor
+                         C      	TITLE	'EDITOR --- Meldephase'
+                         C      	PAGE
+'EDITOR --- Meldephase'	MACRO-80 3.44	09-Dec-81	PAGE	1-27
+
+
+                         C      
+                         C      ;	PN	ED01
+                         C      ;****************************************************************
+                         C      ;*                  DEG 2000   V. 1.2     EDITOR --- Meldephase *
+                         C      ;*  Version         --------------------------------------------*
+                         C      ;*                  Programmierer: M. Herbote  K EAW  ZFT (WFT) *
+                         C      ;*  V 1 . 2         --------------------------------------------*
+                         C      ;*                  Stand        : 30.Januar 1985               *
+                         C      ;****************************************************************
+                         C      
+                         C      	ORG	SD.EDITA
+                         C      
+  1000'   1000'          C      	DW	$
+  1002'   45 44 49 54    C      	DB	'EDIT'
+  1006'                  C      ED.MELAN:
+  1006'   F3             C      	DI
+  1007'   CD 054A'       C      	CALL	SY.QTABL
+  100A'   22 0E17'       C      	LD	(SM.PTSA),HL
+  100D'   06 1C          C      	LD	B,SD.PSANZ
+  100F'                  C      ED.MEL5:
+  100F'   36 00          C      	LD	M,0
+  1011'   23             C      	INC	HL
+  1012'   10 FB          C      	DJNZ	ED.MEL5
+  1014'   22 0E15'       C      	LD	(SM.PTSE),HL
+  1017'   18 03          C      	JR	ED.MEL1
+  1019'                  C      ED.MEL2:
+  1019'   CD 111E'       C      	CALL	ED.UMLKP
+  101C'                  C      ED.MEL1:
+  101C'   CD 0644'       C      	CALL	SY.BILO	;Bild loeschen
+  101F'                  C      ED.MEL11:
+  101F'   CD 1488'       C      	CALL	E2.RESET
+  1022'   CD 124F'       C      	CALL	E1.PUFLO	;TP loeschen
+  1025'   CD 068D'       C      	CALL	SY.MEMLA	;Fkt.Tast. u. RAM definieren
+  1028'   21 1053'       C      	LD	HL,ED.MELNL
+  102B'   22 0D28'       C      	LD	(SM.FKTAB+28H),HL
+  102E'   21 0000        C      	LD	HL,0
+  1031'   22 0DAE'       C      	LD	(SM.NEWL),HL	;NL--Taste def.
+  1034'   3A 0DBE'       C      	LD	A,(SM.ZANZ)
+  1037'   3D             C      	DEC	A
+  1038'   32 0DB4'       C      	LD	(SM.ZMIN),A
+  103B'   32 0DB6'       C      	LD	(SM.ZMAX),A	;Format: vorletzte Zeile
+  103E'   CD 0567'       C      	CALL	SY.BWSAF
+  1041'   EB             C      	EX	DE,HL
+  1042'   21 11B7'       C      	LD	HL,ED.ZED1
+  1045'   CD 06EB'       C      	CALL	SY.MELD	;Ausschrift
+  1048'   EB             C      	EX	DE,HL
+  1049'                  C      ED.MEL3:
+  1049'   CD 0608'       C      	CALL	SY.LCPOS
+  104C'   CD 04A0'       C      	CALL	SY.KOM	;Format ab CPOS
+  104F'   CD 06F2'       C      	CALL	SY.DELZL
+  1052'   C9             C      	RET
+                         C      
+                         C      ;NL-Funktion in Meldephase
+                         C      
+  1053'                  C      ED.MELNL:
+  1053'   AF             C      	XOR	A
+  1054'   32 0D93'       C      	LD	(SM.FSTAT),A
+  1057'   CD 0800'       C      	CALL	S1.STANL	;Z=0 falls nur Space
+  105A'   28 20          C      	JR	Z,ED.VOLLF
+  105C'   FE 46          C      	CP	'F'
+  105E'   28 34          C      	JR	Z,ED.FREI
+  1060'   FE 51          C      	CP	'Q'
+  1062'   28 05          C      	JR	Z,ED.QUELL
+  1064'                  C      ED.ERRO1:
+  1064'   0E 01          C      	LD	C,1	;falsche Formatanweisung
+  1066'   C3 08BF'       C      	JP	S1.ERROR
+                         C      
+  1069'                  C      ED.QUELL:
+  1069'   3E 80          C      	LD	A,80H
+  106B'   32 0D93'       C      	LD	(SM.FSTAT),A	;Quellcode Status
+  106E'   21 0D9B'       C      	LD	HL,SM.TABZ
+  1071'   36 00          C      	LD	M,SD.QTAB1
+  1073'   23             C      	INC	HL
+  1074'   36 09          C      	LD	M,SD.QTAB2
+  1076'   23             C      	INC	HL
+  1077'   36 0F          C      	LD	M,SD.QTAB3
+  1079'   23             C      	INC	HL
+  107A'   36 22          C      	LD	M,SD.QTAB4
+  107C'                  C      ED.VOLLF:
+  107C'   2A 0DBE'       C      	LD	HL,(SM.ZANZ)	;volles Format laden
+  107F'                  C      ED.FREI2:
+  107F'   2D             C      	DEC	L
+'EDITOR --- Meldephase'	MACRO-80 3.44	09-Dec-81	PAGE	1-28
+
+
+  1080'   2D             C      	DEC	L
+  1081'   22 0DBC'       C      	LD	(SM.ZMAX2),HL
+  1084'                  C      ED.KOMA2:
+  1084'   21 0000        C      	LD	HL,0
+  1087'   22 0DB8'       C      	LD	(SM.ZPOS2),HL
+  108A'   24             C      	INC	H
+  108B'   2C             C      	INC	L
+  108C'   22 0DBA'       C      	LD	(SM.ZMIN2),HL	;SPOS2,ZPOS2=SMIN2-1,ZMIN2-1
+  108F'   21 101C'       C      	LD	HL,ED.MEL1
+  1092'   18 1E          C      	JR	ED.KOMA3
+                         C      
+  1094'                  C      ED.FREI:
+  1094'   EB             C      	EX	DE,HL
+  1095'   DD 21 0DBF'    C      	LD	IX,SM.SPANZ
+  1099'   AF             C      	XOR	A
+  109A'   08             C      	EX	AF,AF'
+  109B'   CD 090F'       C      	CALL	S1.LT1Z	;freies Format
+  109E'   EB             C      	EX	DE,HL	;A<E=<(IX+0) BEI Z=CY=0
+  109F'   28 DB          C      	JR	Z,ED.VOLLF
+  10A1'   38 C1          C      	JR	C,ED.ERRO1
+  10A3'   2A 0DBE'       C      	LD	HL,(SM.ZANZ)
+  10A6'   63             C      	LD	H,E
+  10A7'   18 D6          C      	JR	ED.FREI2
+                         C      
+                         C      ;Kommandophase
+                         C      
+  10A9'                  C      ED.KOMA1:
+  10A9'   CD 082B'       C      	CALL	S1.FOEX	;CPOS + Arb.Form. --> Zweitmerker
+  10AC'   CD 0661'       C      	CALL	SY.FKTLA	;RAM neu laden
+  10AF'   21 1019'       C      	LD	HL,ED.MEL2	;Syst.Taste neu
+  10B2'                  C      ED.KOMA3:
+  10B2'   22 0D68'       C      	LD	(SM.FKTAB+68H),HL
+  10B5'   21 10E5'       C      	LD	HL,ED.KONEV
+  10B8'   22 0D28'       C      	LD	(SM.FKTAB+28H),HL
+  10BB'   21 10F0'       C      	LD	HL,ED.KONER
+  10BE'   22 0D38'       C      	LD	(SM.FKTAB+38H),HL
+  10C1'   21 0DA5'       C      	LD	HL,SM.UMERK
+  10C4'   36 00          C      	LD	M,0
+  10C6'   11 0DA6'       C      	LD	DE,SM.UMERK+1
+  10C9'   01 000E        C      	LD	BC,SM.LOE1-1
+  10CC'   CD 06B1'       C      	CALL	SY.RALO1	;volles Format
+  10CF'   7D             C      	LD	A,L
+  10D0'   32 0DB4'       C      	LD	(SM.ZMIN),A	;Format letzte Zeile
+  10D3'   21 0702'       C      	LD	HL,SY.AEIN
+  10D6'   CD 0696'       C      	CALL	SY.MEML1	;NEWL,DELZ,EINA laden
+  10D9'   21 0933'       C      	LD	HL,S1.UMS
+  10DC'   22 0DA6'       C      	LD	(SM.USCH),HL
+  10DF'   CD 0567'       C      	CALL	SY.BWSAF
+  10E2'   C3 1049'       C      	JP	ED.MEL3
+                         C      
+                         C      ;Start--Funktion in Kommandophase
+                         C      
+  10E5'                  C      ED.KONEV:
+  10E5'   CD 10FB'       C      	CALL	ED.KOEIN
+  10E8'   21 0D94'       C      	LD	HL,SM.STAT
+  10EB'   CB FE          C      	SET	7,M
+  10ED'   C3 1442'       C      	JP	E2.TEX
+                         C      
+  10F0'                  C      ED.KONER:
+  10F0'   CD 10FB'       C      	CALL	ED.KOEIN
+  10F3'   21 0D94'       C      	LD	HL,SM.STAT
+  10F6'   CB BE          C      	RES	7,M
+  10F8'   C3 1442'       C      	JP	E2.TEX
+                         C      
+  10FB'                  C      ED.KOEIN:
+  10FB'   CD 111E'       C      	CALL	ED.UMLKP
+  10FE'   CD 0800'       C      	CALL	S1.STANL
+  1101'   C4 18A7'       C      	CALL	NZ,E3.KOMAN
+  1104'                  C      ED.ARBPH:
+  1104'   CD 082B'       C      	CALL	S1.FOEX
+  1107'                  C      ED.ARBFK:
+  1107'   21 1137'       C      	LD	HL,ED.FALFT	;Fkt. fuer Arb.Phase init.
+  110A'   11 0D00'       C      	LD	DE,SM.FKTAB
+  110D'   01 0080        C      	LD	BC,80H
+  1110'   ED B0          C      	LDIR
+  1112'   21 112B'       C      	LD	HL,ED.FALAT
+  1115'   11 0DA6'       C      	LD	DE,SM.USCH
+  1118'   01 000C        C      	LD	BC,12
+  111B'   ED B0          C      	LDIR
+  111D'   C9             C      	RET
+                         C      
+  111E'                  C      ED.UMLKP:
+  111E'   CD 082B'       C      	CALL	S1.FOEX
+'EDITOR --- Meldephase'	MACRO-80 3.44	09-Dec-81	PAGE	1-29
+
+
+  1121'   CD 17B5'       C      	CALL	E2.UML
+  1124'   CD 1244'       C      	CALL	E1.LOEBP
+  1127'   CD 082B'       C      	CALL	S1.FOEX
+  112A'   C9             C      	RET
+                         C      
+  112B'                  C      ED.FALAT:
+  112B'   0933'          C      	DW	S1.UMS	;Fkt.Adressliste Alphatastatur
+  112D'   127E'          C      	DW	E1.TAB
+  112F'   136E'          C      	DW	E1.DELZ
+  1131'   1267'          C      	DW	E1.LEERZ
+  1133'   11D6'          C      	DW	E1.CNEW
+  1135'   11C7'          C      	DW	E1.ZSCHS
+                         C      
+                         C      ;Funktionsadressliste Funktionstastatur
+                         C      
+  1137'                  C      ED.FALFT:
+  1137'   137B'          C      	DW	E1.PTS1	;S1,Z1
+  1139'   1389'          C      	DW	E1.PTS15
+  113B'   12AB'          C      	DW	E1.TABS
+  113D'   12F5'          C      	DW	E1.TCNOS
+  113F'   12F0'          C      	DW	E1.TCNLS
+  1141'   1383'          C      	DW	E1.PTS9
+  1143'   1391'          C      	DW	E1.PTS23
+  1145'   0000           C      	DW	0
+                         C      
+  1147'   137C'          C      	DW	E1.PTS2	;S2,Z1
+  1149'   138A'          C      	DW	E1.PTS16
+  114B'   12CB'          C      	DW	E1.TABL
+  114D'   12EB'          C      	DW	E1.TCNRS
+  114F'   12FA'          C      	DW	E1.TCNUS
+  1151'   1384'          C      	DW	E1.PTS10
+  1153'   1392'          C      	DW	E1.PTS24
+  1155'   0000           C      	DW	0
+                         C      
+  1157'   137D'          C      	DW	E1.PTS3	;S3,Z1
+  1159'   138B'          C      	DW	E1.PTS17
+  115B'   1332'          C      	DW	E1.ABS
+  115D'   1347'          C      	DW	E1.ATTR
+  115F'   1417'          C      	DW	E2.TEXV
+  1161'   1385'          C      	DW	E1.PTS11
+  1163'   1393'          C      	DW	E1.PTS25
+  1165'   0000           C      	DW	0
+                         C      
+  1167'   137E'          C      	DW	E1.PTS4	;S4,Z1
+  1169'   138C'          C      	DW	E1.PTS18
+  116B'   13D8'          C      	DW	E1.PS
+  116D'   1361'          C      	DW	E1.REPEL
+  116F'   141E'          C      	DW	E2.TEXR
+  1171'   1386'          C      	DW	E1.PTS12
+  1173'   1394'          C      	DW	E1.PTS26
+  1175'   0000           C      	DW	0
+                         C      
+  1177'   137F'          C      	DW	E1.PTS5	;S5,Z1
+  1179'   138D'          C      	DW	E1.PTS19
+  117B'   13FE'          C      	DW	E1.GS
+  117D'   140B'          C      	DW	E1.UND
+  117F'   01A3'          C      	DW	SY.IFKT3
+  1181'   1387'          C      	DW	E1.PTS13
+  1183'   01AD'          C      	DW	SY.IFKT4
+  1185'   0000           C      	DW	0
+                         C      
+  1187'   1380'          C      	DW	E1.PTS6	;S6,Z1
+  1189'   138E'          C      	DW	E1.PTS20
+  118B'   1403'          C      	DW	E1.HT
+  118D'   140F'          C      	DW	E1.DOL
+  118F'   0000           C      	DW	0
+  1191'   1388'          C      	DW	E1.PTS14
+  1193'   0000           C      	DW	0
+  1195'   0000           C      	DW	0
+                         C      
+  1197'   1381'          C      	DW	E1.PTS7	;S7,Z1
+  1199'   138F'          C      	DW	E1.PTS21
+  119B'   1407'          C      	DW	E1.CA
+  119D'   1413'          C      	DW	E1.SCHW
+  119F'   10A9'          C      	DW	ED.KOMA1
+  11A1'   1395'          C      	DW	E1.PTS27
+  11A3'   0000           C      	DW	0
+  11A5'   0000           C      	DW	0
+                         C      
+  11A7'   1382'          C      	DW	E1.PTS8	;S8,Z1
+  11A9'   1390'          C      	DW	E1.PTS22
+  11AB'   1304'          C      	DW	E1.THOME
+  11AD'   12FF'          C      	DW	E1.TCNZA
+'EDITOR --- Meldephase'	MACRO-80 3.44	09-Dec-81	PAGE	1-30
+
+
+  11AF'   080C'          C      	DW	S1.PFO1
+  11B1'   1396'          C      	DW	E1.PTS28
+  11B3'   0000           C      	DW	0
+  11B5'   0000           C      	DW	0
+                         C      
+  11B7'                  C      ED.ZED1:
+  11B7'   0F             C      	DB	LOW(ED.LZED1)
+  11B8'   45 44 49 54    C      	DB	'EDITOR   FORMAT'
+  11BC'   4F 52 20 20    C      
+  11C0'   20 46 4F 52    C      
+  11C4'   4D 41 54       C      
+  000F                   C      ED.LZED1 EQU    $-ED.ZED1-1
+                         C      
+                         C      			;Stand: 30.Januar 85 - K EAW/wfvm..MSH
+                         C      
+                         C      ;	END
+                         C      	TITLE 'EDITOR --- Arbeitsphase'
+                         C      	PAGE
+'EDITOR --- Arbeitsphase'	MACRO-80 3.44	09-Dec-81	PAGE	1-31
+
+
+                         C      
+                         C      ;	PN	E101
+                         C      ;****************************************************************
+                         C      ;*                  DEG2000 V. 1.2    EDITOR --- Arbeitsphase   *
+                         C      ;*  Version         --------------------------------------------*
+                         C      ;*                  Programmierer: M. Herbote  K EAW  ZFT (WFT) *
+                         C      ;*  V 1 . 2         --------------------------------------------*
+                         C      ;*                  Stand        : 30.Januar 1985               *
+                         C      ;****************************************************************
+                         C      
+                         C      ;Alphazeichen schreiben
+                         C      
+  11C7'                  C      E1.ZSCHS:
+  11C7'   3E 01          C      	LD	A,1
+  11C9'   32 0D8E'       C      	LD	(SM.ZSMER),A
+  11CC'                  C      E1.ZSCHR:
+  11CC'   79             C      	LD	A,C
+  11CD'                  C      E1.ZSCH1:
+  11CD'   CD 0580'       C      	CALL	SY.CPOS
+  11D0'   77             C      	LD	M,A
+  11D1'   CD 05FA'       C      	CALL	SY.ICPOS
+  11D4'   18 2C          C      	JR	E1.CNEW2
+                         C      
+                         C      ;NL-Funktion
+                         C      
+  11D6'                  C      E1.CNEW:
+  11D6'   CD 0580'       C      	CALL	SY.CPOS
+  11D9'   71             C      	LD	M,C
+  11DA'   ED 4B 0DB3'    C      	LD	BC,(SM.SPOS)
+  11DE'   06 00          C      	LD	B,0
+  11E0'   0C             C      	INC	C
+  11E1'   0D             C      	DEC	C
+  11E2'   28 09          C      	JR	Z,E1.CNEW3
+  11E4'   7E             C      	LD	A,M
+  11E5'   2B             C      	DEC	HL
+  11E6'   ED B9          C      	CPDR
+  11E8'   20 03          C      	JR	NZ,E1.CNEW3
+  11EA'   23             C      	INC	HL
+  11EB'   36 20          C      	LD	M,SD.SPACE
+  11ED'                  C      E1.CNEW3:
+  11ED'   CD 05E0'       C      	CALL	SY.ISPOS
+  11F0'   38 0D          C      	JR	C,E1.CNEW1
+  11F2'   CD 0814'       C      	CALL	S1.SPOSN
+  11F5'   CD 06FB'       C      	CALL	SY.DEL2
+  11F8'   3A 0DB5'       C      	LD	A,(SM.SMIN)
+  11FB'   3D             C      	DEC	A
+  11FC'   32 0DB3'       C      	LD	(SM.SPOS),A
+  11FF'                  C      E1.CNEW1:
+  11FF'   CD 05D3'       C      	CALL	SY.IZPOS
+  1202'                  C      E1.CNEW2:
+  1202'   DC 05B4'       C      	CALL	C,SY.DZPOS
+  1205'   DC 1226'       C      	CALL	C,E1.LIFT
+  1208'   CD 131A'       C      	CALL	E1.ZNUM
+  120B'   C9             C      	RET
+                         C      
+                         C      ;1.Bildzeile umladen
+                         C      
+  120C'                  C      E1.UMLZ1:
+  120C'   ED 4B 0DBF'    C      	LD	BC,(SM.SPANZ)
+  1210'   06 00          C      	LD	B,0
+  1212'   CD 17C1'       C      	CALL	E2.UMLT
+  1215'   22 0DC0'       C      	LD	(SM.WINA),HL
+  1218'                  C      E1.ZEINR:
+  1218'   01 8830        C      	LD	BC,SD.TPA
+  121B'   CD 1596'       C      	CALL	E2.LANG
+  121E'   CD 163F'       C      	CALL	E2.ZNX2
+  1221'   ED 53 0D96'    C      	LD	(SM.ZEIZ),DE
+  1225'   C9             C      	RET
+                         C      
+  1226'                  C      E1.LIFT:
+  1226'   CD 120C'       C      	CALL	E1.UMLZ1
+  1229'   3A 0DB6'       C      	LD	A,(SM.ZMAX)
+  122C'                  C      E1.LIFT1:
+  122C'   3D             C      	DEC	A
+  122D'   CD 1260'       C      	CALL	E1.BIL1
+  1230'   E5             C      	PUSH	HL
+  1231'   C1             C      	POP	BC
+  1232'   CD 0625'       C      	CALL	SY.DESZ
+  1235'   D5             C      	PUSH	DE
+  1236'   EB             C      	EX	DE,HL
+  1237'   11 3000        C      	LD	DE,SD.BWSA
+  123A'   19             C      	ADD	HL,DE	;HL=BWSA+(SPANZ)
+'EDITOR --- Arbeitsphase'	MACRO-80 3.44	09-Dec-81	PAGE	1-32
+
+
+  123B'   ED B0          C      	LDIR
+  123D'   C1             C      	POP	BC
+  123E'   41             C      	LD	B,C
+  123F'   EB             C      	EX	DE,HL
+  1240'   CD 06FC'       C      	CALL	SY.DEL1
+  1243'   C9             C      	RET
+                         C      
+                         C      ;Bildpuffer loeschen
+                         C      
+  1244'                  C      E1.LOEBP:
+  1244'   CD 125D'       C      	CALL	E1.BIL
+  1247'                  C      E1.LOBP1:
+  1247'   01 03FF        C      	LD	BC,SD.BWSA-SD.BPA-1
+  124A'   09             C      	ADD	HL,BC
+  124B'   E5             C      	PUSH	HL
+  124C'   C1             C      	POP	BC
+  124D'   18 03          C      	JR	E1.PULO
+  124F'                  C      E1.PUFLO:
+  124F'   01 03FF        C      	LD	BC,SD.BWSA-SD.BPA-1
+  1252'                  C      E1.PULO:
+  1252'   21 2C00        C      	LD	HL,SD.BPA
+  1255'   36 20          C      	LD	M,SD.SPACE
+  1257'   11 2C01        C      	LD	DE,SD.BPA+1
+  125A'   ED B0          C      	LDIR
+  125C'   C9             C      	RET
+                         C      
+                         C      ;BWS Laenge
+                         C      
+  125D'                  C      E1.BIL:
+  125D'   3A 0DB6'       C      	LD	A,(SM.ZMAX)
+  1260'                  C      E1.BIL1:
+  1260'   21 0000        C      	LD	HL,0
+  1263'   CD 05A8'       C      	CALL	SY.AMSZ
+  1266'   C9             C      	RET		;HL=Laenge   BC,DE unveraendert
+                         C      
+                         C      ;Leerzeile einfuegen
+                         C      
+  1267'                  C      E1.LEERZ:
+  1267'   21 0DB2'       C      	LD	HL,SM.ZPOS
+  126A'   AF             C      	XOR	A
+  126B'   B6             C      	OR	M
+  126C'   C8             C      	RET	Z
+  126D'   35             C      	DEC	M
+  126E'   F5             C      	PUSH	AF
+  126F'   CD 120C'       C      	CALL	E1.UMLZ1
+  1272'   F1             C      	POP	AF
+  1273'   20 B7          C      	JR	NZ,E1.LIFT1
+  1275'   3A 0DBF'       C      	LD	A,(SM.SPANZ)
+  1278'   21 3000        C      	LD	HL,SD.BWSA
+  127B'   C3 06FB'       C      	JP	SY.DEL2
+                         C      
+                         C      ;Tabulator Aufruf
+                         C      
+  127E'                  C      E1.TAB:
+  127E'   CD 129D'       C      	CALL	E1.TAUP
+  1281'   30 14          C      	JR	NC,E1.TAB1
+  1283'   7E             C      	LD	A,M
+  1284'   2A 0DB7'       C      	LD	HL,(SM.SMAX)
+  1287'   BD             C      	CP	L
+  1288'   30 0D          C      	JR	NC,E1.TAB1
+  128A'                  C      E1.TAB2:
+  128A'   32 0DB3'       C      	LD	(SM.SPOS),A
+  128D'   C8             C      	RET	Z
+  128E'   CD 164B'       C      	CALL	E2.RUFTF
+  1291'   C0             C      	RET	NZ
+  1292'   3E 09          C      	LD	A,SD.TAB
+  1294'   C3 11CD'       C      	JP	E1.ZSCH1
+                         C      
+  1297'                  C      E1.TAB1:
+  1297'   3A 0DB5'       C      	LD	A,(SM.SMIN)
+  129A'   3D             C      	DEC	A
+  129B'   18 ED          C      	JR	E1.TAB2
+                         C      
+  129D'                  C      E1.TAUP:
+  129D'   3A 0DB3'       C      	LD	A,(SM.SPOS)
+  12A0'                  C      E1.TAUP2:
+  12A0'   21 0D9B'       C      	LD	HL,SM.TABZ
+  12A3'   06 0A          C      	LD	B,SD.TABZA
+  12A5'                  C      E1.TAUP1:
+  12A5'   BE             C      	CP	M
+  12A6'   D8             C      	RET	C	;CY=1: gefunden
+  12A7'   23             C      	INC	HL
+  12A8'   10 FB          C      	DJNZ	E1.TAUP1
+'EDITOR --- Arbeitsphase'	MACRO-80 3.44	09-Dec-81	PAGE	1-33
+
+
+  12AA'   C9             C      	RET
+                         C      
+                         C      ;Tabulator setzen
+                         C      
+  12AB'                  C      E1.TABS:
+  12AB'   CD 129D'       C      	CALL	E1.TAUP
+  12AE'   38 02          C      	JR	C,E1.TABS1
+  12B0'   2B             C      	DEC	HL
+  12B1'   04             C      	INC	B
+  12B2'                  C      E1.TABS1:
+  12B2'   10 02          C      	DJNZ	E1.TABS3
+  12B4'   77             C      	LD	M,A
+  12B5'   C9             C      	RET
+  12B6'                  C      E1.TABS3:
+  12B6'   4F             C      	LD	C,A
+  12B7'   3E 0A          C      	LD	A,SD.TABZA
+  12B9'   B8             C      	CP	B
+  12BA'   79             C      	LD	A,C
+  12BB'   28 03          C      	JR	Z,E1.TABS4
+  12BD'   2B             C      	DEC	HL
+  12BE'   BE             C      	CP	M
+  12BF'   C8             C      	RET	Z
+  12C0'                  C      E1.TABS4:
+  12C0'   48             C      	LD	C,B
+  12C1'   06 00          C      	LD	B,0
+  12C3'   09             C      	ADD	HL,BC
+  12C4'   E5             C      	PUSH	HL
+  12C5'   D1             C      	POP	DE
+  12C6'   13             C      	INC	DE
+  12C7'   ED B8          C      	LDDR
+  12C9'   12             C      	LD	(DE),A
+  12CA'   C9             C      	RET
+                         C      
+                         C      ;Tabulator loeschen
+                         C      
+  12CB'                  C      E1.TABL:
+  12CB'   CD 129D'       C      	CALL	E1.TAUP
+  12CE'   38 06          C      	JR	C,E1.TABL1
+  12D0'   2B             C      	DEC	HL
+  12D1'   BE             C      	CP	M
+  12D2'   C0             C      	RET	NZ
+  12D3'   36 FF          C      	LD	M,-1
+  12D5'   C9             C      	RET
+  12D6'                  C      E1.TABL1:
+  12D6'   4F             C      	LD	C,A
+  12D7'   3E 0A          C      	LD	A,SD.TABZA
+  12D9'   B8             C      	CP	B
+  12DA'   C8             C      	RET	Z
+  12DB'   79             C      	LD	A,C
+  12DC'   2B             C      	DEC	HL
+  12DD'   BE             C      	CP	M
+  12DE'   C0             C      	RET	NZ
+  12DF'   48             C      	LD	C,B
+  12E0'   06 00          C      	LD	B,0
+  12E2'   E5             C      	PUSH	HL
+  12E3'   D1             C      	POP	DE
+  12E4'   23             C      	INC	HL
+  12E5'   ED B0          C      	LDIR
+  12E7'   3E FF          C      	LD	A,-1
+  12E9'   12             C      	LD	(DE),A
+  12EA'   C9             C      	RET
+                         C      
+                         C      ;Cursor Funktionen
+                         C      
+  12EB'                  C      E1.TCNRS:
+  12EB'   CD 062C'       C      	CALL	SY.CNRS
+  12EE'   18 17          C      	JR	E1.TCUR
+  12F0'                  C      E1.TCNLS:
+  12F0'   CD 0631'       C      	CALL	SY.CNLS
+  12F3'   18 12          C      	JR	E1.TCUR
+  12F5'                  C      E1.TCNOS:
+  12F5'   CD 063B'       C      	CALL	SY.CNOS
+  12F8'   18 0D          C      	JR	E1.TCUR
+  12FA'                  C      E1.TCNUS:
+  12FA'   CD 0636'       C      	CALL	SY.CNUS
+  12FD'   18 08          C      	JR	E1.TCUR
+  12FF'                  C      E1.TCNZA:
+  12FF'   CD 0198'       C      	CALL	SY.IFKT2
+  1302'   18 03          C      	JR	E1.TCUR
+  1304'                  C      E1.THOME:
+  1304'   CD 018B'       C      	CALL	SY.IFKT1
+  1307'                  C      E1.TCUR:
+  1307'   CD 131A'       C      	CALL	E1.ZNUM
+'EDITOR --- Arbeitsphase'	MACRO-80 3.44	09-Dec-81	PAGE	1-34
+
+
+  130A'   C9             C      	RET
+                         C      
+                         C      ;Anzahl der NL zwischen BWSA und ZLPOS
+                         C      
+  130B'                  C      E1.BIZA:
+  130B'   CD 057B'       C      	CALL	SY.ZLPOS
+  130E'   23             C      	INC	HL
+  130F'   01 3000        C      	LD	BC,SD.BWSA
+  1312'   CD 1596'       C      	CALL	E2.LANG
+  1315'   CD 163F'       C      	CALL	E2.ZNX2
+  1318'   1B             C      	DEC	DE	;DE=NL Anzahl
+  1319'   C9             C      	RET
+                         C      
+                         C      ;Zeilennummer ausschreiben
+                         C      
+  131A'                  C      E1.ZNUM:
+  131A'   CD 130B'       C      	CALL	E1.BIZA
+  131D'   2A 0D96'       C      	LD	HL,(SM.ZEIZ)
+  1320'   19             C      	ADD	HL,DE
+  1321'   18 03          C      	JR	E1.NUM1
+  1323'                  C      E1.NUM:
+  1323'   2A 0D96'       C      	LD	HL,(SM.ZEIZ)
+  1326'                  C      E1.NUM1:
+  1326'   01 FFF3        C      	LD	BC,-13
+  1329'   3A 0DBE'       C      	LD	A,(SM.ZANZ)
+  132C'   11 08D7'       C      	LD	DE,S1.ZS12
+  132F'   C3 08AE'       C      	JP	S1.MELDN
+                         C      
+                         C      ;Absatz einfuegen
+                         C      
+  1332'                  C      E1.ABS:
+  1332'   CD 1361'       C      	CALL	E1.REPEL
+  1335'   CD 0580'       C      	CALL	SY.CPOS
+  1338'   36 1E          C      	LD	M,SD.NL
+  133A'   3E 00          C      	LD	A,0
+  133C'   32 0D8E'       C      	LD	(SM.ZSMER),A
+  133F'   21 0D94'       C      	LD	HL,SM.STAT
+  1342'   CB E6          C      	SET	4,M
+  1344'   C3 1428'       C      	JP	E2.TEXL
+                         C      
+                         C      ;Zeichen rechts von Cursor heranziehen
+                         C      
+  1347'                  C      E1.ATTR:
+  1347'   CD 0580'       C      	CALL	SY.CPOS
+  134A'   DD 21 092B'    C      	LD	IX,S1.RNL
+  134E'   36 20          C      	LD	M,SD.SPACE
+  1350'                  C      E1.ATTR1:
+  1350'   CD 0814'       C      	CALL	S1.SPOSN
+  1353'   3D             C      	DEC	A
+  1354'   C8             C      	RET	Z
+  1355'   4F             C      	LD	C,A
+  1356'   06 00          C      	LD	B,0
+  1358'   CD 0921'       C      	CALL	S1.MX
+  135B'   21 0D8E'       C      	LD	HL,SM.ZSMER
+  135E'   36 01          C      	LD	M,1
+  1360'   C9             C      	RET
+                         C      
+                         C      ;Zeichen rechts von Cursor wegschieben
+                         C      
+  1361'                  C      E1.REPEL:
+  1361'   CD 081F'       C      	CALL	S1.ZENDF
+  1364'   7E             C      	LD	A,M
+  1365'   FE 20          C      	CP	SD.SPACE
+  1367'   C0             C      	RET	NZ
+  1368'   DD 21 0923'    C      	LD	IX,S1.RNR
+  136C'   18 E2          C      	JR	E1.ATTR1
+                         C      
+                         C      ;Zeile loeschen
+                         C      
+  136E'                  C      E1.DELZ:
+  136E'   CD 06F2'       C      	CALL	SY.DELZL
+  1371'   CD 05D3'       C      	CALL	SY.IZPOS
+  1374'   DC 05B4'       C      	CALL	C,SY.DZPOS
+  1377'   CD 131A'       C      	CALL	E1.ZNUM
+  137A'   C9             C      	RET
+                         C      
+                         C      ;Aufruf programmierter Textelemente
+                         C      
+  137B'   00             C      E1.PTS1:	NOP
+  137C'   00             C      E1.PTS2:	NOP
+  137D'   00             C      E1.PTS3:	NOP
+  137E'   00             C      E1.PTS4:	NOP
+  137F'   00             C      E1.PTS5:	NOP
+'EDITOR --- Arbeitsphase'	MACRO-80 3.44	09-Dec-81	PAGE	1-35
+
+
+  1380'   00             C      E1.PTS6:	NOP
+  1381'   00             C      E1.PTS7:	NOP
+  1382'   00             C      E1.PTS8:	NOP
+  1383'   00             C      E1.PTS9:	NOP
+  1384'   00             C      E1.PTS10:	NOP
+  1385'   00             C      E1.PTS11:	NOP
+  1386'   00             C      E1.PTS12:	NOP
+  1387'   00             C      E1.PTS13:	NOP
+  1388'   00             C      E1.PTS14:	NOP
+  1389'   00             C      E1.PTS15:	NOP
+  138A'   00             C      E1.PTS16:	NOP
+  138B'   00             C      E1.PTS17:	NOP
+  138C'   00             C      E1.PTS18:	NOP
+  138D'   00             C      E1.PTS19:	NOP
+  138E'   00             C      E1.PTS20:	NOP
+  138F'   00             C      E1.PTS21:	NOP
+  1390'   00             C      E1.PTS22:	NOP
+  1391'   00             C      E1.PTS23:	NOP
+  1392'   00             C      E1.PTS24:	NOP
+  1393'   00             C      E1.PTS25:	NOP
+  1394'   00             C      E1.PTS26:	NOP
+  1395'   00             C      E1.PTS27:	NOP
+  1396'                  C      E1.PTS28:
+  1396'   11 137A'       C      	LD	DE,E1.PTS1-1
+  1399'   B7             C      	OR	A
+  139A'   ED 52          C      	SBC	HL,DE
+  139C'   CD 13B6'       C      	CALL	E1.PTSNR
+  139F'   D8             C      	RET	C
+  13A0'   E0             C      	RET	PO
+  13A1'                  C      E1.PTS92:
+  13A1'   AF             C      	XOR	A
+  13A2'   B6             C      	OR	M
+  13A3'   C8             C      	RET	Z
+  13A4'   E5             C      	PUSH	HL
+  13A5'   FE 1E          C      	CP	SD.NL
+  13A7'   28 05          C      	JR	Z,E1.PTS91
+  13A9'   CD 11CD'       C      	CALL	E1.ZSCH1
+  13AC'   18 04          C      	JR	E1.PTS93
+  13AE'                  C      E1.PTS91:
+  13AE'   4F             C      	LD	C,A
+  13AF'   CD 11D6'       C      	CALL	E1.CNEW
+  13B2'                  C      E1.PTS93:
+  13B2'   E1             C      	POP	HL
+  13B3'   23             C      	INC	HL
+  13B4'   18 EB          C      	JR	E1.PTS92
+                         C      
+  13B6'                  C      E1.PTSNR:
+  13B6'   EB             C      	EX	DE,HL
+  13B7'   ED 4B 0E17'    C      	LD	BC,(SM.PTSA)
+  13BB'   2A 0E15'       C      	LD	HL,(SM.PTSE)
+  13BE'   CD 1596'       C      	CALL	E2.LANG
+  13C1'   D8             C      	RET	C
+  13C2'   AF             C      	XOR	A
+  13C3'                  C      E1.PTSN1:
+  13C3'   1D             C      	DEC	E
+  13C4'   28 05          C      	JR	Z,E1.PTSN2
+  13C6'   ED B1          C      	CPIR
+  13C8'   E0             C      	RET	PO
+  13C9'   18 F8          C      	JR	E1.PTSN1
+  13CB'                  C      E1.PTSN2:
+  13CB'   AF             C      	XOR	A
+  13CC'   C9             C      	RET		;P/V=1
+                         C      
+  13CD'                  C      E1.PTEST:
+  13CD'   ED 4B 0FF7     C      	LD	BC,(SM.PTS)
+  13D1'   2A 0E17'       C      	LD	HL,(SM.PTSA)
+  13D4'   AF             C      	XOR	A
+  13D5'   ED 42          C      	SBC	HL,BC
+  13D7'   C9             C      	RET
+  13D8'                  C      E1.PS:
+  13D8'   CD 13CD'       C      	CALL	E1.PTEST
+  13DB'   28 16          C      	JR	Z,E1.PS1
+  13DD'   ED 43 0E17'    C      	LD	(SM.PTSA),BC
+  13E1'   21 0FFF        C      	LD	HL,SD.RAM+3FFH
+  13E4'   AF             C      	XOR	A
+  13E5'   ED 42          C      	SBC	HL,BC
+  13E7'   C5             C      	PUSH	BC
+  13E8'   E3             C      	EX	(SP),HL
+  13E9'   C1             C      	POP	BC
+  13EA'                  C      E1.PS2:
+  13EA'   1E 1D          C      	LD	E,SD.PSANZ+1
+  13EC'   CD 13C3'       C      	CALL	E1.PTSN1
+  13EF'   22 0E15'       C      	LD	(SM.PTSE),HL
+'EDITOR --- Arbeitsphase'	MACRO-80 3.44	09-Dec-81	PAGE	1-36
+
+
+  13F2'   C9             C      	RET
+  13F3'                  C      E1.PS1:
+  13F3'   21 49D8'       C      	LD	HL,PF.O1ANF	;PF.PFT1
+  13F6'   22 0E17'       C      	LD	(SM.PTSA),HL
+  13F9'   01 03FF        C      	LD	BC,3FFH
+  13FC'   18 EC          C      	JR	E1.PS2
+                         C      
+  13FE'                  C      E1.GS:
+  13FE'   3E 1D          C      	LD	A,1DH
+  1400'                  C      E1.GS1:
+  1400'   C3 11CD'       C      	JP	E1.ZSCH1
+  1403'                  C      E1.HT:
+  1403'   3E 09          C      	LD	A,9
+  1405'   18 F9          C      	JR	E1.GS1
+  1407'                  C      E1.CA:
+  1407'   3E 18          C      	LD	A,18H
+  1409'   18 F5          C      	JR	E1.GS1
+  140B'                  C      E1.UND:
+  140B'   3E 26          C      	LD	A,26H
+  140D'   18 F1          C      	JR	E1.GS1
+  140F'                  C      E1.DOL:
+  140F'   3E 24          C      	LD	A,24H
+  1411'   18 ED          C      	JR	E1.GS1
+  1413'                  C      E1.SCHW:
+  1413'   3E 40          C      	LD	A,40H
+  1415'   18 E9          C      	JR	E1.GS1
+                         C      
+                         C      			;Stand: 30.Januar 85 - K EAW/wfvm..MSH
+                         C      
+                         C      ;	END
+                         C      	TITLE	'EDITOR --- Textaufruf'
+                         C      	PAGE
+'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-37
+
+
+                         C      
+                         C      ;	PN	E201
+                         C      ;****************************************************************
+                         C      ;*                  DEG2000  V. 1.2   EDITOR --- Textaufruf     *
+                         C      ;*  Version         --------------------------------------------*
+                         C      ;*                  Programmierer: M. Herbote  K EAW  ZFT (WFT) *
+                         C      ;*  V 1 . 2         --------------------------------------------*
+                         C      ;*                  Stand        : 30.Januar 1985               *
+                         C      ;****************************************************************
+  1417'                  C      E2.TEXV:
+  1417'   21 0D94'       C      	LD	HL,SM.STAT
+  141A'   CB FE          C      	SET	7,M
+  141C'   18 05          C      	JR	E2.TEXS
+  141E'                  C      E2.TEXR:
+  141E'   21 0D94'       C      	LD	HL,SM.STAT
+  1421'   CB BE          C      	RES	7,M
+  1423'                  C      E2.TEXS:
+  1423'   3E 01          C      	LD	A,1
+  1425'   32 0D8E'       C      	LD	(SM.ZSMER),A
+  1428'                  C      E2.TEXL:
+  1428'   CD 17B5'       C      	CALL	E2.UML
+  142B'   CD 1244'       C      	CALL	E1.LOEBP
+  142E'   ED 5B 0DC4'    C      	LD	DE,(SM.END)
+  1432'   2A 0FF7        C      	LD	HL,(SM.PTS)
+  1435'   B7             C      	OR	A
+  1436'   ED 52          C      	SBC	HL,DE
+  1438'   38 5E          C      	JR	C,E2.ERR99
+  143A'   11 1388        C      	LD	DE,5000
+  143D'   ED 52          C      	SBC	HL,DE
+  143F'   DC 147B'       C      	CALL	C,E2.TEXW
+  1442'                  C      E2.TEX:
+  1442'   CD 1590'       C      	CALL	E2.QLANG
+  1445'   D8             C      	RET	C
+  1446'   CD 14B7'       C      	CALL	E2.TEXV1
+  1449'   E5             C      	PUSH	HL
+  144A'   C1             C      	POP	BC	;BC=WINE
+  144B'   CD 1593'       C      	CALL	E2.LANG1
+  144E'   D4 1491'       C      	CALL	NC,E2.SET
+  1451'   DC 1488'       C      	CALL	C,E2.RESET
+  1454'   CD 0580'       C      	CALL	SY.CPOS
+  1457'   E5             C      	PUSH	HL
+  1458'   AF             C      	XOR	A
+  1459'   32 0DB2'       C      	LD	(SM.ZPOS),A
+  145C'                  C      E2.TEXV3:
+  145C'   ED 4B 0DC2'    C      	LD	BC,(SM.WINE)
+  1460'   CD 1593'       C      	CALL	E2.LANG1
+  1463'   38 0E          C      	JR	C,E2.TEXV2
+  1465'   CD 1651'       C      	CALL	E2.RUFT	;Zeilenaufruf
+  1468'   21 0DB2'       C      	LD	HL,SM.ZPOS
+  146B'   34             C      	INC	M
+  146C'   3A 0DB6'       C      	LD	A,(SM.ZMAX)
+  146F'   3D             C      	DEC	A
+  1470'   BE             C      	CP	M
+  1471'   30 E9          C      	JR	NC,E2.TEXV3
+  1473'                  C      E2.TEXV2:
+  1473'   E1             C      	POP	HL
+  1474'   CD 0608'       C      	CALL	SY.LCPOS	;Cursor einsetzen
+  1477'   CD 131A'       C      	CALL	E1.ZNUM
+  147A'   C9             C      	RET
+                         C      
+  147B'                  C      E2.TEXW:
+  147B'   19             C      	ADD	HL,DE	;Warnung Speicher voll
+  147C'   11 08DD'       C      	LD	DE,S1.ZS13
+  147F'   3A 0DBE'       C      	LD	A,(SM.ZANZ)
+  1482'   01 FFEA        C      	LD	BC,-22
+  1485'   C3 08AF'       C      	JP	S1.MELDE
+                         C      
+  1488'                  C      E2.RESET:
+  1488'   21 0001        C      	LD	HL,1
+  148B'   22 0D96'       C      	LD	(SM.ZEIZ),HL
+  148E'   21 8830        C      	LD	HL,SD.TPA
+  1491'                  C      E2.SET:
+  1491'   22 0DC0'       C      	LD	(SM.WINA),HL
+  1494'   22 0DC2'       C      	LD	(SM.WINE),HL
+  1497'   C9             C      	RET
+                         C      
+  1498'                  C      E2.ERR99:
+  1498'   0E 63          C      	LD	C,99	;Speicherueberlauf
+  149A'   18 06          C      	JR	E2.ERR5A
+  149C'                  C      E2.ERR7A:
+  149C'   0E 07          C      	LD	C,7	;Zeichenkette nicht vorhanden
+  149E'   18 02          C      	JR	E2.ERR5A
+'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-38
+
+
+  14A0'                  C      E2.ERRO5:
+  14A0'   0E 05          C      	LD	C,5	;Zeilennummer zu gross
+  14A2'                  C      E2.ERR5A:
+  14A2'   C3 1B85'       C      	JP	E3.ERRR
+                         C      
+  14A5'                  C      E2.TEX0:
+  14A5'   E5             C      	PUSH	HL
+  14A6'   21 0D94'       C      	LD	HL,SM.STAT
+  14A9'   CB A6          C      	RES	4,M
+  14AB'   2A 0D96'       C      	LD	HL,(SM.ZEIZ)
+  14AE'   ED 5B 0D98'    C      	LD	DE,(SM.BZA)
+  14B2'   16 00          C      	LD	D,0
+  14B4'   19             C      	ADD	HL,DE
+  14B5'   18 40          C      	JR	E2.ZNR2
+                         C      
+  14B7'                  C      E2.TEXV1:
+  14B7'   3A 0D94'       C      	LD	A,(SM.STAT)	;pruefen Statusbits
+  14BA'   CB 67          C      	BIT	4,A
+  14BC'   20 E7          C      	JR	NZ,E2.TEX0
+  14BE'   CB 5F          C      	BIT	3,A
+  14C0'   20 4C          C      	JR	NZ,E2.NZEI
+  14C2'   CB 57          C      	BIT	2,A
+  14C4'   C2 15F5'       C      	JP	NZ,E2.MRK
+  14C7'   CB 4F          C      	BIT	1,A
+  14C9'   20 23          C      	JR	NZ,E2.ZNR
+  14CB'   CB 7F          C      	BIT	7,A
+  14CD'   28 17          C      	JR	Z,E2.SPR
+  14CF'   2A 0DC2'       C      	LD	HL,(SM.WINE)
+  14D2'   E5             C      	PUSH	HL
+  14D3'   ED 4B 0DC0'    C      	LD	BC,(SM.WINA)
+  14D7'   CD 1596'       C      	CALL	E2.LANG
+  14DA'   CD 163F'       C      	CALL	E2.ZNX2
+  14DD'   2A 0D96'       C      	LD	HL,(SM.ZEIZ)
+  14E0'   19             C      	ADD	HL,DE
+  14E1'   22 0D96'       C      	LD	(SM.ZEIZ),HL
+  14E4'   E1             C      	POP	HL
+  14E5'   C9             C      	RET
+                         C      
+  14E6'                  C      E2.SPR:
+  14E6'   ED 5B 0DB6'    C      	LD	DE,(SM.ZMAX)
+  14EA'   16 00          C      	LD	D,0
+  14EC'   18 24          C      	JR	E2.NZEI8
+                         C      
+  14EE'                  C      E2.ZNR:
+  14EE'   3E 01          C      	LD	A,1
+  14F0'   32 0D94'       C      	LD	(SM.STAT),A
+  14F3'   E5             C      	PUSH	HL
+  14F4'   2A 0D96'       C      	LD	HL,(SM.ZEIZ)
+  14F7'                  C      E2.ZNR2:
+  14F7'   CD 1577'       C      	CALL	E2.NKORR
+  14FA'   EB             C      	EX	DE,HL
+  14FB'   E1             C      	POP	HL
+  14FC'   CD 1503'       C      	CALL	E2.ZNR1
+  14FF'   E2 14A0'       C      	JP	PO,E2.ERRO5
+  1502'   C9             C      	RET
+                         C      
+  1503'                  C      E2.ZNR1:
+  1503'   1B             C      	DEC	DE	;BC=Textlaenge
+  1504'                  C      E2.ZNR0:
+  1504'   7A             C      	LD	A,D	;HL=Textanfang
+  1505'   B3             C      	OR	E
+  1506'   C8             C      	RET	Z
+  1507'   3E 1E          C      	LD	A,1EH
+  1509'   ED B1          C      	CPIR
+  150B'   E0             C      	RET	PO
+  150C'   18 F5          C      	JR	E2.ZNR1	;HL=WINE neu
+                         C      
+  150E'                  C      E2.NZEI:
+  150E'   ED 5B 0D99'    C      	LD	DE,(SM.WEITE)	;+/- n Zeilen
+  1512'                  C      E2.NZEI8:
+  1512'   ED 4B 0D96'    C      	LD	BC,(SM.ZEIZ)
+  1516'   2A 0D98'       C      	LD	HL,(SM.BZA)
+  1519'   26 00          C      	LD	H,0
+  151B'   09             C      	ADD	HL,BC
+  151C'   CB 7F          C      	BIT	7,A
+  151E'   20 18          C      	JR	NZ,E2.NZEIV
+  1520'   37             C      	SCF
+  1521'   ED 52          C      	SBC	HL,DE
+  1523'   23             C      	INC	HL
+  1524'   30 21          C      	JR	NC,E2.NZEIR
+  1526'   EB             C      	EX	DE,HL
+  1527'                  C      E2.NZEI7:
+  1527'   D5             C      	PUSH	DE
+'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-39
+
+
+  1528'   CD 163C'       C      	CALL	E2.ZNUMX
+  152B'   E1             C      	POP	HL
+  152C'   19             C      	ADD	HL,DE	;HL<=0!
+  152D'   22 0D96'       C      	LD	(SM.ZEIZ),HL
+  1530'   EB             C      	EX	DE,HL
+  1531'                  C      E2.NZEI6:
+  1531'   CD 1590'       C      	CALL	E2.QLANG
+  1534'   CD 1503'       C      	CALL	E2.ZNR1
+  1537'   C9             C      	RET
+                         C      
+  1538'                  C      E2.NZEIV:
+  1538'   19             C      	ADD	HL,DE
+  1539'   E5             C      	PUSH	HL
+  153A'   C5             C      	PUSH	BC
+  153B'   CD 163C'       C      	CALL	E2.ZNUMX
+  153E'   C1             C      	POP	BC
+  153F'   E1             C      	POP	HL
+  1540'   B7             C      	OR	A
+  1541'   ED 52          C      	SBC	HL,DE
+  1543'   D2 1488'       C      	JP	NC,E2.RESET
+  1546'   19             C      	ADD	HL,DE
+  1547'                  C      E2.NZEIR:
+  1547'   CD 1577'       C      	CALL	E2.NKORR
+  154A'   B7             C      	OR	A
+  154B'   ED 42          C      	SBC	HL,BC
+  154D'   EB             C      	EX	DE,HL	;DE=Weite
+  154E'   2A 0DC0'       C      	LD	HL,(SM.WINA)
+  1551'   C8             C      	RET	Z
+  1552'   38 0A          C      	JR	C,E2.NZEI4
+  1554'   E5             C      	PUSH	HL
+  1555'   C1             C      	POP	BC
+  1556'   CD 1593'       C      	CALL	E2.LANG1
+  1559'   D8             C      	RET	C
+  155A'   CD 1504'       C      	CALL	E2.ZNR0
+  155D'   C9             C      	RET
+                         C      
+  155E'                  C      E2.NZEI4:
+  155E'   01 8830        C      	LD	BC,SD.TPA
+  1561'   CD 1596'       C      	CALL	E2.LANG
+  1564'   38 C1          C      	JR	C,E2.NZEI7
+  1566'   09             C      	ADD	HL,BC
+  1567'   2B             C      	DEC	HL
+  1568'   03             C      	INC	BC
+  1569'                  C      E2.NZEI1:
+  1569'   3E 1E          C      	LD	A,1EH
+  156B'   ED B9          C      	CPDR
+  156D'   20 05          C      	JR	NZ,E2.NZEI3
+  156F'   7A             C      	LD	A,D
+  1570'   B3             C      	OR	E
+  1571'   13             C      	INC	DE
+  1572'   20 F5          C      	JR	NZ,E2.NZEI1
+  1574'                  C      E2.NZEI3:
+  1574'   23             C      	INC	HL
+  1575'   23             C      	INC	HL
+  1576'   C9             C      	RET
+                         C      
+  1577'                  C      E2.NKORR:
+  1577'   ED 5B 0DB2'    C      	LD	DE,(SM.ZPOS)
+  157B'   16 00          C      	LD	D,0
+  157D'   37             C      	SCF
+  157E'   ED 52          C      	SBC	HL,DE
+  1580'   23             C      	INC	HL
+  1581'   30 09          C      	JR	NC,E2.NKOR1
+  1583'   19             C      	ADD	HL,DE
+  1584'   7D             C      	LD	A,L
+  1585'   3D             C      	DEC	A
+  1586'   32 0DB2'       C      	LD	(SM.ZPOS),A
+  1589'   21 0001        C      	LD	HL,1
+  158C'                  C      E2.NKOR1:
+  158C'   22 0D96'       C      	LD	(SM.ZEIZ),HL
+  158F'   C9             C      	RET
+                         C      
+  1590'                  C      E2.QLANG:
+  1590'   01 8830        C      	LD	BC,SD.TPA
+  1593'                  C      E2.LANG1:
+  1593'   2A 0DC4'       C      	LD	HL,(SM.END)
+  1596'                  C      E2.LANG:
+  1596'   37             C      	SCF		;HL=Q.Ende  BC=Q.Anfang
+  1597'   ED 42          C      	SBC	HL,BC
+  1599'   23             C      	INC	HL
+  159A'   C5             C      	PUSH	BC
+  159B'   E3             C      	EX	(SP),HL
+  159C'   C1             C      	POP	BC	;BC=Q.Laenge   HL=Q.Anfang
+'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-40
+
+
+  159D'   C9             C      	RET		;CY=1 falls BC<=0
+                         C      
+  159E'                  C      E2.SUCH:
+  159E'   11 0DC7'       C      	LD	DE,SM.ZKA
+  15A1'   1A             C      	LD	A,(DE)
+  15A2'   ED B1          C      	CPIR
+  15A4'   37             C      	SCF
+  15A5'   E0             C      	RET	PO
+  15A6'   E5             C      	PUSH	HL
+  15A7'   2B             C      	DEC	HL
+  15A8'                  C      E2.SUCH1:
+  15A8'   C5             C      	PUSH	BC
+  15A9'   3A 0DC6'       C      	LD	A,(SM.LZA)
+  15AC'   47             C      	LD	B,A
+  15AD'   CD 073A'       C      	CALL	SY.VERGL
+  15B0'   37             C      	SCF
+  15B1'   3F             C      	CCF
+  15B2'   C1             C      	POP	BC
+  15B3'   E1             C      	POP	HL	;CY=1 Fehler
+  15B4'   C9             C      	RET		;CY=0 Z=1 falls Zeichenkette gefunden
+                         C      
+  15B5'                  C      E2.SUCHR:
+  15B5'   11 0DC7'       C      	LD	DE,SM.ZKA
+  15B8'   1A             C      	LD	A,(DE)
+  15B9'   ED B9          C      	CPDR
+  15BB'   37             C      	SCF
+  15BC'   E0             C      	RET	PO
+  15BD'   E5             C      	PUSH	HL
+  15BE'   23             C      	INC	HL
+  15BF'   18 E7          C      	JR	E2.SUCH1
+                         C      
+  15C1'                  C      E2.MARKR:
+  15C1'   CD 1593'       C      	CALL	E2.LANG1
+  15C4'   38 09          C      	JR	C,E2.MRKR1
+  15C6'   ED 5B 0D98'    C      	LD	DE,(SM.BZA)
+  15CA'   16 00          C      	LD	D,0
+  15CC'   CD 1504'       C      	CALL	E2.ZNR0
+  15CF'                  C      E2.MRKR1:
+  15CF'   01 8830        C      	LD	BC,SD.TPA
+  15D2'   CD 1596'       C      	CALL	E2.LANG
+  15D5'   38 0D          C      	JR	C,E2.MRKR4
+  15D7'   09             C      	ADD	HL,BC
+  15D8'   2B             C      	DEC	HL
+  15D9'   03             C      	INC	BC
+  15DA'                  C      E2.MRKR3:
+  15DA'   CD 15B5'       C      	CALL	E2.SUCHR
+  15DD'   38 05          C      	JR	C,E2.MRKR4
+  15DF'   20 F9          C      	JR	NZ,E2.MRKR3
+  15E1'   23             C      	INC	HL
+  15E2'   18 41          C      	JR	E2.MRK2
+  15E4'                  C      E2.MRKR4:
+  15E4'   CD 1590'       C      	CALL	E2.QLANG
+  15E7'   09             C      	ADD	HL,BC
+  15E8'   2B             C      	DEC	HL
+  15E9'   03             C      	INC	BC
+  15EA'                  C      E2.MRKR2:
+  15EA'   CD 15B5'       C      	CALL	E2.SUCHR
+  15ED'   DA 149C'       C      	JP	C,E2.ERR7A
+  15F0'   20 F8          C      	JR	NZ,E2.MRKR2
+  15F2'   23             C      	INC	HL
+  15F3'   18 30          C      	JR	E2.MRK2
+                         C      
+  15F5'                  C      E2.MRK:
+  15F5'   ED 4B 0DC0'    C      	LD	BC,(SM.WINA)
+  15F9'   CB 7F          C      	BIT	7,A
+  15FB'   28 C4          C      	JR	Z,E2.MARKR
+  15FD'   CD 1593'       C      	CALL	E2.LANG1
+  1600'   38 17          C      	JR	C,E2.MRK4
+  1602'   ED 5B 0D98'    C      	LD	DE,(SM.BZA)
+  1606'   16 00          C      	LD	D,0
+  1608'   1C             C      	INC	E
+  1609'   CD 1504'       C      	CALL	E2.ZNR0
+  160C'   E2 1619'       C      	JP	PO,E2.MRK4
+  160F'                  C      E2.MRK3:
+  160F'   CD 159E'       C      	CALL	E2.SUCH
+  1612'   38 05          C      	JR	C,E2.MRK4
+  1614'   20 F9          C      	JR	NZ,E2.MRK3
+  1616'   2B             C      	DEC	HL
+  1617'   18 0C          C      	JR	E2.MRK2
+  1619'                  C      E2.MRK4:
+  1619'   CD 1590'       C      	CALL	E2.QLANG
+  161C'                  C      E2.MRK1:
+  161C'   CD 159E'       C      	CALL	E2.SUCH
+'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-41
+
+
+  161F'   DA 149C'       C      	JP	C,E2.ERR7A
+  1622'   20 F8          C      	JR	NZ,E2.MRK1
+  1624'   2B             C      	DEC	HL
+  1625'                  C      E2.MRK2:
+  1625'   01 8830        C      	LD	BC,SD.TPA
+  1628'   23             C      	INC	HL
+  1629'   CD 1596'       C      	CALL	E2.LANG
+  162C'   E5             C      	PUSH	HL
+  162D'   C5             C      	PUSH	BC
+  162E'   CD 163F'       C      	CALL	E2.ZNX2
+  1631'   EB             C      	EX	DE,HL
+  1632'   CD 1577'       C      	CALL	E2.NKORR
+  1635'   EB             C      	EX	DE,HL
+  1636'   C1             C      	POP	BC
+  1637'   E1             C      	POP	HL
+  1638'   CD 1503'       C      	CALL	E2.ZNR1
+  163B'   C9             C      	RET
+                         C      
+  163C'                  C      E2.ZNUMX:
+  163C'   CD 1590'       C      	CALL	E2.QLANG
+  163F'                  C      E2.ZNX2:
+  163F'   3E 1E          C      	LD	A,1EH
+  1641'   11 0000        C      	LD	DE,0
+  1644'   D8             C      	RET	C
+  1645'                  C      E2.ZNX1:
+  1645'   13             C      	INC	DE
+  1646'   ED B1          C      	CPIR
+  1648'   E0             C      	RET	PO		;DE=Zeilenanzahl, HL=(END)
+  1649'   18 FA          C      	JR	E2.ZNX1
+                         C      
+                         C      ;TEXTAUFRUF AUS TEXTPUFFER
+                         C      
+  164B'                  C      E2.RUFTF:
+  164B'   3A 0D93'       C      	LD	A,(SM.FSTAT)
+  164E'   FE 80          C      	CP	80H
+  1650'   C9             C      	RET
+                         C      
+  1651'                  C      E2.RUFT:
+  1651'   3A 0DB5'       C      	LD	A,(SM.SMIN)	;HL=WINE  BC=Laenge
+  1654'   3D             C      	DEC	A
+  1655'   32 0DB3'       C      	LD	(SM.SPOS),A
+  1658'   CD 0814'       C      	CALL	S1.SPOSN
+  165B'   04             C      	INC	B
+  165C'   05             C      	DEC	B
+  165D'   20 04          C      	JR	NZ,E2.RUF5
+  165F'   B9             C      	CP	C
+  1660'   38 01          C      	JR	C,E2.RUF5
+  1662'   79             C      	LD	A,C
+  1663'                  C      E2.RUF5:
+  1663'   4F             C      	LD	C,A
+  1664'   06 00          C      	LD	B,0
+  1666'   E5             C      	PUSH	HL
+  1667'   3E 1E          C      	LD	A,SD.NL
+  1669'   59             C      	LD	E,C
+  166A'   ED B1          C      	CPIR
+  166C'   28 2A          C      	JR	Z,E2.RUF3
+  166E'   2B             C      	DEC	HL
+  166F'   4B             C      	LD	C,E
+  1670'   CD 164B'       C      	CALL	E2.RUFTF
+  1673'   28 5D          C      	JR	Z,E2.RUFQ2
+  1675'   3E 20          C      	LD	A,SD.SPACE
+  1677'   ED B9          C      	CPDR
+  1679'   28 0D          C      	JR	Z,E2.RUF2
+  167B'   4B             C      	LD	C,E
+  167C'   0D             C      	DEC	C
+  167D'   20 01          C      	JR	NZ,$+3
+  167F'   0C             C      	INC	C
+  1680'   E1             C      	POP	HL
+  1681'   CD 16A1'       C      	CALL	E2.RUF1
+  1684'   3E 1E          C      	LD	A,SD.NL
+  1686'   12             C      	LD	(DE),A
+  1687'   C9             C      	RET
+  1688'                  C      E2.RUF2:
+  1688'   E2 1691'       C      	JP	PO,E2.RUF6
+  168B'   ED A9          C      	CPD
+  168D'   28 F9          C      	JR	Z,E2.RUF2
+  168F'   23             C      	INC	HL
+  1690'   03             C      	INC	BC
+  1691'                  C      E2.RUF6:
+  1691'   23             C      	INC	HL
+  1692'   36 1E          C      	LD	M,SD.NL
+  1694'   03             C      	INC	BC
+  1695'   E1             C      	POP	HL
+'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-42
+
+
+  1696'   18 09          C      	JR	E2.RUF1
+                         C      
+  1698'                  C      E2.RUF3:
+  1698'   7B             C      	LD	A,E
+  1699'   91             C      	SUB	C
+  169A'   4F             C      	LD	C,A
+  169B'   E1             C      	POP	HL
+  169C'   CD 164B'       C      	CALL	E2.RUFTF
+  169F'   28 44          C      	JR	Z,E2.RUFQ
+  16A1'                  C      E2.RUF1:
+  16A1'   EB             C      	EX	DE,HL
+  16A2'   CD 0580'       C      	CALL	SY.CPOS
+  16A5'   EB             C      	EX	DE,HL
+  16A6'                  C      E2.RUF4:
+  16A6'   ED B0          C      	LDIR
+  16A8'   22 0DC2'       C      	LD	(SM.WINE),HL
+  16AB'   C9             C      	RET
+                         C      
+  16AC'                  C      E2.RUFQ4:
+  16AC'   13             C      	INC	DE
+  16AD'                  C      E2.RUFQ3:
+  16AD'   CD 0580'       C      	CALL	SY.CPOS
+  16B0'   06 03          C      	LD	B,3
+  16B2'                  C      E2.RUFQ5:
+  16B2'   36 23          C      	LD	M,'#'
+  16B4'   23             C      	INC	HL
+  16B5'   10 FB          C      	DJNZ	E2.RUFQ5
+  16B7'   23             C      	INC	HL
+  16B8'   CD 0814'       C      	CALL	S1.SPOSN
+  16BB'   D6 05          C      	SUB	5
+  16BD'   B9             C      	CP	C
+  16BE'   30 01          C      	JR	NC,$+3
+  16C0'   4F             C      	LD	C,A
+  16C1'   EB             C      	EX	DE,HL
+  16C2'   CD 17A5'       C      	CALL	E2.KOMZ3
+  16C5'   36 23          C      	LD	M,'#'
+  16C7'   C3 179A'       C      	JP	E2.KOMZ4
+                         C      
+  16CA'                  C      E2.RUFQ1:
+  16CA'   CD 0580'       C      	CALL	SY.CPOS
+  16CD'   EB             C      	EX	DE,HL
+  16CE'   0C             C      	INC	C
+  16CF'   C3 177F'       C      	JP	E2.KOMTR
+                         C      
+  16D2'                  C      E2.RUFQ2:
+  16D2'   D1             C      	POP	DE
+  16D3'   1A             C      	LD	A,(DE)
+  16D4'   FE 3B          C      	CP	3BH
+  16D6'   28 F2          C      	JR	Z,E2.RUFQ1
+  16D8'   FE 23          C      	CP	'#'
+  16DA'   28 D0          C      	JR	Z,E2.RUFQ4
+  16DC'   3E 3B          C      	LD	A,3BH
+  16DE'   C5             C      	PUSH	BC
+  16DF'   ED B9          C      	CPDR
+  16E1'   C1             C      	POP	BC
+  16E2'   20 C9          C      	JR	NZ,E2.RUFQ3
+  16E4'   EB             C      	EX	DE,HL
+                         C      
+  16E5'                  C      E2.RUFQ:
+  16E5'   41             C      	LD	B,C	;Quellkodeaufruf und Sortieren
+  16E6'   CD 074B'       C      	CALL	SY.SZEI4
+  16E9'   28 46          C      	JR	Z,E2.OP1
+  16EB'   48             C      	LD	C,B
+  16EC'   06 00          C      	LD	B,0
+  16EE'   FE 23          C      	CP	'#'
+  16F0'   CA 16A1'       C      	JP	Z,E2.RUF1
+  16F3'   FE 3B          C      	CP	3BH
+  16F5'   CA 16A1'       C      	JP	Z,E2.RUF1
+  16F8'   E5             C      	PUSH	HL
+  16F9'   3E 3B          C      	LD	A,3BH
+  16FB'   59             C      	LD	E,C
+  16FC'   ED B1          C      	CPIR		;allgemeiner Kommentar ?
+  16FE'   CC 1755'       C      	CALL	Z,E2.KOM
+  1701'   E1             C      	POP	HL	;Marke ?
+  1702'   E5             C      	PUSH	HL
+  1703'   4B             C      	LD	C,E
+  1704'   3E 3A          C      	LD	A,':'	;Doppelpunkt-Suche
+  1706'   ED B1          C      	CPIR
+  1708'   E1             C      	POP	HL
+  1709'   20 15          C      	JR	NZ,E2.OPCO	;Sprung, falls keine Marke
+  170B'                  C      E2.MARK:
+  170B'   7B             C      	LD	A,E
+  170C'   91             C      	SUB	C	;Markenlaenge einstellen
+'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-43
+
+
+  170D'   4F             C      	LD	C,A
+  170E'   E5             C      	PUSH	HL
+  170F'   C5             C      	PUSH	BC
+  1710'   3E 27          C      	LD	A,27H	;Literalsuche
+  1712'   ED B1          C      	CPIR
+  1714'   C1             C      	POP	BC
+  1715'   E1             C      	POP	HL
+  1716'   28 08          C      	JR	Z,E2.OPCO	;keine Marke falls Literal
+  1718'   CD 17A9'       C      	CALL	E2.POSI0
+  171B'   ED B0          C      	LDIR
+  171D'   CD 074B'       C      	CALL	SY.SZEI4
+  1720'                  C      E2.OPCO:
+  1720'   3A 0D9C'       C      	LD	A,(SM.TABZ+1)
+  1723'   CD 17AC'       C      	CALL	E2.POSIT
+  1726'                  C      E2.OP2:
+  1726'   7E             C      	LD	A,M
+  1727'   FE 20          C      	CP	SD.SPACE
+  1729'   28 0A          C      	JR	Z,E2.OPRD
+  172B'   ED A0          C      	LDI
+  172D'   FE 1E          C      	CP	SD.NL
+  172F'   20 F5          C      	JR	NZ,E2.OP2
+  1731'                  C      E2.OP1:
+  1731'   22 0DC2'       C      	LD	(SM.WINE),HL
+  1734'   C9             C      	RET
+                         C      
+  1735'                  C      E2.OPRD:
+  1735'   3A 0D9D'       C      	LD	A,(SM.TABZ+2)
+  1738'   CD 17AC'       C      	CALL	E2.POSIT
+  173B'   CD 074F'       C      	CALL	SY.SZEI2
+  173E'                  C      E2.OP3:
+  173E'   FE 3B          C      	CP	3BH	;Semikolon
+  1740'   C8             C      	RET	Z
+  1741'   ED A0          C      	LDI
+  1743'   FE 1E          C      	CP	SD.NL
+  1745'   28 EA          C      	JR	Z,E2.OP1
+  1747'   FE 27          C      	CP	27H
+  1749'   7E             C      	LD	A,M
+  174A'   20 F2          C      	JR	NZ,E2.OP3
+  174C'                  C      E2.OP4:
+  174C'   ED A0          C      	LDI
+  174E'   FE 27          C      	CP	27H
+  1750'   7E             C      	LD	A,M
+  1751'   28 EB          C      	JR	Z,E2.OP3
+  1753'   18 F7          C      	JR	E2.OP4
+                         C      
+  1755'                  C      E2.KOM:
+  1755'   E5             C      	PUSH	HL
+  1756'   C5             C      	PUSH	BC
+  1757'   7B             C      	LD	A,E
+  1758'   91             C      	SUB	C
+  1759'   4F             C      	LD	C,A
+  175A'   3E 27          C      	LD	A,27H
+  175C'   2B             C      	DEC	HL
+  175D'   ED B9          C      	CPDR
+  175F'   20 0B          C      	JR	NZ,E2.KOM3
+  1761'   ED B9          C      	CPDR
+  1763'   28 07          C      	JR	Z,E2.KOM3
+  1765'   C1             C      	POP	BC
+  1766'   E1             C      	POP	HL
+  1767'   3E 3B          C      	LD	A,3BH
+  1769'   ED B1          C      	CPIR
+  176B'   C0             C      	RET	NZ
+  176C'                  C      E2.KOM3:
+  176C'   C1             C      	POP	BC
+  176D'   E1             C      	POP	HL
+  176E'   7B             C      	LD	A,E
+  176F'   91             C      	SUB	C
+  1770'   5F             C      	LD	E,A
+  1771'   D5             C      	PUSH	DE
+  1772'   03             C      	INC	BC
+  1773'   2B             C      	DEC	HL
+  1774'   3A 0D9E'       C      	LD	A,(SM.TABZ+3)
+  1777'   CD 17AC'       C      	CALL	E2.POSIT
+  177A'   CD 177F'       C      	CALL	E2.KOMTR
+  177D'   D1             C      	POP	DE
+  177E'   C9             C      	RET
+                         C      
+  177F'                  C      E2.KOMTR:
+  177F'   CD 0814'       C      	CALL	S1.SPOSN
+  1782'   91             C      	SUB	C
+  1783'   D2 16A6'       C      	JP	NC,E2.RUF4
+  1786'   81             C      	ADD	A,C
+  1787'   3D             C      	DEC	A
+'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-44
+
+
+  1788'   4F             C      	LD	C,A
+  1789'   C5             C      	PUSH	BC
+  178A'   E5             C      	PUSH	HL
+  178B'   09             C      	ADD	HL,BC
+  178C'   3E 20          C      	LD	A,SD.SPACE
+  178E'   ED B9          C      	CPDR
+  1790'   E1             C      	POP	HL
+  1791'   CC 17A1'       C      	CALL	Z,E2.KOMZ2
+  1794'   C1             C      	POP	BC
+  1795'   C4 17A5'       C      	CALL	NZ,E2.KOMZ3
+  1798'   36 3B          C      	LD	M,3BH
+  179A'                  C      E2.KOMZ4:
+  179A'   3E 1E          C      	LD	A,SD.NL
+  179C'   12             C      	LD	(DE),A
+  179D'   22 0DC2'       C      	LD	(SM.WINE),HL
+  17A0'   C9             C      	RET
+                         C      
+  17A1'                  C      E2.KOMZ2:
+  17A1'   03             C      	INC	BC
+  17A2'   ED B0          C      	LDIR
+  17A4'   C9             C      	RET
+                         C      
+  17A5'                  C      E2.KOMZ3:
+  17A5'   ED B0          C      	LDIR
+  17A7'   2B             C      	DEC	HL
+  17A8'   C9             C      	RET
+                         C      
+  17A9'                  C      E2.POSI0:
+  17A9'   3A 0D9B'       C      	LD	A,(SM.TABZ)
+  17AC'                  C      E2.POSIT:
+  17AC'   32 0DB3'       C      	LD	(SM.SPOS),A
+  17AF'   EB             C      	EX	DE,HL
+  17B0'   CD 0580'       C      	CALL	SY.CPOS
+  17B3'   EB             C      	EX	DE,HL
+  17B4'   C9             C      	RET
+                         C      
+  17B5'                  C      E2.UML:
+  17B5'   CD 130B'       C      	CALL	E1.BIZA
+  17B8'   7B             C      	LD	A,E
+  17B9'   32 0D98'       C      	LD	(SM.BZA),A
+  17BC'   CD 125D'       C      	CALL	E1.BIL
+  17BF'                  C      E2.UMLT1:
+  17BF'   E5             C      	PUSH	HL
+  17C0'   C1             C      	POP	BC
+  17C1'                  C      E2.UMLT:
+  17C1'   21 3000        C      	LD	HL,SD.BWSA
+  17C4'   11 2C00        C      	LD	DE,SD.BPA
+  17C7'   D5             C      	PUSH	DE
+  17C8'   CD 1822'       C      	CALL	E2.UMLBT	;Komprimieren
+  17CB'   E1             C      	POP	HL
+  17CC'   EB             C      	EX	DE,HL
+  17CD'   B7             C      	OR	A
+  17CE'   ED 52          C      	SBC	HL,DE
+  17D0'   E5             C      	PUSH	HL	;HL=Laenge
+  17D1'   CD 17E7'       C      	CALL	E2.UMLAD
+  17D4'   C1             C      	POP	BC
+  17D5'   21 2C00        C      	LD	HL,SD.BPA
+  17D8'                  C      E2.UMLA:
+  17D8'   ED 5B 0DC0'    C      	LD	DE,(SM.WINA)
+  17DC'   78             C      	LD	A,B
+  17DD'   B1             C      	OR	C
+  17DE'   28 02          C      	JR	Z,E2.UMLE
+  17E0'   ED B0          C      	LDIR
+  17E2'                  C      E2.UMLE:
+  17E2'   EB             C      	EX	DE,HL
+  17E3'   22 0DC2'       C      	LD	(SM.WINE),HL
+  17E6'   C9             C      	RET
+                         C      
+  17E7'                  C      E2.UMLAD:
+  17E7'   ED 4B 0DC0'    C      	LD	BC,(SM.WINA)	;HL=Laenge Text im BPUF
+  17EB'   09             C      	ADD	HL,BC	;HL=WINE neu
+  17EC'   E5             C      	PUSH	HL
+  17ED'   ED 5B 0DC2'    C      	LD	DE,(SM.WINE)
+  17F1'   B7             C      	OR	A
+  17F2'   ED 52          C      	SBC	HL,DE	;CY=1 falls WINE neu < alt
+  17F4'   E1             C      	POP	HL
+  17F5'   C8             C      	RET	Z
+  17F6'   E5             C      	PUSH	HL
+  17F7'   F5             C      	PUSH	AF
+  17F8'   2A 0DC4'       C      	LD	HL,(SM.END)
+  17FB'   37             C      	SCF
+  17FC'   ED 52          C      	SBC	HL,DE
+  17FE'   23             C      	INC	HL
+'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-45
+
+
+  17FF'   30 06          C      	JR	NC,E2.UMLC	;HL=Laenge Q.Rest
+  1801'   F1             C      	POP	AF
+  1802'   E1             C      	POP	HL
+  1803'   22 0DC4'       C      	LD	(SM.END),HL
+  1806'   C9             C      	RET
+  1807'                  C      E2.UMLC:
+  1807'   F1             C      	POP	AF
+  1808'   E5             C      	PUSH	HL
+  1809'   C1             C      	POP	BC	;BC=Laenge Q.Rest
+  180A'   E1             C      	POP	HL	;HL=WINE neu
+  180B'   38 0D          C      	JR	C,E2.UMLR
+  180D'   09             C      	ADD	HL,BC	;Luecke vergroessern
+  180E'   EB             C      	EX	DE,HL	;DE=END neu
+  180F'   2A 0DC4'       C      	LD	HL,(SM.END)
+  1812'   ED 53 0DC4'    C      	LD	(SM.END),DE
+  1816'   03             C      	INC	BC
+  1817'   ED B8          C      	LDDR
+  1819'   C9             C      	RET
+  181A'                  C      E2.UMLR:
+  181A'   EB             C      	EX	DE,HL	;DE=WINE neu   HL= alt
+  181B'   ED B0          C      	LDIR
+  181D'   ED 53 0DC4'    C      	LD	(SM.END),DE
+  1821'   C9             C      	RET
+                         C      
+  1822'                  C      E2.UMLBT:
+  1822'   78             C      	LD	A,B
+  1823'   B1             C      	OR	C
+  1824'   C8             C      	RET	Z
+  1825'   3A 0D93'       C      	LD	A,(SM.FSTAT)
+  1828'   FE 80          C      	CP	80H
+  182A'   28 44          C      	JR	Z,E2.UML1
+  182C'                  C      E2.UMLF:
+  182C'   C5             C      	PUSH	BC
+  182D'   E3             C      	EX	(SP),HL	;HL=Laenge (SP)=Quelle
+  182E'   ED 4B 0DBF'    C      	LD	BC,(SM.SPANZ)
+  1832'   06 00          C      	LD	B,0
+  1834'   CD 086E'       C      	CALL	S1.DIV	;A=Zeilenazahl  BC=Zeilenlaenge
+  1837'   E1             C      	POP	HL	;HL=Quelle
+  1838'                  C      E2.UMLF0:
+  1838'   F5             C      	PUSH	AF
+  1839'   C5             C      	PUSH	BC
+  183A'   E5             C      	PUSH	HL
+  183B'   41             C      	LD	B,C
+  183C'   CD 074B'       C      	CALL	SY.SZEI4	;Z=1 wenn nur space
+  183F'   28 14          C      	JR	Z,E2.UMLF1
+  1841'   ED 4B 0DB5'    C      	LD	BC,(SM.SMIN)
+  1845'   06 00          C      	LD	B,0
+  1847'   0D             C      	DEC	C
+  1848'   E1             C      	POP	HL
+  1849'   E5             C      	PUSH	HL
+  184A'   09             C      	ADD	HL,BC
+  184B'   F5             C      	PUSH	AF
+  184C'   3A 0DB7'       C      	LD	A,(SM.SMAX)
+  184F'   91             C      	SUB	C
+  1850'   4F             C      	LD	C,A
+  1851'   F1             C      	POP	AF
+  1852'   CD 186A'       C      	CALL	E2.UMLFR
+  1855'                  C      E2.UMLF1:
+  1855'   E1             C      	POP	HL
+  1856'   C1             C      	POP	BC
+  1857'   09             C      	ADD	HL,BC
+  1858'   F1             C      	POP	AF
+  1859'   3D             C      	DEC	A
+  185A'   20 DC          C      	JR	NZ,E2.UMLF0
+  185C'   C9             C      	RET
+                         C      
+  185D'                  C      E2.UMLF2:
+  185D'   3E 20          C      	LD	A,SD.SPACE
+  185F'   ED A1          C      	CPI
+  1861'   E0             C      	RET	PO
+  1862'   28 F9          C      	JR	Z,E2.UMLF2
+  1864'   2B             C      	DEC	HL
+  1865'   03             C      	INC	BC
+  1866'                  C      E2.UMLF3:
+  1866'   7E             C      	LD	A,M
+  1867'   ED A0          C      	LDI
+  1869'   E0             C      	RET	PO
+  186A'                  C      E2.UMLFR:
+  186A'   FE 1E          C      	CP	SD.NL
+  186C'   20 F8          C      	JR	NZ,E2.UMLF3
+  186E'   18 ED          C      	JR	E2.UMLF2
+                         C      
+  1870'                  C      E2.UML1:
+'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-46
+
+
+  1870'   3E 20          C      	LD	A,SD.SPACE	;Komprimieren
+  1872'   ED A1          C      	CPI
+  1874'   E0             C      	RET	PO
+  1875'   28 F9          C      	JR	Z,E2.UML1
+  1877'   2B             C      	DEC	HL
+  1878'   03             C      	INC	BC
+  1879'   7E             C      	LD	A,M	;kein space
+  187A'   FE 1E          C      	CP	1EH	;NL ?  ;SD.NL ???
+  187C'   28 10          C      	JR	Z,E2.UML2
+  187E'   FE 27          C      	CP	27H	;Literal ?
+  1880'   28 11          C      	JR	Z,E2.UML4
+  1882'   FE 3B          C      	CP	3BH	;Semikolon ?
+  1884'   28 17          C      	JR	Z,E2.UML5
+  1886'                  C      E2.UML6:
+  1886'   ED A0          C      	LDI		;Text uebertragen mit nachgestelltem SP
+  1888'   E0             C      	RET	PO
+  1889'   3E 20          C      	LD	A,SD.SPACE
+  188B'   BE             C      	CP	M
+  188C'   20 E2          C      	JR	NZ,E2.UML1
+  188E'                  C      E2.UML2:
+  188E'   ED A0          C      	LDI		;Text uebertragen ohne nachgestelltes SP
+  1890'   E0             C      	RET	PO
+  1891'   18 DD          C      	JR	E2.UML1
+  1893'                  C      E2.UML4:
+  1893'   ED A0          C      	LDI
+  1895'   E0             C      	RET	PO
+  1896'   3E 27          C      	LD	A,27H
+  1898'   BE             C      	CP	M
+  1899'   20 F8          C      	JR	NZ,E2.UML4
+  189B'   18 E9          C      	JR	E2.UML6
+  189D'                  C      E2.UML5:
+  189D'   ED A0          C      	LDI
+  189F'   E0             C      	RET	PO
+  18A0'   3E 1E          C      	LD	A,1EH
+  18A2'   BE             C      	CP	M
+  18A3'   20 F8          C      	JR	NZ,E2.UML5
+  18A5'   18 E7          C      	JR	E2.UML2
+                         C      
+                         C      			;Stand: 30.Januar 85 - K EAW/wfvm..MSH
+                         C      
+                         C      ;	END
+                         C      	TITLE	'EDITOR --- Kommandointerpreter'
+                         C      	PAGE
+'EDITOR --- Kommandointerpreter'	MACRO-80 3.44	09-Dec-81	PAGE	1-47
+
+
+                         C      
+                         C      ;	PN	E301
+                         C      ;****************************************************************
+                         C      ;*                  DEG2000 V.1.2   EDITOR --- Kommandointerpr. *
+                         C      ;*  Version         --------------------------------------------*
+                         C      ;*                  Programmierer: M. Herbote  K EAW  ZFT (WFT) *
+                         C      ;*  V 1 . 2         --------------------------------------------*
+                         C      ;*                  Stand        : 30.Januar 1985               *
+                         C      ;****************************************************************
+  18A7'                  C      E3.KOMAN:
+  18A7'   FE 5A          C      	CP	'Z'	;(HL)=A=1.Kommandozeichen
+  18A9'   CA 18DC'       C      	JP	Z,E3.ZET	;B=Zaehler
+  18AC'   FE 54          C      	CP	'T'
+  18AE'   CA 1941'       C      	JP	Z,E3.TAUS
+  18B1'   FE 59          C      	CP	'Y'
+  18B3'   CA 19E1'       C      	JP	Z,E3.STAN
+  18B6'   FE 58          C      	CP	'X'
+  18B8'   CA 19C8'       C      	JP	Z,E3.LESE
+  18BB'   FE 4D          C      	CP	'M'
+  18BD'   CA 1A3E'       C      	JP	Z,E3.MOVE
+  18C0'   FE 4E          C      	CP	'N'
+  18C2'   CA 19B1'       C      	JP	Z,E3.NEUST
+  18C5'   FE 50          C      	CP	'P'
+  18C7'   CA 1AEF'       C      	JP	Z,E3.PTSL
+  18CA'   FE 45          C      	CP	'E'
+  18CC'   20 06          C      	JR	NZ,E3.ERRO2
+  18CE'   CD 1488'       C      	CALL	E2.RESET
+  18D1'   C3 000B'       C      	JP	SY.SYSTB
+  18D4'                  C      E3.ERRO2:
+  18D4'   0E 02          C      	LD	C,2	;KOMMANDO FALSCH
+  18D6'                  C      E3.FEHL:
+  18D6'   CD 0608'       C      	CALL	SY.LCPOS
+  18D9'                  C      E3.FEHL1:
+  18D9'   C3 1B85'       C      	JP	E3.ERRR
+                         C      
+                         C      ;Kommando       Statusbyte     Bedeutung
+                         C      ;  Z                1          fortlaufend  Blaettern
+                         C      ;  Z n              2          ab Zeile  n  Blaettern
+                         C      ;  Z '...'          4          ab naechster Zeichenkette
+                         C      ;  Z +n             8          ab Zeilenstand  +n
+                         C      ;  Z +              8          ''      ''      +1
+                         C      ;  Z*....       wie oben       wie oben ab Zeile 1 geginnend
+                         C      ;  T '..' '..'   ''  ''+10H    Tausch von Zeichenketten
+                         C      ;  Y ....        ''  ''  ''    Stanzen
+                         C      ;  M ....        ''  ''  ''    Verschieben
+                         C      
+                         C      
+  18DC'                  C      E3.ZET:
+  18DC'   EB             C      	EX	DE,HL
+  18DD'   21 0D94'       C      	LD	HL,SM.STAT	;DE=Anfang Rest Kommando
+  18E0'   36 01          C      	LD	M,1
+  18E2'   CD 08FB'       C      	CALL	S1.SUZEI
+  18E5'   C8             C      	RET	Z
+  18E6'   FE 2A          C      	CP	'*'
+  18E8'   20 0B          C      	JR	NZ,E3.Z1
+  18EA'   CD 1488'       C      	CALL	E2.RESET
+  18ED'   AF             C      	XOR	A
+  18EE'   32 0D98'       C      	LD	(SM.BZA),A
+  18F1'   CD 08FB'       C      	CALL	S1.SUZEI
+  18F4'   C8             C      	RET	Z		;Blaettern ab #
+  18F5'                  C      E3.Z1:
+  18F5'   CD 0877'       C      	CALL	S1.IDH
+  18F8'   38 0B          C      	JR	C,E3.Z4
+  18FA'   28 1F          C      	JR	Z,E3.ERRO3
+  18FC'                  C      E3.ZET1:
+  18FC'   3E 02          C      	LD	A,2
+  18FE'   32 0D94'       C      	LD	(SM.STAT),A
+  1901'                  C      E3.Z3:
+  1901'   22 0D96'       C      	LD	(SM.ZEIZ),HL
+  1904'   C9             C      	RET
+  1905'                  C      E3.Z4:
+  1905'   FE 2B          C      	CP	'+'
+  1907'   20 18          C      	JR	NZ,E3.ZEIK
+  1909'   3E 08          C      	LD	A,8
+  190B'   32 0D94'       C      	LD	(SM.STAT),A
+  190E'   21 0001        C      	LD	HL,1
+  1911'                  C      E3.PL3:
+  1911'   CD 0901'       C      	CALL	S1.SUZA
+  1914'   38 05          C      	JR	C,E3.ERRO3
+  1916'   22 0D99'       C      	LD	(SM.WEITE),HL
+  1919'   C9             C      	RET
+                         C      
+'EDITOR --- Kommandointerpreter'	MACRO-80 3.44	09-Dec-81	PAGE	1-48
+
+
+  191A'                  C      E3.ERR3A:
+  191A'   F1             C      	POP	AF
+  191B'                  C      E3.ERRO3:
+  191B'   0E 03          C      	LD	C,3	;falsche Zahleneingabe
+  191D'   EB             C      	EX	DE,HL
+  191E'   C3 18D6'       C      	JP	E3.FEHL
+                         C      
+  1921'                  C      E3.ZEIK:
+  1921'   21 0D94'       C      	LD	HL,SM.STAT
+  1924'   36 04          C      	LD	M,4
+  1926'   D5             C      	PUSH	DE
+  1927'   E1             C      	POP	HL
+  1928'                  C      E3.ZEIKA:
+  1928'   CD 08EC'       C      	CALL	S1.KETTE
+  192B'   38 0F          C      	JR	C,E3.ERRO4
+  192D'   28 0D          C      	JR	Z,E3.ERRO4
+  192F'                  C      E3.ZEIKC:
+  192F'   21 0DC6'       C      	LD	HL,SM.LZA
+  1932'                  C      E3.ZEIKB:
+  1932'   EB             C      	EX	DE,HL
+  1933'   12             C      	LD	(DE),A
+  1934'   13             C      	INC	DE
+  1935'   23             C      	INC	HL
+  1936'   06 00          C      	LD	B,0
+  1938'   4F             C      	LD	C,A
+  1939'   ED B0          C      	LDIR
+  193B'   C9             C      	RET
+                         C      
+  193C'                  C      E3.ERRO4:
+  193C'   0E 04          C      	LD	C,4	;falsch eingegebene Zeichenkette
+  193E'   C3 18D9'       C      	JP	E3.FEHL1
+                         C      
+  1941'                  C      E3.TAUS:
+  1941'   CD 074F'       C      	CALL	SY.SZEI2
+  1944'   C8             C      	RET	Z
+  1945'   E5             C      	PUSH	HL
+  1946'   D1             C      	POP	DE
+  1947'   CD 08EC'       C      	CALL	S1.KETTE
+  194A'   38 F0          C      	JR	C,E3.ERRO4
+  194C'   28 EE          C      	JR	Z,E3.ERRO4
+  194E'   C5             C      	PUSH	BC
+  194F'   CD 192F'       C      	CALL	E3.ZEIKC
+  1952'   C1             C      	POP	BC
+  1953'   CD 074F'       C      	CALL	SY.SZEI2
+  1956'   28 07          C      	JR	Z,E3.TAU3
+  1958'   E5             C      	PUSH	HL
+  1959'   D1             C      	POP	DE
+  195A'   CD 08EC'       C      	CALL	S1.KETTE
+  195D'   38 DD          C      	JR	C,E3.ERRO4
+  195F'                  C      E3.TAU3:
+  195F'   21 0E12'       C      	LD	HL,SM.LZN
+  1962'   36 00          C      	LD	M,0
+  1964'   28 06          C      	JR	Z,E3.TAU6
+  1966'   77             C      	LD	M,A
+  1967'   13             C      	INC	DE
+  1968'   ED 53 0E13'    C      	LD	(SM.ZKN),DE
+  196C'                  C      E3.TAU6:
+  196C'   CD 1590'       C      	CALL	E2.QLANG
+  196F'                  C      E3.TAU4:
+  196F'   D4 159E'       C      	CALL	NC,E2.SUCH
+  1972'   38 16          C      	JR	C,E3.ERRO7
+  1974'   20 F9          C      	JR	NZ,E3.TAU4
+  1976'                  C      E3.TAU1:
+  1976'   CC 198F'       C      	CALL	Z,E3.EXCH
+  1979'   D4 159E'       C      	CALL	NC,E2.SUCH
+  197C'   30 F8          C      	JR	NC,E3.TAU1
+  197E'                  C      E3.TAU2:
+  197E'   21 0D94'       C      	LD	HL,SM.STAT
+  1981'   CB 56          C      	BIT	2,M
+  1983'   28 02          C      	JR	Z,E3.TAU5
+  1985'   36 01          C      	LD	M,1
+  1987'                  C      E3.TAU5:
+  1987'   CB E6          C      	SET	4,M
+  1989'   C9             C      	RET
+                         C      
+  198A'                  C      E3.ERRO7:
+  198A'   0E 07          C      	LD	C,7	;Zeichenkette nicht vorhanden
+  198C'   C3 18D6'       C      	JP	E3.FEHL
+                         C      
+  198F'                  C      E3.EXCH:
+  198F'   2B             C      	DEC	HL
+  1990'   22 0DC0'       C      	LD	(SM.WINA),HL
+  1993'   ED 4B 0DC6'    C      	LD	BC,(SM.LZA)
+'EDITOR --- Kommandointerpreter'	MACRO-80 3.44	09-Dec-81	PAGE	1-49
+
+
+  1997'   06 00          C      	LD	B,0
+  1999'   09             C      	ADD	HL,BC
+  199A'   22 0DC2'       C      	LD	(SM.WINE),HL
+  199D'   2A 0E12'       C      	LD	HL,(SM.LZN)
+  19A0'   60             C      	LD	H,B
+  19A1'   E5             C      	PUSH	HL
+  19A2'   CD 17E7'       C      	CALL	E2.UMLAD
+  19A5'   C1             C      	POP	BC
+  19A6'   2A 0E13'       C      	LD	HL,(SM.ZKN)
+  19A9'   CD 17D8'       C      	CALL	E2.UMLA
+  19AC'   E5             C      	PUSH	HL
+  19AD'   C1             C      	POP	BC
+  19AE'   C3 1593'       C      	JP	E2.LANG1
+                         C      
+  19B1'                  C      E3.NEUST:
+  19B1'   CD 1488'       C      	CALL	E2.RESET
+  19B4'   22 0DC4'       C      	LD	(SM.END),HL
+  19B7'                  C      E3.NEU1:
+  19B7'   CD 1323'       C      	CALL	E1.NUM
+  19BA'   3E 01          C      	LD	A,1
+  19BC'   32 0D94'       C      	LD	(SM.STAT),A
+  19BF'   2A 0DBA'       C      	LD	HL,(SM.ZMIN2)
+  19C2'   25             C      	DEC	H
+  19C3'   2D             C      	DEC	L
+  19C4'   22 0DB8'       C      	LD	(SM.ZPOS2),HL
+  19C7'   C9             C      	RET
+                         C      
+  19C8'                  C      E3.LESE:
+  19C8'   CD 074F'       C      	CALL	SY.SZEI2
+  19CB'   28 08          C      	JR	Z,E3.LESE1
+  19CD'   FE 2A          C      	CP	'*'
+  19CF'   C2 18D4'       C      	JP	NZ,E3.ERRO2
+  19D2'   CD 19B1'       C      	CALL	E3.NEUST
+  19D5'                  C      E3.LESE1:
+  19D5'   CD 163C'       C      	CALL	E2.ZNUMX	;HL=(END)
+  19D8'   D5             C      	PUSH	DE
+  19D9'   CD 1B93'       C      	CALL	E4.LESER
+  19DC'   E1             C      	POP	HL
+  19DD'   23             C      	INC	HL
+  19DE'   C3 18FC'       C      	JP	E3.ZET1
+                         C      
+  19E1'                  C      E3.STAN:
+  19E1'   EB             C      	EX	DE,HL
+  19E2'                  C      E3.STAN2:
+  19E2'   CD 0901'       C      	CALL	S1.SUZA
+  19E5'   20 0C          C      	JR	NZ,E3.STAN1
+  19E7'   11 8830        C      	LD	DE,SD.TPA	;DE=Anfang
+  19EA'                  C      E3.STAN3:
+  19EA'   2A 0DC4'       C      	LD	HL,(SM.END)	;HL=Ende
+  19ED'                  C      E3.STAN6:
+  19ED'   2B             C      	DEC	HL
+  19EE'   CD 1BEA'       C      	CALL	E4.STANZ
+  19F1'   18 8B          C      	JR	E3.TAU2
+  19F3'                  C      E3.STAN1:
+  19F3'   DA 191B'       C      	JP	C,E3.ERRO3
+  19F6'   C5             C      	PUSH	BC
+  19F7'   D5             C      	PUSH	DE
+  19F8'   EB             C      	EX	DE,HL
+  19F9'   CD 1590'       C      	CALL	E2.QLANG
+  19FC'   38 20          C      	JR	C,E3.ERR5C
+  19FE'   CD 1503'       C      	CALL	E2.ZNR1	;HL=Startadresse
+  1A01'   D1             C      	POP	DE	;DE=KOZEIposition
+  1A02'   C1             C      	POP	BC
+  1A03'   E2 1A1F'       C      	JP	PO,E3.ERR5B
+  1A06'                  C      E3.STAN5:
+  1A06'   E5             C      	PUSH	HL
+  1A07'   CD 0901'       C      	CALL	S1.SUZA
+  1A0A'   38 E7          C      	JR	C,E3.STAN1
+  1A0C'   D1             C      	POP	DE	;DE=Startadresse
+  1A0D'   28 DB          C      	JR	Z,E3.STAN3
+  1A0F'   D5             C      	PUSH	DE
+  1A10'   23             C      	INC	HL
+  1A11'   EB             C      	EX	DE,HL
+  1A12'   CD 1590'       C      	CALL	E2.QLANG
+  1A15'   CD 1503'       C      	CALL	E2.ZNR1
+  1A18'   D1             C      	POP	DE
+  1A19'   E2 19EA'       C      	JP	PO,E3.STAN3
+  1A1C'   18 CF          C      	JR	E3.STAN6
+                         C      
+  1A1E'                  C      E3.ERR5C:
+  1A1E'   D1             C      	POP	DE
+  1A1F'                  C      E3.ERR5B:
+  1A1F'   EB             C      	EX	DE,HL
+'EDITOR --- Kommandointerpreter'	MACRO-80 3.44	09-Dec-81	PAGE	1-50
+
+
+  1A20'   0E 05          C      	LD	C,5	;Zeilennummer zu gross
+  1A22'   C3 18D6'       C      	JP	E3.FEHL
+                         C      
+  1A25'                  C      E3.ERRO8:
+  1A25'   EB             C      	EX	DE,HL
+  1A26'   0E 08          C      	LD	C,8	;Zeilennummer zu klein
+  1A28'   C3 18D6'       C      	JP	E3.FEHL
+                         C      
+  1A2B'                  C      E3.MOVE2:
+  1A2B'   CD 0901'       C      	CALL	S1.SUZA
+  1A2E'   DA 191A'       C      	JP	C,E3.ERR3A
+  1A31'   C0             C      	RET	NZ
+  1A32'   3A 0DB5'       C      	LD	A,(SM.SMIN)
+  1A35'   3D             C      	DEC	A
+  1A36'   32 0DB3'       C      	LD	(SM.SPOS),A
+  1A39'   F1             C      	POP	AF	;SP korrigieren
+  1A3A'                  C      E3.ERR2A:
+  1A3A'   EB             C      	EX	DE,HL
+  1A3B'   C3 18D4'       C      	JP	E3.ERRO2
+                         C      
+  1A3E'                  C      E3.MOVE:
+  1A3E'   EB             C      	EX	DE,HL
+  1A3F'   CD 1A2B'       C      	CALL	E3.MOVE2
+  1A42'   22 0E10'       C      	LD	(SM.LZN-2),HL
+  1A45'   23             C      	INC	HL
+  1A46'   22 0E0E'       C      	LD	(SM.LZN-4),HL
+  1A49'   CD 1AE6'       C      	CALL	E3.MOVE4
+  1A4C'   28 EC          C      	JR	Z,E3.ERR2A
+  1A4E'   FE 3E          C      	CP	'>'
+  1A50'   28 1D          C      	JR	Z,E3.MOVE1
+  1A52'   CD 0905'       C      	CALL	S1.SUZA1
+  1A55'   DA 191B'       C      	JP	C,E3.ERRO3
+  1A58'   23             C      	INC	HL
+  1A59'   22 0E0E'       C      	LD	(SM.LZN-4),HL
+  1A5C'   C5             C      	PUSH	BC
+  1A5D'   ED 4B 0E10'    C      	LD	BC,(SM.LZN-2)
+  1A61'   ED 42          C      	SBC	HL,BC
+  1A63'   C1             C      	POP	BC
+  1A64'   38 BF          C      	JR	C,E3.ERRO8
+  1A66'   CD 1AE6'       C      	CALL	E3.MOVE4
+  1A69'   28 CF          C      	JR	Z,E3.ERR2A
+  1A6B'   FE 3E          C      	CP	'>'
+  1A6D'   20 CB          C      	JR	NZ,E3.ERR2A
+  1A6F'                  C      E3.MOVE1:
+  1A6F'   CD 1A2B'       C      	CALL	E3.MOVE2
+  1A72'   22 0E0C'       C      	LD	(SM.LZN-6),HL
+  1A75'   ED 4B 0E0E'    C      	LD	BC,(SM.LZN-4)
+  1A79'   3E 01          C      	LD	A,1
+  1A7B'   32 0E0B'       C      	LD	(SM.LZN-7),A
+  1A7E'   ED 42          C      	SBC	HL,BC
+  1A80'   09             C      	ADD	HL,BC
+  1A81'   30 0C          C      	JR	NC,E3.MOVE3
+  1A83'   ED 4B 0E10'    C      	LD	BC,(SM.LZN-2)
+  1A87'   AF             C      	XOR	A
+  1A88'   ED 42          C      	SBC	HL,BC
+  1A8A'   30 99          C      	JR	NC,E3.ERRO8
+  1A8C'   32 0E0B'       C      	LD	(SM.LZN-7),A
+  1A8F'                  C      E3.MOVE3:
+  1A8F'   D5             C      	PUSH	DE
+  1A90'   CD 1590'       C      	CALL	E2.QLANG
+  1A93'   38 89          C      	JR	C,E3.ERR5C
+  1A95'   ED 5B 0E0C'    C      	LD	DE,(SM.LZN-6)
+  1A99'   CD 1503'       C      	CALL	E2.ZNR1
+  1A9C'   E2 1A1E'       C      	JP	PO,E3.ERR5C
+  1A9F'   CD 1491'       C      	CALL	E2.SET	;WINA=WINE=Zielzeile
+  1AA2'   CD 1590'       C      	CALL	E2.QLANG
+  1AA5'   ED 5B 0E10'    C      	LD	DE,(SM.LZN-2)
+  1AA9'   CD 1503'       C      	CALL	E2.ZNR1	;HL=Quellanfang
+  1AAC'   E2 1A1E'       C      	JP	PO,E3.ERR5C
+  1AAF'   E3             C      	EX	(SP),HL
+  1AB0'   E5             C      	PUSH	HL
+  1AB1'   CD 1590'       C      	CALL	E2.QLANG
+  1AB4'   ED 5B 0E0E'    C      	LD	DE,(SM.LZN-4)
+  1AB8'   CD 1503'       C      	CALL	E2.ZNR1	;HL=Quellende
+  1ABB'   D1             C      	POP	DE
+  1ABC'   E2 1A1F'       C      	JP	PO,E3.ERR5B
+  1ABF'   C1             C      	POP	BC
+  1AC0'   C5             C      	PUSH	BC
+  1AC1'   B7             C      	OR	A
+  1AC2'   ED 42          C      	SBC	HL,BC	;HL=QE-QA
+  1AC4'   E5             C      	PUSH	HL
+  1AC5'   CD 17E7'       C      	CALL	E2.UMLAD
+  1AC8'   C1             C      	POP	BC
+'EDITOR --- Kommandointerpreter'	MACRO-80 3.44	09-Dec-81	PAGE	1-51
+
+
+  1AC9'   E1             C      	POP	HL	;HL=QA
+  1ACA'   3A 0E0B'       C      	LD	A,(SM.LZN-7)
+  1ACD'   B7             C      	OR	A	;Z=1 fuer rueckwaerts
+  1ACE'   20 01          C      	JR	NZ,E3.MOVEV
+  1AD0'   09             C      	ADD	HL,BC
+  1AD1'                  C      E3.MOVEV:
+  1AD1'   E5             C      	PUSH	HL
+  1AD2'   CD 17D8'       C      	CALL	E2.UMLA
+  1AD5'   E1             C      	POP	HL
+  1AD6'   22 0DC0'       C      	LD	(SM.WINA),HL
+  1AD9'   ED 53 0DC2'    C      	LD	(SM.WINE),DE
+  1ADD'   21 0000        C      	LD	HL,0
+  1AE0'   CD 17E7'       C      	CALL	E2.UMLAD
+  1AE3'   C3 197E'       C      	JP	E3.TAU2
+  1AE6'                  C      E3.MOVE4:
+  1AE6'   CD 08FB'       C      	CALL	S1.SUZEI
+  1AE9'   C8             C      	RET	Z		;Z=1: Fehler
+  1AEA'   FE 2D          C      	CP	'-'
+  1AEC'   28 F8          C      	JR	Z,E3.MOVE4
+  1AEE'   C9             C      	RET
+  1AEF'                  C      E3.PTSL:
+  1AEF'   AF             C      	XOR	A
+  1AF0'   08             C      	EX	AF,AF'
+  1AF1'   DD 21 0C00     C      	LD	IX,SD.RAM
+  1AF5'   DD 36 00 1C    C      	LD	(IX+0),SD.PSANZ
+  1AF9'   EB             C      	EX	DE,HL
+  1AFA'   CD 090F'       C      	CALL	S1.LT1Z
+  1AFD'   CA 1A3A'       C      	JP	Z,E3.ERR2A
+  1B00'   DA 191B'       C      	JP	C,E3.ERRO3
+  1B03'   C5             C      	PUSH	BC
+  1B04'   D5             C      	PUSH	DE
+  1B05'   CD 13B6'       C      	CALL	E1.PTSNR
+  1B08'   D1             C      	POP	DE
+  1B09'   DA 1A1F'       C      	JP	C,E3.ERR5B
+  1B0C'   D9             C      	EXX
+  1B0D'   2A 0DC4'       C      	LD	HL,(SM.END)
+  1B10'   ED 5B 0DC0'    C      	LD	DE,(SM.WINA)
+  1B14'   ED 4B 0DC2'    C      	LD	BC,(SM.WINE)
+  1B18'   D9             C      	EXX
+  1B19'   22 0DC0'       C      	LD	(SM.WINA),HL
+  1B1C'   E2 1B21'       C      	JP	PO,E3.PTSL1
+  1B1F'   ED B1          C      	CPIR
+  1B21'                  C      E3.PTSL1:
+  1B21'   2B             C      	DEC	HL
+  1B22'   22 0DC2'       C      	LD	(SM.WINE),HL
+  1B25'   2A 0E15'       C      	LD	HL,(SM.PTSE)
+  1B28'   22 0DC4'       C      	LD	(SM.END),HL
+  1B2B'   C1             C      	POP	BC
+  1B2C'   CD 08FB'       C      	CALL	S1.SUZEI
+  1B2F'   28 46          C      	JR	Z,E3.PTER4
+  1B31'   D5             C      	PUSH	DE
+  1B32'   E1             C      	POP	HL
+  1B33'   CD 08EC'       C      	CALL	S1.KETTE
+  1B36'   28 3F          C      	JR	Z,E3.PTER4
+  1B38'   38 3D          C      	JR	C,E3.PTER4
+  1B3A'   2A 0DC4'       C      	LD	HL,(SM.END)
+  1B3D'   ED 4B 0DC0'    C      	LD	BC,(SM.WINA)
+  1B41'   09             C      	ADD	HL,BC
+  1B42'   ED 4B 0DC2'    C      	LD	BC,(SM.WINE)
+  1B46'   B7             C      	OR	A
+  1B47'   ED 42          C      	SBC	HL,BC
+  1B49'   06 00          C      	LD	B,0
+  1B4B'   4F             C      	LD	C,A
+  1B4C'   09             C      	ADD	HL,BC
+  1B4D'   01 FFFF        C      	LD	BC,0FFFFH
+  1B50'   B7             C      	OR	A
+  1B51'   ED 42          C      	SBC	HL,BC
+  1B53'   30 28          C      	JR	NC,E3.PTER9	;END+WINA-WINE+L < 0FFFFH   ?
+  1B55'   26 00          C      	LD	H,0	;                  RAM+400H ?
+  1B57'   6F             C      	LD	L,A
+  1B58'   13             C      	INC	DE
+  1B59'   E5             C      	PUSH	HL
+  1B5A'   D5             C      	PUSH	DE
+  1B5B'   CD 17E7'       C      	CALL	E2.UMLAD
+  1B5E'   E1             C      	POP	HL
+  1B5F'   C1             C      	POP	BC
+  1B60'   CD 17D8'       C      	CALL	E2.UMLA
+  1B63'   2A 0DC4'       C      	LD	HL,(SM.END)
+  1B66'   22 0E15'       C      	LD	(SM.PTSE),HL
+  1B69'                  C      E3.PTEX:
+  1B69'   D9             C      	EXX
+  1B6A'   22 0DC4'       C      	LD	(SM.END),HL
+  1B6D'   ED 53 0DC0'    C      	LD	(SM.WINA),DE
+'EDITOR --- Kommandointerpreter'	MACRO-80 3.44	09-Dec-81	PAGE	1-52
+
+
+  1B71'   ED 43 0DC2'    C      	LD	(SM.WINE),BC
+  1B75'   D9             C      	EXX
+  1B76'   C9             C      	RET
+  1B77'                  C      E3.PTER4:
+  1B77'   CD 1B69'       C      	CALL	E3.PTEX
+  1B7A'   C3 193C'       C      	JP	E3.ERRO4
+  1B7D'                  C      E3.PTER9:
+  1B7D'   CD 1B69'       C      	CALL	E3.PTEX
+  1B80'   0E 09          C      	LD	C,9	;Speicherueberlauf
+  1B82'   C3 18D9'       C      	JP	E3.FEHL1
+                         C      
+  1B85'                  C      E3.ERRR:
+  1B85'   31 0CFE        C      	LD	SP,SM.STACK-2
+  1B88'   3E 17          C      	LD	A,23
+  1B8A'   32 0DB2'       C      	LD	(SM.ZPOS),A
+  1B8D'   CD 08C2'       C      	CALL	S1.ERRO
+  1B90'   C3 101F'       C      	JP	ED.MEL11
+                         C      
+                         C      			;Stand: 30.Januar 85 - K EAW/wfvm..MSH
+                         C      
+                         C      ;	END
+                         C      	TITLE	'EDITOR --- Peripheriegeraete'
+                         C      	PAGE
+'EDITOR --- Peripheriegeraete'	MACRO-80 3.44	09-Dec-81	PAGE	1-53
+
+
+                         C      
+                         C      ;	PN	E403
+                         C      ;****************************************************************
+                         C      ;*                  DEG2000  V. 1.2   EDITOR --- Peripherieger. *
+                         C      ;*  Version         --------------------------------------------*
+                         C      ;*                  Programmierer: M. Herbote  K EAW  ZFT (WFT) *
+                         C      ;*  V 1 . 2         --------------------------------------------*
+                         C      ;*                  Stand        : 04.Februar 1985              *
+                         C      ;****************************************************************
+  1B93'                  C      E4.LESER:
+  1B93'   DD E5          C      	PUSH	IX
+  1B95'   DD 21 0FA0'    C      	LD	IX,SM.EALBL
+  1B99'                  C      E4.LLQ0:
+  1B99'   CD 4050'       C      	CALL	LR.LRLBL
+  1B9C'   DD CB 03 46    C      	BIT	0,(IX+3)
+  1BA0'   20 42          C      	JR	NZ,E4.FERTL
+  1BA2'   FE 0A          C      	CP	00AH
+  1BA4'   28 2E          C      	JR	Z,E4.LLQ2
+  1BA6'   FE 0D          C      	CP	00DH
+  1BA8'   28 2A          C      	JR	Z,E4.LLQ2
+  1BAA'   FE 09          C      	CP	SD.TAB	;Tabulator
+  1BAC'   20 0A          C      	JR	NZ,E4.LLQ6
+  1BAE'   36 20          C      	LD	M,SD.SPACE
+  1BB0'   CD 164B'       C      	CALL	E2.RUFTF
+  1BB3'   3E 09          C      	LD	A,SD.TAB
+  1BB5'   20 01          C      	JR	NZ,E4.LLQ6
+  1BB7'   23             C      	INC	HL
+  1BB8'                  C      E4.LLQ6:
+  1BB8'   77             C      	LD	M,A
+  1BB9'   BE             C      	CP	M
+  1BBA'   20 21          C      	JR	NZ,E4.ERR13	;Schreibfehler
+  1BBC'   23             C      	INC	HL
+  1BBD'   E5             C      	PUSH	HL
+  1BBE'   D5             C      	PUSH	DE
+  1BBF'   EB             C      	EX	DE,HL
+  1BC0'   2A 0FF7        C      	LD	HL,(SM.PTS)
+  1BC3'   B7             C      	OR	A
+  1BC4'   ED 52          C      	SBC	HL,DE
+  1BC6'   11 09C4        C      	LD	DE,2500
+  1BC9'   B7             C      	OR	A
+  1BCA'   ED 52          C      	SBC	HL,DE
+  1BCC'   D1             C      	POP	DE
+  1BCD'   E1             C      	POP	HL
+  1BCE'   28 14          C      	JR	Z,E4.FERTL	;(SM.PTS)-2500 = akt. Zeiger
+  1BD0'   38 12          C      	JR	C,E4.FERTL	;(SM.PTS)-2500 < akt. Zeiger
+  1BD2'   18 C5          C      	JR	E4.LLQ0
+                         C      
+  1BD4'                  C      E4.LLQ2:
+  1BD4'   3E 1E          C      	LD	A,1EH
+  1BD6'   2B             C      	DEC	HL
+  1BD7'   BE             C      	CP	M
+  1BD8'   23             C      	INC	HL
+  1BD9'   28 BE          C      	JR	Z,E4.LLQ0
+  1BDB'   18 DB          C      	JR	E4.LLQ6
+                         C      
+  1BDD'                  C      E4.ERR13:
+  1BDD'   0E 0D          C      	LD	C,13	;Schreibfehler
+  1BDF'                  C      E4.ERR0:
+  1BDF'   E5             C      	PUSH	HL
+  1BE0'   CD 08C2'       C      	CALL	S1.ERRO
+  1BE3'   E1             C      	POP	HL
+  1BE4'                  C      E4.FERTL:
+  1BE4'   22 0DC4'       C      	LD	(SM.END),HL
+  1BE7'   DD E1          C      	POP	IX
+  1BE9'   C9             C      	RET
+                         C      
+                         C      
+  1BEA'                  C      E4.STANZ:
+  1BEA'   DD E5          C      	PUSH	IX	;(DE)=1.-, (HL)=letztes Zeichen
+  1BEC'   DD 21 0F80'    C      	LD	IX,SM.EALBS
+  1BF0'                  C      E4.LSQ1:
+  1BF0'   1A             C      	LD	A,(DE)
+  1BF1'   4F             C      	LD	C,A
+  1BF2'   CD 4053'       C      	CALL	LR.LRLBS
+  1BF5'   B7             C      	OR	A
+  1BF6'   ED 52          C      	SBC	HL,DE
+  1BF8'   19             C      	ADD	HL,DE
+  1BF9'   13             C      	INC	DE
+  1BFA'   20 F4          C      	JR	NZ,E4.LSQ1
+  1BFC'   DD E1          C      	POP	IX
+  1BFE'   C9             C      	RET
+                         C      
+'EDITOR --- Peripheriegeraete'	MACRO-80 3.44	09-Dec-81	PAGE	1-54
+
+
+                         C      
+  1BFF'                  C      E4.LEER:
+  1BFF'   DD E5          C      	PUSH	IX
+  1C01'   DD 21 0F80'    C      	LD	IX,SM.EALBS
+  1C05'   DD 7E 04       C      	LD	A,(IX+4)
+  1C08'   F5             C      	PUSH	AF
+  1C09'   DD 36 04 02    C      	LD	(IX+4),00000010B
+  1C0D'   C5             C      	PUSH	BC
+  1C0E'   01 8000        C      	LD	BC,08000H	;Ausgabe von 80H mal Zeichen "00H"
+  1C11'   CD 4053'       C      	CALL	LR.LRLBS
+  1C14'   10 FB          C      	DJNZ	$-3
+  1C16'                  C      E4.LEER1:
+  1C16'   C1             C      	POP	BC
+  1C17'   F1             C      	POP	AF
+  1C18'   DD 77 04       C      	LD	(IX+4),A
+  1C1B'   DD E1          C      	POP	IX
+  1C1D'   C9             C      	RET
+                         C      
+  1C1E'                  C      E4.STEND:
+  1C1E'   DD E5          C      	PUSH	IX	;Ausgabe des LB-Endezeichens  EOF
+  1C20'   DD 21 0F80'    C      	LD	IX,SM.EALBS
+  1C24'   DD 7E 04       C      	LD	A,(IX+4)
+  1C27'   F5             C      	PUSH	AF
+  1C28'   DD 36 04 02    C      	LD	(IX+4),00000010B
+  1C2C'   C5             C      	PUSH	BC
+  1C2D'   DD 4E 0C       C      	LD	C,(IX+12)
+  1C30'   CD 4053'       C      	CALL	LR.LRLBS
+  1C33'   18 E1          C      	JR	E4.LEER1
+                         C      
+                         C      	PAGE
+'EDITOR --- Peripheriegeraete'	MACRO-80 3.44	09-Dec-81	PAGE	1-55
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*                  Eintragungen in die E/A-Tabellen            *
+                         C      ;****************************************************************
+  1C35'   1C35'          C      	DW	$
+  1C37'   49 53 4F 20    C      	DB	'ISO '
+  1C3B'   FD 21 0FA0'    C      	LD	IY,SM.EALBL	;E/A-Tabelle   L B L
+  1C3F'   21 0000        C      	LD	HL,0
+  1C42'   D9             C      	EXX
+  1C43'   06 E6          C      	LD	B,11100110B	;Kommando
+  1C45'   0E 7F          C      	LD	C,07FH	;Parity
+  1C47'   11 1E1E        C      	LD	DE,01E1EH	;EOR - Zeichen
+  1C4A'   3E 19          C      	LD	A,019H	;EOF - Zeichen
+  1C4C'   21 0000        C      	LD	HL,0
+  1C4F'   CD 1C8C'       C      	CALL	E4.TAB
+  1C52'   D9             C      	EXX
+  1C53'   FD 21 0F80'    C      	LD	IY,SM.EALBS	;E/A-Tabelle   L B S
+  1C57'   06 C4          C      	LD	B,11000100B	;Kommando
+  1C59'   0E 80          C      	LD	C,080H	;Parity
+  1C5B'                  C      E4.ISO:
+  1C5B'   CD 1C8C'       C      	CALL	E4.TAB
+  1C5E'   C3 000B'       C      	JP	SY.SYSTB
+                         C      
+                         C      
+  1C61'   1C61'          C      	DW	$
+  1C63'   41 4E 57 20    C      	DB	'ANW '
+  1C67'   FD 21 0FA0'    C      	LD	IY,SM.EALBL	;E/A-Tabelle   L B L
+  1C6B'   21 4464'       C      	LD	HL,LR.KONV
+  1C6E'   D9             C      	EXX
+  1C6F'   06 AE          C      	LD	B,10101110B	;Kommando
+  1C71'   0E EF          C      	LD	C,0EFH	;Parity
+  1C73'   11 801E        C      	LD	DE,0801EH	;EOR - Zeichen
+  1C76'   3E 81          C      	LD	A,081H	;EOF - Zeichen
+  1C78'   21 4584'       C      	LD	HL,LR.SKTBI
+  1C7B'   CD 1C8C'       C      	CALL	E4.TAB
+  1C7E'   D9             C      	EXX
+  1C7F'   FD 21 0F80'    C      	LD	IY,SM.EALBS	;E/A-Tabelle   L B S
+  1C83'   06 AC          C      	LD	B,10101100B	;Kommando
+  1C85'   0E 10          C      	LD	C,010H	;Parity
+  1C87'   21 4684'       C      	LD	HL,LR.SKTBO
+  1C8A'   18 CF          C      	JR	E4.ISO
+                         C      
+  1C8C'                  C      E4.TAB:
+  1C8C'   FD 72 00       C      	LD	(IY+0),D
+  1C8F'   FD 73 01       C      	LD	(IY+1),E
+  1C92'   FD 70 04       C      	LD	(IY+4),B
+  1C95'   FD 71 0B       C      	LD	(IY+11),C
+  1C98'   FD 77 0C       C      	LD	(IY+12),A
+  1C9B'   FD 75 05       C      	LD	(IY+5),L
+  1C9E'   FD 74 06       C      	LD	(IY+6),H
+  1CA1'   D9             C      	EXX
+  1CA2'   FD 75 13       C      	LD	(IY+19),L
+  1CA5'   FD 74 14       C      	LD	(IY+20),H
+  1CA8'   C9             C      	RET
+                         C      
+                         C      	PAGE
+'EDITOR --- Peripheriegeraete'	MACRO-80 3.44	09-Dec-81	PAGE	1-56
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*                  Kommandos:  V O R _ , E O F _ , M B _ _     *
+                         C      ;****************************************************************
+  1CA9'   1CA9'          C      	DW	$
+  1CAB'   56 4F 52 20    C      	DB	'VOR '
+  1CAF'   CD 1BFF'       C      	CALL	E4.LEER
+  1CB2'   C3 000B'       C      	JP	SY.SYSTB
+                         C      
+                         C      
+  1CB5'   1CB5'          C      	DW	$
+  1CB7'   45 4F 46 20    C      	DB	'EOF '
+  1CBB'   CD 1C1E'       C      	CALL	E4.STEND
+  1CBE'   CD 1BFF'       C      	CALL	E4.LEER
+  1CC1'   C3 000B'       C      	JP	SY.SYSTB
+                         C      
+                         C      
+  1CC4'   1CC4'          C      	DW	$
+  1CC6'   4D 42 20 20    C      	DB	'MB  '
+  1CCA'                  C      E4.MBIF:
+  1CCA'   C5             C      	PUSH	BC
+  1CCB'   DD E5          C      	PUSH	IX
+  1CCD'   D3 4F          C      	OUT	(SD.AMB),A	;Aktivierung der  A M B
+  1CCF'   01 00FF        C      	LD	BC,255
+  1CD2'                  C      E4.MBIF1:
+  1CD2'   0B             C      	DEC	BC	;Warteschleife ca. 1.27 ms
+  1CD3'   78             C      	LD	A,B
+  1CD4'   B1             C      	OR	C
+  1CD5'   20 FB          C      	JR	NZ,E4.MBIF1
+  1CD7'   DD 21 0FE0     C      	LD	IX,SM.EAAMB
+  1CDB'                  C      E4.MBIF2:
+  1CDB'   DD CB 00 46    C      	BIT	0,(IX+0)	;MB-Geraet 1 bzw. 2 ?
+  1CDF'   20 06          C      	JR	NZ,E4.MBIF3
+  1CE1'   DD CB 07 4E    C      	BIT	1,(IX+7)	;MB-Geraet 1  besetzt ?
+  1CE5'   18 04          C      	JR	E4.MBIF4
+  1CE7'                  C      E4.MBIF3:
+  1CE7'   DD CB 08 4E    C      	BIT	1,(IX+8)	;MB-Geraet 2  besetzt ?
+  1CEB'                  C      E4.MBIF4:
+  1CEB'   20 EE          C      	JR	NZ,E4.MBIF2
+  1CED'   DD E1          C      	POP	IX
+  1CEF'   C1             C      	POP	BC
+  1CF0'   C9             C      	RET
+                         C      
+                         C      			;Stand: 04.Februar 85 - K EAW/wfvm..MSH
+                         C      
+                         C      ;	END
+                                
+                         C      	INCLUDE ME01.ASM	; M E M O
+                         C      	TITLE	'M E M O'
+                         C      	PAGE
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-57
+
+
+                         C      
+                         C      ;	PN	ME02
+                         C      ;	ORG	2000H
+                         C      ;**********************************************************
+                         C      ;        Darstellung (BZMAX) * 16 Byte Hexa und ASCII
+                         C      ;**********************************************************
+                         C      ;
+  1CF1'                  C      ME.AZBLD:
+  1CF1'   E5             C      	PUSH	HL
+  1CF2'   D5             C      	PUSH	DE
+  1CF3'   C5             C      	PUSH	BC
+  1CF4'   2A 2BE0'       C      	LD	HL,(ME.AADR)	;HL:= Bereichsanfang
+  1CF7'   11 3000        C      	LD	DE,SD.BWSA	;DE:= Bildwiederholsp.
+  1CFA'   3A 2BEB'       C      	LD	A,(ME.BZMAX)
+  1CFD'   B7             C      	OR	A
+  1CFE'   28 0A          C      	JR	Z,ME.AZBL2	;0 Zeilen
+  1D00'   FE 17          C      	CP	23
+  1D02'   30 06          C      	JR	NC,ME.AZBL2	;mehr als 24 Zeilen
+  1D04'   47             C      	LD	B,A	;B:=Zeilenzahl
+  1D05'                  C      ME.AZBL1:
+  1D05'   CD 1D0E'       C      	CALL	ME.ANZ1Z
+  1D08'   10 FB          C      	DJNZ	ME.AZBL1
+  1D0A'                  C      ME.AZBL2:
+  1D0A'   C1             C      	POP	BC
+  1D0B'   D1             C      	POP	DE
+  1D0C'   E1             C      	POP	HL
+  1D0D'   C9             C      	RET
+                         C      ;
+  1D0E'                  C      ME.ANZ1Z:
+  1D0E'   CD 22CE'       C      	CALL	ME.CVAX
+  1D11'   C5             C      	PUSH	BC
+  1D12'   13             C      	INC	DE
+  1D13'   13             C      	INC	DE
+  1D14'   E5             C      	PUSH	HL
+  1D15'   06 04          C      	LD	B,4
+  1D17'                  C      ME.ANZ11:
+  1D17'   CD 1D2F'       C      	CALL	ME.AZ4BY	;Hexa-Darstellung
+  1D1A'   10 FB          C      	DJNZ	ME.ANZ11
+  1D1C'   13             C      	INC	DE
+  1D1D'   E1             C      	POP	HL
+  1D1E'   06 10          C      	LD	B,16
+  1D20'                  C      ME.ANZ12:
+  1D20'   7E             C      	LD	A,(HL)	;ASCII-Darstellung
+  1D21'   CD 1D3D'       C      	CALL	ME.ANZ1B
+  1D24'   23             C      	INC	HL
+  1D25'   13             C      	INC	DE
+  1D26'   10 F8          C      	DJNZ	ME.ANZ12
+  1D28'   06 05          C      	LD	B,5
+  1D2A'                  C      ME.ANZ13:
+  1D2A'   13             C      	INC	DE
+  1D2B'   10 FD          C      	DJNZ	ME.ANZ13
+  1D2D'   C1             C      	POP	BC
+  1D2E'   C9             C      	RET
+                         C      ;
+  1D2F'                  C      ME.AZ4BY:
+  1D2F'   C5             C      	PUSH	BC	;Anzeige Vierergruppe
+  1D30'   06 04          C      	LD	B,4
+  1D32'                  C      ME.AZ4B1:
+  1D32'   7E             C      	LD	A,(HL)
+  1D33'   CD 6F20        C      	CALL	UC.CVBX+2
+  1D36'   13             C      	INC	DE
+  1D37'   23             C      	INC	HL
+  1D38'   10 F8          C      	DJNZ	ME.AZ4B1
+  1D3A'   13             C      	INC	DE
+  1D3B'   C1             C      	POP	BC
+  1D3C'   C9             C      	RET
+                         C      ;
+  1D3D'                  C      ME.ANZ1B:
+  1D3D'   CD 1D42'       C      	CALL	ME.TASCI	;Anzeige 1 Byte ASCII
+  1D40'   12             C      	LD	(DE),A
+  1D41'   C9             C      	RET
+                         C      ;
+  1D42'                  C      ME.TASCI:
+  1D42'   C9             C      	RET	;aktualisiert fuer Emulator
+  1D43'   FE 20          C      	CP	' '
+  1D45'   38 03          C      	JR	C,ME.TASC1
+  1D47'   FE 80          C      	CP	80H
+  1D49'   D8             C      	RET	C
+  1D4A'                  C      ME.TASC1:
+  1D4A'   3E 7F          C      	LD	A,7FH
+  1D4C'   C9             C      	RET
+                         C      ;
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-58
+
+
+                         C      ;********************************************************
+                         C      ;        Ausfuehrungsroutinen fuer die einzelnen
+                         C      ;        Tastencodes
+                         C      ;--------------------------------------------------------
+                         C      ; CDH    SYS-Taste  (Systemruecksprung)
+                         C      ;--------------------------------------------------------
+                         C      ;
+  1D4D'                  C      ME.SYS:
+  1D4D'   21 21FF'       C      	LD	HL,ME.SYSM
+  1D50'   E3             C      	EX	(SP),HL
+  1D51'   C9             C      	RET
+                         C      ;
+                         C      ;--------------------------------------------------------
+                         C      ; F8H   Home (Kursor nach oben links)
+                         C      ;--------------------------------------------------------
+                         C      ;
+  1D52'                  C      ME.HOME:
+  1D52'   CD 1D90'       C      	CALL	ME.BSADL
+  1D55'   2A 2BE0'       C      	LD	HL,(ME.AADR)
+  1D58'   22 2BE2'       C      	LD	(ME.AKTAD),HL	;aktuelle Adresse
+  1D5B'   3A 2BE4'       C      	LD	A,(ME.MOD)
+  1D5E'   B7             C      	OR	A
+  1D5F'   20 0D          C      	JR	NZ,ME.AHOME	;---> ASCII-Mode
+  1D61'   3E 06          C      	LD	A,6
+  1D63'                  C      ME.HOME1:
+  1D63'   32 2BE6'       C      	LD	(ME.BPZEI),A	;Position/Zeile
+  1D66'   AF             C      	XOR	A
+  1D67'   32 2BE5'       C      	LD	(ME.BZEIN),A
+  1D6A'   CD 1D94'       C      	CALL	ME.BSADS
+  1D6D'   C9             C      	RET
+  1D6E'                  C      ME.AHOME:
+  1D6E'   3E 3B          C      	LD	A,59
+  1D70'   18 F1          C      	JR	ME.HOME1
+                         C      ;
+                         C      ;BWS-Adresse aus (BZEIN) und (BPZEI) berechnen
+                         C      ;OUT   HL=aktuelle BWS-Adresse
+                         C      ;
+  1D72'                  C      ME.BSADR:
+  1D72'   F5             C      	PUSH	AF
+  1D73'   C5             C      	PUSH	BC
+  1D74'   D5             C      	PUSH	DE
+  1D75'   3A 2BE5'       C      	LD	A,(ME.BZEIN)	;Zeilennummer
+  1D78'   21 3000        C      	LD	HL,SD.BWSA
+  1D7B'   B7             C      	OR	A
+  1D7C'   28 07          C      	JR	Z,ME.BSAD2
+  1D7E'   47             C      	LD	B,A
+  1D7F'   11 0050        C      	LD	DE,80
+  1D82'                  C      ME.BSAD1:
+  1D82'   19             C      	ADD	HL,DE
+  1D83'   10 FD          C      	DJNZ	ME.BSAD1
+  1D85'                  C      ME.BSAD2:
+  1D85'   3A 2BE6'       C      	LD	A,(ME.BPZEI)	;Position
+  1D88'   5F             C      	LD	E,A
+  1D89'   16 00          C      	LD	D,0
+  1D8B'   19             C      	ADD	HL,DE
+  1D8C'   D1             C      	POP	DE
+  1D8D'   C1             C      	POP	BC
+  1D8E'   F1             C      	POP	AF
+  1D8F'   C9             C      	RET
+                         C      ;
+  1D90'                  C      ME.BSADL:
+                         C      ;	CALL	ME.BSADR
+                         C      ;	RES	7,(HL)
+  1D90'   CD 04E8'       C      	CALL	SY.RESC
+  1D93'   C9             C      	RET
+  1D94'                  C      ME.BSADS:
+  1D94'   CD 1D72'       C      	CALL	ME.BSADR
+                         C      	; SET	7,(HL)
+  1D97'   CD 04D1'       C      	CALL	SY.SETCHL
+                         C      	; PUSH	AF
+                         C      	; LD	A,(ME.BPZEI)	;Position
+                         C      	; LD	(SM.SPOS),A
+                         C      	; LD	A,(ME.BZEIN)	;Zeilennummer
+                         C      	; LD	(SM.ZPOS),A
+                         C      	; CALL	SY.SETC
+                         C      	; POP	AF
+  1D9A'   C9             C      	RET
+                         C      ;
+                         C      ;----------------------------------------------------------
+                         C      ; FAH    New Line (Anfang naechste Zeile)
+                         C      ;----------------------------------------------------------
+                         C      ;
+  1D9B'                  C      ME.NEWL:
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-59
+
+
+  1D9B'   3A 2BE5'       C      	LD	A,(ME.BZEIN)
+  1D9E'   3C             C      	INC	A
+  1D9F'   CD 1DC1'       C      	CALL	ME.TSZMX
+  1DA2'   30 AE          C      	JR	NC,ME.HOME	;---> Max. Zeilennummer
+  1DA4'   CD 1D90'       C      	CALL	ME.BSADL
+  1DA7'   21 2BE5'       C      	LD	HL,ME.BZEIN
+  1DAA'   34             C      	INC	(HL)
+  1DAB'   3A 2BE4'       C      	LD	A,(ME.MOD)
+  1DAE'   B7             C      	OR	A
+  1DAF'   20 0C          C      	JR	NZ,ME.ANEWL
+  1DB1'   3E 06          C      	LD	A,6
+  1DB3'                  C      ME.NEWL1:
+  1DB3'   32 2BE6'       C      	LD	(ME.BPZEI),A
+  1DB6'   CD 1D94'       C      	CALL	ME.BSADS
+  1DB9'   CD 1DC8'       C      	CALL	ME.CAKAL	;Korrektur akt. Adresse
+  1DBC'   C9             C      	RET
+  1DBD'                  C      ME.ANEWL:
+  1DBD'   3E 3B          C      	LD	A,59
+  1DBF'   18 F2          C      	JR	ME.NEWL1
+                         C      ;
+  1DC1'                  C      ME.TSZMX:
+  1DC1'   E5             C      	PUSH	HL	;Test auf max. Zeilennummer
+  1DC2'   21 2BEB'       C      	LD	HL,ME.BZMAX
+  1DC5'   BE             C      	CP	(HL)
+  1DC6'   E1             C      	POP	HL
+  1DC7'   C9             C      	RET
+                         C      ;
+  1DC8'                  C      ME.CAKAL:
+  1DC8'   2A 2BE0'       C      	LD	HL,(ME.AADR)
+  1DCB'   C5             C      	PUSH	BC
+  1DCC'   3A 2BE5'       C      	LD	A,(ME.BZEIN)
+  1DCF'   B7             C      	OR	A
+  1DD0'   28 0A          C      	JR	Z,ME.CAKA1
+  1DD2'   47             C      	LD	B,A
+  1DD3'                  C      ME.CAKA2:
+  1DD3'   11 0010        C      	LD	DE,10H
+  1DD6'   19             C      	ADD	HL,DE
+  1DD7'   10 FA          C      	DJNZ	ME.CAKA2
+  1DD9'   22 2BE2'       C      	LD	(ME.AKTAD),HL
+  1DDC'                  C      ME.CAKA1:
+  1DDC'   C1             C      	POP	BC
+  1DDD'   C9             C      	RET
+                         C      ;
+                         C      ;---------------------------------------------------------------
+                         C      ; FBH    Kursor nach unten
+                         C      ;---------------------------------------------------------------
+                         C      ;
+  1DDE'                  C      ME.CRUNT:
+  1DDE'   3A 2BE5'       C      	LD	A,(ME.BZEIN)
+  1DE1'   3C             C      	INC	A
+  1DE2'   CD 1DC1'       C      	CALL	ME.TSZMX
+  1DE5'   30 15          C      	JR	NC,ME.CRBLD	;max. Zeilenanzahl
+  1DE7'   CD 1D90'       C      	CALL	ME.BSADL
+  1DEA'   21 2BE5'       C      	LD	HL,ME.BZEIN
+  1DED'   34             C      	INC	(HL)
+  1DEE'                  C      ME.CRUN1:
+  1DEE'   CD 1D94'       C      	CALL	ME.BSADS
+  1DF1'   2A 2BE2'       C      	LD	HL,(ME.AKTAD)
+  1DF4'   11 0010        C      	LD	DE,10H
+  1DF7'   19             C      	ADD	HL,DE
+  1DF8'   22 2BE2'       C      	LD	(ME.AKTAD),HL
+  1DFB'   C9             C      	RET
+  1DFC'                  C      ME.CRBLD:
+  1DFC'   2A 2BE0'       C      	LD	HL,(ME.AADR)
+  1DFF'   11 0010        C      	LD	DE,10H
+  1E02'   19             C      	ADD	HL,DE
+  1E03'   22 2BE0'       C      	LD	(ME.AADR),HL
+  1E06'   CD 1CF1'       C      	CALL	ME.AZBLD
+  1E09'   18 E3          C      	JR	ME.CRUN1
+                         C      ;
+                         C      ;----------------------------------------------------------
+                         C      ; F5H    Kursor nach oben
+                         C      ;----------------------------------------------------------
+                         C      ;
+  1E0B'                  C      ME.CHOCH:
+  1E0B'   3A 2BE5'       C      	LD	A,(ME.BZEIN)
+  1E0E'   B7             C      	OR	A
+  1E0F'   28 17          C      	JR	Z,ME.CHBLD	;1. Zeile
+  1E11'   CD 1D90'       C      	CALL	ME.BSADL
+  1E14'   21 2BE5'       C      	LD	HL,ME.BZEIN
+  1E17'   35             C      	DEC	(HL)
+  1E18'                  C      ME.CHOC1:
+  1E18'   CD 1D94'       C      	CALL	ME.BSADS
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-60
+
+
+  1E1B'   2A 2BE2'       C      	LD	HL,(ME.AKTAD)
+  1E1E'   11 0010        C      	LD	DE,10H
+  1E21'   B7             C      	OR	A
+  1E22'   ED 52          C      	SBC	HL,DE
+  1E24'   22 2BE2'       C      	LD	(ME.AKTAD),HL
+  1E27'   C9             C      	RET
+  1E28'                  C      ME.CHBLD:
+  1E28'   2A 2BE0'       C      	LD	HL,(ME.AADR)
+  1E2B'   11 0010        C      	LD	DE,10H
+  1E2E'   B7             C      	OR	A
+  1E2F'   ED 52          C      	SBC	HL,DE
+  1E31'   22 2BE0'       C      	LD	(ME.AADR),HL
+  1E34'   CD 1CF1'       C      	CALL	ME.AZBLD
+  1E37'   18 DF          C      	JR	ME.CHOC1
+                         C      ;
+                         C      ;-----------------------------------------------------------
+                         C      ; F0H    INS MODE (Umschaltung ASCII <---> HEXA)
+                         C      ;-----------------------------------------------------------
+                         C      ;
+  1E39'                  C      ME.UMOD:
+  1E39'   CD 1D90'       C      	CALL	ME.BSADL
+  1E3C'   3A 2BE4'       C      	LD	A,(ME.MOD)
+  1E3F'   B7             C      	OR	A
+  1E40'   28 22          C      	JR	Z,ME.ASCMD
+  1E42'   CD 1E4D'       C      	CALL	ME.REFAH
+  1E45'   CD 1D94'       C      	CALL	ME.BSADS
+  1E48'   AF             C      	XOR	A
+  1E49'   32 2BE4'       C      	LD	(ME.MOD),A
+  1E4C'   C9             C      	RET
+                         C      ;
+  1E4D'                  C      ME.REFAH:
+  1E4D'   3A 2BE6'       C      	LD	A,(ME.BPZEI)
+  1E50'   21 2146'       C      	LD	HL,ME.REFTB+10H
+  1E53'                  C      ME.HEMD2:
+  1E53'   BE             C      	CP	(HL)
+  1E54'   28 03          C      	JR	Z,ME.HEMD1
+  1E56'   23             C      	INC	HL
+  1E57'   18 FA          C      	JR	ME.HEMD2
+  1E59'                  C      ME.HEMD1:
+  1E59'   11 0010        C      	LD	DE,10H
+  1E5C'   B7             C      	OR	A
+  1E5D'   ED 52          C      	SBC	HL,DE
+  1E5F'   7E             C      	LD	A,(HL)
+  1E60'   32 2BE6'       C      	LD	(ME.BPZEI),A
+  1E63'   C9             C      	RET
+                         C      ;
+  1E64'                  C      ME.ASCMD:
+  1E64'   CD 1E73'       C      	CALL	ME.CBPZ
+  1E67'   CD 1E7D'       C      	CALL	ME.REFHA
+  1E6A'   CD 1D94'       C      	CALL	ME.BSADS
+  1E6D'   3E 01          C      	LD	A,1
+  1E6F'   32 2BE4'       C      	LD	(ME.MOD),A
+  1E72'   C9             C      	RET
+                         C      ;
+  1E73'                  C      ME.CBPZ:
+  1E73'   23             C      	INC	HL
+  1E74'   7E             C      	LD	A,(HL)
+  1E75'   FE 20          C      	CP	' '
+  1E77'   C0             C      	RET	NZ
+  1E78'   21 2BE6'       C      	LD	HL,ME.BPZEI
+  1E7B'   35             C      	DEC	(HL)
+  1E7C'   C9             C      	RET
+                         C      ;
+  1E7D'                  C      ME.REFHA:
+  1E7D'   3A 2BE6'       C      	LD	A,(ME.BPZEI)
+  1E80'   21 2136'       C      	LD	HL,ME.REFTB
+  1E83'                  C      ME.ASMD2:
+  1E83'   BE             C      	CP	(HL)
+  1E84'   28 03          C      	JR	Z,ME.ASMD1
+  1E86'   23             C      	INC	HL
+  1E87'   18 FA          C      	JR	ME.ASMD2
+  1E89'                  C      ME.ASMD1:
+  1E89'   11 0010        C      	LD	DE,10H
+  1E8C'   19             C      	ADD	HL,DE
+  1E8D'   7E             C      	LD	A,(HL)
+  1E8E'   32 2BE6'       C      	LD	(ME.BPZEI),A
+  1E91'   C9             C      	RET
+                         C      ;
+                         C      ;------------------------------------------------------------
+                         C      ; B0H    POS. QUIT.  (Blaettern vorwaerts)
+                         C      ;------------------------------------------------------------
+                         C      ;
+  1E92'                  C      ME.BLVOR:
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-61
+
+
+  1E92'   2A 2BE0'       C      	LD	HL,(ME.AADR)
+  1E95'   3A 2BEB'       C      	LD	A,(ME.BZMAX)
+  1E98'   47             C      	LD	B,A
+  1E99'   11 0010        C      	LD	DE,10H
+  1E9C'                  C      ME.BLVO3:
+  1E9C'   19             C      	ADD	HL,DE
+  1E9D'   10 FD          C      	DJNZ	ME.BLVO3
+  1E9F'                  C      ME.BLVO2:
+  1E9F'   22 2BE0'       C      	LD	(ME.AADR),HL
+  1EA2'   22 2BE2'       C      	LD	(ME.AKTAD),HL
+  1EA5'   CD 1CF1'       C      	CALL	ME.AZBLD
+  1EA8'   AF             C      	XOR	A
+  1EA9'   32 2BE5'       C      	LD	(ME.BZEIN),A
+  1EAC'   3A 2BE4'       C      	LD	A,(ME.MOD)
+  1EAF'   B7             C      	OR	A
+  1EB0'   20 09          C      	JR	NZ,ME.ABLVO
+  1EB2'   3E 06          C      	LD	A,6
+  1EB4'                  C      ME.BLVO1:
+  1EB4'   32 2BE6'       C      	LD	(ME.BPZEI),A
+  1EB7'   CD 1D94'       C      	CALL	ME.BSADS
+  1EBA'   C9             C      	RET
+  1EBB'                  C      ME.ABLVO:
+  1EBB'   3E 3B          C      	LD	A,59
+  1EBD'   18 F5          C      	JR	ME.BLVO1
+                         C      ;
+                         C      ;----------------------------------------------------------
+                         C      ; CCH    NEG. QUIT.  (Blaettern rueckwaerts)
+                         C      ;----------------------------------------------------------
+                         C      ;
+  1EBF'                  C      ME.BLRUC:
+  1EBF'   2A 2BE0'       C      	LD	HL,(ME.AADR)
+  1EC2'   3A 2BEB'       C      	LD	A,(ME.BZMAX)
+  1EC5'   47             C      	LD	B,A
+  1EC6'   11 0010        C      	LD	DE,10H
+  1EC9'                  C      ME.BLRU1:
+  1EC9'   B7             C      	OR	A
+  1ECA'   ED 52          C      	SBC	HL,DE
+  1ECC'   10 FB          C      	DJNZ	ME.BLRU1
+  1ECE'   18 CF          C      	JR	ME.BLVO2
+                         C      ;
+                         C      ;----------------------------------------------------------
+                         C      ; F9H    Kursor nach rechts
+                         C      ;----------------------------------------------------------
+                         C      ;
+  1ED0'                  C      ME.CRECH:
+  1ED0'   3A 2BE4'       C      	LD	A,(ME.MOD)
+  1ED3'   B7             C      	OR	A
+  1ED4'   C2 1F3B'       C      	JP	NZ,ME.ACREC	;---> ASCII-Mode
+  1ED7'   3A 2BE6'       C      	LD	A,(ME.BPZEI)
+  1EDA'   FE 37          C      	CP	55
+  1EDC'   28 33          C      	JR	Z,ME.CRNZ	;---> naechste Zeile
+  1EDE'   CD 1D90'       C      	CALL	ME.BSADL
+  1EE1'   23             C      	INC	HL
+  1EE2'   7E             C      	LD	A,(HL)
+  1EE3'   FE 20          C      	CP	' '
+  1EE5'   28 08          C      	JR	Z,ME.CRAIC	;---> Adresse erhoehen
+  1EE7'   21 2BE6'       C      	LD	HL,ME.BPZEI
+  1EEA'   34             C      	INC	(HL)
+  1EEB'   CD 1D94'       C      	CALL	ME.BSADS
+  1EEE'   C9             C      	RET
+                         C      ;
+  1EEF'                  C      ME.CRAIC:
+  1EEF'   23             C      	INC	HL
+  1EF0'   7E             C      	LD	A,(HL)
+  1EF1'   FE 20          C      	CP	' '
+  1EF3'   28 0A          C      	JR	Z,ME.CREC2	;---> naechste Vierergruppe
+                         C      	; SET	7,(HL)
+  1EF5'   CD 04D1'       C      	CALL	SY.SETCHL
+  1EF8'   21 2BE6'       C      	LD	HL,ME.BPZEI
+  1EFB'                  C      ME.CREC4:
+  1EFB'   34             C      	INC	(HL)
+  1EFC'   34             C      	INC	(HL)
+  1EFD'   18 0A          C      	JR	ME.CREC3
+  1EFF'                  C      ME.CREC2:
+  1EFF'   23             C      	INC	HL
+                         C      	; SET	7,(HL)
+  1F00'   CD 04D1'       C      	CALL	SY.SETCHL
+  1F03'   21 2BE6'       C      	LD	HL,ME.BPZEI
+  1F06'   34             C      	INC	(HL)
+  1F07'   18 F2          C      	JR	ME.CREC4
+  1F09'                  C      ME.CREC3:
+  1F09'   2A 2BE2'       C      	LD	HL,(ME.AKTAD)	;aktuelle Adr. erhoehen
+  1F0C'   23             C      	INC	HL
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-62
+
+
+  1F0D'   22 2BE2'       C      	LD	(ME.AKTAD),HL
+  1F10'   C9             C      	RET
+                         C      ;
+  1F11'                  C      ME.CRNZ:
+  1F11'   CD 1D90'       C      	CALL	ME.BSADL
+  1F14'   3E 06          C      	LD	A,6
+  1F16'                  C      ME.CRNZ2:
+  1F16'   32 2BE6'       C      	LD	(ME.BPZEI),A
+  1F19'   3A 2BE5'       C      	LD	A,(ME.BZEIN)
+  1F1C'   3C             C      	INC	A
+  1F1D'   CD 1DC1'       C      	CALL	ME.TSZMX
+  1F20'   30 0A          C      	JR	NC,ME.CRCBD	;---> letzte Zeile
+  1F22'   21 2BE5'       C      	LD	HL,ME.BZEIN
+  1F25'   34             C      	INC	(HL)
+  1F26'                  C      ME.CRNZ1:
+  1F26'   CD 1D94'       C      	CALL	ME.BSADS
+  1F29'   C3 1F09'       C      	JP	ME.CREC3
+                         C      ;
+  1F2C'                  C      ME.CRCBD:
+  1F2C'   2A 2BE0'       C      	LD	HL,(ME.AADR)
+  1F2F'   11 0010        C      	LD	DE,10H
+  1F32'   19             C      	ADD	HL,DE
+  1F33'   22 2BE0'       C      	LD	(ME.AADR),HL
+  1F36'   CD 1CF1'       C      	CALL	ME.AZBLD
+  1F39'   18 EB          C      	JR	ME.CRNZ1
+                         C      ;
+                         C      ;-------------------------------------------------------
+                         C      ;
+  1F3B'                  C      ME.ACREC:
+  1F3B'   CD 1D90'       C      	CALL	ME.BSADL
+  1F3E'   3A 2BE6'       C      	LD	A,(ME.BPZEI)
+  1F41'   FE 4A          C      	CP	74
+  1F43'   28 0A          C      	JR	Z,ME.ACRNZ	;---> naechste Zeile
+  1F45'   3C             C      	INC	A
+  1F46'   32 2BE6'       C      	LD	(ME.BPZEI),A
+  1F49'   CD 1D94'       C      	CALL	ME.BSADS
+  1F4C'   C3 1F09'       C      	JP	ME.CREC3
+                         C      ;
+  1F4F'                  C      ME.ACRNZ:
+  1F4F'   3E 3B          C      	LD	A,59
+  1F51'   18 C3          C      	JR	ME.CRNZ2
+                         C      ;
+                         C      ;-------------------------------------------------------
+                         C      ; F7H    Kursor nach links
+                         C      ;-------------------------------------------------------
+                         C      ;
+  1F53'                  C      ME.CLINK:
+  1F53'   3A 2BE4'       C      	LD	A,(ME.MOD)
+  1F56'   B7             C      	OR	A
+  1F57'   C2 1FBD'       C      	JP	NZ,ME.ACLNK	;---> ASCII-Mode
+  1F5A'   3A 2BE6'       C      	LD	A,(ME.BPZEI)
+  1F5D'   FE 06          C      	CP	6
+  1F5F'   28 33          C      	JR	Z,ME.CLNZ	;---> 1 Zeile zurueck
+  1F61'   CD 1D90'       C      	CALL	ME.BSADL
+  1F64'   2B             C      	DEC	HL
+  1F65'   7E             C      	LD	A,(HL)
+  1F66'   FE 20          C      	CP	' '
+  1F68'   28 08          C      	JR	Z,ME.CLDEC	;Adresse decrementieren
+  1F6A'   21 2BE6'       C      	LD	HL,ME.BPZEI
+  1F6D'   35             C      	DEC	(HL)
+  1F6E'   CD 1D94'       C      	CALL	ME.BSADS
+  1F71'   C9             C      	RET
+                         C      ;
+  1F72'                  C      ME.CLDEC:
+  1F72'   2B             C      	DEC	HL
+  1F73'   7E             C      	LD	A,(HL)
+  1F74'   FE 20          C      	CP	' '
+  1F76'   28 0A          C      	JR	Z,ME.CLDE2	;---> 1 Vierergruppe zurueck
+                         C      	; SET	7,(HL)
+  1F78'   CD 04D1'       C      	CALL	SY.SETCHL
+  1F7B'   21 2BE6'       C      	LD	HL,ME.BPZEI
+  1F7E'                  C      ME.CLDE4:
+  1F7E'   35             C      	DEC	(HL)
+  1F7F'   35             C      	DEC	(HL)
+  1F80'   18 0A          C      	JR	ME.CLDE3
+  1F82'                  C      ME.CLDE2:
+  1F82'   2B             C      	DEC	HL
+                         C      	; SET	7,(HL)
+  1F83'   CD 04D1'       C      	CALL	SY.SETCHL
+  1F86'   21 2BE6'       C      	LD	HL,ME.BPZEI
+  1F89'   35             C      	DEC	(HL)
+  1F8A'   18 F2          C      	JR	ME.CLDE4
+  1F8C'                  C      ME.CLDE3:
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-63
+
+
+  1F8C'   2A 2BE2'       C      	LD	HL,(ME.AKTAD)
+  1F8F'   2B             C      	DEC	HL
+  1F90'   22 2BE2'       C      	LD	(ME.AKTAD),HL
+  1F93'   C9             C      	RET
+                         C      ;
+  1F94'                  C      ME.CLNZ:
+  1F94'   CD 1D90'       C      	CALL	ME.BSADL
+  1F97'   3E 37          C      	LD	A,55
+  1F99'                  C      ME.CLNZ2:
+  1F99'   32 2BE6'       C      	LD	(ME.BPZEI),A
+  1F9C'   3A 2BE5'       C      	LD	A,(ME.BZEIN)
+  1F9F'   B7             C      	OR	A
+  1FA0'   28 0A          C      	JR	Z,ME.CLCBD	;1.Zeile
+  1FA2'   21 2BE5'       C      	LD	HL,ME.BZEIN
+  1FA5'   35             C      	DEC	(HL)
+  1FA6'                  C      ME.CLNZ1:
+  1FA6'   CD 1D94'       C      	CALL	ME.BSADS
+  1FA9'   C3 1F8C'       C      	JP	ME.CLDE3
+                         C      ;
+  1FAC'                  C      ME.CLCBD:
+  1FAC'   2A 2BE0'       C      	LD	HL,(ME.AADR)
+  1FAF'   11 0010        C      	LD	DE,10H
+  1FB2'   B7             C      	OR	A
+  1FB3'   ED 52          C      	SBC	HL,DE
+  1FB5'   22 2BE0'       C      	LD	(ME.AADR),HL
+  1FB8'   CD 1CF1'       C      	CALL	ME.AZBLD
+  1FBB'   18 E9          C      	JR	ME.CLNZ1
+                         C      ;
+                         C      ;---------------------------------------------------------
+                         C      ;
+  1FBD'                  C      ME.ACLNK:
+  1FBD'   CD 1D90'       C      	CALL	ME.BSADL
+  1FC0'   3A 2BE6'       C      	LD	A,(ME.BPZEI)
+  1FC3'   FE 3B          C      	CP	59
+  1FC5'   28 0A          C      	JR	Z,ME.ACLNZ
+  1FC7'   3D             C      	DEC	A
+  1FC8'   32 2BE6'       C      	LD	(ME.BPZEI),A
+  1FCB'   CD 1D94'       C      	CALL	ME.BSADS
+  1FCE'   C3 1F8C'       C      	JP	ME.CLDE3
+  1FD1'                  C      ME.ACLNZ:
+  1FD1'   3E 4A          C      	LD	A,74
+  1FD3'   18 C4          C      	JR	ME.CLNZ2
+                         C      ;
+                         C      ;-------------------------------------------------------------
+                         C      ; F6H   Schieben rechts  (Ablegen im Puffer)
+                         C      ;-------------------------------------------------------------
+                         C      ;
+  1FD5'                  C      ME.INPUF:
+  1FD5'   ED 5B 2BE7'    C      	LD	DE,(ME.PUZEI)
+  1FD9'   21 0400        C      	LD	HL,400H
+  1FDC'   B7             C      	OR	A
+  1FDD'   ED 52          C      	SBC	HL,DE
+  1FDF'   C8             C      	RET	Z		;Puffer voll
+  1FE0'   CD 1FFD'       C      	CALL	ME.CCPO	;Korrektur Kursorpos.
+  1FE3'   2A 2BE2'       C      	LD	HL,(ME.AKTAD)
+  1FE6'   7E             C      	LD	A,(HL)
+  1FE7'   21 2C00        C      	LD	HL,ME.PUFAN
+  1FEA'   19             C      	ADD	HL,DE
+  1FEB'   77             C      	LD	(HL),A
+  1FEC'   13             C      	INC	DE
+  1FED'   ED 53 2BE7'    C      	LD	(ME.PUZEI),DE
+  1FF1'   CD 1ED0'       C      	CALL	ME.CRECH
+  1FF4'   3A 2BE4'       C      	LD	A,(ME.MOD)
+  1FF7'   B7             C      	OR	A
+  1FF8'   C0             C      	RET	NZ
+  1FF9'   CD 1ED0'       C      	CALL	ME.CRECH
+  1FFC'   C9             C      	RET
+                         C      ;
+  1FFD'                  C      ME.CCPO:
+  1FFD'   3A 2BE4'       C      	LD	A,(ME.MOD)
+  2000'   B7             C      	OR	A
+  2001'   C0             C      	RET	NZ
+  2002'   CD 1D72'       C      	CALL	ME.BSADR
+  2005'   23             C      	INC	HL
+  2006'   7E             C      	LD	A,(HL)
+  2007'   FE 20          C      	CP	' '
+  2009'   C0             C      	RET	NZ
+  200A'   2B             C      	DEC	HL
+                         C      ;	RES	7,(HL)
+  200B'   CD 1D90'       C      	CALL	ME.BSADL
+  200E'   21 2BE6'       C      	LD	HL,ME.BPZEI
+  2011'   35             C      	DEC	(HL)
+  2012'   C9             C      	RET
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-64
+
+
+                         C      ;
+                         C      ;--------------------------------------------------------------
+                         C      ; F4H   Schieben links (Auslagern Pufferinhalt)
+                         C      ;--------------------------------------------------------------
+                         C      ;
+  2013'                  C      ME.AUPUF:
+  2013'   ED 5B 2BE7'    C      	LD	DE,(ME.PUZEI)
+  2017'   7A             C      	LD	A,D
+  2018'   B3             C      	OR	E
+  2019'   C8             C      	RET	Z
+  201A'   CD 1FFD'       C      	CALL	ME.CCPO
+  201D'   11 2C00        C      	LD	DE,ME.PUFAN
+  2020'   1A             C      	LD	A,(DE)
+  2021'   2A 2BE2'       C      	LD	HL,(ME.AKTAD)
+  2024'   77             C      	LD	(HL),A
+  2025'   BE             C      	CP	(HL)
+  2026'   C0             C      	RET	NZ
+  2027'   D5             C      	PUSH	DE
+  2028'   E1             C      	POP	HL
+  2029'   23             C      	INC	HL
+  202A'   ED 4B 2BE7'    C      	LD	BC,(ME.PUZEI)
+  202E'   C5             C      	PUSH	BC
+  202F'   ED B0          C      	LDIR
+  2031'   C1             C      	POP	BC
+  2032'   0B             C      	DEC	BC
+  2033'   ED 43 2BE7'    C      	LD	(ME.PUZEI),BC
+  2037'   4F             C      	LD	C,A
+  2038'   3A 2BE4'       C      	LD	A,(ME.MOD)
+  203B'   B7             C      	OR	A
+  203C'   20 0E          C      	JR	NZ,ME.AUPU1
+  203E'   21 2BE6'       C      	LD	HL,ME.BPZEI
+  2041'   46             C      	LD	B,(HL)
+  2042'   CD 21D2'       C      	CALL	ME.DSBAH
+  2045'   CD 1ED0'       C      	CALL	ME.CRECH
+  2048'   CD 1ED0'       C      	CALL	ME.CRECH
+  204B'   C9             C      	RET
+  204C'                  C      ME.AUPU1:
+  204C'   CD 1D72'       C      	CALL	ME.BSADR
+  204F'   79             C      	LD	A,C
+  2050'   CD 1D42'       C      	CALL	ME.TASCI
+  2053'   77             C      	LD	(HL),A
+  2054'   41             C      	LD	B,C
+  2055'   CD 2175'       C      	CALL	ME.DSBH
+  2058'   CD 1ED0'       C      	CALL	ME.CRECH
+  205B'   C9             C      	RET
+                         C      ;
+                         C      ;--------------------------------------------------------------
+                         C      ; F3H    DEL LINE (Zeile mit 00H fuellen)
+                         C      ;--------------------------------------------------------------
+                         C      ;
+  205C'                  C      ME.DELL:
+  205C'   3A 2BE4'       C      	LD	A,(ME.MOD)
+  205F'   B7             C      	OR	A
+  2060'   C0             C      	RET	NZ
+  2061'   CD 1D90'       C      	CALL	ME.BSADL
+  2064'   3E 06          C      	LD	A,6
+  2066'   32 2BE6'       C      	LD	(ME.BPZEI),A
+  2069'   CD 1D94'       C      	CALL	ME.BSADS
+  206C'   CD 1DC8'       C      	CALL	ME.CAKAL
+  206F'   22 2BE2'       C      	LD	(ME.AKTAD),HL
+  2072'   06 20          C      	LD	B,32
+  2074'                  C      ME.DELL1:
+  2074'   3E 30          C      	LD	A,'0'
+  2076'   C5             C      	PUSH	BC
+  2077'   CD 2189'       C      	CALL	ME.HEXMO
+  207A'   C1             C      	POP	BC
+  207B'   10 F7          C      	DJNZ	ME.DELL1
+  207D'   C9             C      	RET
+                         C      ;
+                         C      ;--------------------------------------------------------------
+                         C      ; F0H    DEL  (Bildneuaufbau) 
+                         C      ;--------------------------------------------------------------
+                         C      ;
+  207E'                  C      ME.TDEL:
+  207E'   2A 2BE0'       C      	LD	HL,(ME.AADR)
+  2081'   22 2BE2'       C      	LD	(ME.AKTAD),HL
+  2084'   22 2BEC'       C      	LD	(ME.AADR1),HL
+  2087'   22 2BEE'       C      	LD	(ME.AKTA1),HL
+  208A'   3E 06          C      	LD	A,6
+  208C'   32 2BE6'       C      	LD	(ME.BPZEI),A
+  208F'   32 2BF2'       C      	LD	(ME.BPZE1),A
+  2092'   AF             C      	XOR	A
+  2093'   32 2BE4'       C      	LD	(ME.MOD),A
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-65
+
+
+  2096'   32 2BE5'       C      	LD	(ME.BZEIN),A
+  2099'   32 2BF0'       C      	LD	(ME.MOD1),A
+  209C'   32 2BF1'       C      	LD	(ME.BZEI1),A
+  209F'   3E 10          C      	LD	A,16
+  20A1'   32 2BEB'       C      	LD	(ME.BZMAX),A
+  20A4'   21 0550        C      	LD	HL,550H
+  20A7'   22 2BE9'       C      	LD	(ME.VTAS),HL
+  20AA'   21 0000        C      	LD	HL,0
+  20AD'   22 2BE7'       C      	LD	(ME.PUZEI),HL
+  20B0'                  C      ME.INSLN:
+  20B0'   CD 5F0B        C      	CALL	KH.BILO
+  20B3'   CD 1CF1'       C      	CALL	ME.AZBLD
+  20B6'   CD 1D94'       C      	CALL	ME.BSADS
+  20B9'   CD 22B6'       C      	CALL	ME.DSPAD
+  20BC'   CD 22C4'       C      	CALL	ME.DSPOI
+  20BF'   C9             C      	RET
+                         C      ;
+                         C      ;--------------------------------------------------------------
+                         C      ; B1H    TABS  (aktuellen Zustand retten)
+                         C      ;--------------------------------------------------------------
+                         C      ;
+  20C0'                  C      ME.SAVE:
+  20C0'   21 2BE0'       C      	LD	HL,ME.AADR
+  20C3'   11 2BEC'       C      	LD	DE,ME.AADR1
+  20C6'                  C      ME.SAVE1:
+  20C6'   01 0007        C      	LD	BC,7
+  20C9'   ED B0          C      	LDIR
+  20CB'   C9             C      	RET
+                         C      ;
+                         C      ;-------------------------------------------------------------
+                         C      ; B2H    TABL  (geretteten Zustand herstellen)
+                         C      ;-------------------------------------------------------------
+                         C      ;
+  20CC'                  C      ME.GET:
+  20CC'   21 2BEC'       C      	LD	HL,ME.AADR1
+  20CF'   11 2BE0'       C      	LD	DE,ME.AADR
+  20D2'   CD 20C6'       C      	CALL	ME.SAVE1
+  20D5'   3A 2BEB'       C      	LD	A,(ME.BZMAX)
+  20D8'   47             C      	LD	B,A
+  20D9'   3A 2BE5'       C      	LD	A,(ME.BZEIN)
+  20DC'                  C      ME.GET2:
+  20DC'   B8             C      	CP	B
+  20DD'   38 10          C      	JR	C,ME.GET1
+  20DF'   2A 2BE0'       C      	LD	HL,(ME.AADR)
+  20E2'   11 0010        C      	LD	DE,10H
+  20E5'   19             C      	ADD	HL,DE
+  20E6'   22 2BE0'       C      	LD	(ME.AADR),HL
+  20E9'   3D             C      	DEC	A
+  20EA'   32 2BE5'       C      	LD	(ME.BZEIN),A
+  20ED'   18 ED          C      	JR	ME.GET2
+  20EF'                  C      ME.GET1:
+  20EF'   CD 20B0'       C      	CALL	ME.INSLN
+  20F2'   C9             C      	RET
+                         C      ;
+                         C      ;-------------------------------------------------------------
+                         C      ; 09H    ET2   (Start eines Programms ab Kursorposition)
+                         C      ;-------------------------------------------------------------
+                         C      ;
+  20F3'                  C      ME.START:
+  20F3'   2A 2BE2'       C      	LD	HL,(ME.AKTAD)
+  20F6'   01 20FB'       C      	LD	BC,ME.STAR1
+  20F9'   C5             C      	PUSH	BC
+  20FA'   E9             C      	JP	(HL)
+  20FB'                  C      ME.STAR1:
+  20FB'   CD 20B0'       C      	CALL	ME.INSLN
+  20FE'   C9             C      	RET
+                         C      ;
+                         C      ;--------------------------------------------------------------
+                         C      ; B3H    (Zeilenanzahl erhoehen)
+                         C      ;--------------------------------------------------------------
+                         C      ;
+  20FF'                  C      ME.INCBZ:
+  20FF'   3A 2BEB'       C      	LD	A,(ME.BZMAX)
+  2102'   FE 16          C      	CP	22
+  2104'   D0             C      	RET	NC
+  2105'   3C             C      	INC	A
+  2106'   32 2BEB'       C      	LD	(ME.BZMAX),A
+  2109'   CD 20B0'       C      	CALL	ME.INSLN
+  210C'   C9             C      	RET
+                         C      ;
+                         C      ;-------------------------------------------------------------
+                         C      ; B4H    (Zeilenanzahl verringern)
+                         C      ;-------------------------------------------------------------
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-66
+
+
+                         C      ;
+  210D'                  C      ME.DECBZ:
+  210D'   3A 2BEB'       C      	LD	A,(ME.BZMAX)
+  2110'   FE 01          C      	CP	1
+  2112'   C8             C      	RET	Z
+  2113'   3D             C      	DEC	A
+  2114'   32 2BEB'       C      	LD	(ME.BZMAX),A
+  2117'   47             C      	LD	B,A
+  2118'   3A 2BE5'       C      	LD	A,(ME.BZEIN)
+  211B'   4F             C      	LD	C,A
+  211C'   78             C      	LD	A,B
+  211D'   3D             C      	DEC	A
+  211E'   B9             C      	CP	C
+  211F'   30 11          C      	JR	NC,ME.DECB1
+  2121'   B7             C      	OR	A
+  2122'   11 0010        C      	LD	DE,10H
+  2125'   2A 2BE2'       C      	LD	HL,(ME.AKTAD)
+  2128'   ED 52          C      	SBC	HL,DE
+  212A'   22 2BE2'       C      	LD	(ME.AKTAD),HL
+  212D'   79             C      	LD	A,C
+  212E'   3D             C      	DEC	A
+  212F'   32 2BE5'       C      	LD	(ME.BZEIN),A
+  2132'   CD 20B0'       C      ME.DECB1:	CALL	ME.INSLN
+  2135'   C9             C      	RET
+                         C      ;
+                         C      ;-------------------------------------------------------------
+                         C      ;        Positionstabelle   HEXA ---- ASCII fuer Byte 00...0FH
+                         C      ;-------------------------------------------------------------
+                         C      ;
+  2136'                  C      ME.REFTB:
+  2136'   06             C      	DB	6	;00H   HEXA-Mode
+  2137'   09             C      	DB	9	;01H
+  2138'   0C             C      	DB	12
+  2139'   0F             C      	DB	15
+  213A'   13             C      	DB	19
+  213B'   16             C      	DB	22
+  213C'   19             C      	DB	25
+  213D'   1C             C      	DB	28
+  213E'   20             C      	DB	32
+  213F'   23             C      	DB	35
+  2140'   26             C      	DB	38
+  2141'   29             C      	DB	41
+  2142'   2D             C      	DB	45
+  2143'   30             C      	DB	48
+  2144'   33             C      	DB	51
+  2145'   36             C      	DB	54	;0FH
+  2146'   3B             C      	DB	59	;00H  ASCII-Mode
+  2147'   3C             C      	DB	60
+  2148'   3D             C      	DB	61
+  2149'   3E             C      	DB	62
+  214A'   3F             C      	DB	63
+  214B'   40             C      	DB	64
+  214C'   41             C      	DB	65
+  214D'   42             C      	DB	66
+  214E'   43             C      	DB	67
+  214F'   44             C      	DB	68
+  2150'   45             C      	DB	69
+  2151'   46             C      	DB	70
+  2152'   47             C      	DB	71
+  2153'   48             C      	DB	72
+  2154'   49             C      	DB	73
+  2155'   4A             C      	DB	74	;0FH
+                         C      ;
+                         C      ;-------------------------------------------------------------
+                         C      ;        Auswertung alphanumerischer Tasten im ASCII-Mode
+                         C      ;-------------------------------------------------------------
+                         C      ;
+  2156'                  C      ME.ASCMO:
+  2156'   47             C      	LD	B,A	;Code retten
+  2157'   CD 1D72'       C      	CALL	ME.BSADR
+  215A'   77             C      	LD	(HL),A	;Code anzeigen
+  215B'   2A 2BE2'       C      	LD	HL,(ME.AKTAD)
+  215E'   77             C      	LD	(HL),A	;Code abspeichern
+  215F'   7E             C      	LD	A,(HL)	;ruecklesen
+  2160'   B8             C      	CP	B
+  2161'   28 0B          C      	JR	Z,ME.ASCM1	;---> RAM-Bereich
+  2163'   CD 1D72'       C      	CALL	ME.BSADR
+  2166'   CD 1D42'       C      	CALL	ME.TASCI
+  2169'   77             C      	LD	(HL),A	;Speicherinhalt anzeigen
+                         C      	; SET	7,(HL)	;Kursor setzen
+  216A'   CD 04D1'       C      	CALL	SY.SETCHL
+  216D'   C9             C      	RET
+  216E'                  C      ME.ASCM1:
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-67
+
+
+  216E'   CD 2175'       C      	CALL	ME.DSBH
+  2171'   CD 1ED0'       C      	CALL	ME.CRECH
+  2174'   C9             C      	RET
+                         C      ;
+  2175'                  C      ME.DSBH:
+  2175'   3A 2BE6'       C      	LD	A,(ME.BPZEI)
+  2178'   F5             C      	PUSH	AF	;Position retten
+  2179'   CD 1E4D'       C      	CALL	ME.REFAH	;Position HEXA
+  217C'   CD 1D72'       C      	CALL	ME.BSADR	;BWS-Adresse HEXA
+  217F'   F1             C      	POP	AF
+  2180'   32 2BE6'       C      	LD	(ME.BPZEI),A	;Position ASCII
+  2183'   EB             C      	EX	DE,HL
+  2184'   78             C      	LD	A,B
+  2185'   CD 6F20        C      	CALL	UC.CVBX+2	;Anzeige HEXA
+  2188'   C9             C      	RET
+                         C      ;
+                         C      ;-------------------------------------------------------------
+                         C      ;        Auswertung Tasten 0...9,A...F im HEXA-Mode
+                         C      ;-------------------------------------------------------------
+                         C      ;
+  2189'                  C      ME.HEXMO:
+  2189'   47             C      	LD	B,A	;Code retten
+  218A'   CD 6F43        C      	CALL	UC.CVAXB	;ASCII-Hexa ---> Binaer < 16
+  218D'   4F             C      	LD	C,A
+  218E'   CD 1D72'       C      	CALL	ME.BSADR
+  2191'   23             C      	INC	HL
+  2192'   7E             C      	LD	A,(HL)
+  2193'   FE 20          C      	CP	' '
+  2195'   28 1D          C      	JR	Z,ME.RHB	;---> rechtes Halbbyte
+  2197'                  C      ME.LHB:
+  2197'   2A 2BE2'       C      	LD	HL,(ME.AKTAD)	;linkes Halbbyte
+  219A'   79             C      	LD	A,C
+  219B'   87             C      	ADD	A,A	;*16
+  219C'   87             C      	ADD	A,A
+  219D'   87             C      	ADD	A,A
+  219E'   87             C      	ADD	A,A
+  219F'   4F             C      	LD	C,A
+  21A0'   7E             C      	LD	A,(HL)	;A:= Speicherinhalt
+  21A1'   E6 0F          C      	AND	0FH	;linkes Halbbyte ausblenden
+  21A3'   B1             C      	OR	C	;neuer Wert
+  21A4'                  C      ME.LHB1:
+  21A4'   57             C      	LD	D,A	;Wert retten
+  21A5'   77             C      	LD	(HL),A	;abspeichern
+  21A6'   4F             C      	LD	C,A
+  21A7'   7E             C      	LD	A,(HL)	;ruecklesen
+  21A8'   BA             C      	CP	D
+  21A9'   28 12          C      	JR	Z,ME.HEXM0	;---> RAM
+  21AB'   EB             C      	EX	DE,HL
+  21AC'   79             C      	LD	A,C
+  21AD'   CD 6F20        C      	CALL	UC.CVBX+2	;alten Wert anzeigen
+  21B0'   CD 1D94'       C      	CALL	ME.BSADS
+  21B3'   C9             C      	RET
+                         C      ;
+  21B4'                  C      ME.RHB:
+  21B4'   2A 2BE2'       C      	LD	HL,(ME.AKTAD)	;rechtes Halbbyte
+  21B7'   7E             C      	LD	A,(HL)
+  21B8'   E6 F0          C      	AND	0F0H	;rechtes Halbbyte ausblenden
+  21BA'   B1             C      	OR	C
+  21BB'   18 E7          C      	JR	ME.LHB1
+                         C      ;
+  21BD'                  C      ME.HEXM0:
+  21BD'   3A 2BE6'       C      	LD	A,(ME.BPZEI)
+  21C0'   47             C      	LD	B,A
+  21C1'   CD 1D72'       C      	CALL	ME.BSADR
+  21C4'   23             C      	INC	HL
+  21C5'   7E             C      	LD	A,(HL)
+  21C6'   FE 20          C      	CP	' '
+  21C8'   CC 21EA'       C      	CALL	Z,ME.RHB1
+  21CB'   CD 21D2'       C      	CALL	ME.DSBAH
+  21CE'   CD 1ED0'       C      	CALL	ME.CRECH
+  21D1'   C9             C      	RET
+                         C      ;
+  21D2'                  C      ME.DSBAH:
+  21D2'   CD 1D72'       C      	CALL	ME.BSADR
+  21D5'   79             C      	LD	A,C
+  21D6'   EB             C      	EX	DE,HL
+  21D7'   CD 6F20        C      	CALL	UC.CVBX+2
+  21DA'                  C      ME.HEXM1:
+  21DA'   CD 1E7D'       C      	CALL	ME.REFHA
+  21DD'   CD 1D72'       C      	CALL	ME.BSADR
+  21E0'   79             C      	LD	A,C
+  21E1'   CD 1D42'       C      	CALL	ME.TASCI
+  21E4'   77             C      	LD	(HL),A	;Anzeige ASCII
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-68
+
+
+  21E5'   21 2BE6'       C      	LD	HL,ME.BPZEI
+  21E8'   70             C      	LD	(HL),B
+  21E9'   C9             C      	RET
+                         C      ;
+  21EA'                  C      ME.RHB1:
+  21EA'   21 2BE6'       C      	LD	HL,ME.BPZEI
+  21ED'   35             C      	DEC	(HL)
+  21EE'   C9             C      	RET
+                         C      ;
+                         C      ;***************************************************************
+                         C      ;        Tastencodeauswertung
+                         C      ;***************************************************************
+                         C      ;
+  21EF'                  C      ME.ATACO:
+  21EF'   CD 22FF'       C      	CALL	ME.TAREP
+  21F2'   F5             C      	PUSH	AF
+  21F3'   CD 2201'       C      	CALL	ME.TAUSF
+  21F6'   CD 22B6'       C      	CALL	ME.DSPAD
+  21F9'   CD 22C4'       C      	CALL	ME.DSPOI
+  21FC'   F1             C      	POP	AF
+  21FD'   18 F0          C      	JR	ME.ATACO
+  21FF'                  C      ME.SYSM:
+  21FF'   F1             C      	POP	AF
+  2200'   C9             C      	RET
+                         C      ;
+  2201'                  C      ME.TAUSF:
+  2201'   FE CD          C      	CP	0CDH
+  2203'   CA 1D4D'       C      	JP	Z,ME.SYS
+  2206'   FE CE          C      	CP	0CEH
+  2208'   CA 2305'       C      	JP	Z,ME.HDCOP
+  220B'   FE B0          C      	CP	0B0H
+  220D'   CA 1E92'       C      	JP	Z,ME.BLVOR
+  2210'   FE B1          C      	CP	0B1H
+  2212'   CA 20C0'       C      	JP	Z,ME.SAVE
+  2215'   FE B2          C      	CP	0B2H
+  2217'   CA 20CC'       C      	JP	Z,ME.GET
+  221A'   FE B3          C      	CP	0B3H
+  221C'   CA 20FF'       C      	JP	Z,ME.INCBZ
+  221F'   FE B4          C      	CP	0B4H
+  2221'   CA 210D'       C      	JP	Z,ME.DECBZ
+  2224'   FE 09          C      	CP	09H
+  2226'   CA 20F3'       C      	JP	Z,ME.START
+  2229'   FE CC          C      	CP	0CCH
+  222B'   CA 1EBF'       C      	JP	Z,ME.BLRUC
+  222E'   FE F0          C      	CP	0F0H
+  2230'   CA 1E39'       C      	JP	Z,ME.UMOD
+  2233'   FE F8          C      	CP	0F8H
+  2235'   CA 1D52'       C      	JP	Z,ME.HOME
+  2238'   FE FA          C      	CP	0FAH
+  223A'   CA 1D9B'       C      	JP	Z,ME.NEWL
+  223D'   FE F7          C      	CP	0F7H
+  223F'   CA 1F53'       C      	JP	Z,ME.CLINK
+  2242'   FE F9          C      	CP	0F9H
+  2244'   CA 1ED0'       C      	JP	Z,ME.CRECH
+  2247'   FE F2          C      	CP	0F2H
+  2249'   CA 20B0'       C      	JP	Z,ME.INSLN
+  224C'   FE F3          C      	CP	0F3H
+  224E'   CA 205C'       C      	JP	Z,ME.DELL
+  2251'   FE F5          C      	CP	0F5H
+  2253'   CA 1E0B'       C      	JP	Z,ME.CHOCH
+  2256'   FE FB          C      	CP	0FBH
+  2258'   CA 1DDE'       C      	JP	Z,ME.CRUNT
+  225B'   FE F6          C      	CP	0F6H
+  225D'   CA 1FD5'       C      	JP	Z,ME.INPUF
+  2260'   FE F4          C      	CP	0F4H
+  2262'   CA 2013'       C      	JP	Z,ME.AUPUF
+  2265'   FE F1          C      	CP	0F1H
+  2267'   CA 207E'       C      	JP	Z,ME.TDEL
+  226A'   F5             C      	PUSH	AF
+  226B'   3A 2BE4'       C      	LD	A,(ME.MOD)
+  226E'   B7             C      	OR	A
+  226F'   28 0A          C      	JR	Z,ME.NHEXA
+  2271'   F1             C      	POP	AF
+  2272'   FE 20          C      	CP	20H
+  2274'   D8             C      	RET	C
+  2275'   FE 80          C      	CP	80H
+  2277'   D0             C      	RET	NC
+  2278'   C3 2156'       C      	JP	ME.ASCMO
+  227B'                  C      ME.NHEXA:
+  227B'   F1             C      	POP	AF
+  227C'   FE 30          C      	CP	'0'
+  227E'   D8             C      	RET	C
+  227F'   FE 3A          C      	CP	3AH
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-69
+
+
+  2281'   DA 2189'       C      	JP	C,ME.HEXMO
+  2284'   FE 47          C      	CP	'G'
+  2286'   D0             C      	RET	NC
+  2287'   FE 41          C      	CP	'A'
+  2289'   D8             C      	RET	C
+  228A'   C3 2189'       C      	JP	ME.HEXMO
+                         C      
+                         C      ;      INITIALISIERUNG
+                         C      
+  228D'   228D'          C      	DW	$
+  228F'   4D 20 20 20    C      	DB	'M   '
+  2293'   CD 20B0'       C      	CALL	ME.INSLN
+  2296'   CD 21EF'       C      	CALL	ME.ATACO
+  2299'   C3 000B'       C      	JP	SY.SYSTB
+                         C      
+  229C'   229C'          C      	DW	$
+  229E'   4D 45 4D 4F    C      	DB	'MEMO'
+  22A2'   11 3327        C      	LD	DE,SD.BWSA + 10*80 +7	;327H
+  22A5'   CD 22EE'       C      	CALL	ME.CVXA
+  22A8'   38 03          C      	JR	C,ME.AAALT
+  22AA'   22 2BE0'       C      	LD	(ME.AADR),HL
+  22AD'                  C      ME.AAALT:
+  22AD'   CD 207E'       C      	CALL	ME.TDEL
+  22B0'   CD 21EF'       C      	CALL	ME.ATACO
+  22B3'   C3 000B'       C      	JP	SY.SYSTB
+                         C      
+                         C      ;---------------------------
+                         C      
+  22B6'                  C      ME.DSPAD:
+  22B6'   E5             C      	PUSH	HL
+  22B7'   D5             C      	PUSH	DE
+  22B8'   11 3730        C      	LD	DE,SD.BWSA + 23*80	;730H
+  22BB'   2A 2BE2'       C      	LD	HL,(ME.AKTAD)
+  22BE'                  C      ME.DSPA1:
+  22BE'   CD 22CE'       C      	CALL	ME.CVAX
+  22C1'   D1             C      	POP	DE
+  22C2'   E1             C      	POP	HL
+  22C3'   C9             C      	RET
+  22C4'                  C      ME.DSPOI:
+  22C4'   E5             C      	PUSH	HL
+  22C5'   D5             C      	PUSH	DE
+  22C6'   11 373A        C      	LD	DE,SD.BWSA + 23*80 +10	;73AH
+  22C9'   2A 2BE7'       C      	LD	HL,(ME.PUZEI)
+  22CC'   18 F0          C      	JR	ME.DSPA1
+                         C      
+  22CE'                  C      ME.CVAX:
+  22CE'   7C             C      	LD	A,H
+  22CF'   CD 6F20        C      	CALL	UC.CVBX+2
+  22D2'   7D             C      	LD	A,L
+  22D3'   CD 6F20        C      	CALL	UC.CVBX+2
+  22D6'   C9             C      	RET
+                         C      
+  22D7'                  C      ME.CVXB:
+  22D7'   C5             C      	PUSH	BC
+  22D8'   CD 22F9'       C      	CALL	ME.CVX1B
+  22DB'   38 0E          C      	JR	C,ME.CVX11
+  22DD'   87             C      	ADD	A,A
+  22DE'   87             C      	ADD	A,A
+  22DF'   87             C      	ADD	A,A
+  22E0'   87             C      	ADD	A,A
+  22E1'   4F             C      	LD	C,A
+  22E2'   CD 22F9'       C      	CALL	ME.CVX1B
+  22E5'   38 04          C      	JR	C,ME.CVX11
+  22E7'   81             C      	ADD	A,C
+  22E8'   B7             C      	OR	A
+  22E9'   C1             C      	POP	BC
+  22EA'   C9             C      	RET
+  22EB'                  C      ME.CVX11:
+  22EB'   C1             C      	POP	BC
+  22EC'   37             C      	SCF
+  22ED'   C9             C      	RET
+                         C      
+  22EE'                  C      ME.CVXA:
+  22EE'   CD 22D7'       C      	CALL	ME.CVXB
+  22F1'   D8             C      	RET	C
+  22F2'   67             C      	LD	H,A
+  22F3'   CD 22D7'       C      	CALL	ME.CVXB
+  22F6'   D8             C      	RET	C
+  22F7'   6F             C      	LD	L,A
+  22F8'   C9             C      	RET
+                         C      
+  22F9'                  C      ME.CVX1B:
+  22F9'   1A             C      	LD	A,(DE)	; ASCII hexa (DE) --> A binaer,DE+1
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-70
+
+
+  22FA'   CD 6F43        C      	CALL	UC.CVAXB
+  22FD'   13             C      	INC	DE
+  22FE'   C9             C      	RET
+                         C      
+  22FF'                  C      ME.TAREP:
+  22FF'   CD 4026'       C      	CALL	TA.ABFR1
+  2302'   28 FB          C      	JR	Z,ME.TAREP
+  2304'   C9             C      	RET
+                         C      
+                         C      ;***************  HARDCOPY  *******************
+                         C      
+  2305'                  C      ME.HDCOP:
+  2305'   CD 207E'       C      	CALL	ME.TDEL
+  2308'   3E 14          C      	LD	A,20
+  230A'   32 2B00        C      	LD	(ME.ZN),A
+  230D'   21 2371'       C      	LD	HL,ME.ZKEIN
+  2310'   CD 6B2E        C      	CALL	UR.MIMO
+  2313'   D8             C      	RET	C
+                         C      
+  2314'   EB             C      	EX	DE,HL
+  2315'   CD 22EE'       C      	CALL	ME.CVXA
+  2318'   D8             C      	RET	C
+                         C      
+  2319'   ED 5B 2BE0'    C      	LD	DE,(ME.AADR)
+  231D'   AF             C      	XOR	A
+  231E'   ED 52          C      	SBC	HL,DE
+  2320'   D8             C      	RET	C
+  2321'   C8             C      	RET	Z
+                         C      
+  2322'   11 0100        C      	LD	DE,100H
+  2325'   AF             C      	XOR	A
+  2326'   47             C      	LD	B,A
+  2327'   4F             C      	LD	C,A
+  2328'   E5             C      	PUSH	HL
+                         C      
+  2329'                  C      ME.HC01:
+  2329'   ED 52          C      	SBC	HL,DE
+  232B'   38 03          C      	JR	C,ME.HC02
+  232D'   04             C      	INC	B
+  232E'   18 F9          C      	JR	ME.HC01
+                         C      
+  2330'                  C      ME.HC02:
+  2330'   E1             C      	POP	HL
+  2331'   00             C      	NOP
+  2332'   00             C      	NOP
+  2333'   00             C      	NOP
+  2334'   CB 3D          C      	SRL	L
+  2336'   CB 3D          C      	SRL	L
+  2338'   CB 3D          C      	SRL	L
+  233A'   CB 3D          C      	SRL	L
+  233C'   2C             C      	INC	L
+  233D'   4D             C      	LD	C,L
+  233E'                  C      ME.HC021:
+  233E'   B8             C      	CP	B
+  233F'   28 1A          C      	JR	Z,ME.HC04
+                         C      
+  2341'                  C      ME.HC03:
+  2341'   C5             C      	PUSH	BC
+  2342'   06 10          C      	LD	B,16
+  2344'   CD 2360'       C      	CALL	ME.HC
+  2347'   11 0100        C      	LD	DE,100H
+  234A'   2A 2BE0'       C      	LD	HL,(ME.AADR)
+  234D'   19             C      	ADD	HL,DE
+  234E'   22 2BE0'       C      	LD	(ME.AADR),HL
+  2351'   CD 207E'       C      	CALL	ME.TDEL
+  2354'   C1             C      	POP	BC
+  2355'   10 EA          C      	DJNZ	ME.HC03
+                         C      
+  2357'   AF             C      	XOR	A
+  2358'   B9             C      	CP	C
+  2359'   28 04          C      	JR	Z,ME.END
+                         C      
+  235B'                  C      ME.HC04:
+  235B'   41             C      	LD	B,C
+  235C'   CD 2360'       C      	CALL	ME.HC
+                         C      
+  235F'                  C      ME.END:
+  235F'   C9             C      	RET
+                         C      
+  2360'                  C      ME.HC:
+  2360'   21 3000        C      	LD	HL,SD.BWSA
+  2363'   0E 50          C      	LD	C,80
+  2365'   CD 07D3'       C      	CALL	S1.HCP
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-71
+
+
+  2368'   3E 1E          C      	LD	A,1EH
+  236A'   CD 486B'       C      	CALL	P1.PRINT
+  236D'   CD 486B'       C      	CALL	P1.PRINT
+  2370'   C9             C      	RET
+                         C      
+  2371'                  C      ME.ZKEIN:
+  2371'   04             C      	DB	4
+  2372'   16             C      	DB	22
+  2373'   08             C      	DB	8
+  2374'   44 72 75 63    C      	DB	'Drucken bis Adresse : '
+  2378'   6B 65 6E 20    C      
+  237C'   62 69 73 20    C      
+  2380'   41 64 72 65    C      
+  2384'   73 73 65 20    C      
+  2388'   3A 20          C      
+                         C      
+                         C      ;	END
+                         C      ;	PN	ME01
+  2B00                   C      ME.ZN     EQU   02B00H
+                         C      	ORG	2BE0H
+                         C      ;***********************************************************
+                         C      ;      Arbeitszellen fuer MEMO
+                         C      ;***********************************************************
+                         C      
+  2BE0'                  C      ME.AADR:    DEFS	2,0
+  2BE2'                  C      ME.AKTAD:   DEFS	2,0
+  2BE4'                  C      ME.MOD:     DEFS	1,0
+  2BE5'                  C      ME.BZEIN:   DEFS	1,0
+  2BE6'                  C      ME.BPZEI:   DEFS	1,0
+  2BE7'                  C      ME.PUZEI:   DEFS	2,0
+  2BE9'                  C      ME.VTAS:    DEFS	2,0
+  2BEB'                  C      ME.BZMAX:   DEFS	1,0
+                         C      
+  2BEC'                  C      ME.AADR1:   DEFS	2,0
+  2BEE'                  C      ME.AKTA1:   DEFS	2,0
+  2BF0'                  C      ME.MOD1:    DEFS	1,0
+  2BF1'                  C      ME.BZEI1:   DEFS	1,0
+  2BF2'                  C      ME.BPZE1:   DEFS	1,0
+                         C      
+  2C00                   C      ME.PUFAN  EQU   02C00H
+                         C      
+                         C      ;	END
+                                
+                         C      	INCLUDE V101.ASM	; Verbindungsroutinen
+                         C          TITLE   'DEG2000 V. 1.2    Einsprungadressen'
+                         C          PAGE
+'DEG2000 V. 1.2    Einsprungadressen'	MACRO-80 3.44	09-Dec-81	PAGE	1-72
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*                  DEG2000 V. 1.2    Einsprungadressen         *
+                         C      ;*  Version         --------------------------------------------*
+                         C      ;*                  Programmierer: M. Herbote                   *
+                         C      ;*  V 1 . 2         --------------------------------------------*
+                         C      ;*                  Stand        : 03.Dezember 2022             *
+                         C      ;****************************************************************
+                         C      	ORG	04000H
+                         C      ;****************************************************************
+                         C      ;*                  physische Ansteuerung der Tastatur          *
+                         C      ;****************************************************************
+  4000'   C3 43CF'       C      TR.TINIT:  JP	TR.PIOP2    ;Initialisierung der Tastatur
+  4003'   C3 4408'       C      TR.TA1:    JP	TR.TTA12    ;U_Int - Abfrage
+  4006'   C3 4411'       C      TR.TA2:    JP	TR.TTA22    ;Tastencode-Eingabe
+  4009'   C3 43EA'       C      TR.TA3:    JP	TR.TA32     ;Warten auf Tasten
+  400C'   C3 43F8'       C      TR.TFE:    JP	TR.TFE2     ;Warten auf Tastenende
+  400F'   C3 4417'       C      TR.TIM:    JP	TR.TTIM2    ;Ansteuerung der INS_MOD - Diode
+  4012'   C3 4437'       C      TR.TEM:    JP	TR.TTEM2    ;Ansteuerung der Ebenen  - Dioden
+  4015'   C3 443D'       C      TR.TBEL:   JP	TR.TTBL2    ;Ansteuerung der Fehleranzeigen
+                         C      ;
+                         C          ORG	04020H
+  4020'   C3 4100'       C      TA.TAST1:  JP	TA.TAST     ;04020H
+  4023'   C3 41CF'       C      TA.TFE1:   JP	TA.TFE      ;04023H
+  4026'   C3 438C'       C      TA.ABFR1:  JP	TA.ABFR2    ;04026H
+                         C      
+                         C      	ORG	04030H
+                         C      ;****************************************************************
+                         C      ;*                  SET-/RESET- Cursor                          *
+                         C      ;****************************************************************
+  4030'   C3 04AE'       C      SY.SETCG:   JP   SY.SETC    ;04030H
+  4033'   C3 04D1'       C      SY.SETCHLG: JP   SY.SETCHL  ;04033H
+  4036'   C3 04E8'       C      SY.RESCG:   JP   SY.RESC    ;04036H
+                         C      
+                         C      	ORG	04040H
+                         C      ;****************************************************************
+                         C      ;*                  Druckerroutinen                             *
+                         C      ;****************************************************************
+  4040'   C3 4784'       C      PR.PRINT:  JP   PR.PRINA    ;04040H
+  4043'   C3 4784'       C      PR.DINIT:  JP   PR.PRINA    ;04043H
+  4046'   C3 486C'       C      PR.MRES:   JP   P1.MRES     ;04046H
+  4049'   C3 48DA'       C      PR.PRIO:   JP   P1.PRIO     ;04049H
+                         C      
+                         C      	ORG	04050H
+                         C      ;****************************************************************
+                         C      ;*                  Lochbandroutinen                            *
+                         C      ;****************************************************************
+  4050'   C3 44FC'       C      LR.LRLBL:  JP   LR.LBL      ;04050H
+  4053'   C3 448B'       C      LR.LRLBS:  JP   LR.LBS      ;04053H
+                         C      
+                         C      	ORG	04060H
+                         C      ;****************************************************************
+                         C      ;*                  Kassettenroutinen                           *
+                         C      ;****************************************************************
+  4060'   C9             C      KMBROB:    RET              ;04060H
+  4061'   00             C                 NOP
+  4062'   00             C                 NOP
+  4063'   C9             C      KMBRUC:    RET              ;04063H
+  4064'   00             C                 NOP
+  4065'   00             C                 NOP
+  4066'   C9             C      KMBINI:    RET              ;04066H
+  4067'   00             C                 NOP
+  4068'   00             C                 NOP
+                         C      
+                         C      ;   END
+                                	
+                         C      	INCLUDE TA01.ASM	; Tastatur
+                         C      	TITLE	'DEG2000 V. 1.2    Tastaturmodul'
+                         C      	PAGE
+'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-73
+
+
+                         C      
+                         C      ;	PN	TA01
+                         C      ;****************************************************************
+                         C      ;*                  DEG2000 V. 1.2    Tastaturmodul             *
+                         C      ;*  Version         --------------------------------------------*
+                         C      ;*                  Programmierer: M. Herbote  K EAW  ZFT (WFT) *
+                         C      ;*  V 1 . 2         --------------------------------------------*
+                         C      ;*                  Stand        : 06.Februar 1985              *
+                         C      ;****************************************************************
+                         C      	ORG	04100H	;06C00H
+  4100'                  C      TA.TAST:
+  4100'   CD 435D'       C      	CALL	TA.ABFR	;Abfragen der Tastatur
+  4103'   28 FB          C      	JR	Z,TA.TAST	;Warten auf gueltiges Zeichen
+  4105'   32 0D80'       C      	LD	(SM.TK),A
+  4108'   47             C      	LD	B,A
+  4109'   3A 0FFD        C      	LD	A,(SM.KGMER)	;(SM.KGMER)=1 : Schreibmasch.tastatur
+  410C'   B7             C      	OR	A
+  410D'   78             C      	LD	A,B
+  410E'   28 18          C      	JR	Z,TA.ABF14	;Codewandlung fuer Klein-/Gross-
+  4110'   FE 7E          C      	CP	7EH	;                  Schreibung
+  4112'   30 14          C      	JR	NC,TA.ABF14
+  4114'   FE 61          C      	CP	61H
+  4116'   30 0A          C      	JR	NC,TA.ABF15
+  4118'   FE 5E          C      	CP	5EH
+  411A'   30 0C          C      	JR	NC,TA.ABF14
+  411C'   FE 41          C      	CP	41H
+  411E'   30 06          C      	JR	NC,TA.ABF16
+  4120'   18 06          C      	JR	TA.ABF14
+                         C      
+  4122'                  C      TA.ABF15:
+  4122'   D6 20          C      	SUB	20H
+  4124'   18 02          C      	JR	TA.ABF14
+                         C      
+  4126'                  C      TA.ABF16:
+  4126'   C6 20          C      	ADD	A,20H
+                         C      
+  4128'                  C      TA.ABF14:
+  4128'   FE 80          C      	CP	80H	;Test auf Funktionstasten
+  412A'   D2 41F9'       C      	JP	NC,TA.ABF20
+  412D'   FE 09          C      	CP	09H	;Tabulator
+  412F'   20 05          C      	JR	NZ,TA.AB01
+  4131'   2A 0DA8'       C      	LD	HL,(SM.TABU)
+  4134'   18 1C          C      	JR	TA.ABF3
+  4136'                  C      TA.AB01:
+  4136'   FE 1E          C      	CP	1EH	;ET1 / ENTER
+  4138'   20 05          C      	JR	NZ,TA.ABF1
+  413A'   2A 0DAE'       C      	LD	HL,(SM.NEWL)
+  413D'   18 13          C      	JR	TA.ABF3
+                         C      
+  413F'                  C      TA.ABF1:
+  413F'   21 0FFF        C      	LD	HL,SM.SPMER	;Merker fuer zugelassene Tastaturgruppen
+  4142'   FE 3A          C      	CP	3AH
+  4144'   30 7F          C      	JR	NC,TA.ABF10
+  4146'   FE 20          C      	CP	20H
+  4148'   30 5D          C      	JR	NC,TA.ABF6
+  414A'   CB 46          C      	BIT	0,M	;BIT 0 : Zeichencode < 20H
+  414C'   CA 41CF'       C      	JP	Z,TA.TFE
+                         C      
+  414F'                  C      TA.ABF2:
+  414F'   2A 0DB0'       C      	LD	HL,(SM.EINA)	;Routine ASCII-Zeichen
+  4152'                  C      TA.ABF3:
+  4152'   4F             C      	LD	C,A
+  4153'   7C             C      	LD	A,H
+  4154'   B5             C      	OR	L
+  4155'   28 78          C      	JR	Z,TA.TFE	;HL=0 : Taste nicht zugelassen
+  4157'   CD 04E8'       C      	CALL	SY.RESC	;Cursor loeschen
+  415A'   79             C      	LD	A,C
+  415B'   31 0D00        C      	LD	SP,SM.STACK	;STACK_POINTER ruecksetzen
+  415E'   CD 41A6'       C      	CALL	TA.MM	;Sprung zur Tastenroutine
+  4161'   CD 04AE'       C      	CALL	SY.SETC	;Cursor setzen
+                         C      
+  4164'                  C      TA.WART:
+  4164'   06 82          C      	LD	B,130
+  4166'                  C      TA.WART1:
+  4166'   C5             C      	PUSH	BC
+  4167'   3A 0D8E'       C      	LD	A,(SM.ZSMER)
+  416A'   B7             C      	OR	A
+  416B'   CA 41CF'       C      	JP	Z,TA.TFE
+  416E'   2A 4004'       C      	LD	HL,(TR.TA1+1)
+  4171'   CD 41A4'       C      	CALL	TA.MM1
+  4174'   C2 41CF'       C      	JP	NZ,TA.TFE
+  4177'   2A 4007'       C      	LD	HL,(TR.TA2+1)
+'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-74
+
+
+  417A'   CD 41A4'       C      	CALL	TA.MM1
+  417D'   21 0D80'       C      	LD	HL,SM.TK
+  4180'   BE             C      	CP	(HL)
+  4181'   C2 41CF'       C      	JP	NZ,TA.TFE
+  4184'   C1             C      	POP	BC
+  4185'   10 DF          C      	DJNZ	TA.WART1
+  4187'   3A 0D8F'       C      	LD	A,(SM.ZSTC)
+  418A'   FE 0E          C      	CP	SD.ZEIT2-SD.ZEIT1
+  418C'   38 04          C      	JR	C,TA.WART3
+  418E'   FE 10          C      	CP	SD.ZEIT2
+  4190'   28 06          C      	JR	Z,TA.WART4
+  4192'                  C      TA.WART3:
+  4192'   3C             C      	INC	A
+  4193'   32 0D8F'       C      	LD	(SM.ZSTC),A
+  4196'   18 CC          C      	JR	TA.WART
+  4198'                  C      TA.WART4:
+  4198'   3E 0E          C      	LD	A,SD.ZEIT2-SD.ZEIT1
+  419A'   32 0D8F'       C      	LD	(SM.ZSTC),A
+  419D'   AF             C      	XOR	A
+  419E'   32 0D80'       C      	LD	(SM.TK),A
+  41A1'   C3 4100'       C      	JP	TA.TAST
+                         C      
+  41A4'                  C      TA.MM1:
+  41A4'   2B             C      	DEC	HL
+  41A5'   2B             C      	DEC	HL
+  41A6'                  C      TA.MM:
+  41A6'   E9             C      	JP	(HL)
+                         C      
+  41A7'                  C      TA.ABF6:
+  41A7'   FE 30          C      	CP	30H
+  41A9'   30 14          C      	JR	NC,TA.ABF9
+  41AB'   FE 2B          C      	CP	2BH
+  41AD'   30 06          C      	JR	NC,TA.ABF8
+  41AF'                  C      TA.ABF7:
+  41AF'   CB 4E          C      	BIT	1,M	;BIT 1 : " SPACE!"#$%&'()*./
+  41B1'   28 1C          C      	JR	Z,TA.TFE
+  41B3'   18 9A          C      	JR	TA.ABF2
+                         C      
+  41B5'                  C      TA.ABF8:
+  41B5'   FE 2E          C      	CP	2EH
+  41B7'   30 F6          C      	JR	NC,TA.ABF7
+  41B9'   CB 56          C      	BIT	2,M	;BIT 2 : +,-
+  41BB'   28 12          C      	JR	Z,TA.TFE
+  41BD'   18 90          C      	JR	TA.ABF2
+                         C      
+  41BF'                  C      TA.ABF9:
+  41BF'   CB 5E          C      	BIT	3,M	;BIT 3 : 1234567890
+  41C1'   28 0C          C      	JR	Z,TA.TFE
+  41C3'   18 8A          C      	JR	TA.ABF2
+                         C      
+  41C5'                  C      TA.ABF10:
+  41C5'   FE 40          C      	CP	40H
+  41C7'   30 1A          C      	JR	NC,TA.ABF11
+  41C9'   CB 66          C      	BIT	4,M	;BIT 4 : :;<>=?
+  41CB'   28 02          C      	JR	Z,TA.TFE
+  41CD'   18 80          C      	JR	TA.ABF2
+                         C      
+  41CF'                  C      TA.TFE:
+  41CF'   CD 41D5'       C      	CALL	TA.TFE2
+  41D2'   C3 4100'       C      	JP	TA.TAST
+                         C      
+  41D5'                  C      TA.TFE2:
+  41D5'   AF             C      	XOR	A	;Einsprung Tastenende
+  41D6'   32 0D8E'       C      	LD	(SM.ZSMER),A
+  41D9'   32 0D8F'       C      	LD	(SM.ZSTC),A
+  41DC'   2A 400D'       C      	LD	HL,(TR.TFE+1)	;Warten auf Tastenende
+  41DF'   CD 41A4'       C      	CALL	TA.MM1
+  41E2'   C9             C      	RET
+                         C      
+  41E3'                  C      TA.ABF11:
+  41E3'   FE 61          C      	CP	61H
+  41E5'   30 07          C      	JR	NC,TA.ABF13
+  41E7'                  C      TA.ABF12:
+  41E7'   CB 6E          C      	BIT	5,M	;BIT 5 : 40H - 60H UND 7BH - 7EH
+  41E9'   28 E4          C      	JR	Z,TA.TFE
+  41EB'   C3 414F'       C      	JP	TA.ABF2
+                         C      
+  41EE'                  C      TA.ABF13:
+  41EE'   FE 7B          C      	CP	7BH
+  41F0'   30 F5          C      	JR	NC,TA.ABF12
+  41F2'   CB 76          C      	BIT	6,M	;BIT 6 : kleine Buchstaben
+  41F4'   28 D9          C      	JR	Z,TA.TFE
+  41F6'   C3 414F'       C      	JP	TA.ABF2
+'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-75
+
+
+                         C      
+  41F9'                  C      TA.ABF20:
+  41F9'   21 0FFF        C      	LD	HL,SM.SPMER	;Unterteilung der Funktionstasten
+  41FC'   FE FC          C      	CP	0FCH
+  41FE'   30 36          C      	JR	NC,TA.EW1
+  4200'   FE F0          C      	CP	0F0H
+  4202'   30 45          C      	JR	NC,TA.STEUT
+  4204'   FE D0          C      	CP	0D0H
+  4206'   30 7C          C      	JR	NC,TA.STZ
+  4208'   FE CA          C      	CP	0CAH
+  420A'   30 7F          C      	JR	NC,TA.FKT2
+  420C'   FE C0          C      	CP	0C0H
+  420E'   30 76          C      	JR	NC,TA.HZE
+  4210'   CB 7E          C      	BIT	7,M	;BIT 7 : Funktionstasten
+  4212'   28 BB          C      	JR	Z,TA.TFE
+  4214'   FE B0          C      	CP	0B0H
+  4216'   30 7F          C      	JR	NC,TA.FKT1
+                         C      
+  4218'   21 0D81'       C      	LD	HL,SM.FKT	;PF1 - PF12 in 4 Ebenen
+  421B'   46             C      	LD	B,(HL)
+  421C'   04             C      	INC	B
+  421D'   D6 8C          C      	SUB	08CH
+  421F'                  C      TA.EAW2:
+  421F'   C6 0C          C      	ADD	A,0CH
+  4221'   10 FC          C      	DJNZ	TA.EAW2
+  4223'                  C      TA.EAW3:
+  4223'   21 42CF'       C      	LD	HL,TA.TAB1
+  4226'                  C      TA.EAW5:
+  4226'   87             C      	ADD	A,A
+  4227'   4F             C      	LD	C,A
+  4228'   06 00          C      	LD	B,0
+  422A'   09             C      	ADD	HL,BC
+                         C      
+  422B'                  C      TA.ABFR9:
+  422B'   7E             C      	LD	A,M
+  422C'   23             C      	INC	HL
+  422D'   66             C      	LD	H,M
+  422E'   6F             C      	LD	L,A
+  422F'   5E             C      	LD	E,M
+  4230'   23             C      	INC	HL
+  4231'   56             C      	LD	D,M
+  4232'   EB             C      	EX	DE,HL
+  4233'   C3 4152'       C      	JP	TA.ABF3
+                         C      
+  4236'                  C      TA.EW1:
+  4236'   CB 7E          C      	BIT	7,M	;Ebenenumschalttasten
+  4238'   28 95          C      	JR	Z,TA.TFE
+  423A'   2F             C      	CPL
+  423B'   32 0D81'       C      	LD	(SM.FKT),A	;0,...,3 steht in (SM.FKT)
+  423E'   CD 4271'       C      	CALL	TA.BBB
+  4241'   2A 4013'       C      	LD	HL,(TR.TEM+1)	;Ansteuerung der Ebenen-Dioden
+  4244'   CD 41A4'       C      	CALL	TA.MM1
+  4247'   18 86          C      	JR	TA.TFE
+                         C      
+  4249'                  C      TA.STEUT:
+  4249'   CB 7E          C      	BIT	7,M	;INS_MODE ; DEL ; INS_LINE ; DEL_LINE
+  424B'   28 82          C      	JR	Z,TA.TFE
+  424D'   FE F0          C      	CP	0F0H
+  424F'   28 07          C      	JR	Z,TA.INSMD
+  4251'   D6 F0          C      	SUB	0F0H
+  4253'                  C      TA.STEU1:
+  4253'   21 432F'       C      	LD	HL,TA.TAB2
+  4256'   18 CE          C      	JR	TA.EAW5
+                         C      
+  4258'                  C      TA.INSMD:
+  4258'   3A 0FFE        C      	LD	A,(SM.IMERK)
+  425B'   B7             C      	OR	A
+  425C'   28 03          C      	JR	Z,TA.INSME
+  425E'   3D             C      	DEC	A	;Diode INS_MODE ausschalten
+  425F'   18 01          C      	JR	TA.INSML
+  4261'                  C      TA.INSME:
+  4261'   3C             C      	INC	A	;Diode INS_MODE einschalten
+  4262'                  C      TA.INSML:
+  4262'   32 0FFE        C      	LD	(SM.IMERK),A
+  4265'   CD 4271'       C      	CALL	TA.BBB
+  4268'   2A 4010'       C      	LD	HL,(TR.TIM+1)	;Diode INS_MODE ansteuern
+  426B'   CD 41A4'       C      	CALL	TA.MM1
+  426E'   AF             C      	XOR	A
+  426F'   18 E2          C      	JR	TA.STEU1
+                         C      
+  4271'                  C      TA.BBB:
+  4271'   3A 0D81'       C      	LD	A,(SM.FKT)	;( B )   laden fuer  TR.TIM
+  4274'   3C             C      	INC	A
+'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-76
+
+
+  4275'   47             C      	LD	B,A
+  4276'   3E 80          C      	LD	A,080H
+  4278'   07             C      	RLCA		;<--!
+  4279'   10 FD          C      	DJNZ	$-1	;$-$-$-!
+  427B'   47             C      	LD	B,A
+  427C'   3A 0FFE        C      	LD	A,(SM.IMERK)
+  427F'   B7             C      	OR	A
+  4280'   C8             C      	RET	Z
+  4281'   CB F8          C      	SET	7,B
+  4283'   C9             C      	RET
+                         C      
+  4284'                  C      TA.STZ:
+  4284'   D6 40          C      	SUB	040H	;Codes 00H - 1FH (Hexatasten)
+  4286'                  C      TA.HZE:
+  4286'   D6 90          C      	SUB	090H	;Codes 30H - 39H (Hexatasten)
+  4288'   C3 413F'       C      	JP	TA.ABF1
+                         C      
+  428B'                  C      TA.FKT2:
+  428B'   CB 7E          C      	BIT	7,M	;Tasten : - , NQ SYS END ABS
+  428D'   CA 41CF'       C      	JP	Z,TA.TFE
+  4290'   D6 CA          C      	SUB	0CAH
+  4292'   21 4347'       C      	LD	HL,TA.TAB3
+  4295'   18 8F          C      	JR	TA.EAW5
+                         C      
+  4297'                  C      TA.FKT1:
+  4297'   D6 B0          C      	SUB	0B0H	;Tasten : PQ TABS TABL CI M
+  4299'   21 4353'       C      	LD	HL,TA.TAB4
+  429C'   18 88          C      	JR	TA.EAW5
+                         C      
+  429E'                  C      TA.E0IN:
+  429E'   AF             C      	XOR	A
+  429F'   32 0D81'       C      	LD	(SM.FKT),A
+  42A2'   32 0FFE        C      	LD	(SM.IMERK),A
+  42A5'   CD 4271'       C      	CALL	TA.BBB
+  42A8'   2A 4013'       C      	LD	HL,(TR.TEM+1)
+  42AB'   CD 41A4'       C      	CALL	TA.MM1
+  42AE'   CD 4271'       C      	CALL	TA.BBB
+  42B1'   2A 4010'       C      	LD	HL,(TR.TIM+1)
+  42B4'   CD 41A4'       C      	CALL	TA.MM1
+  42B7'   C9             C      	RET
+                         C      
+                         C      
+  42B8'   42B8'          C      	DW	$	;Schreibmaschinentastatur
+  42BA'   53 54 41 53    C      	DB	'STAS'
+  42BE'   3E 01          C      	LD	A,1
+  42C0'                  C      TA.STAS1:
+  42C0'   32 0FFD        C      	LD	(SM.KGMER),A
+  42C3'   C3 000B'       C      	JP	SY.SYSTB
+                         C      
+  42C6'   42C6'          C      	DW	$	;Programmiertastatur
+  42C8'   50 54 41 53    C      	DB	'PTAS'
+  42CC'   AF             C      	XOR	A
+  42CD'   18 F1          C      	JR	TA.STAS1
+                         C      
+                         C      	PAGE
+'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-77
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*                  Verzweigungstabelle der Tastenroutinen      *
+                         C      ;****************************************************************
+  42CF'                  C      TA.TAB1:
+  42CF'   0D00           C      	DW	00D00H	;P01
+  42D1'   0D10           C      	DW	00D10H	;P02
+  42D3'   0D20           C      	DW	00D20H	;P03
+  42D5'   0D30           C      	DW	00D30H	;P04
+  42D7'   0D40           C      	DW	00D40H	;P05
+  42D9'   0D50           C      	DW	00D50H	;P06
+  42DB'   0D60           C      	DW	00D60H	;P07
+  42DD'   0D70           C      	DW	00D70H	;P08
+  42DF'   0D0A           C      	DW	00D0AH	;P09
+                         C      
+  42E1'   0D1A           C      	DW	00D1AH	;P10
+  42E3'   0D2A           C      	DW	00D2AH	;P11
+  42E5'   0D3A           C      	DW	00D3AH	;P12
+  42E7'   0D4A           C      	DW	00D4AH	;P13
+  42E9'   0D5A           C      	DW	00D5AH	;P14
+  42EB'   0D02           C      	DW	00D02H	;P15
+  42ED'   0D12           C      	DW	00D12H	;P16
+  42EF'   0D22           C      	DW	00D22H	;P17
+  42F1'   0D32           C      	DW	00D32H	;P18
+  42F3'   0D42           C      	DW	00D42H	;P19
+                         C      
+  42F5'   0D52           C      	DW	00D52H	;P20
+  42F7'   0D62           C      	DW	00D62H	;P21
+  42F9'   0D72           C      	DW	00D72H	;P22
+  42FB'   0D0C           C      	DW	00D0CH	;P23
+  42FD'   0D1C           C      	DW	00D1CH	;P24
+  42FF'   0D2C           C      	DW	00D2CH	;P25
+  4301'   0D3C           C      	DW	00D3CH	;P26
+  4303'   0D6A           C      	DW	00D6AH	;P27
+  4305'   0D7A           C      	DW	00D7AH	;P28
+  4307'   0D0E           C      	DW	00D0EH	;P29
+                         C      
+  4309'   0D5E           C      	DW	00D5EH	;P30
+  430B'   0D7C           C      	DW	00D7CH	;P31
+  430D'   0D7E           C      	DW	00D7EH	;P32
+  430F'   0D2E           C      	DW	00D2EH	;P33
+  4311'   0D4E           C      	DW	00D4EH	;P34
+  4313'   0D1E           C      	DW	00D1EH	;P35
+  4315'   0D3E           C      	DW	00D3EH	;P36
+  4317'   0D5E           C      	DW	00D5EH	;P37
+  4319'   0D5E           C      	DW	00D5EH	;P38
+  431B'   0D5E           C      	DW	00D5EH	;P39
+                         C      
+  431D'   0D5E           C      	DW	00D5EH	;P40
+  431F'   0D5E           C      	DW	00D5EH	;P41
+  4321'   0D5E           C      	DW	00D5EH	;P42
+  4323'   0D5E           C      	DW	00D5EH	;P43
+  4325'   0D5E           C      	DW	00D5EH	;P44
+  4327'   0D5E           C      	DW	00D5EH	;P45
+  4329'   0D5E           C      	DW	00D5EH	;P46
+  432B'   0D5E           C      	DW	00D5EH	;P47
+  432D'   0D5E           C      	DW	00D5EH	;P48
+                         C      
+  432F'                  C      TA.TAB2:
+  432F'   0D5E           C      	DW	00D5EH	;INS_MOD
+  4331'   0D58           C      	DW	00D58H	;DEL
+  4333'   0DAC           C      	DW	00DACH	;INS_LINE
+  4335'   0DAA           C      	DW	00DAAH	;DEL_LINE
+                         C      
+  4337'   0D26           C      	DW	00D26H	;SCH_LINKS
+  4339'   0D06           C      	DW	00D06H	;C_HOCH
+  433B'   0D36           C      	DW	00D36H	;SCH_RECHTS
+  433D'   0D08           C      	DW	00D08H	;C_LINKS
+  433F'   0D74           C      	DW	00D74H	;HOME
+  4341'   0D16           C      	DW	00D16H	;C_RECHTS
+  4343'   0D76           C      	DW	00D76H	;CNZA
+  4345'   0D18           C      	DW	00D18H	;C_RUNTER
+                         C      
+  4347'                  C      TA.TAB3:
+  4347'   0D4C           C      	DW	00D4CH	;00
+  4349'   0D48           C      	DW	00D48H	;000
+  434B'   0D38           C      	DW	00D38H	;NEG_QUIT
+  434D'   0D68           C      	DW	00D68H	;SYS
+  434F'   0D68           C      	DW	00D68H	;END
+  4351'   0D24           C      	DW	00D24H	;ABS
+                         C      
+  4353'                  C      TA.TAB4:
+'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-78
+
+
+  4353'   0D28           C      	DW	00D28H	;POS_QUIT
+  4355'   0D04           C      	DW	00D04H	;TABS
+  4357'   0D14           C      	DW	00D14H	;TABL
+  4359'   0D34           C      	DW	00D34H	;CI
+  435B'   0D78           C      	DW	00D78H	;M
+                         C      
+                         C      	PAGE
+'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-79
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*                  Eingabe des Tastencode                      *
+                         C      ;****************************************************************
+  435D'                  C      TA.ABFR:
+  435D'   C5             C      	PUSH	BC	;retten der Register
+  435E'   E5             C      	PUSH	HL
+  435F'   F5             C      	PUSH	AF
+  4360'   C1             C      	POP	BC	;BC=AF
+  4361'   CB F1          C      	SET	6,C	;Z=1, wenn keine Taste betaetigt
+  4363'   C5             C      	PUSH	BC
+  4364'   2A 4004'       C      	LD	HL,(TR.TA1+1)	;/UInt einlesen
+  4367'   CD 41A4'       C      	CALL	TA.MM1
+  436A'   32 0FFC        C      	LD	(SM.CTRL),A
+  436D'   C1             C      	POP	BC
+  436E'   20 17          C      	JR	NZ,TA.AB1	;keine Taste : Rueckladen der Register
+                         C      
+  4370'   C5             C      	PUSH	BC
+  4371'   2A 4007'       C      	LD	HL,(TR.TA2+1)	;Tastencode lesen
+  4374'   CD 41A4'       C      	CALL	TA.MM1
+  4377'   C1             C      	POP	BC
+                         C      
+  4378'   B7             C      	OR	A	;Zeichen  NULL
+  4379'   28 0C          C      	JR	Z,TA.AB1
+  437B'   CB B1          C      	RES	6,C	;Taste betaetigt ----- Z=0
+  437D'   60             C      	LD	H,B	;Inhalt von A retten fuer CTRL
+  437E'   47             C      	LD	B,A	;B : Tastencode
+                         C      
+  437F'   3A 0FFC        C      	LD	A,(SM.CTRL)	;Abfrage CTRL - Taste
+  4382'   CB 57          C      	BIT	2,A
+  4384'   CC 439C'       C      	CALL	Z,TA.CTRL	;Auswertung CTRL - Taste
+                         C      
+  4387'                  C      TA.AB1:
+  4387'   C5             C      	PUSH	BC
+  4388'   F1             C      	POP	AF	;Rueckladen der Register
+  4389'   E1             C      	POP	HL
+  438A'   C1             C      	POP	BC
+  438B'   C9             C      	RET
+                         C      
+  438C'                  C      TA.ABFR2:
+  438C'   CD 435D'       C      	CALL	TA.ABFR
+  438F'   F5             C      	PUSH	AF
+  4390'   C5             C      	PUSH	BC
+  4391'   01 3000        C      	LD	BC,03000H
+  4394'   0B             C      	DEC	BC	    ;<--|
+  4395'   78             C      	LD	A,B	    ;   |
+  4396'   B1             C      	OR	C	    ;   |
+  4397'   20 FB          C      	JR	NZ,$-3	;---|
+  4399'   C1             C      	POP	BC
+  439A'   F1             C      	POP	AF
+  439B'   C9             C      	RET
+                         C      
+                         C      
+  439C'                  C      TA.CTRL:
+  439C'   78             C      	LD	A,B	;Auswertung der CTRL-Taste
+  439D'   FE CE          C      	CP	0CEH	;Taste Hardcopy
+  439F'   20 07          C      	JR	NZ,TA.CT1
+  43A1'   CD 07BA'       C      	CALL	S1.COPG
+  43A4'   44             C      	LD	B,H	;nach Ausfuehrung Hardcopy wird die
+  43A5'   CB F1          C      	SET	6,C	;Taste als nicht betaetigt betrachtet
+  43A7'   C9             C      	RET
+  43A8'                  C      TA.CT1:
+  43A8'   FE 85          C      	CP	85H	;nur fuer Tastencode kleiner 85H
+  43AA'   D0             C      	RET	NC
+  43AB'   FE 84          C      	CP	84H
+  43AD'   20 03          C      	JR	NZ,TA.CTRL0
+  43AF'   06 F4          C      	LD	B,0F4H	;84H wird SCH_LINKS
+  43B1'   C9             C      	RET
+  43B2'                  C      TA.CTRL0:
+  43B2'   FE 80          C      	CP	80H
+  43B4'   38 03          C      	JR	C,TA.CTRL1
+  43B6'   C6 31          C      	ADD	A,31H	;TABS , TABL , CI , M
+  43B8'   47             C      	LD	B,A
+  43B9'                  C      TA.CTRL1:
+  43B9'   FE 70          C      	CP	70H
+  43BB'   D0             C      	RET	NC
+  43BC'   FE 60          C      	CP	60H
+  43BE'   38 03          C      	JR	C,TA.CTRL2
+  43C0'   C6 80          C      	ADD	A,80H	;`.....o wird zu 10H - 1FH
+  43C2'   47             C      	LD	B,A
+  43C3'                  C      TA.CTRL2:
+  43C3'   FE 50          C      	CP	50H
+'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-80
+
+
+  43C5'   D0             C      	RET	NC
+  43C6'   FE 40          C      	CP	40H
+  43C8'   D8             C      	RET	C
+  43C9'   C6 90          C      	ADD	A,90H	;@.....O wird zu 00H - 0FH
+  43CB'   47             C      	LD	B,A
+  43CC'   C9             C      	RET
+                         C      
+                         C      			;Stand: 06.Februar 85 - K EAW/wfvm..MSH
+                         C      
+                         C      ;	END
+                         C      	INCLUDE TR01.ASM
+                         C      	TITLE	'physische Tastatur-Routine'
+                         C      	PAGE
+'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-81
+
+
+                         C      
+                         C      ;	PN	TR01
+                         C      ;****************************************************************
+                         C      ;*                  TAP / DEG2000 -- physische Tastatur-Routine *
+                         C      ;*  T A P           --------------------------------------------*
+                         C      ;*                  Programmierer: M. Herbote  K EAW  ZFT (WFT) *
+                         C      ;*  D E G 2 0 0 0   --------------------------------------------*
+                         C      ;*                  Stand        : 06.Februar 1985              *
+                         C      ;****************************************************************
+  00A0                   C      TR.ATAST EQU    0A0H    ;Grundadresse der Tastaturansteuerung
+                         C      
+  0002                   C      TR.ANST  EQU    2       ;8 --- PIO- Ansteuerung
+                         C                              ;4 --- ATD- Ansteuerung
+                         C                              ;2 --- ATS- Ansteuerung
+                         C      
+  0002                   C      TR.TAST  EQU    2       ;1 --- Tastatur K 760x
+                         C                              ;2 --- Tastatur K 763x
+                         C      
+  0001                   C      TR.CTR   EQU    1       ;1 --- ohne Code-Transformation
+                         C                              ;2 --- mit  Code-Transformation
+                         C      
+                         C      	IF	TR.ANST AND 8
+                         C      TR.PPTAB:
+                         C               DB	0CFH
+                         C               DB	0FFH
+                         C               DB	003H
+                         C      
+                         C      TR.PTAB1:
+                         C               DB	0CFH
+                         C               DB	001H
+                         C               DB	003H
+                         C      
+                         C      TR.PTAB2:
+                         C               DB	0CFH
+                         C               DB	0F0H
+                         C               DB	003H
+                         C      	ENDIF
+                         C      
+                         C      	PAGE
+'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-82
+
+
+                         C      
+                         C      	IF	TR.CTR AND 2
+                         C      ;****************************************************************
+                         C      ;*                  Codewandeltabelle  neue ==> alte Tastatur   *
+                         C      ;****************************************************************
+                         C      TR.TABB1:
+                         C      	DB	36
+                         C      	DW	08D09H
+                         C      	DW	0118FH
+                         C      	DW	09291H
+                         C      	DW	09493H
+                         C      	DW	09695H
+                         C      	DW	09897H
+                         C      	DW	09A99H
+                         C      	DW	09C9BH
+                         C      	DW	09D1FH
+                         C      	DB	002H
+                         C      	DW	08B1BH
+                         C      	DB	01CH
+                         C      	DW	08E1EH
+                         C      	DW	01303H
+                         C      	DW	0050BH
+                         C      	DW	00A04H
+                         C      	DW	00607H
+                         C      	DW	00F01H
+                         C      	DW	00810H
+                         C      
+                         C      	DW	0FEFFH
+                         C      	DW	0FCFDH
+                         C      	DW	08180H
+                         C      	DW	08382H
+                         C      	DW	08584H
+                         C      	DW	08786H
+                         C      	DW	08988H
+                         C      	DW	08B8AH
+                         C      	DW	01E09H
+                         C      	DB	0F0H
+                         C      	DW	0F1F1H
+                         C      	DB	0F2H
+                         C      	DW	0F3F3H
+                         C      	DW	0F6F5H
+                         C      	DW	0F8F7H
+                         C      	DW	0FAF9H
+                         C      	DW	0B0FBH
+                         C      	DW	0CDCCH
+                         C      	DW	0CFCEH
+                         C      TR.TABB2  EQU   $-1
+                         C      	ENDIF
+                         C      
+                         C      	PAGE
+'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-83
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*                  Initialisierung der Tastatur                *
+                         C      ;****************************************************************
+  43CD'                  C      TR.PIOPR:
+  43CD'   3E A0          C      	LD	A,TR.ATAST
+  43CF'                  C      TR.PIOP2:
+  43CF'   4F             C      	LD	C,A
+  43D0'   C9             C      	RET
+                         C      
+                         C      	IF	(TR.ANST AND 2) AND (TR.TAST AND 2)
+  43D1'   F5             C      	PUSH	AF
+                         C      	ENDIF
+                         C      
+  43D2'   0C             C      	INC	C
+  43D3'   0C             C      	INC	C
+                         C      
+                         C      	IF	TR.ANST AND 8	;PIO
+                         C      	LD	HL,TR.PTAB1
+                         C      	CALL	TR.PIOU3
+                         C      	INC	C
+                         C      	LD	HL,TR.PPTAB
+                         C      	CALL	TR.PIOU3
+                         C      	RET
+                         C      TR.PIOUM:
+                         C      	LD	A,TR.ATAST
+                         C      TR.PIOU2:
+                         C      	LD	C,A
+                         C      	LD	A,0FEH		;DB tristate
+                         C      	OUT	(C),A
+                         C      	INC	C
+                         C      	INC	C
+                         C      	INC	C
+                         C      TR.PIOU3:
+                         C      	LD	B,3
+                         C      	OTIR
+                         C      	ENDIF
+                         C      
+                         C      	IF	TR.ANST AND 4 OR TR.ANST AND 2
+  43D4'   AF             C      	XOR	A
+  43D5'   ED 79          C      	OUT	(C),A
+  43D7'   0D             C      	DEC	C
+  43D8'   0D             C      	DEC	C
+  43D9'   ED 78          C      	IN	A,(C)
+  43DB'   01 8000        C      	LD	BC,8000H
+  43DE'   0B             C      	DEC	BC
+  43DF'   78             C      	LD	A,B
+  43E0'   B1             C      	OR	C
+  43E1'   20 FB          C      	JR	NZ,$-3
+                         C      
+                         C      	IF	(TR.ANST AND 2) AND (TR.TAST AND 2)
+  43E3'   F1             C      	POP	AF
+  43E4'   CD 43EA'       C      	CALL	TR.TA32
+                         C      	ENDIF
+                         C      
+  43E7'                  C      TR.PIOUM  EQU   $
+  43E7'                  C      TR.PIOU2  EQU   $
+                         C      	ENDIF
+                         C      
+  43E7'   C9             C      	RET
+                         C      
+  43E8'                  C      TR.TA31:
+  43E8'   3E A0          C      	LD	A,TR.ATAST	;Warten auf gedrueckte Taste
+  43EA'                  C      TR.TA32:
+  43EA'   F5             C      	PUSH	AF
+  43EB'   CD 4003'       C      	CALL	TR.TA1
+  43EE'   C1             C      	POP	BC
+  43EF'   78             C      	LD	A,B
+  43F0'   20 F8          C      	JR	NZ,TR.TA32
+  43F2'   CD 4006'       C      	CALL	TR.TA2
+  43F5'   C9             C      	RET
+                         C      
+  43F6'                  C      TR.TFE1:
+  43F6'   3E A0          C      	LD	A,TR.ATAST	;Warten auf Tastenende
+  43F8'                  C      TR.TFE2:
+  43F8'   F5             C      	PUSH	AF
+  43F9'   CD 4003'       C      	CALL	TR.TA1
+  43FC'   C1             C      	POP	BC
+  43FD'   78             C      	LD	A,B
+  43FE'   F5             C      	PUSH	AF
+  43FF'   CD 4006'       C      	CALL	TR.TA2
+  4402'   F1             C      	POP	AF
+'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-84
+
+
+  4403'   28 F3          C      	JR	Z,TR.TFE2
+  4405'   C9             C      	RET
+                         C      
+                         C      	PAGE
+'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-85
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*                  UP zum Abfragen nach gedrueckter Taste      *
+                         C      ;****************************************************************
+  4406'                  C      TR.TTA11:
+  4406'   3E A0          C      	LD	A,TR.ATAST
+                         C      
+  4408'                  C      TR.TTA12  EQU   $
+                         C      	IF	TR.TAST AND 1
+                         C      	PUSH	AF
+                         C      	ENDIF
+                         C      
+                         C      	IF	TR.ANST AND 8	;PIO
+                         C      	LD	C,A
+                         C      	LD	A,0FEH		;DB tristate
+                         C      	OUT	(C),A
+                         C      	LD	A,0FAH		;/UCS2
+                         C      	OUT	(C),A
+                         C      	IN	A,(C)
+                         C      	BIT	0,A
+                         C      	ENDIF
+                         C      
+                         C      	IF	TR.ANST AND 4	;ATD
+                         C      	ADD	4		;/UCS2
+                         C      	ENDIF
+                         C      
+                         C      	IF	TR.ANST AND 2	;ATS
+  4408'   3C             C      	INC	A		;/UCS2
+                         C      	ENDIF
+                         C      
+                         C      	IF	TR.ANST AND 4 OR TR.ANST AND 2
+  4409'   4F             C      	LD	C,A
+  440A'   ED 78          C      	IN	A,(C)
+  440C'   CB 5F          C      	BIT	3,A
+                         C      	ENDIF
+                         C      
+                         C      	IF	TR.TAST AND 1	;alte Tastatur  ( K 760x )
+                         C      	SET	2,A		;CTRL ausschalten
+                         C      	POP	BC
+                         C      	RET	Z		;RET wenn /UInt aktiv
+                         C      	PUSH	AF
+                         C      	LD	A,B		;liegt gueltige Taste an ?
+                         C      	CALL	TR.TTA22
+                         C      	OR	A		;Z=1 wenn keine gueltige Taste
+                         C      	JR	NZ,$+4		;---|
+                         C      	POP	AF		;   |
+                         C      	RET			;   |
+                         C      	POP	AF		;<--|
+                         C      	RES	3,A		;/UINT akivieren
+                         C      	BIT	3,A
+                         C      	ENDIF
+                         C      
+  440E'   C9             C      	RET
+                         C      ;****************************************************************
+                         C      ;*                  UP zum Einlesen des Tastaturcodes           *
+                         C      ;****************************************************************
+  440F'                  C      TR.TTA21:
+  440F'   3E A0          C      	LD	A,TR.ATAST
+  4411'                  C      TR.TTA22:
+  4411'   4F             C      	LD	C,A
+                         C      
+                         C      	IF	TR.ANST AND 8	;PIO
+                         C      	LD	A,0FCH		;/UCS1
+                         C      	OUT	(C),A
+                         C      	INC	C
+                         C      	IN	A,(C)
+                         C      	ENDIF
+                         C      
+                         C      	IF	TR.ANST AND 4 OR TR.ANST AND 2
+  4412'   ED 78          C      	IN	A,(C)		;/UCS1
+                         C      	ENDIF
+                         C      
+                         C      	IF	TR.CTR AND 2
+                         C      	PUSH	HL		;Codewandlung neue ==> alte Tast.
+                         C      	PUSH	BC
+                         C      	LD	HL,TR.TABB1
+                         C      	LD	B,0
+                         C      	LD	C,(HL)
+                         C      	INC	HL
+                         C      	CPIR
+                         C      	JR	NZ,TR.KODE
+                         C      	OR	A
+'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-86
+
+
+                         C      	LD	HL,TR.TABB2
+                         C      	SBC	HL,BC
+                         C      	LD	A,(HL)
+                         C      TR.KODE:
+                         C      	POP	BC
+                         C      	POP	HL
+                         C      	ENDIF
+                         C      
+  4414'   C9             C      	RET
+                         C      
+                         C      	PAGE
+'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-87
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*                  Ansteuerung der INS_MOD - Diode             *
+                         C      ;****************************************************************
+  4415'                  C      TR.TTIM1:
+  4415'   3E A0          C      	LD	A,TR.ATAST
+  4417'                  C      TR.TTIM2:
+  4417'   4F             C      	LD	C,A		;( B )___bit 7       INS_MOD
+  4418'   C9             C      	RET
+  4419'   F5             C      	PUSH	AF		;        bit 3,2,1,0 aktuelle Ebene
+                         C      
+                         C      	IF	TR.ANST AND 8	; P I O
+                         C      	LD	HL,TR.PTAB2
+                         C      	CALL	TR.PIOU2
+                         C      	ENDIF
+                         C      
+  441A'   F1             C      	POP	AF
+  441B'   F5             C      	PUSH	AF
+                         C      
+                         C      	IF	TR.TAST AND 1	;alte Tastatur  ( K 760x )
+                         C      	BIT	7,B
+                         C      	JR	NZ,$+6		;---|
+                         C      	LD	B,0F7H		;   |     /UCS4: UB3
+                         C      	JR	$+4		;------|
+                         C      	LD	B,0FDH		;<--|  |  /UCS4: UB1
+                         C      	ENDIF			;<-----|
+                         C      
+                         C      	IF	TR.TAST AND 2	;neue Tastatur  ( K 763x )
+  441C'   78             C      	LD	A,B
+  441D'   E6 0F          C      	AND	00FH
+  441F'   2F             C      	CPL
+  4420'   CB 78          C      	BIT	7,B
+  4422'   28 02          C      	JR	Z,$+4		;---|
+  4424'   CB A7          C      	RES	4,A		;   |     /UCS4: UB4
+  4426'   47             C      	LD	B,A		;<--|
+                         C      	ENDIF
+                         C      
+  4427'                  C      TR.TTIM4  EQU   $
+                         C      
+                         C      	IF	TR.ANST AND 8	; P I O
+                         C      	LD	A,0EEH		; /UCS4
+                         C      TR.TTIM3:
+                         C      	OUT	(C),A
+                         C      	INC	C
+                         C      	OUT	(C),B
+                         C      	POP	AF
+                         C      	LD	HL,TR.PPTAB
+                         C      	CALL	TR.PIOU2
+                         C      	ENDIF
+                         C      
+                         C      	IF	TR.ANST AND 4	; A T D
+                         C      	PUSH	BC
+                         C      	LD	B,12		; /UCS4
+                         C      	ENDIF
+                         C      
+                         C      	IF	TR.ANST AND 2	; A T S
+  4427'   C5             C      	PUSH	BC
+  4428'   06 02          C      	LD	B,2		; /UCS4
+                         C      	ENDIF
+                         C      
+                         C      	IF	TR.ANST AND 2 OR TR.ANST AND 4
+  442A'                  C      TR.TTIM3:
+  442A'   0C             C      	INC	C
+  442B'   10 FD          C      	DJNZ	$-1
+  442D'   F1             C      	POP	AF
+  442E'   ED 79          C      	OUT	(C),A
+  4430'   F1             C      	POP	AF
+                         C      
+                         C      	IF	(TR.ANST AND 2) AND (TR.TAST AND 2)
+  4431'   CD 43EA'       C      	CALL	TR.TA32
+                         C      	ENDIF
+                         C      
+                         C      	ENDIF
+                         C      
+  4434'   C9             C      	RET
+                         C      
+                         C      	PAGE
+'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-88
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*                  Ansteuerung der Ebenen  - Dioden            *
+                         C      ;****************************************************************
+  4435'                  C      TR.TTEM1:
+  4435'   3E A0          C      	LD	A,TR.ATAST
+  4437'                  C      TR.TTEM2:
+  4437'   4F             C      	LD	C,A
+  4438'   C9             C      	RET
+                         C      
+                         C      	IF	TR.TAST AND 2	;neue Tastatur  ( K 763x )
+  4439'                  C      TR.TTEM3:
+  4439'   18 DC          C      	JR	TR.TTIM2
+                         C      	ENDIF
+                         C      
+                         C      	IF	TR.TAST AND 1	;alte Tastatur  ( K 760x )
+                         C      	PUSH	AF
+                         C      
+                         C      	IF	TR.ANST AND 8	; P I O
+                         C      	LD	HL,TR.PTAB2
+                         C      	CALL	TR.PIOU2
+                         C      	ENDIF
+                         C      
+                         C      	POP	AF
+                         C      	PUSH	AF
+                         C      
+                         C      	LD	A,B
+                         C      	AND	00FH
+                         C      	CPL
+                         C      	LD	B,A
+                         C      
+                         C      	IF	TR.ANST AND 8	; P I O
+                         C      	LD	A,0F6H		; /UCS3
+                         C      	JR	TR.TTIM3
+                         C      	ENDIF
+                         C      
+                         C      	IF	TR.ANST AND 4	; A T D
+                         C      	PUSH	BC
+                         C      	LD	B,8		; /UCS3
+                         C      	ENDIF
+                         C      
+                         C      	IF	TR.ANST AND 2	; A T S
+                         C      	PUSH	BC
+                         C      	LD	B,7		; /UCS3
+                         C      	ENDIF
+                         C      
+                         C      	IF	TR.ANST AND 2 OR TR.ANST AND 4
+                         C      	JR	TR.TTIM3
+                         C      	ENDIF
+                         C      
+                         C      	ENDIF
+                         C      
+                         C      
+                         C      	PAGE
+'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-89
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*                  Ansteuerung der Fehleranzeigen              *
+                         C      ;****************************************************************
+  443B'                  C      TR.TTBL1:
+  443B'   3E A0          C      	LD	A,TR.ATAST
+  443D'                  C      TR.TTBL2:
+  443D'   4F             C      	LD	C,A		;( B )___bit 3,2,1,0 aktuelle Ebene
+                         C      				;        bit 4       Fehlerlampe
+                         C      				;        bit 5       Hupe lang
+                         C      				;        bit 6       Hupe kurz
+                         C      				;        bit 7       INS_MOD
+  443E'   C9             C      	RET
+                         C      
+                         C      	IF	TR.ANST AND 8	; P I O
+                         C      	PUSH	AF
+                         C      	LD	HL,TR.PTAB2
+                         C      	CALL	TR.PIOU2
+                         C      	POP	AF
+                         C      	ENDIF
+                         C      
+  443F'   F5             C      	PUSH	AF
+                         C      
+                         C      	IF	TR.TAST AND 2	;neue Tastatur  ( K 763x )
+  4440'   78             C      	LD	A,B
+  4441'   E6 0F          C      	AND	00FH
+  4443'   2F             C      	CPL
+  4444'   CB 78          C      	BIT	7,B
+  4446'   28 02          C      	JR	Z,$+4		;---|
+  4448'   CB A7          C      	RES	4,A		;   |     /UCS4: UB4
+  444A'   CB 60          C      	BIT	4,B		;<--|
+  444C'   28 02          C      	JR	Z,$+4		;------|
+  444E'   CB AF          C      	RES	5,A		;      |  /UCS4: UB5
+  4450'   CB 68          C      	BIT	5,B		;<-----|
+  4452'   28 02          C      	JR	Z,$+4		;---|
+  4454'   CB B7          C      	RES	6,A		;   |     /UCS4: UB6
+  4456'   CB 70          C      	BIT	6,B		;<--|
+  4458'   28 02          C      	JR	Z,$+4		;------|
+  445A'   3E 20          C      	LD	A,020H		;      |  /UCS4: UB0,1,2,3,4,6,7
+  445C'   47             C      	LD	B,A		;<-----|
+  445D'   C3 4427'       C      	JP	TR.TTIM4
+                         C      	ENDIF
+                         C      
+                         C      	IF	TR.TAST AND 1	;alte Tastatur  ( K 760x )
+                         C      	BIT	4,B
+                         C      	JR	NZ,TR.BL3
+                         C      	BIT	5,B
+                         C      	JR	NZ,TR.BL3
+                         C      	BIT	6,B
+                         C      	JR	NZ,TR.BL3
+                         C      
+                         C      	LD	A,0F7H		;         /UCS4: UB3
+                         C      	JR	TR.BL4
+                         C      
+                         C      TR.BL3:
+                         C      	LD	A,0FEH		;         /UCS4: UB0
+                         C      	BIT	7,B
+                         C      	JR	Z,TR.BL4
+                         C      	RES	1,A		;         /UCS4: UB1
+                         C      
+                         C      TR.BL4:
+                         C      	LD	B,A
+                         C      
+                         C      	IF	TR.ANST AND 8	; P I O
+                         C      	LD	A,0EEH		; /UCS4
+                         C      	OUT	(C),A
+                         C      	INC	C
+                         C      	OUT	(C),B
+                         C      	POP	AF
+                         C      	LD	HL,TR.PPTAB
+                         C      	CALL	TR.PIOU2
+                         C      	ENDIF
+                         C      
+                         C      	IF	TR.ANST AND 4	; A T D
+                         C      	PUSH	BC
+                         C      	LD	B,12		; /UCS4
+                         C      	ENDIF
+                         C      
+                         C      	IF	TR.ANST AND 2	; A T S
+                         C      	PUSH	BC
+                         C      	LD	B,2		; /UCS4
+                         C      	ENDIF
+'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-90
+
+
+                         C      
+                         C      	IF	TR.ANST AND 2 OR TR.ANST AND 4
+                         C      	INC	C
+                         C      	DJNZ	$-1
+                         C      	POP	AF
+                         C      	OUT	(C),A
+                         C      	POP	AF
+                         C      	IF	TR.ANST AND 2
+                         C      	IF	TR.TAST AND 2
+                         C      	CALL	TR.TA32
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+                         C      	RET
+                         C      
+                         C      	ENDIF
+                         C      
+                         C      			;Stand: 07.Februar 85 - K EAW/wfvm..MSH
+                         C      
+                         C      ;	END
+                                
+                         C      	INCLUDE LR01.ASM	; Lochband-Routine
+                         C      	TITLE	'Lochband-Geraete-Treiber'
+                         C      	PAGE
+'Lochband-Geraete-Treiber'	MACRO-80 3.44	09-Dec-81	PAGE	1-91
+
+
+                         C      
+                         C      ;	PN	LR01
+                         C      ;****************************************************************
+                         C      ;*                  Lochband-Geraete-Treiber  fuer              *
+                         C      ;*                  S I F 1000  ( ADA )  und  I F S P  ( ALB )  *
+                         C      ;*  T A P           --------------------------------------------*
+                         C      ;*                  Programmierer: M. Herbote  K EAW  ZFT (WFT) *
+                         C      ;*  D E G 2 0 0 0   --------------------------------------------*
+                         C      ;*                  Stand        : 10.Januar 1985               *
+                         C      ;****************************************************************
+                         C      
+                         C      ;****************************************************************
+                         C      ;*                  Aufbau der  E-/A-Tabelle                    *
+                         C      ;*                  --------------------------------------------*
+                         C      ;*       +  0       EOR - Zeichen  extern                       *
+                         C      ;*       +  1       EOR - Zeichen  intern                       *
+                         C      ;*       +  2       Basisadresse der Ansteuerkarte fuer Lochb.  *
+                         C      ;*       +  3       Status                                      *
+                         C      ;*                  bit 0 = 1  ...  EOF gelesen                 *
+                         C      ;*                      1 = 1  ...  EOR gelesen                 *
+                         C      ;*       +  4       Kommando                                    *
+                         C      ;*                  bit 0      ...  nicht benutzt               *
+                         C      ;*                                                              *
+                         C      ;*                      1 = 0  ...  Transport rueckwaerts Lesen *
+                         C      ;*                        = 1  ...  Transport vorwaerts   Lesen *
+                         C      ;*                      2 = 0  ...  keine EOR-Umwandlung        *
+                         C      ;*                        = 1  ...  EOR extern <===> EOR intern *
+                         C      ;*                      3 = 0  ...  keine Code-Konvertierung    *
+                         C      ;*                        = 1  ...        Code-Konvertierung    *
+                         C      ;*                      4      ...  nicht benutzt               *
+                         C      ;*                                                              *
+                         C      ;*                      5 = 0  ...  NUL und DEL      lesen      *
+                         C      ;*                          1  ...  NUL und DEL ueberlesen      *
+                         C      ;*                      6 = 0  ...  ungerade Paritaet (7=1)     *
+                         C      ;*                          1  ...    gerade Paritaet (7=1)     *
+                         C      ;*                      7 = 0  ...  ohne Paritaet               *
+                         C      ;*                          1  ...  mit  Paritaet               *
+                         C      ;*       + 5, + 6   Anfangsadresse der Konvertierungstabelle(n) *
+                         C      ;*       + 7, + 8   Blockadresse                                *
+                         C      ;*       + 9, +10   Blocklaenge                                 *
+                         C      ;*       +11        Paritaetsverknuepfungszeichen               *
+                         C      ;*       +12        EOF - Zeichen                               *
+                         C      ;*       +13, +14   Adresse der  OPEN       - Routine           *
+                         C      ;*       +15, +16   Adresse der  CLOSE      - Routine           *
+                         C      ;*       +17, +18   Adresse der  READ/WRITE - Routine           *
+                         C      ;*       +19, +20   Adresse der  KONV       - Routine           *
+                         C      ;****************************************************************
+                         C      
+                         C      ;	ORG	07000H
+                         C      ; LR.LRLBL:
+                         C      ; 	JP	LR.LBL
+                         C      ; LR.LRLBS:
+                         C      ; 	JP	LR.LBS
+                         C      
+                         C      ;	ORG	07010H
+  4460'                  C      LR.IRLB:
+  4460'   44EF'          C      	DW	LR.IRLBS
+  4462'   456F'          C      	DW	LR.IRLBL
+                         C      
+                         C      	PAGE
+'Lochband-Geraete-Treiber'	MACRO-80 3.44	09-Dec-81	PAGE	1-92
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*                  Standard-Konvertierungsroutine              *
+                         C      ;*                  fuer Einfach-Kodetabelle                    *
+                         C      ;****************************************************************
+  4464'                  C      LR.KONV:
+  4464'   E5             C      	PUSH	HL
+  4465'   C5             C      	PUSH	BC
+  4466'   DD 66 06       C      	LD	H,(IX+6)	;Adresse der Konvertierungstabelle
+  4469'   DD 6E 05       C      	LD	L,(IX+5)
+  446C'   06 00          C      	LD	B,0
+  446E'   4F             C      	LD	C,A
+  446F'   09             C      	ADD	HL,BC
+  4470'   7E             C      	LD	A,(HL)
+  4471'   C1             C      	POP	BC
+  4472'   E1             C      	POP	HL
+  4473'   C9             C      	RET
+                         C      
+  4474'                  C      LR.KONV1:
+  4474'   CB 58          C      	BIT	3,B	;Konvertierung ?
+  4476'   C8             C      	RET	Z		;NEIN
+  4477'   F5             C      	PUSH	AF	;Zeichen retten
+  4478'   DD 7E 13       C      	LD	A,(IX+19)	;Adresse der Konvertierungsroutine
+  447B'   6F             C      	LD	L,A	;laden
+  447C'   DD B6 14       C      	OR	(IX+20)
+  447F'   28 05          C      	JR	Z,LR.KONV2
+  4481'   DD 66 14       C      	LD	H,(IX+20)
+  4484'   18 03          C      	JR	LR.KONV3
+  4486'                  C      LR.KONV2:
+  4486'   21 4464'       C      	LD	HL,LR.KONV
+  4489'                  C      LR.KONV3:
+  4489'   F1             C      	POP	AF	;Zeichen laden
+  448A'   E9             C      	JP	(HL)	;Konvertierungsroutine aufrufen
+                         C      
+  0001                   C      LR.LBGEN	EQU	00000001B	;Generierungskonstante
+                         C      			;Bit 0 = 1  ...  ALB / K6200
+                         C      			;    1 = 1  ...  ADA / DARO
+                         C      
+                         C      	TITLE	'Lochband-Geraete-Treiber Ausgaberoutine'
+                         C      	PAGE
+'Lochband-Geraete-Treiber Ausgaberoutine'	MACRO-80 3.44	09-Dec-81	PAGE	1-93
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*                  Ausgabe eines Zeichens zum Lochbandstanzer  *
+                         C      ;****************************************************************
+  448B'                  C      LR.LBS:
+  448B'   E5             C      	PUSH	HL	;Register retten
+  448C'   C5             C      	PUSH	BC
+  448D'   F5             C      	PUSH	AF
+  448E'   ED 57          C      	LD	A,I	;I-Register retten
+  4490'   F5             C      	PUSH	AF
+  4491'   3E 44'         C      	LD	A,HIGH(LR.IRLB)	;I-Register fuer LB laden
+  4493'   ED 47          C      	LD	I,A
+  4495'   41             C      	LD	B,C	;auszugebendes Zeichen retten
+  4496'   C5             C      	PUSH	BC
+                         C      
+                         C      	IF	LR.LBGEN AND 1
+  4497'   3E E8          C      	LD	A,0E8H	;Basisadresse ALB
+                         C      	ENDIF
+                         C      	IF	LR.LBGEN AND 2
+                         C      	LD	A,0	;Basisadresse ADA
+                         C      	ENDIF
+                         C      
+  4499'                  C      LR.ILBS:
+  4499'   F3             C      	DI
+                         C      
+                         C      	IF	LR.LBGEN AND 1
+  449A'   C6 06          C      	ADD	A,6
+                         C      	ENDIF
+                         C      	IF	LR.LBGEN AND 2
+                         C      	ADD	A,2
+                         C      	ENDIF
+                         C      
+  449C'   4F             C      	LD	C,A
+  449D'   21 4578'       C      	LD	HL,LR.SWLBS
+  44A0'   06 03          C      	LD	B,3
+  44A2'   ED B3          C      	OTIR		;Adresse + 6 : PIO 2, Port A, Steuer
+                         C      			;Adresse + 2 : PIO 1, Port A, Steuer
+                         C      
+  44A4'   0C             C      	INC	C
+  44A5'   06 03          C      	LD	B,3
+  44A7'   ED B3          C      	OTIR		;Adresse + 7 : PIO 2, Port B, Steuer
+                         C      			;Adresse + 3 : PIO 1, Port B, Steuer
+                         C      
+  44A9'   0D             C      	DEC	C
+  44AA'   0D             C      	DEC	C
+                         C      
+  44AB'   F1             C      	POP	AF	;Ausgabe des Datenbyte ====>
+  44AC'   C5             C      	PUSH	BC
+  44AD'   DD 46 04       C      	LD	B,(IX+4)	;Kommandobyte
+  44B0'   CB 50          C      	BIT	2,B	;EOR-Umwandlung ?
+  44B2'   28 08          C      	JR	Z,LR.LBS2	;NEIN
+  44B4'   DD BE 01       C      	CP	(IX+1)	;EOR intern ?
+  44B7'   20 03          C      	JR	NZ,LR.LBS2	;NEIN
+  44B9'   DD 7E 00       C      	LD	A,(IX+0)	;EOR extern
+  44BC'                  C      LR.LBS2:
+  44BC'   CD 4474'       C      	CALL	LR.KONV1
+  44BF'   CB 78          C      	BIT	7,B	;mit Paritaet ?
+  44C1'   28 14          C      	JR	Z,LR.LBSE	;NEIN
+  44C3'   CB 70          C      	BIT	6,B	;welche Paritaet ?
+  44C5'   20 09          C      	JR	NZ,LR.LBS1
+                         C      
+  44C7'   B7             C      	OR	A	;ungerade Paritaet ?
+  44C8'   E2 44D7'       C      	JP	PO,LR.LBSE	;JA
+  44CB'   DD B6 0B       C      	OR	(IX+11)	;Paritybit setzen
+  44CE'   18 07          C      	JR	LR.LBSE
+                         C      
+  44D0'                  C      LR.LBS1:
+  44D0'   B7             C      	OR	A	;  gerade Paritaet ?
+  44D1'   EA 44D7'       C      	JP	PE,LR.LBSE	;JA
+  44D4'   DD B6 0B       C      	OR	(IX+11)	;Paritybit seten
+                         C      
+  44D7'                  C      LR.LBSE:
+  44D7'   C1             C      	POP	BC
+  44D8'   F5             C      	PUSH	AF
+                         C      
+                         C      	IF	LR.LBGEN AND 1
+  44D9'   0D             C      	DEC	C
+  44DA'   AF             C      	XOR	A	;ALB aktivieren
+  44DB'   ED 79          C      	OUT	(C),A	;Adresse + 4 : PIO 2, Port A, Daten
+  44DD'   0C             C      	INC	C
+                         C      	ENDIF
+                         C      	IF	LR.LBGEN AND 2
+'Lochband-Geraete-Treiber Ausgaberoutine'	MACRO-80 3.44	09-Dec-81	PAGE	1-94
+
+
+                         C      	LD	A,7	;SIF1000 - Kommando ausgeben
+                         C      	OUT	(C),A	;Adresse + 1 : PIO 1, Port B, Daten
+                         C      	IN	A,(C)
+                         C      	DEC	C
+                         C      	ENDIF
+                         C      
+  44DE'   F1             C      	POP	AF
+  44DF'   ED 79          C      	OUT	(C),A	;Adresse + 5 : PIO 2, Port B, Daten
+                         C      			;Adresse + 0 : PIO 1, Port A, Daten
+                         C      
+                         C      	IF	LR.LBGEN AND 1
+  44E1'   0D             C      	DEC	C
+                         C      	ENDIF
+                         C      	IF	LR.LBGEN AND 2
+                         C      	INC	C
+                         C      	ENDIF
+                         C      
+  44E2'   FB             C      	EI
+  44E3'   76             C      	HALT
+                         C      
+                         C      	IF	LR.LBGEN AND 1
+  44E4'   3E 10          C      	LD	A,10H	;ALB sperren
+  44E6'   ED 79          C      	OUT	(C),A	;Adresse + 4
+                         C      	ENDIF
+                         C      
+  44E8'   F1             C      	POP	AF	;I-Register alten Zustand laden
+  44E9'   ED 47          C      	LD	I,A
+  44EB'   F1             C      	POP	AF	;Register laden
+  44EC'   C1             C      	POP	BC
+  44ED'   E1             C      	POP	HL
+  44EE'   C9             C      	RET
+                         C      ;****************************************************************
+                         C      ;*                  Interruptroutine Lochbandstanzer            *
+                         C      ;****************************************************************
+  44EF'                  C      LR.IRLBS	EQU	$
+                         C      
+                         C      	IF	LR.LBGEN AND 1
+  44EF'   ED 78          C      	IN	A,(C)	;Adresse + 4,(C)
+  44F1'   CB 5F          C      	BIT	3,A
+  44F3'   20 FA          C      	JR	NZ,LR.IRLBS
+  44F5'   CB 47          C      	BIT	0,A
+  44F7'   20 F6          C      	JR	NZ,LR.IRLBS
+                         C      	ENDIF
+                         C      
+  44F9'   FB             C      	EI
+  44FA'   ED 4D          C      	RETI
+                         C      
+                         C      	TITLE	'Lochband-Geraete-Treiber Eingaberoutine'
+                         C      	PAGE
+'Lochband-Geraete-Treiber Eingaberoutine'	MACRO-80 3.44	09-Dec-81	PAGE	1-95
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*                  Eingabe eines Zeichens vom Lochbandleser    *
+                         C      ;****************************************************************
+  44FC'                  C      LR.LBL:
+  44FC'   E5             C      	PUSH	HL	;Register retten
+  44FD'   C5             C      	PUSH	BC
+  44FE'   ED 57          C      	LD	A,I	;I-Register retten
+  4500'   F5             C      	PUSH	AF
+  4501'   3E 44'         C      	LD	A,HIGH(LR.IRLB)	;I-Register fuer LB laden
+  4503'   ED 47          C      	LD	I,A
+                         C      
+                         C      	IF	LR.LBGEN AND 1
+  4505'   3E E8          C      	LD	A,0E8H	;Basisadresse ALB
+                         C      	ENDIF
+                         C      	IF	LR.LBGEN AND 2
+                         C      	LD	A,0	;Basisadresse ADA
+                         C      	ENDIF
+                         C      
+  4507'                  C      LR.ILBL:
+  4507'   F3             C      	DI
+                         C      
+                         C      	IF	LR.LBGEN AND 1
+  4508'   C6 02          C      	ADD	A,2
+                         C      	ENDIF
+                         C      	IF	LR.LBGEN AND 2
+                         C      	ADD	A,6
+                         C      	ENDIF
+                         C      
+  450A'   4F             C      	LD	C,A
+                         C      
+  450B'   06 03          C      	LD	B,3
+  450D'   21 457E'       C      	LD	HL,LR.SWLBL
+  4510'   ED B3          C      	OTIR		;Adresse + 2 : PIO 1, Port A, Steuer
+                         C      			;Adresse + 6 : PIO 2, Port A, Steuer
+                         C      
+  4512'   0C             C      	INC	C
+  4513'   06 03          C      	LD	B,3
+  4515'   ED B3          C      	OTIR		;Adresse + 3 : PIO 1, Port B, Steuer
+                         C      			;Adresse + 7 : PIO 2, Port B, Steuer
+                         C      
+  4517'   0D             C      	DEC	C
+  4518'   0D             C      	DEC	C
+                         C      
+                         C      	IF	LR.LBGEN AND 1
+  4519'   0D             C      	DEC	C
+  451A'   DD 7E 04       C      	LD	A,(IX+4)	;Kommando: 0 ... Lesen rueckwaerts
+  451D'   E6 02          C      	AND	002H	;          2 ... Lesen vorwaerts
+  451F'   ED 79          C      	OUT	(C),A	;Adresse + 0 : PIO 1, Port A, Daten
+  4521'   0C             C      	INC	C
+                         C      	ENDIF
+                         C      	IF	LR.LBGEN AND 2
+                         C      	LD	A,(IX+4)	;Kommando: 0 ... Lesen rueckwaerts
+                         C      	AND	002H	;          2 ... Lesen vorwaerts
+                         C      	CP	2	;rueckwaerts ?
+                         C      	JR	NZ,$+6	;NEIN
+                         C      	LD	A,3
+                         C      	JR	$+4
+                         C      	LD	A,7
+                         C      	OUT	(C),A	;Adresse + 5 : PIO 2, Port B, Daten
+                         C      	DEC	C
+                         C      	ENDIF
+                         C      
+                         C      			;Eingabe des Datenbyte <====
+  4522'   ED 78          C      	IN	A,(C)	;Adresse + 1 : PIO 1, Port B, Daten,(C)
+  4524'   DD 36 03 00    C      	LD	(IX+3),0
+  4528'   DD BE 0C       C      	CP	(IX+12)	;Zeichen = EOF ?
+  452B'   20 04          C      	JR	NZ,LR.LBL2	;NEIN
+  452D'   DD CB 03 C6    C      	SET	0,(IX+3)
+                         C      
+  4531'                  C      LR.LBL2:
+  4531'   DD 46 04       C      	LD	B,(IX+4)	;Kommandobyte
+  4534'   CB 78          C      	BIT	7,B	;mit Paritaet ?
+  4536'   28 03          C      	JR	Z,LR.LBL3	;NEIN
+  4538'   DD A6 0B       C      	AND	(IX+11)	;Paritybyte
+  453B'                  C      LR.LBL3:
+  453B'   DD BE 00       C      	CP	(IX+0)	;EOR extern ?
+  453E'   20 04          C      	JR	NZ,LR.LBL4	;NEIN
+  4540'   DD CB 03 CE    C      	SET	1,(IX+3)
+  4544'                  C      LR.LBL4:
+  4544'   CD 4474'       C      	CALL	LR.KONV1
+  4547'   CB 50          C      	BIT	2,B	;EOR-Umwandlung ?
+'Lochband-Geraete-Treiber Eingaberoutine'	MACRO-80 3.44	09-Dec-81	PAGE	1-96
+
+
+  4549'   28 09          C      	JR	Z,LR.LBLE	;NEIN
+  454B'   DD CB 03 4E    C      	BIT	1,(IX+3)	;war EOR-Zeichen ?
+  454F'   28 03          C      	JR	Z,LR.LBLE	;NEIN
+  4551'   DD 7E 01       C      	LD	A,(IX+1)	;EOR intern
+                         C      
+  4554'                  C      LR.LBLE:
+  4554'   F5             C      	PUSH	AF
+  4555'   0D             C      	DEC	C
+  4556'   FB             C      	EI
+  4557'   76             C      	HALT
+                         C      
+  4558'   F1             C      	POP	AF
+  4559'   C1             C      	POP	BC	;I-Register laden
+  455A'   F5             C      	PUSH	AF
+  455B'   78             C      	LD	A,B
+  455C'   ED 47          C      	LD	I,A
+  455E'   F1             C      	POP	AF
+  455F'   C1             C      	POP	BC
+  4560'   E1             C      	POP	HL
+  4561'   DD CB 04 6E    C      	BIT	5,(IX+4)	;mit NUL und DEL ?
+  4565'   C8             C      	RET	Z		;NEIN
+  4566'   FE 00          C      	CP	0	;Zeichen = NUL ?
+  4568'   28 92          C      	JR	Z,LR.LBL	;JA
+  456A'   FE 7F          C      	CP	7FH	;Zeichen = DEL ?
+  456C'   28 8E          C      	JR	Z,LR.LBL	;JA
+  456E'   C9             C      	RET
+                         C      ;****************************************************************
+                         C      ;*                  Interruptroutine Lochbandleser              *
+                         C      ;****************************************************************
+  456F'                  C      LR.IRLBL	EQU	$
+                         C      
+                         C      	IF	LR.LBGEN AND 1
+  456F'   ED 78          C      	IN	A,(C)	;Adresse + 0,(C)
+  4571'   CB 67          C      	BIT	4,A
+  4573'   20 FA          C      	JR	NZ,LR.IRLBL
+                         C      	ENDIF
+                         C      
+  4575'   FB             C      	EI
+  4576'   ED 4D          C      	RETI
+                         C      
+                         C      	PAGE
+'Lochband-Geraete-Treiber Eingaberoutine'	MACRO-80 3.44	09-Dec-81	PAGE	1-97
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*                  PIO - Steuerworte fuer Stanzen              *
+                         C      ;****************************************************************
+  4578'                  C      LR.SWLBS	EQU	$
+                         C      
+                         C      	IF	LR.LBGEN AND 1	;fuer   +++   ALB   +++
+  4578'   CF             C      	DB	0CFH	;MODE 3 : BIT Ein-/Ausgabe
+  4579'   0F             C      	DB	00FH	;             Ein-/Ausgabe - Maske
+  457A'   03             C      	DB	003H	;Interrupt AUS
+                         C      
+  457B'   0F             C      	DB	00FH	;MODE 0 : BYTE Ausgabe
+  457C'   60'            C      	DB	LOW(LR.IRLB)
+  457D'   83             C      	DB	083H	;Interrupt EIN
+                         C      	ENDIF
+                         C      
+                         C      
+                         C      	IF	LR.LBGEN AND 2	;fuer   +++   ADA   +++
+                         C      	DB	00FH	;MODE 0 : BYTE Ausgabe
+                         C      	DB	LOW(LR.IRLB)
+                         C      	DB	083H	;Interrupt EIN
+                         C      
+                         C      	DB	0CFH	;MODE 3 : BIT Ein-/Ausgabe
+                         C      	DB	0F0H	;             Ein-/Ausgabe - Maske
+                         C      	DB	003H	;Interrupt AUS
+                         C      	ENDIF
+                         C      ;****************************************************************
+                         C      ;*                  PIO - Steuerworte fuer Lesen                *
+                         C      ;****************************************************************
+  457E'                  C      LR.SWLBL	EQU	$
+                         C      
+                         C      	IF	LR.LBGEN AND 1	;fuer   +++   ALB   +++
+  457E'   CF             C      	DB	0CFH	;MODE 3 : BIT Ein-/Ausgabe
+  457F'   F0             C      	DB	0F0H	;             Ein-/Ausgabe - Maske
+  4580'   03             C      	DB	003H	;Interrupt AUS
+                         C      
+  4581'   4F             C      	DB	04FH	;MODE 1 : BYTE Eingabe
+  4582'   62'            C      	DB	LOW(LR.IRLB+2)
+  4583'   83             C      	DB	083H	;Interrupt EIN
+                         C      	ENDIF
+                         C      
+                         C      
+                         C      	IF	LR.LBGEN AND 2	;fuer   +++   ADA   +++
+                         C      	DB	04FH	;MODE 1 : BYTE Eingabe
+                         C      	DB	LOW(LR.IRLB+2)
+                         C      	DB	083H	;Interrupt EIN
+                         C      
+                         C      	DB	0CFH	;MODE 3 : BIT Ein-/Ausgabe
+                         C      	DB	0F0H	;             Ein-/Ausgabe - Maske
+                         C      	DB	003H	;Interrupt AUS
+                         C      	ENDIF
+                         C      
+                         C      	PAGE
+'Lochband-Geraete-Treiber Eingaberoutine'	MACRO-80 3.44	09-Dec-81	PAGE	1-98
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*                  Standard-Anwendercode-Tabelle               *
+                         C      ;****************************************************************
+                         C      ;	ORG	07200H
+  4584'                  C      LR.SKTBI:
+  4584'                  C      	DEFS	00100H,0
+                         C      
+  4684'                  C      LR.SKTBO:
+  4684'                  C      	DEFS	00100H,0
+                         C      
+                         C      			;(C) Marcus Herbote    K EAW / wfvm
+                         C      ;	END
+                                
+                         C      	INCLUDE P108.ASM	; Drucker-Routinen
+                         C      	TITLE	'Drucker-Verbindungsmodul'
+                         C      	PAGE
+'Drucker-Verbindungsmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-99
+
+
+                         C      
+                         C      ;	PN	PR07
+                         C      ;****************************************************************
+                         C      ;*               Drucker-Verbindungsmodul fuer Version 1.2      *
+                         C      ;*  Version      -----------------------------------------------*
+                         C      ;*               Programmierer: M. Herbote --- K EAW  ZFT (WFT) *
+                         C      ;*  V 1 . 2      -----------------------------------------------*
+                         C      ;*               Stand        : 21.August 1984                  *
+                         C      ;****************************************************************
+  4784'                  C      PR.PRINA:
+  4784'   C5             C      	PUSH	BC
+  4785'   4F             C      	LD	C,A
+  4786'   DD 21 0F73'    C      	LD	IX,SM.EADRU+3
+  478A'   CD 48DA'       C      	CALL	P1.PRIO
+  478D'   C1             C      	POP	BC
+  478E'   C9             C      	RET
+                         C      
+                         C      
+  478F'   478F'          C      	DW	$
+  4791'   44 49 4E 49    C      	DB	'DINI'
+  4795'   DD 21 0F73'    C      	LD	IX,SM.EADRU+3
+  4799'   3E 58'         C      	LD	A,LOW(SY.ISRA0)
+  479B'   DD 77 03       C      	LD	(IX+3),A
+  479E'   AF             C      	XOR	A
+  479F'   DD 77 0B       C      	LD	(IX+11),A
+  47A2'   3A 3327        C      	LD	A,(PR.PAR)	;char per inch
+  47A5'   FE 30          C      	CP	'0'
+  47A7'   28 0A          C      	JR	Z,PR.CPI10
+  47A9'   FE 32          C      	CP	'2'
+  47AB'   20 0A          C      	JR	NZ,PR.CPI
+  47AD'   DD CB 04 C6    C      	SET	0,(IX+4)
+  47B1'   18 04          C      	JR	PR.CPI
+  47B3'                  C      PR.CPI10:
+  47B3'   DD CB 04 86    C      	RES	0,(IX+4)
+  47B7'                  C      PR.CPI:
+  47B7'   3A 3328        C      	LD	A,(PR.PAR+1)	;line per inch
+  47BA'   FE 36          C      	CP	'6'
+  47BC'   28 0A          C      	JR	Z,PR.LPI6
+  47BE'   FE 38          C      	CP	'8'
+  47C0'   20 0A          C      	JR	NZ,PR.LPI
+  47C2'   DD CB 04 CE    C      	SET	1,(IX+4)
+  47C6'   18 04          C      	JR	PR.LPI
+  47C8'                  C      PR.LPI6:
+  47C8'   DD CB 04 8E    C      	RES	1,(IX+4)
+  47CC'                  C      PR.LPI:
+  47CC'   3A 3329        C      	LD	A,(PR.PAR+2)	;ohne/mit Nulldurchstreichung
+  47CF'   FE 4F          C      	CP	'O'
+  47D1'   28 08          C      	JR	Z,PR.ONULL
+  47D3'   FE 4D          C      	CP	'M'
+  47D5'   20 04          C      	JR	NZ,PR.ONULL
+  47D7'   3E FF          C      	LD	A,-1
+  47D9'   18 01          C      	JR	PR.NULL
+  47DB'                  C      PR.ONULL:
+  47DB'   AF             C      	XOR	A
+  47DC'                  C      PR.NULL:
+  47DC'   DD 77 0C       C      	LD	(IX+12),A
+  47DF'   CD 486C'       C      	CALL	P1.MRES
+  47E2'                  C      PR.SYS:
+  47E2'   C3 000B'       C      	JP	SY.SYSTB
+                         C      
+                         C      	PAGE
+'Drucker-Verbindungsmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-100
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*               EDITOR-Raum der Version 1 alles drucken        *
+                         C      ;****************************************************************
+  47E5'   47E5'          C      	DW	$
+  47E7'   50 52 45 54    C      	DB	'PRET'
+  47EB'   DD 21 0F73'    C      	LD	IX,SM.EADRU+3
+  47EF'   21 8831        C      	LD	HL,SD.TPA+1
+  47F2'   CD 485E'       C      	CALL	PR.END
+  47F5'   DA 000B'       C      	JP	C,SY.SYSTB
+  47F8'   2B             C      	DEC	HL
+  47F9'                  C      PR.M2:
+  47F9'   CD 485E'       C      	CALL	PR.END
+  47FC'   CA 000B'       C      	JP	Z,SY.SYSTB
+  47FF'   4E             C      	LD	C,(HL)
+  4800'   CD 48DA'       C      	CALL	P1.PRIO
+  4803'   23             C      	INC	HL
+  4804'   18 F3          C      	JR	PR.M2
+                         C      ;****************************************************************
+                         C      ;*               Seitenvorschub bei  1 1 5 2 / 1 1 5 7          *
+                         C      ;****************************************************************
+  4806'   4806'          C      	DW	$
+  4808'   50 41 47 45    C      	DB	'PAGE'
+  480C'   DD 21 0F73'    C      	LD	IX,SM.EADRU+3
+  4810'   0E 0C          C      	LD	C,00CH
+  4812'   CD 48DA'       C      	CALL	P1.PRIO
+  4815'   18 CB          C      	JR	PR.SYS
+                         C      
+                         C      	PAGE
+'Drucker-Verbindungsmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-101
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*               EDITOR-Raum der Version 1  von anz  drucken    *
+                         C      ;****************************************************************
+  4817'   4817'          C      	DW	$
+  4819'   50 52 49 4E    C      	DB	'PRIN'
+  481D'   DD 21 0F73'    C      	LD	IX,SM.EADRU+3
+  4821'   11 3327        C      	LD	DE,PR.PAR
+  4824'   CD 0877'       C      	CALL	S1.IDH
+  4827'   E5             C      	PUSH	HL
+  4828'   13             C      	INC	DE
+  4829'   CD 0877'       C      	CALL	S1.IDH
+  482C'   E3             C      	EX	(SP),HL
+  482D'   EB             C      	EX	DE,HL
+  482E'   21 882F        C      	LD	HL,SD.TPA-1
+  4831'                  C      PR.PR1:
+  4831'   1B             C      	DEC	DE
+  4832'   7A             C      	LD	A,D
+  4833'   B3             C      	OR	E
+  4834'   28 0E          C      	JR	Z,PR.PR3
+  4836'   3E 1E          C      	LD	A,01EH
+  4838'                  C      PR.PR2:
+  4838'   23             C      	INC	HL
+  4839'   CD 485E'       C      	CALL	PR.END
+  483C'   CA 000B'       C      	JP	Z,SY.SYSTB
+  483F'   BE             C      	CP	(HL)
+  4840'   20 F6          C      	JR	NZ,PR.PR2
+  4842'   18 ED          C      	JR	PR.PR1
+  4844'                  C      PR.PR3:
+  4844'   D1             C      	POP	DE
+  4845'   23             C      	INC	HL
+  4846'                  C      PR.PR4:
+  4846'   CD 485E'       C      	CALL	PR.END
+  4849'   CA 000B'       C      	JP	Z,SY.SYSTB
+  484C'   4E             C      	LD	C,(HL)
+  484D'   CD 48DA'       C      	CALL	P1.PRIO
+  4850'   23             C      	INC	HL
+  4851'   3E 1E          C      	LD	A,01EH
+  4853'   B9             C      	CP	C
+  4854'   20 F0          C      	JR	NZ,PR.PR4
+  4856'   1B             C      	DEC	DE
+  4857'   7A             C      	LD	A,D
+  4858'   B3             C      	OR	E
+  4859'   20 EB          C      	JR	NZ,PR.PR4
+  485B'   C3 000B'       C      	JP	SY.SYSTB
+                         C      
+  485E'                  C      PR.END:
+  485E'   E5             C      	PUSH	HL
+  485F'   D5             C      	PUSH	DE
+  4860'   ED 5B 0DC4'    C      	LD	DE,(SM.END)
+  4864'   EB             C      	EX	DE,HL
+  4865'   B7             C      	OR	A
+  4866'   ED 52          C      	SBC	HL,DE
+  4868'   D1             C      	POP	DE
+  4869'   E1             C      	POP	HL
+  486A'   C9             C      	RET
+                         C      
+  3327                   C      PR.PAR EQU	SD.BWSA	+ 10*80 + 7
+                         C      
+                         C      ;	END
+                         C      	TITLE	'Drucker-Routine'
+                         C      	PAGE
+'Drucker-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-102
+
+
+                         C      
+                         C      ;	PN	P108
+                         C      ;****************************************************************
+                         C      ;*               Drucker-Routine  1152 , 1154 , 1156 , 1157     *
+                         C      ;*                                BD 4000 , S 6001              *
+                         C      ;*               -----------------------------------------------*
+                         C      ;*               Programmierer: M. Herbote --- K EAW  ZFT (WFT) *
+                         C      ;*               -----------------------------------------------*
+                         C      ;*               Stand        : 17.August 1984                  *
+                         C      ;****************************************************************
+                         C      
+                         C      ;****************************************************************
+                         C      ;*               Aufbau der E/A-Tabelle  (Adresse ueber  IX)    *
+                         C      ;*               ===============================================*
+                         C      ;*                                                              *
+                         C      ;*               Byte  ! Bedeutung                              *
+                         C      ;*               ------!----------------------------------------*
+                         C      ;*               -  3  ! Laengenbyte                            *
+                         C      ;*               -  2  ! Praefixbyte 1                          *
+                         C      ;*               -  1  ! Praefixbyte 2                          *
+                         C      ;*                  0  ! Status - "1BH"-Merker                  *
+                         C      ;*                  1  ! Fehlerschluessel      (z.Z. unbenutzt) *
+                         C      ;*                  2  ! Basisadresse (wird bei DINIT gesetzt)  *
+                         C      ;*                  3  ! L-Teil Interruptvektor, bei INT-Betrieb*
+                         C      ;*                  4  ! Kommando bei DINIT                     *
+                         C      ;*                     ! bit 0 = 0 ...   CPI = 10 Zoll          *
+                         C      ;*                     !       = 1 ...   CPI = 12 Zoll          *
+                         C      ;*                     !     1 = 0 ...   LPI =  6 Zoll          *
+                         C      ;*                     !       = 1 ...   LPI =  8 Zoll          *
+                         C      ;*                  5  ! Adresse Eintrittspunkt (z.Z.unbenutzt) *
+                         C      ;*                  7  ! Blockadresse          (z.Z. unbenutzt) *
+                         C      ;*                  9  ! Blocklaenge           (z.Z. unbenutzt) *
+                         C      ;*                 11  ! Wert fuer Farbbandstellung             *
+                         C      ;*                 12  ! ungleich Null ...  Nulldurchstreichung *
+                         C      ;****************************************************************
+                         C      
+                         C      	PAGE	
+'Drucker-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-103
+
+
+                         C      
+  0000                   C      P1.ES2   EQU   00H              ;00H ... Generierung   D E G 2 0 0 0
+                         C                                      ;4xH ... Generierung   E S   2 0 0 0
+                         C      
+  0002                   C      P1.DRU   EQU   00000010B        ;Drucker Typ
+                         C                                      ;Bit 0  ...   1152/1157  PIO
+                         C                                      ;    1  ...   1152/1157  SIO
+                         C                                      ;    2  ...   1154       GNI
+                         C                                      ;    3  ...   1154       ASCII
+                         C                                      ;    4  ...
+                         C                                      ;    5  ...
+                         C                                      ;    6  ...   BD 4000
+                         C                                      ;    7  ...   S 6001
+                         C      
+  0008                   C      P1.ANST   EQU   00001000B       ;Ansteuerung
+                         C                                      ;Bit 0  ...   A D A
+                         C                                      ;    1  ...   A T D 1
+                         C                                      ;    2  ...   A T D 2
+                         C                                      ;    3  ...   A T S
+                         C                                      ;    4  ...
+                         C                                      ;    5  ...   S-A1
+                         C                                      ;    6  ...   S-A2
+                         C                                      ;    7  ...   S-A3
+                         C      
+  486B'                  C      P1.PRINT:
+  486B'   C9             C      	RET
+                         C      	
+                         C      	IF	P1.DRU AND 00000011B
+  0001                   C      P1.PIO   EQU   1                ;1 ... PIO-Schnittstelle 1
+                         C                                      ;2 ... PIO-Schnittstelle 2
+                         C      	ENDIF
+                         C      
+                         C      ;	ORG	07C00H
+                         C      	IF	P1.ES2 AND 40H
+                         C      P1.DINIT:
+                         C      	JP	P1.MRES
+                         C      P1.PRINT:
+                         C      	JP	P1.PRI
+                         C      	DB	'...'
+                         C      	DB	P1.ES2
+                         C      	DW	0
+                         C      	DW	0
+                         C      	DB	0
+                         C      
+                         C      P1.PRI:
+                         C      	PUSH	AF
+                         C      	LD	A,C
+                         C      	CP	20H
+                         C      	JR	NC,PRI1
+                         C      	CP	1EH
+                         C      	JR	Z,PRI1
+                         C      	POP	AF
+                         C      	RET
+                         C      P1.PRI1:
+                         C      	POP	AF
+                         C      	JP	PRIO
+                         C      	ENDIF
+                         C      
+                         C      	TITLE	'Drucker-Initialisierung'
+                         C      	PAGE
+'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-104
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*               Drucker - Initialisierung                      *
+                         C      ;****************************************************************
+  486C'                  C      P1.MRES:
+  486C'   F5             C      	PUSH	AF	;Register retten
+  486D'   C5             C      	PUSH	BC
+  486E'   D5             C      	PUSH	DE
+  486F'   E5             C      	PUSH	HL
+  4870'   DD E5          C      	PUSH	IX
+  4872'   FD E5          C      	PUSH	IY
+                         C      
+                         C      
+                         C      ;                B a s i s a d r e s s e   bereitstellen
+                         C      
+                         C      	IF	P1.ANST AND 10000000B
+                         C      	LD	C,088H	;Koppelinterface
+                         C      	ENDIF
+                         C      
+                         C      	IF	P1.ANST AND 00001000B
+  4874'   0E B0          C      	LD	C,0B0H	;A T S
+                         C      	ENDIF
+                         C      
+                         C      	IF	P1.ANST AND 00000110B
+                         C      	LD	C,0B8H	;A T D
+                         C      	ENDIF
+                         C      
+                         C      	IF	P1.ANST AND 00000001B
+                         C      	LD	C,040H	;A D A
+                         C      	ENDIF
+                         C      
+                         C      
+                         C      	IF	P1.ANST AND 10001111B
+  4876'   DD 71 02       C      	LD	(IX+2),C	;Basisadresse in E/A-Tabelle setzen
+                         C      	ENDIF
+                         C      
+                         C      	PAGE
+'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-105
+
+
+                         C      
+                         C      	IF	P1.DRU AND 1
+                         C      	IF	P1.ANST AND 6
+                         C      ;****************************************************************
+                         C      ;*               Drucker  1 1 5 2 / 1 1 5 7  ueber  A T D       *
+                         C      ;****************************************************************
+                         C      	LD	A,08FH
+                         C      	INC	C
+                         C      
+                         C      	IF	P1.ANST AND 2
+                         C      	INC	C
+                         C      	ENDIF
+                         C      
+                         C      	OUT	(C),A	;Adresse ( + 2 / + 1 )
+                         C      	LD	A,0CFH
+                         C      	INC	C
+                         C      
+                         C      	IF	P1.ANST AND 4
+                         C      	INC	C
+                         C      	ENDIF
+                         C      
+                         C      	OUT	(C),A	;Adresse + 3
+                         C      	LD	A,0FEH
+                         C      	OUT	(C),A	;Adresse + 3
+                         C      	LD	A,3
+                         C      	OUT	(C),A	;Adresse + 3
+                         C      	DEC	C
+                         C      
+                         C      	IF	P1.ANST AND 4
+                         C      	DEC	C
+                         C      	ENDIF
+                         C      
+                         C      	OUT	(C),A	;Adresse ( + 2 / + 1 )
+                         C      	LD	A,1
+                         C      
+                         C      	IF	P1.ANST AND 2
+                         C      	DEC	C
+                         C      	ENDIF
+                         C      
+                         C      	IF	P1.ANST AND 4
+                         C      	INC	C
+                         C      	ENDIF
+                         C      
+                         C      	OUT	(C),A	;Adresse ( + 1 / + 2 )
+                         C      	XOR	A
+                         C      	OUT	(C),A	;Adresse ( + 1 / + 2 )
+                         C      	DEC	C
+                         C      
+                         C      	IF	P1.ANST AND 4
+                         C      	DEC	C
+                         C      	ENDIF
+                         C      
+                         C      	IN	A,(C)	;Adresse + 0,(C)
+                         C      	BIT	0,(IX+4)	;char per inch
+                         C      	JR	Z,$+7
+                         C      	LD	HL,P1.CPI12	;=1 ... 12 CPI
+                         C      	JR	$+5
+                         C      	LD	HL,CPI10	;=0 ... 10 CPI
+                         C      	CALL	P1.CPI
+                         C      
+                         C      	BIT	1,(IX+4)	;char per line
+                         C      	JR	Z,$+7
+                         C      	LD	HL,LPI8	;=1 ...  8 LPI
+                         C      	JR	$+5
+                         C      	LD	HL,LPI6	;=0 ...  6 LPI
+                         C      	CALL	P1.CPI
+                         C      	ENDIF
+                         C      
+                         C      	ENDIF
+                         C      
+                         C      	PAGE
+'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-106
+
+
+                         C      
+                         C      	IF	P1.DRU AND 4
+                         C      	IF	P1.ANST AND 1
+                         C      ;****************************************************************
+                         C      ;*               Drucker  1 1 5 4 / GNI ueber  A D A            *
+                         C      ;****************************************************************
+                         C      	LD	A,00FH
+                         C      	INC	C
+                         C      	INC	C
+                         C      	OUT	(C),A	;Adresse + 2
+                         C      	LD	A,(IX+3)	;L-Teil Interruptvektor
+                         C      	OUT	(C),A	;Adresse + 2
+                         C      	LD	A,083H
+                         C      	OUT	(C),A	;Adresse + 2
+                         C      	LD	A,0CFH
+                         C      	INC	C
+                         C      	OUT	(C),A	;Adresse + 3
+                         C      	LD	A,0F0H
+                         C      	OUT	(C),A	;Adresse + 3
+                         C      	LD	A,(IX+11)	;00H bzw. 04H Farbbandstellung
+                         C      	AND	4
+                         C      	DEC	C
+                         C      	DEC	C
+                         C      	OUT	(C),A	;Adresse + 1
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+                         C      	IF	P1.DRU AND 80H
+                         C      	IF	P1.ANST AND 80H
+                         C      ;****************************************************************
+                         C      ;*               Schreibmaschine S 6 0 0 1  ueber Koppelinterf. *
+                         C      ;****************************************************************
+                         C      	PUSH	BC
+                         C      	INC	C
+                         C      	INC	C
+                         C      	LD	HL,P1.STW
+                         C      	LD	B,2
+                         C      	OTIR		;Adresse + 2   Kanal A
+                         C      	INC	C
+                         C      	LD	B,3
+                         C      	OTIR		;Adresse + 3   Kanal B
+                         C      	POP	BC
+                         C      
+                         C      	BIT	0,(IX+4)	;char per inch
+                         C      	JR	Z,$+6
+                         C      	LD	A,6	;=1 ... 12 CPI
+                         C      	JR	$+4
+                         C      	LD	A,5	;=0 ... 10 CPI
+                         C      	CALL	P1.ZEI
+                         C      	BIT	1,(IX+4)	;line per inch
+                         C      	JR	Z,$+6
+                         C      	LD	A,3	;=1 ... 1 1/2 zeilig
+                         C      	JR	$+4
+                         C      	LD	A,2	;=0 ... 1     zeilig
+                         C      	CALL	P1.ZEI
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+                         C      	PAGE
+'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-107
+
+
+                         C      
+                         C      	IF	P1.DRU AND 40H
+                         C      	IF	P1.ANST AND 1
+                         C      ;****************************************************************
+                         C      ;*               Bediendrucker  4 0 0 0   ueber  A D A          *
+                         C      ;****************************************************************
+                         C      	INC	C	;Control Kanal A
+                         C      	INC	C
+                         C      	LD	A,(IX+3)	;L(Adr. Interruptadress-Tabelle)
+                         C      	OUT	(C),A	;Adresse + 2
+                         C      	LD	A,00FH	;Modus 0 = Byte-Ausgabe
+                         C      	OUT	(C),A
+                         C      	LD	A,083H	;Interrupt-Freigabe
+                         C      	OUT	(C),A
+                         C      	INC	C	;Control Kanal B
+                         C      	LD	A,0CFH	;Modus 3 = Bit-E/A
+                         C      	OUT	(C),A	;Adresse + 3
+                         C      	LD	A,060H	;E: Bit 6,5 (Status)
+                         C      	OUT	(C),A	;   (wird nicht ausgewertet)
+                         C      	LD	A,007H	;keine Interruptfreigabe
+                         C      	DEC	C
+                         C      	DEC	C	;Daten Kanal B (Kommandos)
+                         C      	XOR	A	;0: FBU
+                         C      	OUT	(C),A
+                         C      	DEC	C	;Daten Kanal A
+                         C      	LD	A,022H	; schwarz (Grundstellung)
+                         C      	BIT	2,(IX+11)
+                         C      	JR	Z,$+3
+                         C      	DEC	A	;21H rot
+                         C      	OUT	(C),A
+                         C      	INC	C	;Daten Kanal B
+                         C      	LD	A,001H	;Kommando 01H: Druck lt. Code-Tabelle
+                         C      	OUT	(C),A
+                         C      	DEC	C	;bereit fuer Druck Daten auf Kanal A
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+                         C      	PAGE
+'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-108
+
+
+                         C      
+                         C      	IF	P1.DRU AND 00001000B
+                         C      	IF	P1.ANST AND 1
+                         C      ;****************************************************************
+                         C      ;*               Drucker  1 1 5 4 / ASCII  ueber  A D A         *
+                         C      ;****************************************************************
+                         C      	INC	C
+                         C      	INC	C
+                         C      	LD	A,00FH	;Byte - Ausgabe
+                         C      	OUT	(C),A	;Adresse + 2
+                         C      	INC	C
+                         C      	LD	A,0CFH	;Bit  - Ein-/Ausgabe
+                         C      	OUT	(C),A	;Adresse + 3
+                         C      	LD	A,0F0H
+                         C      	OUT	(C),A
+                         C      	DEC	C	;Ausgabe der Synchronisation
+                         C      	DEC	C
+                         C      	DEC	C
+                         C      	XOR	A
+                         C      	OUT	(C),A	;Adresse + 0
+                         C      	INC	C
+                         C      	LD	A,3	;PRIME und STROBE
+                         C      	OUT	(C),A	;Adresse + 1
+                         C      	LD	A,0
+                         C      	OUT	(C),A
+                         C      	LD	A,2	;STROBE
+                         C      	OUT	(C),A
+                         C      	XOR	A
+                         C      	OUT	(C),A
+                         C      P1.ASC1:
+                         C      	IN	A,(C)
+                         C      	BIT	7,0
+                         C      	JR	Z,P1.ASC2
+                         C      	LD	A,1
+                         C      	OUT	(C),A
+                         C      	XOR	A
+                         C      	OUT	(C),A
+                         C      	DEC	C
+                         C      	CALL	P1.ZEIZ
+                         C      	INC	C
+                         C      	JR	P1.ASC1
+                         C      P1.ASC2:
+                         C      	DEC	C
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+                         C      	PAGE
+'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-109
+
+
+                         C      
+                         C      	IF	P1.DRU AND 2
+                         C      	IF	P1.ANST AND 8
+                         C      ;****************************************************************
+                         C      ;*               Drucker  1 1 5 2 / 1 1 5 7  ueber  A T S       *
+                         C      ;****************************************************************
+  4879'   0C             C      	INC	C
+  487A'   0C             C      	INC	C
+  487B'   0C             C      	INC	C
+  487C'   21 4964'       C      	LD	HL,P1.SIOTB	;Initialisierung SIO  Kanal B
+  487F'   06 0A          C      	LD	B,10
+  4881'   ED B3          C      	OTIR		;Adresse + 3
+                         C      
+  4883'   3E 07          C      	LD	A,7	;Initialisierung CTC
+  4885'   81             C      	ADD	A,C
+  4886'   4F             C      	LD	C,A
+  4887'   3E 07          C      	LD	A,7
+  4889'   ED 79          C      	OUT	(C),A	;Adresse + 10
+  488B'   3E 01          C      	LD	A,1
+  488D'   ED 79          C      	OUT	(C),A
+                         C      
+  488F'   79             C      	LD	A,C
+  4890'   D6 07          C      	SUB	7
+  4892'   4F             C      	LD	C,A
+  4893'                  C      P1.IN1:
+  4893'   0D             C      	DEC	C
+  4894'   ED 78          C      	IN	A,(C)	;Adresse + 2,(C)
+  4896'   0C             C      	INC	C
+  4897'   CD 496E'       C      	CALL	P1.STAT
+  489A'   20 F7          C      	JR	NZ,P1.IN1
+  489C'   0D             C      	DEC	C
+  489D'   0D             C      	DEC	C
+  489E'   0D             C      	DEC	C
+                         C      
+  489F'   3E 7F          C      	LD	A,7FH
+  48A1'   CD 493B'       C      	CALL	P1.ZEI
+  48A4'   3E 00          C      	LD	A,0
+  48A6'   CD 493B'       C      	CALL	P1.ZEI
+                         C      
+  48A9'   DD CB 04 46    C      	BIT	0,(IX+4)	;char per inch
+  48AD'   28 05          C      	JR	Z,$+7
+  48AF'   21 4986'       C      	LD	HL,P1.CPI12	;=1 ... 12 CPI
+  48B2'   18 03          C      	JR	$+5
+  48B4'   21 4981'       C      	LD	HL,P1.CPI10	;=0 ... 10 CPI
+  48B7'   CD 4995'       C      	CALL	P1.CPI
+                         C      
+  48BA'   DD CB 04 4E    C      	BIT	1,(IX+4)	;line per inch
+  48BE'   28 05          C      	JR	Z,$+7
+  48C0'   21 4990'       C      	LD	HL,P1.LPI8	;=1 ...  8 LPI
+  48C3'   18 03          C      	JR	$+5
+  48C5'   21 498B'       C      	LD	HL,P1.LPI6	;=0 ...  6 LPI
+  48C8'   CD 4995'       C      	CALL	P1.CPI
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+                         C      	PAGE
+'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-110
+
+
+                         C      
+                         C      	IF	P1.DRU AND 10000000B
+                         C      	IF	P1.ANST AND 01100000B
+                         C      ;****************************************************************
+                         C      ;*               Schreibmaschine S 6 0 0 1 ueber Spezialinterf. *
+                         C      ;****************************************************************
+                         C      	OUT	(C),8FH	;RESET Memory on SL6001
+                         C      	XOR	A	;A=0
+                         C      
+                         C      	IF	P1.ANST AND 00100000B
+                         C      	LD	C,8CH	;Adress
+                         C      	OUT	(C),A	;Latching on Printboard
+                         C      	OUT	(C),8AH	;Latching on SL6001
+                         C      	OUT	(C),88H	;Sign on SL6001-Keyboard
+                         C      	OUT	(C),8DH	;Delete Latch on Printboard
+                         C      	LD	HL,400H
+                         C      	CALL	P1.TIM
+                         C      	INC	A
+                         C      	CALL	P1.MR1
+                         C      	XOR	A	;A=0
+                         C      	CALL	P1.MR1
+                         C      	OUT	(C),8FH	;RESET all
+                         C      	LD	HL,4000H
+                         C      	ENDIF
+                         C      
+                         C      	IF	P1.NST AND 01000000B
+                         C      	CALL	P1.MR1
+                         C      	LD	A,1
+                         C      	CALL	P1.MR1
+                         C      	OUT	(C),8FH
+                         C      	LD	HL,2000H
+                         C      	ENDIF
+                         C      
+                         C      	CALL	P1.TIM
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+  48CB'   DD 36 00 01    C      	LD	(IX+0),1	;Merker CPI/LPI-Steuerzeichenfolgen
+  48CF'   DD CB FF CE    C      	SET	1,(IX-1)	;OPEN - Bit setzen
+  48D3'   DD CB FF D6    C      	SET	2,(IX-1)	;Richtungsbit: Ausgabe
+  48D7'   C3 4932'       C      	JP	P1.M2
+                         C      
+                         C      	PAGE
+'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-111
+
+
+                         C      
+                         C      	IF	P1.DRU AND 10000000B
+                         C      
+                         C      	IF	P1.ANST AND 01000000B
+                         C      P1.MR1:
+                         C      	OUT	(C),8CH
+                         C      	OUT	(C),8DH
+                         C      	LD	HL,16
+                         C      	CALL	P1.TIM
+                         C      	OUT	(C),8AH
+                         C      	OUT	(C),8BH
+                         C      	OUT	(C),88H
+                         C      	LD	HL,300H
+                         C      	CALL	P1.TIM
+                         C      	RET
+                         C      	ENDIF
+                         C      
+                         C      	IF	P1.ANST AND 00100000B
+                         C      P1.MR1:
+                         C      	OUT	(C),A	;latching on Printboard
+                         C      	OUT	(C),8BH	;follow   on S 6001
+                         C      	OUT	(C),8AH	;latching on S 6001
+                         C      	LD	HL,400H
+                         C      	CALL	P1.TIM
+                         C      	RET
+                         C      	ENDIF
+                         C      
+                         C      	IF	P1.ANST AND 01100000B
+                         C      P1.PZKB	EQU	48	;number of lower-case signs at table
+                         C      P1.PZGB	EQU	56	;number of upper-case signs at table
+                         C      	ENDIF
+                         C      
+                         C      	IF	P1.ANST AND 10000000B
+                         C      P1.STW:
+                         C      	DB	00001111B	;Byteausgabe   Kanal A
+                         C      	DB	00000011B	;INT-Sperre
+                         C      	DB	11001111B	;Bit-Mode      Kanal B
+                         C      	DB	11110000B	;I/O-Maske
+                         C      	DB	00000011B	;INT-Sperre
+                         C      	ENDIF
+                         C      
+                         C      	ENDIF
+                         C      
+                         C      	TITLE	'Zeichenausgabe an den Drucker'
+                         C      	PAGE
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-112
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      ;*               Ausgabe eines Zeichens an den Drucker          *
+                         C      ;****************************************************************
+  48DA'                  C      P1.PRIO:
+  48DA'   F5             C      	PUSH	AF	;Register retten
+  48DB'   C5             C      	PUSH	BC
+  48DC'   D5             C      	PUSH	DE
+  48DD'   E5             C      	PUSH	HL
+  48DE'   DD E5          C      	PUSH	IX
+  48E0'   FD E5          C      	PUSH	IY
+  48E2'   79             C      	LD	A,C	;auszugebendes Zeichen
+                         C      
+                         C      	IF	P1.ANST AND 10001111B
+  48E3'   DD 4E 02       C      	LD	C,(IX+2)	;C  laden mit Basisadresse
+                         C      	ENDIF
+                         C      
+  48E6'   DD CB FF 4E    C      	BIT	1,(IX-1)	;OPEN - Bit gesetzt ?
+  48EA'   28 46          C      	JR	Z,P1.M2	;nein
+                         C      
+                         C      	IF	P1.DRU AND 11111100B
+                         C      	CP	0CH
+                         C      	JR	Z,P1.M2
+                         C      	ENDIF
+                         C      
+  48EC'   FE 80          C      	CP	80H
+  48EE'   30 02          C      	JR	NC,$+4
+  48F0'   18 04          C      	JR	$+6
+  48F2'   3E 2E          C      	LD	A,'.'
+  48F4'   18 34          C      	JR	P1.M3
+  48F6'   FE 1B          C      	CP	1BH
+  48F8'   20 04          C      	JR	NZ,P1.CL1
+  48FA'   DD 36 00 05    C      	LD	(IX+0),5
+  48FE'                  C      P1.CL1:
+  48FE'   FE 1E          C      	CP	1EH	;Zeilenendezeichen
+  4900'   28 2D          C      	JR	Z,P1.M1
+                         C      
+                         C      	IF	P1.DRU AND 10000011B
+  4902'   47             C      	LD	B,A
+  4903'   DD 35 00       C      	DEC	(IX+0)
+  4906'   DD 7E 00       C      	LD	A,(IX+0)
+  4909'   FE 00          C      	CP	0
+  490B'   78             C      	LD	A,B
+  490C'   28 02          C      	JR	Z,$+4	    ;-----+
+  490E'   30 1A          C      	JR	NC,P1.M3	;     |
+  4910'   DD 36 00 01    C      	LD	(IX+0),1	;<----+
+  4914'   47             C      	LD	B,A	;Zeichen retten
+  4915'   DD 7E 0C       C      	LD	A,(IX+12)	;Nullen durchstreichen ?
+  4918'   B7             C      	OR	A
+  4919'   78             C      	LD	A,B	;Zeichen zurueckladen
+  491A'   28 0E          C      	JR	Z,P1.M3	;=0 ... nicht durchstreichen
+  491C'   FE 30          C      	CP	'0'
+  491E'   20 0A          C      	JR	NZ,P1.M3
+  4920'   CD 493B'       C      	CALL	P1.ZEI
+  4923'   3E 08          C      	LD	A,8
+  4925'   CD 493B'       C      	CALL	P1.ZEI
+  4928'   3E 2F          C      	LD	A,'/'
+                         C      	ENDIF
+                         C      
+  492A'                  C      P1.M3:
+  492A'   CD 493B'       C      	CALL	P1.ZEI
+  492D'   18 03          C      	JR	P1.M2
+  492F'                  C      P1.M1:
+  492F'   CD 4976'       C      	CALL	P1.ZEIZ
+  4932'                  C      P1.M2:
+  4932'   FD E1          C      	POP	IY
+  4934'   DD E1          C      	POP	IX
+  4936'   E1             C      	POP	HL
+  4937'   D1             C      	POP	DE
+  4938'   C1             C      	POP	BC
+  4939'   F1             C      	POP	AF
+  493A'   C9             C      	RET
+                         C      	PAGE
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-113
+
+
+                         C      
+  493B'                  C      P1.ZEI	EQU	$
+                         C      
+                         C      	IF	P1.DRU AND 4
+                         C      	IF	P1.ANST AND 1
+                         C      ;****************************************************************
+                         C      ;*               1154/GNI  mit  A D A                           *
+                         C      ;****************************************************************
+                         C      	OUT	(C),A	;Adresse + 0
+                         C      	EI
+                         C      	HALT
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+                         C      	IF	P1.DRU AND 00001000B
+                         C      	IF	P1.ANST AND 1
+                         C      ;****************************************************************
+                         C      ;*               1154/ASCII mit  A D A                          *
+                         C      ;****************************************************************
+                         C      	CPL
+                         C      	OUT	(C),A	;Adresse + 0
+                         C      	INC	C
+                         C      	LD	A,2	;STROBE
+                         C      	OUT	(C),A	;Adresse + 1
+                         C      	XOR	A
+                         C      	OUT	(C),A
+                         C      	DEC	C
+                         C      	PUSH	DE
+                         C      	LD	DE,0D00H
+                         C      	DEC	DE
+                         C      	LD	A,D
+                         C      	OR	E
+                         C      	JR	NZ,$-3
+                         C      	POP	DE
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+                         C      	IF	P1.DRU AND 40H
+                         C      	IF	P1.ANST AND 1
+                         C      ;****************************************************************
+                         C      ;*               BD 4000 mit  A D A                             *
+                         C      ;****************************************************************
+                         C      	PUSH	AF
+                         C      	AND	07FH	;herstellen gerade Paritaet
+                         C      	JP	PE,$+5
+                         C      	OR	080H
+                         C      	OUT	(C),A	;Adresse + 0
+                         C      	POP	AF
+                         C      	EI
+                         C      	HALT
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+                         C      	PAGE
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-114
+
+
+                         C      
+                         C      	IF	P1.DRU AND 1
+                         C      	IF	P1.ANST AND 6
+                         C      ;****************************************************************
+                         C      ;*               1152/1157  mit  A T D                          *
+                         C      ;****************************************************************
+                         C      	OUT	(C),A	;Adresse + 0
+                         C      	INC	C
+                         C      
+                         C      	IF	P1.ANST AND 4
+                         C      	INC	C
+                         C      	ENDIF
+                         C      
+                         C      P1.M4:
+                         C      	IN	A,(C)	;Adresse ( + 1 / + 2 ),(C)
+                         C      
+                         C      	IF	P1.ANST AND 2
+                         C      	BIT	3,A
+                         C      	ENDIF
+                         C      
+                         C      	IF	P1.ANST AND 4
+                         C      	BIT	4,A
+                         C      	ENDIF
+                         C      
+                         C      	JR	NZ,P1.M4
+                         C      	DEC	C
+                         C      
+                         C      	IF	P1.ANST AND 4
+                         C      	DEC	C
+                         C      	ENDIF
+                         C      
+                         C      	IN	A,(C)	;Adresse + 0,(C)
+                         C      	PUSH	BC
+                         C      	LD	B,0
+                         C      	DJNZ	0
+                         C      	POP	BC
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+                         C      	PAGE
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-115
+
+
+                         C      
+                         C      	IF	P1.DRU AND 2
+                         C      	IF	P1.ANST AND 8
+                         C      ;****************************************************************
+                         C      ;*               1152/1157  mit  A T S                          *
+                         C      ;****************************************************************
+  493B'   F5             C      	PUSH	AF
+  493C'   0C             C      	INC	C
+  493D'   0C             C      	INC	C
+  493E'   0C             C      	INC	C
+  493F'                  C      P1.B1:
+  493F'   CD 496E'       C      	CALL	P1.STAT
+  4942'   CB 57          C      	BIT	2,A
+  4944'   28 F9          C      	JR	Z,P1.B1
+  4946'   F1             C      	POP	AF
+  4947'   0D             C      	DEC	C
+  4948'   ED 79          C      	OUT	(C),A	;Adresse + 2
+  494A'                  C      P1.B3:
+  494A'   ED 78          C      	IN	A,(C)
+  494C'   E6 7F          C      	AND	7FH
+  494E'   FE 11          C      	CP	11H
+  4950'   28 04          C      	JR	Z,P1.B4
+  4952'   FE 13          C      	CP	13H
+  4954'   28 F4          C      	JR	Z,P1.B3
+  4956'                  C      P1.B4:
+  4956'   0C             C      	INC	C
+  4957'                  C      P1.B6:
+  4957'   0D             C      	DEC	C
+  4958'   ED 78          C      	IN	A,(C)	;Adresse + 2,(C)
+  495A'   0C             C      	INC	C
+  495B'   CD 496E'       C      	CALL	P1.STAT
+  495E'   20 F7          C      	JR	NZ,P1.B6
+  4960'   0D             C      	DEC	C
+  4961'   0D             C      	DEC	C
+  4962'   0D             C      	DEC	C
+  4963'   C9             C      	RET
+                         C      
+  4964'                  C      P1.SIOTB:
+  4964'   04             C      	DB	4	;Steuerworte  S I O
+  4965'   45             C      	DB	45H	;WR4
+  4966'   01             C      	DB	1
+  4967'   00             C      	DB	00H	;WR1
+  4968'   03             C      	DB	3
+  4969'   41             C      	DB	41H	;WR3
+  496A'   05             C      	DB	5
+  496B'   28             C      	DB	28H	;WR5
+  496C'   00             C      	DB	0
+  496D'   30             C      	DB	30H	;WR0
+                         C      
+  496E'                  C      P1.STAT:
+  496E'   AF             C      	XOR	A
+  496F'   ED 79          C      	OUT	(C),A
+  4971'   ED 78          C      	IN	A,(C)
+  4973'   CB 47          C      	BIT	0,A
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+                         C      	PAGE
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-116
+
+
+                         C      
+                         C      	IF	P1.DRU AND 80H
+                         C      	IF	P1.ANST AND 01100000B
+                         C      ;****************************************************************
+                         C      ;*               S 6 0 0 1  mit  Spezialinteface                *
+                         C      ;****************************************************************
+                         C      	LD	A,C	;device-control for a single sign
+                         C      	LD	HL,P1.PTAKB	;table of lower-case signs
+                         C      	LD	BC,P1.PZKB	;number   lower-case signs
+                         C      	CPIR		;compare
+                         C      	JR	Z,P1.PRIZK
+                         C      	LD	HL,P1.PTAGB	;table of upper-case signs
+                         C      	LD	BC,P1.PZGB	;number   upper-case signs
+                         C      	CPIR
+                         C      	JR	Z,P1.PRIZG
+                         C      	LD	A,' '	;space if no sign is matched
+                         C      P1.PRIZK:
+                         C      	OUT	(C),8FH	;Reset all
+                         C      	PUSH	AF	;save sign
+                         C      	LD	A,0EH	;shift sign
+                         C      	JR	P1.PRIZ2
+                         C      P1.PRIZG:
+                         C      	OUT	(C),8FH	;Reset all
+                         C      	PUSH	AF	;save sign
+                         C      	LD	A,0FH	;lock sign
+                         C      P1.PRIZ2	EQU	$
+                         C      
+                         C      	IF	P1.ANST AND 00100000B
+                         C      	LD	C,8CH	;Address
+                         C      	ENDIF
+                         C      
+                         C      	CALL	P1.MR2
+                         C      	LD	HL,200H
+                         C      	CALL	P1.TIM	;time-loop
+                         C      	OUT	(C),8FH	;Reset all
+                         C      	LD	HL,200H
+                         C      	CALL	P1.TIM
+                         C      	POP	AF	;real sign now
+                         C      	CALL	P1.MR2
+                         C      	LD	HL,200H
+                         C      	CALL	P1.TIM
+                         C      	OUT	(C),8FH	;Reset all
+                         C      
+                         C      	IF	P1.ANST AND 00100000B
+                         C      	LD	HL,300H
+                         C      	ENDIF
+                         C      
+                         C      	IF	P1.ANST AND 01000000B
+                         C      	LD	HL,2E0H
+                         C      	ENDIF
+                         C      
+                         C      	CALL	P1.TIM
+                         C      	LD	HL,200H
+                         C      	CALL	P1.TIM
+                         C      	RET
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+                         C      	PAGE
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-117
+
+
+                         C      
+                         C      	IF	P1.DRU AND 80H
+                         C      	IF	P1.ANST AND 01100000B
+                         C      
+                         C      	IF	P1.ANST AND 01000000B
+                         C      P1.MR2:
+                         C      	OUT	(C),8CH
+                         C      	OUT	(C),8DH
+                         C      	CALL	P1.PRIZU
+                         C      	ENDIF
+                         C      
+                         C      	IF	P1.ANST AND 00100000B
+                         C      P1.MR2:
+                         C      	OUT	(C),A	;latching on Printboard
+                         C      	OUT	(C),8AH	;latching on S6001
+                         C      	OUT	(C),88H	;sign on S6001-Keyboard
+                         C      	ENDIF
+                         C      
+                         C      	RET
+                         C      
+                         C      P1.TIM:
+                         C      	PUSH	HL	;time-loop here , Input:<HL>
+                         C      	CALL	P1.TIM1
+                         C      	POP	HL
+                         C      P1.TIM1:
+                         C      	LD	A,L
+                         C      	OR	H
+                         C      	RET	Z
+                         C      	DEC	HL
+                         C      	JR	P1.TIM1
+                         C      
+                         C      	IF	P1.ANST AND 01000000B
+                         C      P1.PRIZU:
+                         C      	LD	HL,16
+                         C      	CALL	P1.TIM
+                         C      	OUT	(C),8AH
+                         C      	OUT	(C),8BH
+                         C      	OUT	(C),88H
+                         C      	ENDIF
+                         C      
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+                         C      	PAGE
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-118
+
+
+                         C      
+                         C      	IF	P1.DRU AND 80H
+                         C      	IF	P1.ANST AND 80H
+                         C      ;****************************************************************
+                         C      ;*               S 6 0 0 1  mit  Koppelinterface                *
+                         C      ;****************************************************************
+                         C      	PUSH	BC
+                         C      	PUSH	AF
+                         C      	LD	HL,P1.CTBS6	;Codeumwandlung ASCII ===> S6001
+                         C      	LD	D,0
+                         C      	LD	E,A
+                         C      	ADD	HL,DE
+                         C      	LD	A,(HL)
+                         C      	CPL
+                         C      	PUSH	AF
+                         C      	INC	C
+                         C      P1.TOUT:
+                         C      	IN	A,(C)	;Adresse + 1,(C)
+                         C      	BIT	5,A
+                         C      	JR	NZ,TOUT	;kein bereit
+                         C      	POP	AF
+                         C      	DEC	C
+                         C      	OUT	(C),A	;Ausgabe Zeichen
+                         C      	LD	A,0FDH
+                         C      	INC	C
+                         C      	OUT	(C),A	;STB High
+                         C      	LD	A,0FFH
+                         C      	OUT	(C),A	;STB Low
+                         C      	LD	A,0FDH
+                         C      	OUT	(C),A	;STB High
+                         C      	OR	A
+                         C      	POP	AF
+                         C      	POP	BC
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+  4975'   C9             C      	RET		;return vom UP "ZEI"
+                         C      
+                         C      	PAGE
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-119
+
+
+                         C      
+  4976'                  C      P1.ZEIZ	EQU	$
+                         C      
+                         C      	IF	P1.DRU AND 3	;1152/1157
+                         C      	IF	P1.ANST AND 00001110B	;A T D / A T S
+  4976'   3E 0D          C      	LD	A,00DH
+  4978'   CD 493B'       C      	CALL	P1.ZEI
+  497B'   3E 0A          C      	LD	A,00AH
+  497D'   CD 493B'       C      	CALL	P1.ZEI
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+                         C      	IF	P1.DRU AND 4	;1154/GNI
+                         C      	IF	P1.ANST AND 1	;A D A
+                         C      	INC	C
+                         C      	LD	A,1
+                         C      	CALL	P1.KOUT
+                         C      	LD	A,2
+                         C      	CALL	P1.KOUT
+                         C      	CALL	P1.WAIT
+                         C      	CALL	P1.WAIT
+                         C      	DEC	C
+                         C      	RET
+                         C      P1.KOUT:
+                         C      	OUT	(C),A	;Adresse + 1
+                         C      	IN	A,(C)	;Adresse + 1,(C)
+                         C      	BIT	5,A
+                         C      	JR	NZ,KOUT+2
+                         C      	RET
+                         C      P1.WAIT:
+                         C      	LD	B,20H
+                         C      	PUSH	BC
+                         C      	LD	B,0FFH
+                         C      	DJNZ	0
+                         C      	POP	BC
+                         C      	DJNZ	P1.WAIT+2
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+                         C      	IF	P1.DRU AND 8	;1154/ASCII
+                         C      	IF	P1.ANST AND 1	;A D A
+                         C      	LD	A,00DH
+                         C      	CALL	P1.ZEI
+                         C      	PUSH	DE
+                         C      	LD	DE,00C00H
+                         C      	DEC	DE
+                         C      	LD	A,D
+                         C      	OR	E
+                         C      	JR	NZ,$-3
+                         C      	POP	DE
+                         C      	LD	A,00AH
+                         C      	CALL	P1.ZEI
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+                         C      	IF	P1.DRU AND 40H	;BD 4000
+                         C      	IF	P1.ANST AND 1
+                         C      	CALL	P1.ZEI
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+                         C      	IF	P1.DRU AND 80H	;S 6001
+                         C      	IF	P1.ANST AND 11100000B
+                         C      	CALL	P1.ZEI
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+  4980'   C9             C      	RET		;return vom UP "ZEIZ"
+                         C      
+                         C      	PAGE
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-120
+
+
+                         C      
+                         C      	IF	P1.DRU AND 00000011B	;1152/1157 PIO
+                         C      
+                         C      	IF	P1.PIO AND 1	;P I O 1
+  4981'                  C      P1.CPI10:
+  4981'   1B             C      	DB	01BH
+  4982'   5B 30 20 4B    C      	DB	'[0 K'
+  4986'                  C      P1.CPI12:
+  4986'   1B             C      	DB	01BH
+  4987'   5B 31 20 4B    C      	DB	'[1 K'
+  498B'                  C      P1.LPI6:
+  498B'   1B             C      	DB	01BH
+  498C'   5B 30 20 4C    C      	DB	'[0 L'
+  4990'                  C      P1.LPI8:
+  4990'   1B             C      	DB	01BH
+  4991'   5B 35 20 4C    C      	DB	'[5 L'
+                         C      
+  4995'                  C      P1.CPI:
+  4995'   06 05          C      	LD	B,5
+                         C      	ENDIF
+                         C      
+                         C      	IF	P1.PIO AND 2	;P I O 2
+                         C      P1.CPI10:	DB	1
+                         C      P1.CPI12:	DB	2
+                         C      P1.LPI6:	DB	5
+                         C      P1.LPI8:	DB	6
+                         C      
+                         C      P1.CPI:	LD	B,1
+                         C      	ENDIF
+                         C      
+                         C      
+  4997'                  C      P1.CPI1:
+  4997'   7E             C      	LD	A,(HL)
+  4998'   23             C      	INC	HL
+  4999'   CD 493B'       C      	CALL	P1.ZEI
+  499C'   10 F9          C      	DJNZ	P1.CPI1
+  499E'   C9             C      	RET
+                         C      	ENDIF
+                         C      
+                         C      	PAGE
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-121
+
+
+                         C      
+                         C      	IF	P1.DRU AND 80H
+                         C      	IF	P1.ANST AND 01100000B
+                         C      P1.PTAGB:
+                         C      	DB	26H	; &     table of upper-case signs
+                         C      	DB	3BH	; ;
+                         C      	DB	5FH	; _
+                         C      	DB	3DH	; =
+                         C      	DB	25H	; %
+                         C      	DB	2BH	; +
+                         C      	DB	28H	; (
+                         C      	DB	29H	; )
+                         C      	DB	3CH	; <
+                         C      	DB	3EH	; >
+                         C      	DB	2FH	; /
+                         C      	DB	3AH	; :
+                         C      	DB	40H	; $
+                         C      	DB	08H	; BS
+                         C      	DB	09H	; TAB
+                         C      	DB	24H	; DOLLAR
+                         C      	DB	7FH	; RUBOUT
+                         C      	DB	22H	; ""
+                         C      	DB	3FH	; ?
+                         C      	DB	21H	; !
+                         C      	DB	27H	; '
+                         C      	DB	41H	; A
+                         C      	DB	42H	; B
+                         C      	DB	43H	; C
+                         C      	DB	44H	; D
+                         C      	DB	45H	; E
+                         C      	DB	46H	; F
+                         C      	DB	47H	; G
+                         C      	DB	48H	; H
+                         C      	DB	49H	; I
+                         C      	DB	4AH	; J
+                         C      	DB	4BH	; K
+                         C      	DB	4CH	; L
+                         C      	DB	4DH	; M
+                         C      	DB	4EH	; N
+                         C      	DB	4FH	; O
+                         C      	DB	50H	; P
+                         C      	DB	51H	; Q
+                         C      	DB	52H	; R
+                         C      	DB	53H	; S
+                         C      	DB	54H	; T
+                         C      	DB	55H	; U
+                         C      	DB	56H	; V
+                         C      	DB	57H	; W
+                         C      	DB	58H	; X
+                         C      	DB	59H	; Y
+                         C      	DB	5AH	; Z
+                         C      	DB	5BH
+                         C      	DB	5CH
+                         C      	DB	5DH
+                         C      	DB	5EH
+                         C      	DB	03H	;Sperrschrift
+                         C      	DB	04H	;Sparschrift
+                         C      	DB	05H	;Schattenschrift
+                         C      	DB	06H	;Unterstreichen
+                         C      	DB	07H	;Fettschrift
+                         C      
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+                         C      	PAGE
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-122
+
+
+                         C      
+                         C      	IF	P1.DRU AND 80H
+                         C      	IF	P1.ANST AND 01100000B
+                         C      P1.PTAKB:
+                         C      	DB	40H	; @     table of lower-case signs
+                         C      	DB	23H	; #
+                         C      	DB	2AH	; *
+                         C      	DB	2CH	; ,
+                         C      	DB	2EH	; .
+                         C      	DB	2DH	; -
+                         C      	DB	1EH	; newline
+                         C      	DB	20H	; space
+                         C      	DB	30H	; 0
+                         C      	DB	31H	; 1
+                         C      	DB	32H	; 2
+                         C      	DB	33H	; 3
+                         C      	DB	34H	; 4
+                         C      	DB	35H	; 5
+                         C      	DB	36H	; 6
+                         C      	DB	37H	; 7
+                         C      	DB	38H	; 8
+                         C      	DB	39H	; 9
+                         C      	DB	61H	; a
+                         C      	DB	62H	; b
+                         C      	DB	63H	; c
+                         C      	DB	64H	; d
+                         C      	DB	65H	; e
+                         C      	DB	66H	; f
+                         C      	DB	67H	; g
+                         C      	DB	68H	; h
+                         C      	DB	69H	; i
+                         C      	DB	6AH	; j
+                         C      	DB	6BH	; k
+                         C      	DB	6CH	; l
+                         C      	DB	6DH	; m
+                         C      	DB	6EH	; n
+                         C      	DB	6FH	; o
+                         C      	DB	70H	; p
+                         C      	DB	71H	; q
+                         C      	DB	72H	; r
+                         C      	DB	73H	; s
+                         C      	DB	74H	; t
+                         C      	DB	75H	; u
+                         C      	DB	76H	; v
+                         C      	DB	77H	; w
+                         C      	DB	78H	; x
+                         C      	DB	79H	; y
+                         C      	DB	7AH	; z
+                         C      	DB	7BH
+                         C      	DB	7CH
+                         C      	DB	7DH
+                         C      	DB	7EH
+                         C      
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+                         C      	PAGE
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-123
+
+
+                         C      
+                         C      	IF	P1.DRU AND 80H
+                         C      	IF	P1.ANST AND 80H
+                         C      P1.CTBS6:
+                         C      	DW	1D1DH
+                         C      	DB	0A5H
+                         C      	DB	0A6H
+                         C      	DB	0A7H
+                         C      	DB	0A8H
+                         C      	DB	0A9H
+                         C      	DB	0AAH
+                         C      	DB	1CH
+                         C      	DB	19H
+                         C      	DB	0AH
+                         C      	DB	08H
+                         C      	DB	0CH
+                         C      	DB	1EH
+                         C      	DB	0BH
+                         C      	DB	1DH
+                         C      	DB	80H
+                         C      	DB	81H
+                         C      	DB	82H
+                         C      	DB	83H
+                         C      	DB	84H
+                         C      	DB	90H
+                         C      	DB	91H
+                         C      	DB	92H
+                         C      	DB	93H
+                         C      	DB	94H
+                         C      	DW	1D1DH
+                         C      	DW	1D1DH
+                         C      	DB	1EH
+                         C      	DB	1FH
+                         C      	DB	1DH	;20
+                         C      	DB	21H
+                         C      	DB	22H
+                         C      	DB	23H
+                         C      	DB	5EH
+                         C      	DB	25H
+                         C      	DB	26H
+                         C      	DB	27H
+                         C      	DB	'()*+,-./'
+                         C      	DB	'0123456789'
+                         C      	DB	':;'
+                         C      	DB	24H
+                         C      	DB	3DH
+                         C      	DB	20H
+                         C      	DB	3FH
+                         C      	DB	3CH
+                         C      	DB	'ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]'
+                         C      	DB	40H
+                         C      	DB	5FH
+                         C      	DB	3EH
+                         C      	DB	'abcdefghijklmnopqrstuvwxyz{|}'
+                         C      	DB	7EH
+                         C      	DB	1DH
+                         C      	DB	80H
+                         C      	DB	81H
+                         C      	DB	82H
+                         C      	DB	83H
+                         C      	DB	84H
+                         C      	DB	1DH
+                         C      	DW	1D1DH
+                         C      	DW	1D1DH
+                         C      	DW	1D1DH
+                         C      	DW	1D1DH
+                         C      	DW	1D1DH
+                         C      	DB	90H
+                         C      	DB	91H
+                         C      	DB	92H
+                         C      	DB	93H
+                         C      	DB	94H
+                         C      	DB	1DH
+                         C      	DW	1D1DH
+                         C      	DW	1D1DH
+                         C      	DW	1D1DH
+                         C      	DW	1D1DH
+                         C      	DW	1D1DH
+                         C      	DB	0A0H
+                         C      	DB	0A1H
+                         C      	DB	0A2H
+                         C      	DB	0A3H
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-124
+
+
+                         C      	DB	0A4H
+                         C      	DB	0A5H
+                         C      	DB	0A6H
+                         C      	DB	0A7H
+                         C      	DB	0A8H
+                         C      	DB	0A9H
+                         C      	DB	0AAH
+                         C      	DW	1D1DH
+                         C      	DB	0ADH
+                         C      	DB	0AEH
+                         C      	DB	0AFH
+                         C      	DB	0B0H
+                         C      	DB	0B1H
+                         C      	DW	1D1DH
+                         C      	DW	1D1DH
+                         C      	DW	1D1DH
+                         C      	DW	1D1DH
+                         C      	DW	1D1DH
+                         C      	DW	1D1DH
+                         C      	DW	1D1DH
+                         C      	DB	0C0H
+                         C      	DB	0C1H
+                         C      	DB	0C2H
+                         C      	DW	1D1DH
+                         C      	DB	1DH
+                         C      	DB	0C6H
+                         C      	DB	0C7H
+                         C      	DB	0C8H
+                         C      	DB	0C9H
+                         C      	DB	0CAH
+                         C      	DW	1D1DH
+                         C      	DW	1D1DH
+                         C      	DB	0CFH
+                         C      	DB	0D0H
+                         C      	DB	0D1H
+                         C      	DB	0D2H
+                         C      	DW	1D1DH
+                         C      	DW	1D1DH
+                         C      	DW	1D1DH
+                         C      	DW	1D1DH
+                         C      	DW	1D1DH
+                         C      	DW	1D1DH
+                         C      	DB	0FFH
+                         C      	ENDIF
+                         C      	ENDIF
+                         C      
+                         C      ;	END
+                                
+                         C      	INCLUDE PF01.ASM	; PF-Tasten-Belegungen
+                         C      	TITLE	'DEG2000 V. 1.2    PF - Belegungen'
+                         C      	PAGE
+'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-125
+
+
+                         C      
+                         C      ;	PN	PF01
+                         C      ;****************************************************************
+                         C      ;*                  DEG2000 V. 1.2    PF - ROM 2 - Belegung     *
+                         C      ;*  Version         --------------------------------------------*
+                         C      ;*                  Programmierer: M. Herbote  K EAW  ZFT (WFT) *
+                         C      ;*  V 1 . 2         --------------------------------------------*
+                         C      ;*                  Stand        : 06.Februar 1985              *
+                         C      ;****************************************************************
+                         C      
+  001E                   C      CR	EQU	01EH
+  0028                   C      PF.SPST	EQU	028H
+                         C      
+  499F'   499F'          C      	DW	$
+  49A1'   50 46 54 41    C      	DB	'PFTA'
+  49A5'   3A 3327        C      	LD	A,(SD.BWSA+327H)
+  49A8'   FE 31          C      	CP	'1'
+  49AA'   28 0A          C      	JR	Z,PF.O1
+  49AC'   FE 32          C      	CP	'2'
+  49AE'   28 0E          C      	JR	Z,PF.O2
+  49B0'   FE 33          C      	CP	'3'
+  49B2'   28 12          C      	JR	Z,PF.O3
+  49B4'   18 1F          C      	JR	PF.OXEND
+                         C      
+  49B6'                  C      PF.O1:
+  49B6'   21 49D8'       C      	LD	HL,PF.O1ANF
+  49B9'   11 4C8F'       C      	LD	DE,PF.O1END
+  49BC'   18 10          C      	JR	PF.OB
+  49BE'                  C      PF.O2:
+  49BE'   21 4C8F'       C      	LD	HL,PF.O2ANF
+  49C1'   11 5073'       C      	LD	DE,PF.O2END
+  49C4'   18 08          C      	JR	PF.OB
+  49C6'                  C      PF.O3:
+  49C6'   21 5073'       C      	LD	HL,PF.O3ANF
+  49C9'   11 5319'       C      	LD	DE,PF.O3END
+  49CC'   18 00          C      	JR	PF.OB
+                         C      	
+  49CE'                  C      PF.OB:
+  49CE'   ED 53 0E15'    C        	LD	(SM.PTSE),DE
+  49D2'   22 0E17'       C      	LD	(SM.PTSA),HL
+  49D5'                  C      PF.OXEND:
+  49D5'   C3 000B'       C      	JP	SY.SYSTB
+                         C      
+                         C      	PAGE
+'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-126
+
+
+                         C      
+                         C      ;****************************************************************
+  49D8'                  C      PF.O1ANF	EQU	$
+  49D8'   3B 2A 2A 2A    C      	DB	';****************************************************************'    ;PF01-0
+  49DC'   2A 2A 2A 2A    C      
+  49E0'   2A 2A 2A 2A    C      
+  49E4'   2A 2A 2A 2A    C      
+  49E8'   2A 2A 2A 2A    C      
+  49EC'   2A 2A 2A 2A    C      
+  49F0'   2A 2A 2A 2A    C      
+  49F4'   2A 2A 2A 2A    C      
+  49F8'   2A 2A 2A 2A    C      
+  49FC'   2A 2A 2A 2A    C      
+  4A00'   2A 2A 2A 2A    C      
+  4A04'   2A 2A 2A 2A    C      
+  4A08'   2A 2A 2A 2A    C      
+  4A0C'   2A 2A 2A 2A    C      
+  4A10'   2A 2A 2A 2A    C      
+  4A14'   2A 2A 2A 2A    C      
+  4A18'   2A             C      
+  4A19'   001E           C      	DW	CR
+  4A1B'   3B 2A 20 20    C      	DB	';*                                                              *'    ;PF02-0
+  4A1F'   20 20 20 20    C      
+  4A23'   20 20 20 20    C      
+  4A27'   20 20 20 20    C      
+  4A2B'   20 20 20 20    C      
+  4A2F'   20 20 20 20    C      
+  4A33'   20 20 20 20    C      
+  4A37'   20 20 20 20    C      
+  4A3B'   20 20 20 20    C      
+  4A3F'   20 20 20 20    C      
+  4A43'   20 20 20 20    C      
+  4A47'   20 20 20 20    C      
+  4A4B'   20 20 20 20    C      
+  4A4F'   20 20 20 20    C      
+  4A53'   20 20 20 20    C      
+  4A57'   20 20 20 20    C      
+  4A5B'   2A             C      
+  4A5C'   001E           C      	DW	CR
+  4A5E'   3B 2A 20 20    C      	DB	';*                  '                                                 ;PF03-0
+  4A62'   20 20 20 20    C      
+  4A66'   20 20 20 20    C      
+  4A6A'   20 20 20 20    C      
+  4A6E'   20 20 20 20    C      
+  4A72'   00             C      	DB	0
+                         C      ; ----
+  4A73'   3B 2A 20 20    C      	DB	';*                  Programmierer:'                                   ;PF04-0
+  4A77'   20 20 20 20    C      
+  4A7B'   20 20 20 20    C      
+  4A7F'   20 20 20 20    C      
+  4A83'   20 20 20 20    C      
+  4A87'   50 72 6F 67    C      
+  4A8B'   72 61 6D 6D    C      
+  4A8F'   69 65 72 65    C      
+  4A93'   72 3A          C      
+  4A95'   20 4D 2E 20    C      	DB	' M. Herbote  K EAW  ZFT (WFV) *'
+  4A99'   48 65 72 62    C      
+  4A9D'   6F 74 65 20    C      
+  4AA1'   20 4B 20 45    C      
+  4AA5'   41 57 20 20    C      
+  4AA9'   5A 46 54 20    C      
+  4AAD'   28 57 46 56    C      
+  4AB1'   29 20 2A       C      
+  4AB4'   001E           C      	DW	CR
+  4AB6'   3B 2A 20 20    C      	DB	';*                  --------------------------------------------*'    ;PF05-0
+  4ABA'   20 20 20 20    C      
+  4ABE'   20 20 20 20    C      
+  4AC2'   20 20 20 20    C      
+  4AC6'   20 20 20 20    C      
+  4ACA'   2D 2D 2D 2D    C      
+  4ACE'   2D 2D 2D 2D    C      
+  4AD2'   2D 2D 2D 2D    C      
+  4AD6'   2D 2D 2D 2D    C      
+  4ADA'   2D 2D 2D 2D    C      
+  4ADE'   2D 2D 2D 2D    C      
+  4AE2'   2D 2D 2D 2D    C      
+  4AE6'   2D 2D 2D 2D    C      
+  4AEA'   2D 2D 2D 2D    C      
+  4AEE'   2D 2D 2D 2D    C      
+  4AF2'   2D 2D 2D 2D    C      
+  4AF6'   2A             C      
+  4AF7'   001E           C      	DW	CR
+'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-127
+
+
+  4AF9'   3B 2A 20 20    C      	DB	';*                  Stand        : '                                  ;PF06-0
+  4AFD'   20 20 20 20    C      
+  4B01'   20 20 20 20    C      
+  4B05'   20 20 20 20    C      
+  4B09'   20 20 20 20    C      
+  4B0D'   53 74 61 6E    C      
+  4B11'   64 20 20 20    C      
+  4B15'   20 20 20 20    C      
+  4B19'   20 3A 20       C      
+  4B1C'   00             C      	DB	0
+                         C      ; ----
+  4B1D'   20 20 20 20    C      	DB	'         CALL  '                                                      ;PF07-0
+  4B21'   20 20 20 20    C      
+  4B25'   20 43 41 4C    C      
+  4B29'   4C 20 20       C      
+  4B2C'   00             C      	DB	0
+  4B2D'   20 20 20 20    C      	DB	'         DA    '                                                      ;PF08-0
+  4B31'   20 20 20 20    C      
+  4B35'   20 44 41 20    C      
+  4B39'   20 20 20       C      
+  4B3C'   00             C      	DB	0
+  4B3D'   20 20 20 20    C      	DB	'         DB    '                                                      ;PF09-0
+  4B41'   20 20 20 20    C      
+  4B45'   20 44 42 20    C      
+  4B49'   20 20 20       C      
+  4B4C'   00             C      	DB	0
+                         C      ; ----
+  4B4D'   20 20 20 20    C      	DB	'         XOR   A'                                                     ;PF10-0
+  4B51'   20 20 20 20    C      
+  4B55'   20 58 4F 52    C      
+  4B59'   20 20 20 41    C      
+  4B5D'   001E           C      	DW	CR
+  4B5F'   20 20 20 20    C      	DB	'         LD    A,'                                                    ;PF11-0
+  4B63'   20 20 20 20    C      
+  4B67'   20 4C 44 20    C      
+  4B6B'   20 20 20 41    C      
+  4B6F'   2C             C      
+  4B70'   00             C      	DB	0
+  4B71'   20 20 20 20    C      	DB	'         LD    HL,'                                                   ;PF12-0
+  4B75'   20 20 20 20    C      
+  4B79'   20 4C 44 20    C      
+  4B7D'   20 20 20 48    C      
+  4B81'   4C 2C          C      
+  4B83'   00             C      	DB	0
+                         C      ; ====	
+  4B84'   20 20 20 20    C      	DB	'         PUSH  HL'                                                    ;PF01-1 PF13
+  4B88'   20 20 20 20    C      
+  4B8C'   20 50 55 53    C      
+  4B90'   48 20 20 48    C      
+  4B94'   4C             C      
+  4B95'   001E           C      	DW	CR
+  4B97'   20 20 20 20    C      	DB	'         PUSH  IX'                                                    ;PF02-1 PF14
+  4B9B'   20 20 20 20    C      
+  4B9F'   20 50 55 53    C      
+  4BA3'   48 20 20 49    C      
+  4BA7'   58             C      
+  4BA8'   001E           C      	DW	CR
+  4BAA'   20 20 20 20    C      	DB	'         PUSH  IY'                                                    ;PF03-1 PF15
+  4BAE'   20 20 20 20    C      
+  4BB2'   20 50 55 53    C      
+  4BB6'   48 20 20 49    C      
+  4BBA'   59             C      
+                         C      ; ----
+  4BBB'   001E           C      	DW	CR
+  4BBD'   20 20 20 20    C      	DB	'         POP   HL'                                                    ;PF04-1 PF16
+  4BC1'   20 20 20 20    C      
+  4BC5'   20 50 4F 50    C      
+  4BC9'   20 20 20 48    C      
+  4BCD'   4C             C      
+  4BCE'   001E           C      	DW	CR
+  4BD0'   20 20 20 20    C      	DB	'         POP   IX'                                                    ;PF05-1 PF17
+  4BD4'   20 20 20 20    C      
+  4BD8'   20 50 4F 50    C      
+  4BDC'   20 20 20 49    C      
+  4BE0'   58             C      
+  4BE1'   001E           C      	DW	CR
+  4BE3'   20 20 20 20    C      	DB	'         POP   IY'                                                    ;PF06-1 PF18
+  4BE7'   20 20 20 20    C      
+  4BEB'   20 50 4F 50    C      
+  4BEF'   20 20 20 49    C      
+  4BF3'   59             C      
+  4BF4'   001E           C      	DW	CR
+                         C      ; ----
+'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-128
+
+
+  4BF6'   20 20 20 20    C      	DB	'         PUSH  AF'                                                    ;PF07-1 PF19
+  4BFA'   20 20 20 20    C      
+  4BFE'   20 50 55 53    C      
+  4C02'   48 20 20 41    C      
+  4C06'   46             C      
+  4C07'   001E           C      	DW	CR
+  4C09'   20 20 20 20    C      	DB	'         PUSH  BC'                                                    ;PF08-1 PF20
+  4C0D'   20 20 20 20    C      
+  4C11'   20 50 55 53    C      
+  4C15'   48 20 20 42    C      
+  4C19'   43             C      
+  4C1A'   001E           C      	DW	CR
+  4C1C'   20 20 20 20    C      	DB	'         PUSH  DE'                                                    ;PF09-1 PF21
+  4C20'   20 20 20 20    C      
+  4C24'   20 50 55 53    C      
+  4C28'   48 20 20 44    C      
+  4C2C'   45             C      
+  4C2D'   001E           C      	DW	CR
+                         C      ; ----
+  4C2F'   20 20 20 20    C      	DB	'         POP   AF'                                                    ;PF10-1 PF22
+  4C33'   20 20 20 20    C      
+  4C37'   20 50 4F 50    C      
+  4C3B'   20 20 20 41    C      
+  4C3F'   46             C      
+  4C40'   001E           C      	DW	CR
+  4C42'   20 20 20 20    C      	DB	'         POP   BC'                                                    ;PF11-1 PF23
+  4C46'   20 20 20 20    C      
+  4C4A'   20 50 4F 50    C      
+  4C4E'   20 20 20 42    C      
+  4C52'   43             C      
+  4C53'   001E           C      	DW	CR
+  4C55'   20 20 20 20    C      	DB	'         POP   DE'                                                    ;PF12-1 PF24
+  4C59'   20 20 20 20    C      
+  4C5D'   20 50 4F 50    C      
+  4C61'   20 20 20 44    C      
+  4C65'   45             C      
+  4C66'   001E           C      	DW	CR
+                         C      ; ====
+  4C68'   28 43 29 20    C      	DB	'(C) Marcus Herbote    K EAW / wfvm'                                   ;PF01-2 PF25
+  4C6C'   4D 61 72 63    C      
+  4C70'   75 73 20 48    C      
+  4C74'   65 72 62 6F    C      
+  4C78'   74 65 20 20    C      
+  4C7C'   20 20 4B 20    C      
+  4C80'   45 41 57 20    C      
+  4C84'   2F 20 77 66    C      
+  4C88'   76 6D          C      
+  4C8A'   001E           C      	DW	CR
+  4C8C'   00             C      	DB	0                                                                      ;PF02-2 PF26
+  4C8D'   00             C      	DB	0                                                                      ;PF03-2 PF27
+  4C8E'   00             C      	DB	0                                                                      ;PF04-2 PF28
+  4C8F'                  C      PF.O1END EQU	$
+                         C      	PAGE
+'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-129
+
+
+                         C      
+                         C      ;****************************************************************
+  4C8F'                  C      PF.O2ANF EQU	$
+  4C8F'   21 2F 2F 46    C      	DB	'!//FRJOB01  JOB (FR690030,01),FRpgrmr1,MSGLEVEL=(1,1),'               ;PF01-0
+  4C93'   52 4A 4F 42    C      
+  4C97'   30 31 20 20    C      
+  4C9B'   4A 4F 42 20    C      
+  4C9F'   28 46 52 36    C      
+  4CA3'   39 30 30 33    C      
+  4CA7'   30 2C 30 31    C      
+  4CAB'   29 2C 46 52    C      
+  4CAF'   70 67 72 6D    C      
+  4CB3'   72 31 2C 4D    C      
+  4CB7'   53 47 4C 45    C      
+  4CBB'   56 45 4C 3D    C      
+  4CBF'   28 31 2C 31    C      
+  4CC3'   29 2C          C      
+  4CC5'   001E           C      	DW	CR
+  4CC7'   21 2F 2F 20    C      	DB	'!//             REGION=090K,TYPRUN=HOLD,CLASS=E'                      ;PF02-0
+  4CCB'   20 20 20 20    C      
+  4CCF'   20 20 20 20    C      
+  4CD3'   20 20 20 20    C      
+  4CD7'   52 45 47 49    C      
+  4CDB'   4F 4E 3D 30    C      
+  4CDF'   39 30 4B 2C    C      
+  4CE3'   54 59 50 52    C      
+  4CE7'   55 4E 3D 48    C      
+  4CEB'   4F 4C 44 2C    C      
+  4CEF'   43 4C 41 53    C      
+  4CF3'   53 3D 45       C      
+  4CF6'   001E           C      	DW	CR
+  4CF8'   21 2F 2F 53    C      	DB	'!//STEP01  EXEC PGM=name...,PARM=''    '''                            ;PF03-0
+  4CFC'   54 45 50 30    C      
+  4D00'   31 20 20 45    C      
+  4D04'   58 45 43 20    C      
+  4D08'   50 47 4D 3D    C      
+  4D0C'   6E 61 6D 65    C      
+  4D10'   2E 2E 2E 2C    C      
+  4D14'   50 41 52 4D    C      
+  4D18'   3D 27 20 20    C      
+  4D1C'   20 20 27       C      
+  4D1F'   001E           C      	DW	CR
+                         C      ; ----
+  4D21'   21 2F 2F 53    C      	DB	'!//STEPLIB  DD  DSN=FR1.LADT.T1,DISP=SHR'                             ;PF04-0
+  4D25'   54 45 50 4C    C      
+  4D29'   49 42 20 20    C      
+  4D2D'   44 44 20 20    C      
+  4D31'   44 53 4E 3D    C      
+  4D35'   46 52 31 2E    C      
+  4D39'   4C 41 44 54    C      
+  4D3D'   2E 54 31 2C    C      
+  4D41'   44 49 53 50    C      
+  4D45'   3D 53 48 52    C      
+  4D49'   001E           C      	DW	CR
+  4D4B'   21 2F 2F 53    C      	DB	'!//SYSPRINT DD  SYSOUT=A'                                             ;PF05-0
+  4D4F'   59 53 50 52    C      
+  4D53'   49 4E 54 20    C      
+  4D57'   44 44 20 20    C      
+  4D5B'   53 59 53 4F    C      
+  4D5F'   55 54 3D 41    C      
+  4D63'   001E           C      	DW	CR
+  4D65'   21 2F 2F 53    C      	DB	'!//SYSUT1   DD  DSN=FRx.QUET.T1,DISP=SHR'                             ;PF06-0
+  4D69'   59 53 55 54    C      
+  4D6D'   31 20 20 20    C      
+  4D71'   44 44 20 20    C      
+  4D75'   44 53 4E 3D    C      
+  4D79'   46 52 78 2E    C      
+  4D7D'   51 55 45 54    C      
+  4D81'   2E 54 31 2C    C      
+  4D85'   44 49 53 50    C      
+  4D89'   3D 53 48 52    C      
+  4D8D'   001E           C      	DW	CR
+                         C      ; ----
+  4D8F'   21 2F 2F 53    C      	DB	'!//SYSUT2   DD  DSN=FRx.QUET.T1,DISP=SHR'                             ;PF07-0
+  4D93'   59 53 55 54    C      
+  4D97'   32 20 20 20    C      
+  4D9B'   44 44 20 20    C      
+  4D9F'   44 53 4E 3D    C      
+  4DA3'   46 52 78 2E    C      
+  4DA7'   51 55 45 54    C      
+  4DAB'   2E 54 31 2C    C      
+  4DAF'   44 49 53 50    C      
+'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-130
+
+
+  4DB3'   3D 53 48 52    C      
+  4DB7'   001E           C      	DW	CR
+  4DB9'   21 2F 2F 53    C      	DB	'!//SYSIN    DD  *'                                                    ;PF08-0
+  4DBD'   59 53 49 4E    C      
+  4DC1'   20 20 20 20    C      
+  4DC5'   44 44 20 20    C      
+  4DC9'   2A             C      
+  4DCA'   001E           C      	DW	CR
+  4DCC'   21 2F 2F 20    C      	DB	'!//             UNIT=5010,VOL=SER=TBoooo,LABEL=(o,SL),'               ;PF09-0
+  4DD0'   20 20 20 20    C      
+  4DD4'   20 20 20 20    C      
+  4DD8'   20 20 20 20    C      
+  4DDC'   55 4E 49 54    C      
+  4DE0'   3D 35 30 31    C      
+  4DE4'   30 2C 56 4F    C      
+  4DE8'   4C 3D 53 45    C      
+  4DEC'   52 3D 54 42    C      
+  4DF0'   6F 6F 6F 6F    C      
+  4DF4'   2C 4C 41 42    C      
+  4DF8'   45 4C 3D 28    C      
+  4DFC'   6F 2C 53 4C    C      
+  4E00'   29 2C          C      
+  4E02'   001E           C      	DW	CR
+                         C      ; ----
+  4E04'   21 2F 2F 20    C      	DB	'!//             DCB=(RECFM=FBA,LRECL=121,BLKSIZE=0121),'              ;PF10-0
+  4E08'   20 20 20 20    C      
+  4E0C'   20 20 20 20    C      
+  4E10'   20 20 20 20    C      
+  4E14'   44 43 42 3D    C      
+  4E18'   28 52 45 43    C      
+  4E1C'   46 4D 3D 46    C      
+  4E20'   42 41 2C 4C    C      
+  4E24'   52 45 43 4C    C      
+  4E28'   3D 31 32 31    C      
+  4E2C'   2C 42 4C 4B    C      
+  4E30'   53 49 5A 45    C      
+  4E34'   3D 30 31 32    C      
+  4E38'   31 29 2C       C      
+  4E3B'   001E           C      	DW	CR
+  4E3D'   21 2F 2F 20    C      	DB	'!//             SPACE=(TRK,(100,50),RLSE),'                           ;PF11-0
+  4E41'   20 20 20 20    C      
+  4E45'   20 20 20 20    C      
+  4E49'   20 20 20 20    C      
+  4E4D'   53 50 41 43    C      
+  4E51'   45 3D 28 54    C      
+  4E55'   52 4B 2C 28    C      
+  4E59'   31 30 30 2C    C      
+  4E5D'   35 30 29 2C    C      
+  4E61'   52 4C 53 45    C      
+  4E65'   29 2C          C      
+  4E67'   001E           C      	DW	CR
+  4E69'   21 2F 2F 20    C      	DB	'!//             DISP=(,PASS),'                                        ;PF12-0
+  4E6D'   20 20 20 20    C      
+  4E71'   20 20 20 20    C      
+  4E75'   20 20 20 20    C      
+  4E79'   44 49 53 50    C      
+  4E7D'   3D 28 2C 50    C      
+  4E81'   41 53 53 29    C      
+  4E85'   2C             C      
+  4E86'   001E           C      	DW	CR
+                         C      ; ====
+  4E88'   21 2F 2F 20    C      	DB	'!//             HIS0=FR1,HIS1=FR1,NCAL=,MODUL=name'                   ;PF00-1 PF13
+  4E8C'   20 20 20 20    C      
+  4E90'   20 20 20 20    C      
+  4E94'   20 20 20 20    C      
+  4E98'   48 49 53 30    C      
+  4E9C'   3D 46 52 31    C      
+  4EA0'   2C 48 49 53    C      
+  4EA4'   31 3D 46 52    C      
+  4EA8'   31 2C 4E 43    C      
+  4EAC'   41 4C 3D 2C    C      
+  4EB0'   4D 4F 44 55    C      
+  4EB4'   4C 3D 6E 61    C      
+  4EB8'   6D 65          C      
+  4EBA'   001E           C      	DW	CR
+  4EBC'   21 2F 2F 20    C      	DB	'!//             UNIT=5050,VOL=SER=BBoooo,DISP=(,PASS),'               ;PF02-1 PF14
+  4EC0'   20 20 20 20    C      
+  4EC4'   20 20 20 20    C      
+  4EC8'   20 20 20 20    C      
+  4ECC'   55 4E 49 54    C      
+  4ED0'   3D 35 30 35    C      
+  4ED4'   30 2C 56 4F    C      
+  4ED8'   4C 3D 53 45    C      
+'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-131
+
+
+  4EDC'   52 3D 42 42    C      
+  4EE0'   6F 6F 6F 6F    C      
+  4EE4'   2C 44 49 53    C      
+  4EE8'   50 3D 28 2C    C      
+  4EEC'   50 41 53 53    C      
+  4EF0'   29 2C          C      
+  4EF2'   001E           C      	DW	CR
+  4EF4'   21 4E 45 57    C      	DB	'!NEWMEMBER      name,R01'                                             ;PF03-1 PF15
+  4EF8'   4D 45 4D 42    C      
+  4EFC'   45 52 20 20    C      
+  4F00'   20 20 20 20    C      
+  4F04'   6E 61 6D 65    C      
+  4F08'   2C 52 30 31    C      
+  4F0C'   001E           C      	DW	CR
+                         C      ; ----
+  4F0E'   21 53 54 41    C      	DB	'!START    AUTOINCL'                                                   ;PF04-1 PF16
+  4F12'   52 54 20 20    C      
+  4F16'   20 20 41 55    C      
+  4F1A'   54 4F 49 4E    C      
+  4F1E'   43 4C          C      
+  4F20'   001E           C      	DW	CR
+  4F22'   21 50 41 52    C      	DB	'!PARM.PRINT'                                                          ;PF05-1 PF17
+  4F26'   4D 2E 50 52    C      
+  4F2A'   49 4E 54       C      
+  4F2D'   001E           C      	DW	CR
+  4F2F'   21 49 4E 43    C      	DB	'!INCLUDE        name'                                                 ;PF06-1 PF18
+  4F33'   4C 55 44 45    C      
+  4F37'   20 20 20 20    C      
+  4F3B'   20 20 20 20    C      
+  4F3F'   6E 61 6D 65    C      
+  4F43'   001E           C      	DW	CR
+                         C      ; ----
+  4F45'   21 20 20 20    C      	DB	'!         INCL  (ooooo}'
+  4F49'   20 20 20 20    C      
+  4F4D'   20 20 49 4E    C      
+  4F51'   43 4C 20 20    C      
+  4F55'   28 6F 6F 6F    C      
+  4F59'   6F 6F 7D       C      
+  4F5C'   9E             C      	DB	9EH
+  4F5D'   BA             C      	DB	0BAH
+  4F5E'   6F 6F 6F 2C    C      	DB	'ooo,oooooooo)'                                                        ;PF07-1 PF19
+  4F62'   6F 6F 6F 6F    C      
+  4F66'   6F 6F 6F 6F    C      
+  4F6A'   29             C      
+  4F6B'   001E           C      	DW	CR
+  4F6D'   21 20 6F 6F    C      	DB	'! oooooooo'                                                           ;PF08-1 PF20
+  4F71'   6F 6F 6F 6F    C      
+  4F75'   6F 6F          C      
+  4F77'   001E           C      	DW	CR
+  4F79'   21 23 45 4E    C      	DB	'!#ENDE#'                                                              ;PF09-1 PF21
+  4F7D'   44 45 23       C      
+  4F80'   001E           C      	DW	CR
+                         C      ; ----
+  4F82'   21 41 2C 45    C      	DB	'!A,EXTRN        KOM'                                                  ;PF10-1 PF22
+  4F86'   58 54 52 4E    C      
+  4F8A'   20 20 20 20    C      
+  4F8E'   20 20 20 20    C      
+  4F92'   4B 4F 4D       C      
+  4F95'   001E           C      	DW	CR
+  4F97'   21 43 4F 4E    C      	DB	'!CONTROL  ALL   FILPRINT,FIL#M01'                                     ;PF11-1 PF23
+  4F9B'   54 52 4F 4C    C      
+  4F9F'   20 20 41 4C    C      
+  4FA3'   4C 20 20 20    C      
+  4FA7'   46 49 4C 50    C      
+  4FAB'   52 49 4E 54    C      
+  4FAF'   2C 46 49 4C    C      
+  4FB3'   23 4D 30 31    C      
+  4FB7'   001E           C      	DW	CR
+  4FB9'   21 2E 2F 20    C      	DB	'!./       CHANGE NAME=name,newname,R02'                               ;PF12-1 PF24
+  4FBD'   20 20 20 20    C      
+  4FC1'   20 20 43 48    C      
+  4FC5'   41 4E 47 45    C      
+  4FC9'   20 4E 41 4D    C      
+  4FCD'   45 3D 6E 61    C      
+  4FD1'   6D 65 2C 6E    C      
+  4FD5'   65 77 6E 61    C      
+  4FD9'   6D 65 2C 52    C      
+  4FDD'   30 32          C      
+  4FDF'   001E           C      	DW	CR
+                         C      ; ----
+  4FE1'   7D             C      	DB	7DH
+  4FE2'   9F             C      	DB	9FH
+  4FE3'   37 21 20 20    C      	DB	'7!         TEXT  titelzeile'                                          ;PF01-2 PF25
+'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-132
+
+
+  4FE7'   20 20 20 20    C      
+  4FEB'   20 20 20 54    C      
+  4FEF'   45 58 54 20    C      
+  4FF3'   20 74 69 74    C      
+  4FF7'   65 6C 7A 65    C      
+  4FFB'   69 6C 65       C      
+  4FFE'   001E           C      	DW	CR
+  5000'   21 20 20 20    C      	DB	'!         PRINT name'                                                 ;PF02-2 PF26
+  5004'   20 20 20 20    C      
+  5008'   20 20 50 52    C      
+  500C'   49 4E 54 20    C      
+  5010'   6E 61 6D 65    C      
+  5014'   001E           C      	DW	CR
+  5016'   21 45 58 2C    C      	DB	'!EX,FILPRINT    INHALT*'                                              ;PF03-2 PF27
+  501A'   46 49 4C 50    C      
+  501E'   52 49 4E 54    C      
+  5022'   20 20 20 20    C      
+  5026'   49 4E 48 41    C      
+  502A'   4C 54 2A       C      
+  502D'   001E           C      	DW	CR
+                         C      ; ----
+  502F'   75 6D 73 63    C      	DB	'umschlagtitel '                                                       ;PF04-2 PF28
+  5033'   68 6C 61 67    C      
+  5037'   74 69 74 65    C      
+  503B'   6C 20          C      
+  503D'   001E           C      	DW	CR
+  503F'   56 56 56 56    C      	DB	'VVVVVVttmmjjDRnnMCR1FRbbbbb0001KOI7ECLK'                              ;PF05-2 PF29
+  5043'   56 56 74 74    C      
+  5047'   6D 6D 6A 6A    C      
+  504B'   44 52 6E 6E    C      
+  504F'   4D 43 52 31    C      
+  5053'   46 52 62 62    C      
+  5057'   62 62 62 30    C      
+  505B'   30 30 31 4B    C      
+  505F'   4F 49 37 45    C      
+  5063'   43 4C 4B       C      
+  5066'   001E           C      	DW	CR
+  5068'   21 2F 2F       C      	DB	'!//'                                                                  ;PF06-2 PF30
+  506B'   001E           C      	DW	CR
+                         C      ; ----
+  506D'   00             C      	DB	0                                                                      ;PF07-2 PF31
+  506E'   00             C      	DB	0                                                                      ;PF08-2 PF32
+  506F'   00             C      	DB	0                                                                      ;PF09-2 PF33
+                         C      ; ----
+  5070'   00             C      	DB	0                                                                      ;PF10-2 PF34
+  5071'   00             C      	DB	0                                                                      ;PF11-2 PF35
+  5072'   00             C      	DB	0                                                                      ;PF12-2 PF36
+  5073'                  C      PF.O2END EQU	$
+                         C      	PAGE
+'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-133
+
+
+                         C      
+                         C      ;****************************************************************
+  5073'                  C      PF.O3ANF EQU	$
+  5073'   41 49 46 20    C      	DB	'AIF   ('                                                              ;PF01-0
+  5077'   20 20 28       C      
+  507A'   00             C      	DB	0
+  507B'   41 47 4F 20    C      	DB	'AGO   .'                                                              ;PF02-0
+  507F'   20 20 2E       C      
+  5082'   00             C      	DB	0
+  5083'   41 4E 4F 50    C      	DB	'ANOP'                                                                 ;PF03-0
+  5087'   00             C      	DB	0
+                         C      ; ----
+  5088'   53 45 54 61    C      	DB	'SETa  '                                                               ;PF04-0
+  508C'   20 20          C      
+  508E'   00             C      	DB	0
+  508F'   4D 4E 4F 54    C      	DB	'MNOTE *,'                                                             ;PF05-0
+  5093'   45 20 2A 2C    C      
+  5097'   00             C      	DB	0
+  5098'   26 53 59 53    C      	DB	'&SYSLIST('                                                            ;PF06-0
+  509C'   4C 49 53 54    C      
+  50A0'   28             C      
+  50A1'   00             C      	DB	0
+                         C      ; ----
+  50A2'   44 43 20 20    C      	DB	'DC    CL'                                                             ;PF07-0
+  50A6'   20 20 43 4C    C      
+  50AA'   00             C      	DB	0
+  50AB'   26 41 2B       C      	DB	'&A+'                                                                  ;PF08-0
+  50AE'   00             C      	DB	0
+  50AF'   26 50 52 4D    C      	DB	'&PRMCa('                                                              ;PF09-0
+  50B3'   43 61 28       C      
+  50B6'   00             C      	DB	0
+                         C      ; ----
+  50B7'   20 45 51 20    C      	DB	' EQ '                                                                 ;PF10-0
+  50BB'   00             C      	DB	0
+  50BC'   20 4E 45 20    C      	DB	' NE '                                                                 ;PF11-0
+  50C0'   00             C      	DB	0
+  50C1'   20 4F 52 20    C      	DB	' OR '                                                                 ;PF12-0
+  50C5'   00             C      	DB	0
+                         C      ; ====
+  50C6'   20 41 4E 44    C      	DB	' AND '                                                                ;PF01-1 PF13
+  50CA'   20             C      
+  50CB'   00             C      	DB	0
+  50CC'   3B 2A 2A 2A    C      	DB	';****************************************************************'    ;PF02-1 PF14
+  50D0'   2A 2A 2A 2A    C      
+  50D4'   2A 2A 2A 2A    C      
+  50D8'   2A 2A 2A 2A    C      
+  50DC'   2A 2A 2A 2A    C      
+  50E0'   2A 2A 2A 2A    C      
+  50E4'   2A 2A 2A 2A    C      
+  50E8'   2A 2A 2A 2A    C      
+  50EC'   2A 2A 2A 2A    C      
+  50F0'   2A 2A 2A 2A    C      
+  50F4'   2A 2A 2A 2A    C      
+  50F8'   2A 2A 2A 2A    C      
+  50FC'   2A 2A 2A 2A    C      
+  5100'   2A 2A 2A 2A    C      
+  5104'   2A 2A 2A 2A    C      
+  5108'   2A 2A 2A 2A    C      
+  510C'   2A             C      
+  510D'   001E           C      	DW	CR
+  510F'   3B 2A 20 20    C      	DB	';*                                                              *'    ;PF03-1 PF15
+  5113'   20 20 20 20    C      
+  5117'   20 20 20 20    C      
+  511B'   20 20 20 20    C      
+  511F'   20 20 20 20    C      
+  5123'   20 20 20 20    C      
+  5127'   20 20 20 20    C      
+  512B'   20 20 20 20    C      
+  512F'   20 20 20 20    C      
+  5133'   20 20 20 20    C      
+  5137'   20 20 20 20    C      
+  513B'   20 20 20 20    C      
+  513F'   20 20 20 20    C      
+  5143'   20 20 20 20    C      
+  5147'   20 20 20 20    C      
+  514B'   20 20 20 20    C      
+  514F'   2A             C      
+  5150'   001E           C      	DW	CR
+                         C      ; ----
+  5152'   2D 2D 2D 2D    C      	DB	'----+----1----+----2----+----3----+----4----+----5----+----6----+----7----+----'
+  5156'   2B 2D 2D 2D    C      
+  515A'   2D 31 2D 2D    C      
+'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-134
+
+
+  515E'   2D 2D 2B 2D    C      
+  5162'   2D 2D 2D 32    C      
+  5166'   2D 2D 2D 2D    C      
+  516A'   2B 2D 2D 2D    C      
+  516E'   2D 33 2D 2D    C      
+  5172'   2D 2D 2B 2D    C      
+  5176'   2D 2D 2D 34    C      
+  517A'   2D 2D 2D 2D    C      
+  517E'   2B 2D 2D 2D    C      
+  5182'   2D 35 2D 2D    C      
+  5186'   2D 2D 2B 2D    C      
+  518A'   2D 2D 2D 36    C      
+  518E'   2D 2D 2D 2D    C      
+  5192'   2B 2D 2D 2D    C      
+  5196'   2D 37 2D 2D    C      
+  519A'   2D 2D 2B 2D    C      
+  519E'   2D 2D 2D       C      
+  51A1'   001E           C      	DW	CR                                                                     ;PF04-1 PF16
+  51A3'   31 2D 2D 2D    C      	DB	'1---5----10---5----20---5----30---5----40---5----50---5----60---5----70*--5----'
+  51A7'   35 2D 2D 2D    C      
+  51AB'   2D 31 30 2D    C      
+  51AF'   2D 2D 35 2D    C      
+  51B3'   2D 2D 2D 32    C      
+  51B7'   30 2D 2D 2D    C      
+  51BB'   35 2D 2D 2D    C      
+  51BF'   2D 33 30 2D    C      
+  51C3'   2D 2D 35 2D    C      
+  51C7'   2D 2D 2D 34    C      
+  51CB'   30 2D 2D 2D    C      
+  51CF'   35 2D 2D 2D    C      
+  51D3'   2D 35 30 2D    C      
+  51D7'   2D 2D 35 2D    C      
+  51DB'   2D 2D 2D 36    C      
+  51DF'   30 2D 2D 2D    C      
+  51E3'   35 2D 2D 2D    C      
+  51E7'   2D 37 30 2A    C      
+  51EB'   2D 2D 35 2D    C      
+  51EF'   2D 2D 2D       C      
+  51F2'   001E           C      	DW	CR                                                                     ;PF04-1 PF17
+  51F4'   7C 2D 2D 2D    C      	DB	'|------------------------------------------------------------------------------|'
+  51F8'   2D 2D 2D 2D    C      
+  51FC'   2D 2D 2D 2D    C      
+  5200'   2D 2D 2D 2D    C      
+  5204'   2D 2D 2D 2D    C      
+  5208'   2D 2D 2D 2D    C      
+  520C'   2D 2D 2D 2D    C      
+  5210'   2D 2D 2D 2D    C      
+  5214'   2D 2D 2D 2D    C      
+  5218'   2D 2D 2D 2D    C      
+  521C'   2D 2D 2D 2D    C      
+  5220'   2D 2D 2D 2D    C      
+  5224'   2D 2D 2D 2D    C      
+  5228'   2D 2D 2D 2D    C      
+  522C'   2D 2D 2D 2D    C      
+  5230'   2D 2D 2D 2D    C      
+  5234'   2D 2D 2D 2D    C      
+  5238'   2D 2D 2D 2D    C      
+  523C'   2D 2D 2D 2D    C      
+  5240'   2D 2D 2D 7C    C      
+  5244'   001E           C      	DW	CR                                                                     ;PF05-1 PF18
+                         C      ; ----
+  5246'   7C 20 20 20    C      	DB	'|                                                                              |'
+  524A'   20 20 20 20    C      
+  524E'   20 20 20 20    C      
+  5252'   20 20 20 20    C      
+  5256'   20 20 20 20    C      
+  525A'   20 20 20 20    C      
+  525E'   20 20 20 20    C      
+  5262'   20 20 20 20    C      
+  5266'   20 20 20 20    C      
+  526A'   20 20 20 20    C      
+  526E'   20 20 20 20    C      
+  5272'   20 20 20 20    C      
+  5276'   20 20 20 20    C      
+  527A'   20 20 20 20    C      
+  527E'   20 20 20 20    C      
+  5282'   20 20 20 20    C      
+  5286'   20 20 20 20    C      
+  528A'   20 20 20 20    C      
+  528E'   20 20 20 20    C      
+  5292'   20 20 20 7C    C      
+  5296'   001E           C      	DW	CR                                                                     ;PF06-1 PF19
+  5298'   50 72 6F 67    C      	DB	'Programmierer: Marcus Herbote   --- IfR - OE-S'                       ;PF07-1 PF20
+'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-135
+
+
+  529C'   72 61 6D 6D    C      
+  52A0'   69 65 72 65    C      
+  52A4'   72 3A 20 4D    C      
+  52A8'   61 72 63 75    C      
+  52AC'   73 20 48 65    C      
+  52B0'   72 62 6F 74    C      
+  52B4'   65 20 20 20    C      
+  52B8'   2D 2D 2D 20    C      
+  52BC'   49 66 52 20    C      
+  52C0'   2D 20 4F 45    C      
+  52C4'   2D 53          C      
+  52C6'   00             C      	DB	0
+  52C7'   2D 2D 2D 2D    C      	DB	'-----------------------------------------------'                      ;PF08-1 PF21
+  52CB'   2D 2D 2D 2D    C      
+  52CF'   2D 2D 2D 2D    C      
+  52D3'   2D 2D 2D 2D    C      
+  52D7'   2D 2D 2D 2D    C      
+  52DB'   2D 2D 2D 2D    C      
+  52DF'   2D 2D 2D 2D    C      
+  52E3'   2D 2D 2D 2D    C      
+  52E7'   2D 2D 2D 2D    C      
+  52EB'   2D 2D 2D 2D    C      
+  52EF'   2D 2D 2D 2D    C      
+  52F3'   2D 2D 2D       C      
+  52F6'   00             C      	DB	0
+                         C      ; ----
+  52F7'   3B 2A 20 20    C      	DB	';*               '                                                    ;PF09-1 PF22
+  52FB'   20 20 20 20    C      
+  52FF'   20 20 20 20    C      
+  5303'   20 20 20 20    C      
+  5307'   20             C      
+  5308'   00             C      	DB	0
+  5309'   53 74 61 6E    C      	DB	'Stand        :'                                                       ;PF10-1 PF23
+  530D'   64 20 20 20    C      
+  5311'   20 20 20 20    C      
+  5315'   20 3A          C      
+  5317'   00             C      	DB	0
+  5318'   00             C      	DB	0                                                                      ;PF11-1 PF24
+  5319'                  C      PF.O3END EQU	$
+                         C      
+                         C      	TITLE 'Aufruf SYS2'
+                         C      	PAGE
+'Aufruf SYS2'	MACRO-80 3.44	09-Dec-81	PAGE	1-136
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      	IF	SD.GENE AND 00000001B
+                         C      	DW	$
+                         C      	DB	'S2  '
+                         C      PF.S2:
+                         C      	OUT	(0C4H),A	;RESET-Sperre aus
+                         C      	LD	A,0FEH
+                         C      	OUT	(0C0H),A	;SYS 1
+                         C      	LD	A,01
+                         C      	OUT	(0C1H),A	;SYS 2
+                         C      	JP	0FF37H	;Sprung zur Version 2.1
+                         C      			;           Version 2.0 : 0C093H
+                         C      	ENDIF
+                         C      ;****************************************************************
+                         C      
+                         C      
+                         C      	TITLE 'Aufruf SYS3'
+                         C      	PAGE
+'Aufruf SYS3'	MACRO-80 3.44	09-Dec-81	PAGE	1-137
+
+
+                         C      
+                         C      ;****************************************************************
+                         C      	IF	SD.GENE AND 00010000B	;DEG2000 Emulator
+                         C      			;Aufruf des Systems   S Y S 3
+  5319'   5319'          C      	DW	$
+  531B'   53 33 2D 4D    C      	DB	'S3-M'	;       mit  Rahmen
+  531F'                  C      PF.S3M:
+  531F'   CD 5377'       C      	CALL	PF.BSLOE
+  5322'   CD 533F'       C      	CALL	PF.BSRAH
+  5325'   18 09          C      	JR	PF.SYS31
+                         C      
+  5327'   5327'          C      	DW	$
+  5329'   53 33 2D 4F    C      	DB	'S3-O'	;       ohne Rahmen
+  532D'   CD 5377'       C      	CALL	PF.BSLOE
+  5330'                  C      PF.SYS31:
+  5330'   01 04C0        C      	LD	BC,004C0H
+  5333'   21 533B'       C      	LD	HL,PF.SYS31a
+  5336'   ED B3          C      	OTIR
+                         C      
+  5338'   C3 A800        C      	JP	0A800H	;0B40DH
+                         C      
+  533B'                  C      PF.SYS31a:			;###
+  533B'   F0             C      	DB	0F0H	;Startbyte
+  533C'   03             C      	DB	003H	;wahl
+  533D'   08             C      	DB	008H	;Sys_31
+  533E'   FF             C      	DB	0FFH	;Endbyte
+                         C      
+                         C      
+  533F'                  C      PF.BSRAH:
+  533F'   21 30F7        C      	LD	HL,SD.BWSA+0F7H	;Bildrahmen erzeugen
+  5342'   11 30F9        C      	LD	DE,SD.BWSA+0F9H
+  5345'   01 0040        C      	LD	BC,64
+  5348'   36 82          C      	LD	(HL),082H
+  534A'   23             C      	INC	HL
+  534B'   36 81          C      	LD	(HL),081H
+  534D'   ED B0          C      	LDIR
+  534F'   36 83          C      	LD	(HL),083H
+  5351'   21 3647        C      	LD	HL,SD.BWSA+647H
+  5354'   11 3649        C      	LD	DE,SD.BWSA+649H
+  5357'   01 0040        C      	LD	BC,64
+  535A'   36 8A          C      	LD	(HL),08AH
+  535C'   23             C      	INC	HL
+  535D'   36 81          C      	LD	(HL),081H
+  535F'   ED B0          C      	LDIR
+  5361'   36 8B          C      	LD	(HL),08BH
+  5363'   21 3147        C      	LD	HL,SD.BWSA+147H
+  5366'   06 10          C      	LD	B,16
+  5368'                  C      PF.SYS30:
+  5368'   36 80          C      	LD	(HL),080H
+  536A'   11 0041        C      	LD	DE,65
+  536D'   19             C      	ADD	HL,DE
+  536E'   36 80          C      	LD	(HL),080H
+  5370'   11 000F        C      	LD	DE,15
+  5373'   19             C      	ADD	HL,DE
+  5374'   10 F2          C      	DJNZ	PF.SYS30
+  5376'   C9             C      	RET
+                         C      
+  5377'                  C      PF.BSLOE:
+  5377'   21 3000        C      	LD	HL,SD.BWSA
+  537A'   11 3001        C      	LD	DE,SD.BWSA+1
+  537D'   01 077F        C      	LD	BC,24*80 - 1	;007FFH
+  5380'   36 20          C      	LD	(HL),' '
+  5382'   ED B0          C      	LDIR
+  5384'   C9             C      	RET
+                         C      	ENDIF
+                         C      
+                         C      	TITLE 'Aufruf SYS4'
+                         C      	PAGE
+'Aufruf SYS4'	MACRO-80 3.44	09-Dec-81	PAGE	1-138
+
+
+                         C      
+                         C      	IF	SD.GENE AND 00010000B	;DEG2000 Emulator
+  5385'   5385'          C      	DW	$
+  5387'   53 34 20 20    C      	DB	'S4  '
+  538B'                  C      PF.S4:
+  538B'   01 04C0        C      	LD	BC,004C0H
+  538E'   21 5399'       C      	LD	HL,PF.OUTB2
+  5391'   ED B3          C      	OTIR
+  5393'   21 5397'       C      	LD	HL,PF.OUTB1+1
+  5396'                  C      PF.OUTB1:
+  5396'   C3 0000        C      	JP	00000H	;!!!!	;Sprung zum BIOS-Anfang
+  5399'                  C      PF.OUTB2:
+  5399'   F0             C      	DB	0F0H	;Startbyte
+  539A'   03             C      	DB	003H	;wahl
+  539B'   05             C      	DB	005H	;Sys_44
+  539C'   FF             C      	DB	0FFH	;Endbyte
+                         C      	ENDIF
+                         C      
+                         C      	TITLE ''
+                         C      	PAGE
+''	MACRO-80 3.44	09-Dec-81	PAGE	1-139
+
+
+                         C      
+  539D'                  C      PF.MINTP	EQU	$
+                         C      	IF	SD.GENE AND 00000010B
+                         C      	LD	BC,PF.SPST  ;Sektoren 0, 1, 2, 3 wegschalten
+                         C      	LD	E,4
+                         C      	LD	A,8         ;<--|
+                         C      	OUT	(C),A       ;   |
+                         C      	LD	A,B         ;   |
+                         C      	ADD	A,10H       ;   |
+                         C      	LD	B,A         ;   |
+                         C      	DEC	E           ;   |
+                         C      	JR	NZ,$-9      ;---|
+                         C      	ENDIF
+                         C      
+                         C      	IF	SD.GENE AND 00000100B
+                         C      	XOR	A           ;Sektoren 0, 1, 2, 3 wegschalten
+                         C      	LD	B,4
+                         C      	EXX             ;<--|
+                         C      	LD	B,A         ;   |
+                         C      	LD	C,PF.SPST+5 ;   |
+                         C      	OUT	(C),A       ;   |
+                         C      	LD	C,PF.SPST+7 ;   |
+                         C      	OUT	(C),A       ;   |
+                         C      	ADD	A,10H       ;   |
+                         C      	EXX             ;   |
+                         C      	DJNZ	$-13    ;---|
+                         C      	ENDIF
+                         C      
+                         C      	IF	SD.GENE AND 00001110B
+                         C      	LD	HL,PF.UP1   ;RESET - Eintrittsadresse setzen
+                         C      	LD	(00C02H),HL
+                         C      	ENDIF
+                         C      
+                         C      	IF	SD.GENE AND 00000010B
+                         C      	LD	BC,PF.SPST  ;Sektoren 0, 1, 2    zuschalten
+                         C      	LD	E,3
+                         C      	XOR	A           ;<--|
+                         C      	OUT	(C),A       ;   |
+                         C      	LD	A,B         ;   |
+                         C      	ADD	A,10H       ;   |
+                         C      	LD	B,A         ;   |
+                         C      	DEC	E           ;   |
+                         C      	JR	NZ,$-8      ;---|
+                         C      	ENDIF
+                         C      
+                         C      	IF	SD.GENE AND 00000100B
+                         C      	XOR	A           ;Sektoren 0, 1, 2    zuschalten
+                         C      	LD	B,3
+                         C      	EXX             ;<--|
+                         C      	LD	B,A         ;   |
+                         C      	LD	C,PF.SPST+4 ;   |
+                         C      	OUT	(C),A       ;   |
+                         C      	LD	C,PF.SPST+6 ;   |
+                         C      	OUT	(C),A       ;   |
+                         C      	ADD	A,10H       ;   |
+                         C      	EXX             ;   |
+                         C      	DJNZ	$-13    ;---|
+                         C      	ENDIF
+                         C      
+                         C      	IF	SD.GENE AND 00001110B
+                         C      	LD	HL,08000H	;"ZRE-PROM" - Bereich umladen
+                         C      	LD	DE,00000H
+                         C      	LD	BC,00C00H
+                         C      	LDIR
+                         C      	LD	DE,01000H	;"OFS-PROM" - Bereich umladen
+                         C      	LD	BC,01800H
+                         C      	LDIR
+                         C      	JP	00000H	;Aufruf  DEG2000  Version 1.2
+                         C      
+                         C      PF.UP1	EQU	$	;Eintrittsroutine fuer  R E S E T
+                         C      	ENDIF
+                         C      
+                         C      	IF	SD.GENE AND 00000010B
+                         C      	LD	BC,PF.SPST  ;Sektoren 0, 1, 2, 3 wegschalten
+                         C      	LD	E,4
+                         C      	LD	A,8         ;<--|
+                         C      	OUT	(C),A       ;   |
+                         C      	LD	A,B         ;   |
+                         C      	ADD	A,10H       ;   |
+                         C      	LD	B,A         ;   |
+                         C      	DEC	E           ;   |
+                         C      	JR	NZ,$-9      ;---|
+''	MACRO-80 3.44	09-Dec-81	PAGE	1-140
+
+
+                         C      
+                         C      	LD	BC,PF.SPST  ;Sektoren 0, 1, 2    zuschalten
+                         C      	LD	E,3
+                         C      	XOR	A           ;<--|
+                         C      	OUT	(C),A       ;   |
+                         C      	LD	A,B         ;   |
+                         C      	ADD	A,10H       ;   |
+                         C      	LD	B,A         ;   |
+                         C      	DEC	E           ;   |
+                         C      	JR	NZ,$-8      ;---|
+                         C      	ENDIF
+                         C      
+                         C      	IF	SD.GENE AND 00000100B
+                         C      	XOR	A           ;Sektoren 0, 1, 2, 3 wegschalten
+                         C      	LD	B,4
+                         C      	EXX             ;<--|
+                         C      	LD	B,A         ;   |
+                         C      	LD	C,PF.SPST+5 ;   |
+                         C      	OUT	(C),A       ;   |
+                         C      	LD	C,PF.SPST+7 ;   |
+                         C      	OUT	(C),A       ;   |
+                         C      	ADD	A,10H       ;   |
+                         C      	EXX             ;   |
+                         C      	DJNZ	$-13    ;---|
+                         C      
+                         C      	XOR	A           ;Sektoren 0, 1, 2    zuschalten
+                         C      	LD	B,3
+                         C      	EXX             ;<--|
+                         C      	LD	B,A         ;   |
+                         C      	LD	C,PF.SPST+4 ;   |
+                         C      	OUT	(C),A       ;   |
+                         C      	LD	C,PF.SPST+6 ;   |
+                         C      	OUT	(C),A       ;   |
+                         C      	ADD	A,10H       ;   |
+                         C      	EXX             ;   |
+                         C      	DJNZ	$-13    ;---|
+                         C      	ENDIF
+                         C      
+                         C      	IF	SD.GENE AND 00001110B
+                         C      	JP	00000H
+                         C      
+                         C      	DW	$
+                         C      	DB	'URL '
+                         C      	ENDIF
+                         C      
+                         C      	IF	SD.GENE AND 00000010B
+                         C      	LD	BC,PF.SPST  ;Sektoren 0, 1, 2    wegschalten
+                         C      	LD	E,3
+                         C      	LD	A,8         ;<--|
+                         C      	OUT	(C),A       ;   |
+                         C      	LD	A,B         ;   |
+                         C      	ADD	A,10H       ;   |
+                         C      	LD	B,A         ;   |
+                         C      	DEC	E           ;   |
+                         C      	JR	NZ,$-9      ;---|
+                         C      	ENDIF
+                         C      
+                         C      	IF	SD.GENE AND 00000100B
+                         C      	XOR	A           ;Sektoren 0, 1, 2    wegschalten
+                         C      	LD	B,3
+                         C      	EXX             ;<--|
+                         C      	LD	B,A         ;   |
+                         C      	LD	C,PF.SPST+5 ;   |
+                         C      	OUT	(C),A       ;   |
+                         C      	LD	C,PF.SPST+7 ;   |
+                         C      	OUT	(C),A       ;   |
+                         C      	ADD	A,10H       ;   |
+                         C      	EXX             ;   |
+                         C      	DJNZ	$-13    ;---|
+                         C      	ENDIF
+                         C      
+                         C      	IF	SD.GENE AND 00001110B
+                         C      	JP	00000H		;Aufruf des  U r l a d e r s
+                         C      	ENDIF
+                         C      
+  539D'                  C      PF.ENDE	EQU	$
+                         C      			;Stand: 21.Februar 85 - K EAW/wfvm..MSH
+                         C      
+                         C      ;	END
+                                
+                                	TITLE ''
+                                	END
+''	MACRO-80 3.44	09-Dec-81	PAGE	S
+
+
+Macros:
+SY.ZAN          
+
+Symbols:
+001E 	CR              1332'	E1.ABS          1347'	E1.ATTR         
+1350'	E1.ATTR1        125D'	E1.BIL          1260'	E1.BIL1         
+130B'	E1.BIZA         1407'	E1.CA           11D6'	E1.CNEW         
+11FF'	E1.CNEW1        1202'	E1.CNEW2        11ED'	E1.CNEW3        
+136E'	E1.DELZ         140F'	E1.DOL          13FE'	E1.GS           
+1400'	E1.GS1          1403'	E1.HT           1267'	E1.LEERZ        
+1226'	E1.LIFT         122C'	E1.LIFT1        1247'	E1.LOBP1        
+1244'	E1.LOEBP        1323'	E1.NUM          1326'	E1.NUM1         
+13D8'	E1.PS           13F3'	E1.PS1          13EA'	E1.PS2          
+13CD'	E1.PTEST        137B'	E1.PTS1         1384'	E1.PTS10        
+1385'	E1.PTS11        1386'	E1.PTS12        1387'	E1.PTS13        
+1388'	E1.PTS14        1389'	E1.PTS15        138A'	E1.PTS16        
+138B'	E1.PTS17        138C'	E1.PTS18        138D'	E1.PTS19        
+137C'	E1.PTS2         138E'	E1.PTS20        138F'	E1.PTS21        
+1390'	E1.PTS22        1391'	E1.PTS23        1392'	E1.PTS24        
+1393'	E1.PTS25        1394'	E1.PTS26        1395'	E1.PTS27        
+1396'	E1.PTS28        137D'	E1.PTS3         137E'	E1.PTS4         
+137F'	E1.PTS5         1380'	E1.PTS6         1381'	E1.PTS7         
+1382'	E1.PTS8         1383'	E1.PTS9         13AE'	E1.PTS91        
+13A1'	E1.PTS92        13B2'	E1.PTS93        13C3'	E1.PTSN1        
+13CB'	E1.PTSN2        13B6'	E1.PTSNR        124F'	E1.PUFLO        
+1252'	E1.PULO         1361'	E1.REPEL        1413'	E1.SCHW         
+127E'	E1.TAB          1297'	E1.TAB1         128A'	E1.TAB2         
+12CB'	E1.TABL         12D6'	E1.TABL1        12AB'	E1.TABS         
+12B2'	E1.TABS1        12B6'	E1.TABS3        12C0'	E1.TABS4        
+129D'	E1.TAUP         12A5'	E1.TAUP1        12A0'	E1.TAUP2        
+12F0'	E1.TCNLS        12F5'	E1.TCNOS        12EB'	E1.TCNRS        
+12FA'	E1.TCNUS        12FF'	E1.TCNZA        1307'	E1.TCUR         
+1304'	E1.THOME        120C'	E1.UMLZ1        140B'	E1.UND          
+1218'	E1.ZEINR        131A'	E1.ZNUM         11CD'	E1.ZSCH1        
+11CC'	E1.ZSCHR        11C7'	E1.ZSCHS        14A2'	E2.ERR5A        
+149C'	E2.ERR7A        1498'	E2.ERR99        14A0'	E2.ERRO5        
+1755'	E2.KOM          176C'	E2.KOM3         177F'	E2.KOMTR        
+17A1'	E2.KOMZ2        17A5'	E2.KOMZ3        179A'	E2.KOMZ4        
+1596'	E2.LANG         1593'	E2.LANG1        170B'	E2.MARK         
+15C1'	E2.MARKR        15F5'	E2.MRK          161C'	E2.MRK1         
+1625'	E2.MRK2         160F'	E2.MRK3         1619'	E2.MRK4         
+15CF'	E2.MRKR1        15EA'	E2.MRKR2        15DA'	E2.MRKR3        
+15E4'	E2.MRKR4        158C'	E2.NKOR1        1577'	E2.NKORR        
+150E'	E2.NZEI         1569'	E2.NZEI1        1574'	E2.NZEI3        
+155E'	E2.NZEI4        1531'	E2.NZEI6        1527'	E2.NZEI7        
+1512'	E2.NZEI8        1547'	E2.NZEIR        1538'	E2.NZEIV        
+1731'	E2.OP1          1726'	E2.OP2          173E'	E2.OP3          
+174C'	E2.OP4          1720'	E2.OPCO         1735'	E2.OPRD         
+17A9'	E2.POSI0        17AC'	E2.POSIT        1590'	E2.QLANG        
+1488'	E2.RESET        16A1'	E2.RUF1         1688'	E2.RUF2         
+1698'	E2.RUF3         16A6'	E2.RUF4         1663'	E2.RUF5         
+1691'	E2.RUF6         16E5'	E2.RUFQ         16CA'	E2.RUFQ1        
+16D2'	E2.RUFQ2        16AD'	E2.RUFQ3        16AC'	E2.RUFQ4        
+16B2'	E2.RUFQ5        1651'	E2.RUFT         164B'	E2.RUFTF        
+1491'	E2.SET          14E6'	E2.SPR          159E'	E2.SUCH         
+15A8'	E2.SUCH1        15B5'	E2.SUCHR        1442'	E2.TEX          
+14A5'	E2.TEX0         1428'	E2.TEXL         141E'	E2.TEXR         
+1423'	E2.TEXS         1417'	E2.TEXV         14B7'	E2.TEXV1        
+1473'	E2.TEXV2        145C'	E2.TEXV3        147B'	E2.TEXW         
+17B5'	E2.UML          1870'	E2.UML1         188E'	E2.UML2         
+1893'	E2.UML4         189D'	E2.UML5         1886'	E2.UML6         
+17D8'	E2.UMLA         17E7'	E2.UMLAD        1822'	E2.UMLBT        
+1807'	E2.UMLC         17E2'	E2.UMLE         182C'	E2.UMLF         
+1838'	E2.UMLF0        1855'	E2.UMLF1        185D'	E2.UMLF2        
+1866'	E2.UMLF3        186A'	E2.UMLFR        181A'	E2.UMLR         
+17C1'	E2.UMLT         17BF'	E2.UMLT1        14EE'	E2.ZNR          
+1504'	E2.ZNR0         1503'	E2.ZNR1         14F7'	E2.ZNR2         
+163C'	E2.ZNUMX        1645'	E2.ZNX1         163F'	E2.ZNX2         
+1A3A'	E3.ERR2A        191A'	E3.ERR3A        1A1F'	E3.ERR5B        
+1A1E'	E3.ERR5C        18D4'	E3.ERRO2        191B'	E3.ERRO3        
+193C'	E3.ERRO4        198A'	E3.ERRO7        1A25'	E3.ERRO8        
+1B85'	E3.ERRR         198F'	E3.EXCH         18D6'	E3.FEHL         
+18D9'	E3.FEHL1        18A7'	E3.KOMAN        19C8'	E3.LESE         
+19D5'	E3.LESE1        1A3E'	E3.MOVE         1A6F'	E3.MOVE1        
+1A2B'	E3.MOVE2        1A8F'	E3.MOVE3        1AE6'	E3.MOVE4        
+1AD1'	E3.MOVEV        19B7'	E3.NEU1         19B1'	E3.NEUST        
+1911'	E3.PL3          1B77'	E3.PTER4        1B7D'	E3.PTER9        
+1B69'	E3.PTEX         1AEF'	E3.PTSL         1B21'	E3.PTSL1        
+19E1'	E3.STAN         19F3'	E3.STAN1        19E2'	E3.STAN2        
+19EA'	E3.STAN3        1A06'	E3.STAN5        19ED'	E3.STAN6        
+1976'	E3.TAU1         197E'	E3.TAU2         195F'	E3.TAU3         
+196F'	E3.TAU4         1987'	E3.TAU5         196C'	E3.TAU6         
+1941'	E3.TAUS         18F5'	E3.Z1           1901'	E3.Z3           
+''	MACRO-80 3.44	09-Dec-81	PAGE	S-1
+
+
+1905'	E3.Z4           1921'	E3.ZEIK         1928'	E3.ZEIKA        
+1932'	E3.ZEIKB        192F'	E3.ZEIKC        18DC'	E3.ZET          
+18FC'	E3.ZET1         1BDF'	E4.ERR0         1BDD'	E4.ERR13        
+1BE4'	E4.FERTL        1C5B'	E4.ISO          1BFF'	E4.LEER         
+1C16'	E4.LEER1        1B93'	E4.LESER        1B99'	E4.LLQ0         
+1BD4'	E4.LLQ2         1BB8'	E4.LLQ6         1BF0'	E4.LSQ1         
+1CCA'	E4.MBIF         1CD2'	E4.MBIF1        1CDB'	E4.MBIF2        
+1CE7'	E4.MBIF3        1CEB'	E4.MBIF4        1BEA'	E4.STANZ        
+1C1E'	E4.STEND        1C8C'	E4.TAB          1107'	ED.ARBFK        
+1104'	ED.ARBPH        1064'	ED.ERRO1        112B'	ED.FALAT        
+1137'	ED.FALFT        1094'	ED.FREI         107F'	ED.FREI2        
+10FB'	ED.KOEIN        10A9'	ED.KOMA1        1084'	ED.KOMA2        
+10B2'	ED.KOMA3        10F0'	ED.KONER        10E5'	ED.KONEV        
+000F 	ED.LZED1        101C'	ED.MEL1         101F'	ED.MEL11        
+1019'	ED.MEL2         1049'	ED.MEL3         100F'	ED.MEL5         
+1006'	ED.MELAN        1053'	ED.MELNL        1069'	ED.QUELL        
+111E'	ED.UMLKP        107C'	ED.VOLLF        11B7'	ED.ZED1         
+5F0B 	KH.BILO         4066'	KMBINI          4060'	KMBROB          
+4063'	KMBRUC          4507'	LR.ILBL         4499'	LR.ILBS         
+4460'	LR.IRLB         456F'	LR.IRLBL        44EF'	LR.IRLBS        
+4464'	LR.KONV         4474'	LR.KONV1        4486'	LR.KONV2        
+4489'	LR.KONV3        0001 	LR.LBGEN        44FC'	LR.LBL          
+4531'	LR.LBL2         453B'	LR.LBL3         4544'	LR.LBL4         
+4554'	LR.LBLE         448B'	LR.LBS          44D0'	LR.LBS1         
+44BC'	LR.LBS2         44D7'	LR.LBSE         4050'	LR.LRLBL        
+4053'	LR.LRLBS        4584'	LR.SKTBI        4684'	LR.SKTBO        
+457E'	LR.SWLBL        4578'	LR.SWLBS        22AD'	ME.AAALT        
+2BE0'	ME.AADR         2BEC'	ME.AADR1        1EBB'	ME.ABLVO        
+1FBD'	ME.ACLNK        1FD1'	ME.ACLNZ        1F3B'	ME.ACREC        
+1F4F'	ME.ACRNZ        1D6E'	ME.AHOME        2BEE'	ME.AKTA1        
+2BE2'	ME.AKTAD        1DBD'	ME.ANEWL        1D17'	ME.ANZ11        
+1D20'	ME.ANZ12        1D2A'	ME.ANZ13        1D3D'	ME.ANZ1B        
+1D0E'	ME.ANZ1Z        216E'	ME.ASCM1        1E64'	ME.ASCMD        
+2156'	ME.ASCMO        1E89'	ME.ASMD1        1E83'	ME.ASMD2        
+21EF'	ME.ATACO        204C'	ME.AUPU1        2013'	ME.AUPUF        
+1D32'	ME.AZ4B1        1D2F'	ME.AZ4BY        1D05'	ME.AZBL1        
+1D0A'	ME.AZBL2        1CF1'	ME.AZBLD        1EC9'	ME.BLRU1        
+1EBF'	ME.BLRUC        1EB4'	ME.BLVO1        1E9F'	ME.BLVO2        
+1E9C'	ME.BLVO3        1E92'	ME.BLVOR        2BF2'	ME.BPZE1        
+2BE6'	ME.BPZEI        1D82'	ME.BSAD1        1D85'	ME.BSAD2        
+1D90'	ME.BSADL        1D72'	ME.BSADR        1D94'	ME.BSADS        
+2BF1'	ME.BZEI1        2BE5'	ME.BZEIN        2BEB'	ME.BZMAX        
+1DDC'	ME.CAKA1        1DD3'	ME.CAKA2        1DC8'	ME.CAKAL        
+1E73'	ME.CBPZ         1FFD'	ME.CCPO         1E28'	ME.CHBLD        
+1E18'	ME.CHOC1        1E0B'	ME.CHOCH        1FAC'	ME.CLCBD        
+1F82'	ME.CLDE2        1F8C'	ME.CLDE3        1F7E'	ME.CLDE4        
+1F72'	ME.CLDEC        1F53'	ME.CLINK        1F94'	ME.CLNZ         
+1FA6'	ME.CLNZ1        1F99'	ME.CLNZ2        1EEF'	ME.CRAIC        
+1DFC'	ME.CRBLD        1F2C'	ME.CRCBD        1EFF'	ME.CREC2        
+1F09'	ME.CREC3        1EFB'	ME.CREC4        1ED0'	ME.CRECH        
+1F11'	ME.CRNZ         1F26'	ME.CRNZ1        1F16'	ME.CRNZ2        
+1DEE'	ME.CRUN1        1DDE'	ME.CRUNT        22CE'	ME.CVAX         
+22EB'	ME.CVX11        22F9'	ME.CVX1B        22EE'	ME.CVXA         
+22D7'	ME.CVXB         2132'	ME.DECB1        210D'	ME.DECBZ        
+205C'	ME.DELL         2074'	ME.DELL1        21D2'	ME.DSBAH        
+2175'	ME.DSBH         22BE'	ME.DSPA1        22B6'	ME.DSPAD        
+22C4'	ME.DSPOI        235F'	ME.END          20CC'	ME.GET          
+20EF'	ME.GET1         20DC'	ME.GET2         2360'	ME.HC           
+2329'	ME.HC01         2330'	ME.HC02         233E'	ME.HC021        
+2341'	ME.HC03         235B'	ME.HC04         2305'	ME.HDCOP        
+1E59'	ME.HEMD1        1E53'	ME.HEMD2        21BD'	ME.HEXM0        
+21DA'	ME.HEXM1        2189'	ME.HEXMO        1D52'	ME.HOME         
+1D63'	ME.HOME1        20FF'	ME.INCBZ        1FD5'	ME.INPUF        
+20B0'	ME.INSLN        2197'	ME.LHB          21A4'	ME.LHB1         
+2BE4'	ME.MOD          2BF0'	ME.MOD1         1D9B'	ME.NEWL         
+1DB3'	ME.NEWL1        227B'	ME.NHEXA        2C00 	ME.PUFAN        
+2BE7'	ME.PUZEI        1E4D'	ME.REFAH        1E7D'	ME.REFHA        
+2136'	ME.REFTB        21B4'	ME.RHB          21EA'	ME.RHB1         
+20C0'	ME.SAVE         20C6'	ME.SAVE1        20FB'	ME.STAR1        
+20F3'	ME.START        1D4D'	ME.SYS          21FF'	ME.SYSM         
+22FF'	ME.TAREP        1D4A'	ME.TASC1        1D42'	ME.TASCI        
+2201'	ME.TAUSF        207E'	ME.TDEL         1DC1'	ME.TSZMX        
+1E39'	ME.UMOD         2BE9'	ME.VTAS         2371'	ME.ZKEIN        
+2B00 	ME.ZN           0008 	P1.ANST         493F'	P1.B1           
+494A'	P1.B3           4956'	P1.B4           4957'	P1.B6           
+48FE'	P1.CL1          4995'	P1.CPI          4997'	P1.CPI1         
+4981'	P1.CPI10        4986'	P1.CPI12        0002 	P1.DRU          
+0000 	P1.ES2          4893'	P1.IN1          498B'	P1.LPI6         
+4990'	P1.LPI8         492F'	P1.M1           4932'	P1.M2           
+492A'	P1.M3           486C'	P1.MRES         0001 	P1.PIO          
+486B'	P1.PRINT        48DA'	P1.PRIO         4964'	P1.SIOTB        
+496E'	P1.STAT         493B'	P1.ZEI          4976'	P1.ZEIZ         
+5377'	PF.BSLOE        533F'	PF.BSRAH        539D'	PF.ENDE         
+''	MACRO-80 3.44	09-Dec-81	PAGE	S-2
+
+
+539D'	PF.MINTP        49B6'	PF.O1           49D8'	PF.O1ANF        
+4C8F'	PF.O1END        49BE'	PF.O2           4C8F'	PF.O2ANF        
+5073'	PF.O2END        49C6'	PF.O3           5073'	PF.O3ANF        
+5319'	PF.O3END        49CE'	PF.OB           5396'	PF.OUTB1        
+5399'	PF.OUTB2        49D5'	PF.OXEND        531F'	PF.S3M          
+538B'	PF.S4           0028 	PF.SPST         5368'	PF.SYS30        
+5330'	PF.SYS31        533B'	PF.SYS31A       47B7'	PR.CPI          
+47B3'	PR.CPI10        4043'	PR.DINIT        485E'	PR.END          
+47CC'	PR.LPI          47C8'	PR.LPI6         47F9'	PR.M2           
+4046'	PR.MRES         47DC'	PR.NULL         47DB'	PR.ONULL        
+3327 	PR.PAR          4831'	PR.PR1          4838'	PR.PR2          
+4844'	PR.PR3          4846'	PR.PR4          4784'	PR.PRINA        
+4040'	PR.PRINT        4049'	PR.PRIO         47E2'	PR.SYS          
+0A05'	S1.ANZ1         09F8'	S1.ANZG         0975'	S1.BHKON        
+078C'	S1.BI1          0795'	S1.BI2          07BA'	S1.COPG         
+09C6'	S1.DA1          09CF'	S1.DA2          086E'	S1.DIV          
+086F'	S1.DIV1         0AAF'	S1.ED           0A6C'	S1.ED1          
+0A77'	S1.ED11         0A7B'	S1.ED2          0A8C'	S1.ED3          
+0A97'	S1.ED4          0AA0'	S1.ED5          0A7F'	S1.ED6          
+0A9C'	S1.ED7          0A3F'	S1.EDN          09DE'	S1.EIN1         
+09D5'	S1.EING         0826'	S1.ENDF1        0822'	S1.ENDF2        
+08C2'	S1.ERRO         08BF'	S1.ERROR        0AB9'	S1.ETEST        
+082B'	S1.FOEX         0833'	S1.FOEX1        098B'	S1.HB10         
+0951'	S1.HBKON        07D3'	S1.HCP          083D'	S1.HDI          
+085B'	S1.HDI1         086B'	S1.HDI3         0877'	S1.IDH          
+0896'	S1.IDH1         087F'	S1.IDH2         0883'	S1.IDH3         
+098F'	S1.IDH41        0892'	S1.IDHE         0890'	S1.IDHF         
+093B'	S1.INPTR        08EF'	S1.KET1         08F7'	S1.KET2         
+08F3'	S1.KET3         08EC'	S1.KETTE        07F6'	S1.KODE         
+07FE'	S1.KODE1        0968'	S1.KON1         0983'	S1.KON2         
+090F'	S1.LT1Z         0005 	S1.LZS11        0005 	S1.LZS12        
+000E 	S1.LZS13        07DA'	S1.M1           07DD'	S1.M2           
+08AF'	S1.MELDE        08AE'	S1.MELDN        08A5'	S1.MUL10        
+0921'	S1.MX           080C'	S1.PFO1         09F5'	S1.RET          
+092B'	S1.RNL          0923'	S1.RNR          089E'	S1.SIEBD        
+0814'	S1.SPOSN        0A3C'	S1.STAB         0A30'	S1.STAND        
+0800'	S1.STANL        07AC'	S1.STR          0901'	S1.SUZA         
+0905'	S1.SUZA1        090A'	S1.SUZA3        08FB'	S1.SUZEI        
+0A2E'	S1.TE1          0A19'	S1.TEST         0933'	S1.UMS          
+0972'	S1.ZAHL         081F'	S1.ZENDF        08D1'	S1.ZS11         
+08D7'	S1.ZS12         08DD'	S1.ZS13         004F 	SD.AMB          
+2C00 	SD.BPA          3000 	SD.BWSA         0080 	SD.CTCK0        
+0002 	SD.CTCKA        0F70 	SD.DEAT         1000 	SD.EDITA        
+0010 	SD.GENE         001E 	SD.NL           8820 	SD.NPA          
+8410 	SD.NPI          8420 	SD.PFFA         8010 	SD.PFFI         
+001C 	SD.PSANZ        0000 	SD.QTAB1        0009 	SD.QTAB2        
+000F 	SD.QTAB3        0022 	SD.QTAB4        0C00 	SD.RAM          
+0020 	SD.SPACE        0000 	SD.SYSTA        0009 	SD.TAB          
+000A 	SD.TABZA        8830 	SD.TPA          FBFF 	SD.TPE          
+8000 	SD.VPI          0002 	SD.ZEIT1        0010 	SD.ZEIT2        
+0F6B'	SM.ADR          0E52'	SM.AEATB        0E1E'	SM.ANFAD        
+0E24'	SM.BWSE         0D98'	SM.BZA          0F6D'	SM.CONTR        
+0E5E'	SM.CRCZ         0FFC 	SM.CTRL         0FF0 	SM.DATUM        
+0DAC'	SM.DEL          0DAA'	SM.DELZ         0FE0 	SM.EAAMB        
+0F70'	SM.EADRU        0FA0'	SM.EALBL        0F80'	SM.EALBS        
+0DB0'	SM.EINA         0DC4'	SM.END          0E60'	SM.FEHLZ        
+0D81'	SM.FKT          0D00'	SM.FKTAB        0D93'	SM.FSTAT        
+0D92'	SM.GRZEI        0E64'	SM.IDAT         0FFE 	SM.IMERK        
+0FFD 	SM.KGMER        0F69'	SM.KOMDO        0026 	SM.LOE          
+000F 	SM.LOE1         0DC6'	SM.LZA          0E12'	SM.LZN          
+0D91'	SM.MERK         0D95'	SM.MODE         0DAE'	SM.NEWL         
+0E26'	SM.NUTZK        0E20'	SM.PARAM        0E61'	SM.POS          
+0FF7 	SM.PTS          0E17'	SM.PTSA         FC00 	SM.PTSC         
+0E15'	SM.PTSE         0E65'	SM.PUFFS        0E54'	SM.PZAUS        
+0E56'	SM.PZEIN        0FF9 	SM.RST38        0E63'	SM.SDAT         
+0DB7'	SM.SMAX         0DBD'	SM.SMAX2        0DB5'	SM.SMIN         
+0DBB'	SM.SMIN2        0DBF'	SM.SPANZ        0FFF 	SM.SPMER        
+0DB3'	SM.SPOS         0DB9'	SM.SPOS2        0D00 	SM.STACK        
+0E1C'	SM.START        0D94'	SM.STAT         0DA8'	SM.TABU         
+0D9B'	SM.TABZ         0D90'	SM.TC           0D80'	SM.TK           
+0DA5'	SM.UMERK        0DA6'	SM.USCH         0D99'	SM.WEITE        
+0DC0'	SM.WINA         0DC2'	SM.WINE         0E5C'	SM.Z1           
+0E5D'	SM.Z2           0DBE'	SM.ZANZ         0E58'	SM.ZAUS         
+0E19'	SM.ZEIAD        0E5A'	SM.ZEIN         0F6A'	SM.ZEITK        
+0D96'	SM.ZEIZ         0E1B'	SM.ZEIZ2        0DC7'	SM.ZKA          
+0E13'	SM.ZKN          0DB6'	SM.ZMAX         0DBC'	SM.ZMAX2        
+0DB4'	SM.ZMIN         0DBA'	SM.ZMIN2        0DB2'	SM.ZPOS         
+0DB8'	SM.ZPOS2        0D8E'	SM.ZSMER        0D8F'	SM.ZSTC         
+05A5'	SY.ADDBL        0702'	SY.AEIN         05A8'	SY.AMSZ         
+05AE'	SY.AMSZ1        0490'	SY.BILA1        048D'	SY.BILAD        
+0644'	SY.BILO         0567'	SY.BWSAF        05A2'	SY.BWSE         
+0598'	SY.BWSL         0631'	SY.CNLS         063B'	SY.CNOS         
+062C'	SY.CNRS         0636'	SY.CNUS         0580'	SY.CPOS         
+''	MACRO-80 3.44	09-Dec-81	PAGE	S-3
+
+
+063E'	SY.CURS         0601'	SY.DCPOS        05CC'	SY.DEC2         
+06FC'	SY.DEL1         06FB'	SY.DEL2         06F2'	SY.DELZL        
+0625'	SY.DESZ         05C1'	SY.DSPOS        05B4'	SY.DZPOS        
+0661'	SY.FKTLA        05FA'	SY.ICPOS        0072'	SY.ICTC1        
+0074'	SY.ICTC2        0076'	SY.ICTC3        018B'	SY.IFKT1        
+0198'	SY.IFKT2        01A3'	SY.IFKT3        01AD'	SY.IFKT4        
+05F3'	SY.INC1         05EB'	SY.INC2         05F1'	SY.INC3         
+05F4'	SY.INC4         0163'	SY.INFKT        0129'	SY.INI          
+0135'	SY.INI1         013B'	SY.INI2         013E'	SY.INI3         
+0120'	SY.ININ1        0120'	SY.ININ3        014B'	SY.INNMI        
+00DC'	SY.INRE         00A0'	SY.INRE1        00BE'	SY.INRE2        
+0150'	SY.INSTB        015B'	SY.INSTC        0400'	SY.IO           
+05E0'	SY.ISPOS        0058'	SY.ISRA0        0070'	SY.ISRA3        
+05D3'	SY.IZPOS        04A0'	SY.KOM          04F8'	SY.KOM1         
+0504'	SY.KOM2         0614'	SY.LCP1         0608'	SY.LCPOS        
+0008 	SY.LZSY1        000E 	SY.LZSY2        000B 	SY.LZSY3        
+0008 	SY.LZSY4        06EB'	SY.MELD         06E5'	SY.MELDE        
+0696'	SY.MEML1        068D'	SY.MEMLA        070D'	SY.NL           
+0066'	SY.NMI          00BA'	SY.OUTB1        058A'	SY.POS1         
+0583'	SY.POS3         0587'	SY.POS4         056F'	SY.POS5         
+0595'	SY.POS7         058C'	SY.POSA         06C0'	SY.PRUEF        
+054A'	SY.QTABL        06A6'	SY.RALO         06B1'	SY.RALO1        
+06C7'	SY.RALO2        06DD'	SY.RAMPR        04E8'	SY.RESC         
+04F5'	SY.RESC1        4036'	SY.RESCG        0010'	SY.RST10        
+0018'	SY.RST18        0020'	SY.RST20        0028'	SY.RST28        
+0030'	SY.RST30        0038'	SY.RST38        0008'	SY.RST8         
+04AE'	SY.SETC         04CC'	SY.SETC1        4030'	SY.SETCG        
+04D1'	SY.SETCHL       04E1'	SY.SETCHL1      04E5'	SY.SETCHL2      
+4033'	SY.SETCHLG      056C'	SY.SPPOF        0592'	SY.SPPOS        
+0720'	SY.SUCH1        071E'	SY.SUCH2        0719'	SY.SUCHE        
+000B'	SY.SYSTB        0756'	SY.SZA1         0752'	SY.SZAHL        
+0745'	SY.SZEI         0748'	SY.SZEI1        074F'	SY.SZEI2        
+074A'	SY.SZEI3        074B'	SY.SZEI4        073B'	SY.VERG1        
+0743'	SY.VERG2        073A'	SY.VERGL        0762'	SY.ZAHL         
+0576'	SY.ZLPOF        057B'	SY.ZLPOS        051D'	SY.ZSY1         
+0526'	SY.ZSY2         0535'	SY.ZSY3         0541'	SY.ZSY4         
+075F'	SY.ZZA1         075B'	SY.ZZAHL        4136'	TA.AB01         
+4387'	TA.AB1          413F'	TA.ABF1         41C5'	TA.ABF10        
+41E3'	TA.ABF11        41E7'	TA.ABF12        41EE'	TA.ABF13        
+4128'	TA.ABF14        4122'	TA.ABF15        4126'	TA.ABF16        
+414F'	TA.ABF2         41F9'	TA.ABF20        4152'	TA.ABF3         
+41A7'	TA.ABF6         41AF'	TA.ABF7         41B5'	TA.ABF8         
+41BF'	TA.ABF9         435D'	TA.ABFR         4026'	TA.ABFR1        
+438C'	TA.ABFR2        422B'	TA.ABFR9        4271'	TA.BBB          
+43A8'	TA.CT1          439C'	TA.CTRL         43B2'	TA.CTRL0        
+43B9'	TA.CTRL1        43C3'	TA.CTRL2        429E'	TA.E0IN         
+421F'	TA.EAW2         4223'	TA.EAW3         4226'	TA.EAW5         
+4236'	TA.EW1          4297'	TA.FKT1         428B'	TA.FKT2         
+4286'	TA.HZE          4258'	TA.INSMD        4261'	TA.INSME        
+4262'	TA.INSML        41A6'	TA.MM           41A4'	TA.MM1          
+42C0'	TA.STAS1        4253'	TA.STEU1        4249'	TA.STEUT        
+4284'	TA.STZ          42CF'	TA.TAB1         432F'	TA.TAB2         
+4347'	TA.TAB3         4353'	TA.TAB4         4100'	TA.TAST         
+4020'	TA.TAST1        41CF'	TA.TFE          4023'	TA.TFE1         
+41D5'	TA.TFE2         4164'	TA.WART         4166'	TA.WART1        
+4192'	TA.WART3        4198'	TA.WART4        0002 	TR.ANST         
+00A0 	TR.ATAST        0001 	TR.CTR          43CF'	TR.PIOP2        
+43CD'	TR.PIOPR        43E7'	TR.PIOU2        43E7'	TR.PIOUM        
+4003'	TR.TA1          4006'	TR.TA2          4009'	TR.TA3          
+43E8'	TR.TA31         43EA'	TR.TA32         0002 	TR.TAST         
+4015'	TR.TBEL         4012'	TR.TEM          400C'	TR.TFE          
+43F6'	TR.TFE1         43F8'	TR.TFE2         400F'	TR.TIM          
+4000'	TR.TINIT        4406'	TR.TTA11        4408'	TR.TTA12        
+440F'	TR.TTA21        4411'	TR.TTA22        443B'	TR.TTBL1        
+443D'	TR.TTBL2        4435'	TR.TTEM1        4437'	TR.TTEM2        
+4439'	TR.TTEM3        4415'	TR.TTIM1        4417'	TR.TTIM2        
+442A'	TR.TTIM3        4427'	TR.TTIM4        6F14 	UC.CVABX        
+6F43 	UC.CVAXB        6F97 	UC.CVBD2        6F1E 	UC.CVBX         
+6FDC 	UC.CVDB         6B2E 	UR.MIMO         
+
+
+
+No Fatal error(s)
+
+
+

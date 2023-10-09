@@ -1,0 +1,37 @@
+    TITLE   'S1.COM zurück von S44 zu S12'
+    ORG  00100H
+    LD  HL,MEM1 ;Speicher umschalten
+    LD  BC,005C0H
+    OTIR
+;
+    LD  HL,COPS
+    LD  DE,08000H
+    LD  BC,MEM3-B1
+    LDIR
+    JP  08000H 
+;
+MEM1:
+    DB  0F0H
+    DB  001H    ;einen Bereich umschalten
+    DB  008H    ;HS Bereich
+    DB  001H    ;Standardbereich
+    DB  0FFH
+
+COPS:
+    .phase  08000H
+B1  EQU $
+    LD  HL,MEM2
+    LD  BC,005C0H
+    OTIR
+    JP  00000H  ;Sprung zur Version 1.2
+B2  EQU $
+
+MEM2:
+    DB  0F0H
+    DB  003H    ;Bereichsumschaltung
+    DB  4       ;Sys_12
+    DB  0FFH
+MEM3:
+    
+    END
+

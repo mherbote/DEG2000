@@ -1,0 +1,187 @@
+;	title	08.Mai 86     DEG2000-BIOS    Version 4.4
+;
+false	equ	0
+true	equ	not false
+;
+;
+talt	equ	false		; false  ...	Tastatur 763x
+						; true   ...	Tastatur 760x
+dr54	equ	false		; system mit drucker <> 1154
+;
+;
+orig	equ	00000h
+abios	equ	0f400h
+sbios	equ	09600h
+abiosl	equ	00c00h		;  3   k
+sbiosl	equ	06a00h		; 26,5 k
+gosys0	equ	08000h
+;
+bsanf	equ	03000h		; bildschirmadresse
+maxz	equ	24			; zeilenanzahl
+maxs	equ	80			; spaltenanzahl
+;
+sbst	equ	0c0h		; adresse der speicherblocksteuerung
+str		equ	000h		; System    -TRAM
+atr		equ	008h		; Anwender  -TRAM
+pdtr	equ	028h		; PseudoDisk-TRAM
+pdta	equ	4			; PseudoDisk-TRAM - Anzahl
+;
+;	tastaturroutine
+;
+ptast	equ	0a0h		; basisadresse der ansteuerung
+ttinit	equ	04000h		; basisadresse der grundroutinen
+;
+;	druckerroutine
+;
+dinit	equ	04026h		; initialisierungsroutine
+dout	equ	04029h		; zeichenausgaberoutine
+eadr	equ	00f70h		; e/a-tabelle
+;
+;	lochbandleser
+;
+lbl		equ	04030h		; zeicheneingaberoutine
+ealbl	equ	00fa0h		; e/a-tabelle
+;
+;	lochbandstanzer
+;
+lbs		equ	04033h		; zeichenausgaberoutine
+ealbs	equ	00f80h		; e/a-tabelle
+;
+; robotron kassettenroutine
+;
+kmbvers	equ	12			; kmb bamos version 1.2
+anzakb	equ	3			; drei doppellaufwerke k 5221
+pkmb	equ	30h			; basisadresse akb
+ if anzakb gt 1
+pkmb2	equ	38h
+ endif
+ if anzakb gt 2
+pkmb3	equ	58h
+ endif
+kmbrob	equ	04040h		; eintrittsadresse in bamos kmb
+kmbruc	equ	04043H
+kmbini	equ	04046H
+;kmbruc	equ	kmbrob+6adh	; eintrittsadresse bereitroutine	;???
+;kmbini	equ	kmbrob+965h	; eintrittsadresse initialisierung	;???
+;
+; puffer fuer kassettenpufferung
+;
+dir1	equ	0d000h		; puffer fuer directory
+dir2	equ	dir1+800h
+ if anzakb gt 1
+dir3	equ	dir2+800h
+dir4	equ	dir3+800h
+ endif
+ if anzakb gt 2
+dir5	equ	dir4+800h
+dir6	equ	dir5+800h
+ endif
+kasbu1	equ	02800h		; puffer fuer hostblock
+kasbu2	equ	kasbu1+100h
+ if anzakb gt 1
+kasbu3	equ	kasbu2+100h
+kasbu4	equ	kasbu3+100h
+ endif
+ if anzakb gt 2
+kasbu5	equ	kasbu4+100h
+kasbu6	equ	kasbu5+100h
+ endif
+;
+;	speicherverteilung aBIOS
+;
+;  F400  :  abios        abios             3,0 k
+;  E600  :  abios-0e00   bdos              3,5 k
+;  DE00  :  abios-1600   ccp               2,0 k
+;   ...  :                tpa_bereich
+;   100  :                tpa
+;
+mbootm	macro
+	defb	1ah,'  59k       S Y S 4 . 4   release 1   T A P 2 / T A P 3'
+	defb	cr,lf,'(128k)      D E G  2000   vom 8.Mai 86 ',lf,lf
+	endm
+;
+;
+s1eq	equ	true		; generierung der datei "S1.COM"
+pipeq	equ	true		; generierung der datei "A:PIP.SUB"
+;
+ if s1eq
+ s1g	macro
+ ;					;	.phase 0000H
+	ld	hl,0116H	; LD	HL,MEM1
+	ld	bc,005C0H	; LD	BC,005C0H
+	otir			; OTIR
+	ld	hl,011BH	; LD	HL,COPS
+	ld	de,08000H	; LD	DE,08000H
+	ld	bc,0000FH	; LD	BC,MEM3-B1
+	jp	08000H		; JP	08000H
+;					;MEM1:
+	 defb	0F0H
+	 defb	001H	; einen Bereich umschalten
+	 defb	008H	; HS Bereich 
+	 defb	001H	; Standardbereich
+	 defb	0FFH
+;					;COPS:	.phase 08000H
+;					;B1 EQU $
+	ld	hl,0800BH	; LD	HL,MEM2
+	ld	bc,004C0H	; LD	BC,004C0H
+	otir			; OTIR
+	jp	0000H		; Sprung zur Version 1.2
+;					;B2 EQU $
+;					;MEM2:
+	defb	0F0H
+	defb	003H	; Bereichsumschaltung
+	defb	4		; Sys_12
+	defb	0FFH
+	endm
+ endif
+; 
+ if pipeq
+dirg	macro
+	defb	'$1:pip p:=$1:xsub.com',cr,lf
+	defb	'go p:s.com=$1:submit.com',cr,lf
+	defb	'go p:=$1:kini.com',cr,lf
+	defb	'go p:=$1:power.com',cr,lf
+	defb	'go o:=$1:m80.com',cr,lf
+	defb	'go o:=$1:l80.com',cr,lf
+	defb	'era pip.sub',cr,lf
+	defb	01ah
+	endm
+ endif
+;
+;
+mindk	equ	false
+stadk	equ	false
+zst		equ	false
+tramdk	equ	false
+opsdk	equ	false
+;
+ if opsdk
+zsm	macro
+zsm:	defb	043h,047h,000h,000h,053h,057h,05bh,000h
+	endm
+ endif
+;
+;
+eq.sys	equ	0cdh		; ruecksprung in DEG2000 Version 1.2
+eq.bsd	equ	0ceh		; hardcopy
+eq.cap	equ	0ffh		; PTAS / STAS
+eq.hex	equ	0feh		; hexadezimale eingabe eines zeichens
+eq.lr0	equ	0fdh		; druckerreset
+eq.lw	equ	0fch		; A := neue laufwerksnummer
+eq.gra	equ	080h		; groesse des geraetes A festlegen
+eq.le1	equ	081h		; laden/entladen kassettenlw 1
+eq.le2	equ	082h		; laden/entladen kassettenlw 2
+ if anzakb gt 1
+eq.le3	equ	08ch		; laden/entladen kassettenlw 3
+eq.le4	equ	08ch		; laden/entladen kassettenlw 4
+ endif
+ if anzakb gt 2
+eq.le5	equ	08ch		; laden/entladen kassettenlw 5
+eq.le6	equ	08ch		; laden/entladen kassettenlw 6
+ endif
+eq.sio	equ	087h		; initialisieren ATS-SIO-Kanal A bzw. B
+eq.ini	equ	088h		; initialisieren laufwerk O , P
+eq.scp	equ	089h		; monitor SCP
+eq.bcu	equ	08ah		; monitor BCU
+eq.deg	equ	08bh		; monitor DEG-SYS4
+

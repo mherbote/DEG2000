@@ -1,0 +1,55 @@
+'S1.COM zurC<ck von S44 zu S12'	MACRO-80 3.44	09-Dec-81	PAGE	1
+
+
+                                    TITLE   'S1.COM zurC<ck von S44 zu S12'
+                                    ORG  00100H
+  0100'   21 0116'                  LD  HL,MEM1 ;Speicher umschalten
+  0103'   01 05C0                   LD  BC,005C0H
+  0106'   ED B3                     OTIR
+                                ;
+  0108'   21 011B'                  LD  HL,COPS
+  010B'   11 8000                   LD  DE,08000H
+  010E'   01 000F                   LD  BC,MEM3-B1
+  0111'   ED B0                     LDIR
+  0113'   C3 8000                   JP  08000H 
+                                ;
+  0116'                         MEM1:
+  0116'   F0                        DB  0F0H
+  0117'   01                        DB  001H    ;einen Bereich umschalten
+  0118'   08                        DB  008H    ;HS Bereich
+  0119'   01                        DB  001H    ;Standardbereich
+  011A'   FF                        DB  0FFH
+                                
+  011B'                         COPS:
+                                    .phase  08000H
+  8000                          B1  EQU $
+  8000    21 800B                   LD  HL,MEM2
+  8003    01 05C0                   LD  BC,005C0H
+  8006    ED B3                     OTIR
+  8008    C3 0000                   JP  00000H  ;Sprung zur Version 1.2
+  800B                          B2  EQU $
+                                
+  800B                          MEM2:
+  800B    F0                        DB  0F0H
+  800C    03                        DB  003H    ;Bereichsumschaltung
+  800D    04                        DB  4       ;Sys_12
+  800E    FF                        DB  0FFH
+  800F                          MEM3:
+                                    
+                                    END
+'S1.COM zurC<ck von S44 zu S12'	MACRO-80 3.44	09-Dec-81	PAGE	S
+
+
+Macros:
+
+Symbols:
+8000 	B1              800B 	B2              011B'	COPS            
+0116'	MEM1            800B 	MEM2            800F 	MEM3            
+
+
+
+No Fatal error(s)
+
+
+ DB  003H    ;Bereichsumschaltung
+  800D    04                        DB  4    

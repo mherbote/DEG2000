@@ -1,0 +1,43 @@
+		TITLE	''
+		ORG		0A820H
+CAUS:	
+		PUSH	HL
+		PUSH	BC
+		LD		HL,AUS
+		LD		BC,00340H
+		OTIR
+		POP		BC
+		POP		HL
+		RET
+AUS:
+		DB		0F0H
+		DB		2
+		DB		0FFH	
+;
+CEIN:	
+		PUSH	BC
+		PUSH	HL
+		LD		HL,EINHL
+		POP		BC
+		PUSH	BC
+		LD		(HL),C
+		INC		HL
+		LD		(HL),B
+		LD		HL,EIN
+		LD		BC,00740H
+		OTIR
+		POP		HL
+		POP		BC
+		RET
+EIN:
+		DB		0F0H
+		DB		4
+		DW		03000H
+EINHL:			
+		DW		03000H
+		DB		0FFH		
+
+
+		TITLE	''
+		END
+

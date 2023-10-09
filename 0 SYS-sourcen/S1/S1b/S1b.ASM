@@ -1,0 +1,4160 @@
+	PAGE
+;	PN	UR
+	ORG	49A0H
+;----------------------------------------------------------------------
+;
+;   ROUTINEN FUER MONITOR UND TASTATUR
+;
+;----------------------------------------------------------------------
+;     1.     MONITOR
+;----------------------------------------------------------------------
+UR.MIMO:	PUSH	DE	;Register DE, BC retten
+	PUSH	BC
+	LD	B,(HL)	;Anzahl einzugebender Zeichen
+	INC	HL
+	LD	C,(HL)	;Laenge der Zeichenkette
+	INC	HL
+	LD	E,(HL)	;Zeichenschluessel
+	INC	HL
+	LD	A,(UB.ZN)	;Zeilennummer
+	LD	D,A	;D:= Zeilennummer
+	XOR	A
+	CP	C
+	JR	Z,MIMO1	;Anzeige entfaellt
+	PUSH	DE
+	CALL	DSPZK	;Anzeige
+MIMO2:	POP	DE
+	CALL	ZINP	;Zeicheneingabe ueber Tastatur
+	POP	BC
+	POP	DE
+	JR	MIMO3
+MIMO1:	PUSH	DE
+	CALL	BBSAD	;BWS - Adresse berechnen
+	EX	DE,HL	;HL:= akt. Bildschirmposition
+	JR	MIMO2
+MIMO3:	PUSH	AF
+	LD	A,(UB.ZN)
+	INC	A
+	CP	24
+	CALL	Z,BILRO	;Zeile 24 ---> Bild rollen
+	LD	(UB.ZN),A
+	POP	AF
+	RET
+BBSAD:	PUSH	HL	;Berechnung der BWS-Adresse
+	PUSH	BC	;IN:    D...Zeilennummer
+	LD	HL,UE.BWSA-80	;OUT:   DE..BWS-Adresse
+	LD	BC,80	;BC:= Zeichen/Zeile
+BBSA1:	ADD	HL,BC
+	DEC	D
+	JR	NZ,BBSA1
+	EX	DE,HL
+	POP	BC
+	POP	HL
+	RET
+DSPZK:	PUSH	DE	;Anzeige
+	PUSH	BC	;IN   HL...Anfangsadresse ZK
+	CALL	BBSAD	;      D...Zeilennummer
+	LD	B,0	;      C...Zeichenkettenlaenge
+	LDIR		;OUT  HL...akt. BWS-Adresse
+	EX	DE,HL
+	POP	BC
+	POP	DE
+	RET
+ZINP:	PUSH	HL	;Zeicheneingabe ueber Tastatur
+	XOR	A	;IN    B...Zeichenanzahl (max.)
+	LD	D,B	;     HL...akt. Adresse
+	CP	B	;      E...Zeichenschluessel
+	JR	Z,RET0	;keine Zeicheneingabe
+ZINP1:	SET	7,(HL)	;Kursor setzen
+ZINP2:	CALL	UR.TAREP	;Tastaturabfrage
+	CALL	TCL	; <---
+	CALL	TCR	; --->
+	CALL	TSYS	; SYS
+	CALL	TQUIT	; POS.QUIT
+	CALL	ZKONT	;Zeichenkontrolle
+	RES	7,(HL)	;Kursor loeschen
+	LD	(HL),A	;Zeichen anzeigen
+	INC	HL	;akt. Adresse erhoehen
+	DJNZ	ZINP1	;B > 0, naechstes Zeichen
+	SET	7,(HL)	;Kursor setzen
+ZINP5:	CALL	UR.TAREP
+	CP	UE.TACL
+	CALL	Z,ZINP7
+	CP	UE.TAQUI
+	JR	Z,ZINP3	;---> POS.QUIT
+	CP	UE.TASYS
+	JR	Z,ZINP4	;---> SYS
+	JR	ZINP5
+ZINP3:	RES	7,(HL)	;Kursor loeschen
+	POP	HL	;BWS - Adresse auskellern
+	XOR	A	;CY:= 0
+	RET
+ZINP4:	RES	7,(HL)	;Kursor loeschen
+	POP	HL
+	SCF		;CY:= 1
+	RET
+RET0:	POP	HL	;keine Zeicheneingabe
+	XOR	A
+	RET
+ZINP7:	CALL	TCL
+	INC	SP
+	INC	SP
+	JR	ZINP2
+TCL:	CP	UE.TACL	;   <---
+	RET	NZ		;Taste nicht gedrueckt
+	PUSH	AF	;Tastencode retten
+	INC	B
+	LD	A,D
+	CP	B
+	JR	C,TCLN	;Linksbewegung nicht zulaessig
+	RES	7,(HL)	;Kursor loeschen
+	DEC	HL	;BWS - Adresse decrementieren
+	SET	7,(HL)	;Kursor setzen
+	POP	AF	;Code auskellern
+	RET
+TCLN:	DEC	B
+	POP	AF
+	RET
+TCR:	CP	UE.TACR	;   --->
+	RET	NZ
+	PUSH	AF
+	LD	A,B
+	CP	2
+	JR	C,TCRN
+	DEC	B
+	RES	7,(HL)
+	INC	HL
+	SET	7,(HL)
+TCRN:	POP	AF
+	RET
+TSYS:	CP	UE.TASYS	; SYS-Taste
+	RET	NZ
+	INC	SP
+	INC	SP	;Returnadresse uebergehen
+	JP	ZINP4
+TQUIT:	CP	UE.TAQUI	; POS.QUIT
+	RET	NZ
+	INC	SP
+	INC	SP
+	JP	ZINP3
+ZKONT:	CP	7FH
+	JR	NC,ZKON1
+	BIT	7,E	;Zeichenschluesselauswertung
+	RET	NZ		;Bit 7 = L, alle Tasten erlaubt
+	CP	20H
+	RET	Z		;Leertaste
+	BIT	5,E
+	SCF
+	CALL	NZ,ALPHA
+	RET	NC		;Bit 5 = L, nur Buchstaben
+	BIT	4,E
+	SCF
+	CALL	NZ,UR.NUM
+	RET	NC		;Bit 4 = L, nur Ziffern
+	BIT	6,E
+	SCF
+	CALL	NZ,ALPNU
+	RET	NC		;Bit 6 = L, Buchstaben und
+			;            Ziffern
+	BIT	3,E
+	SCF
+	CALL	NZ,HEXAZ
+	RET	NC		;BIT 3 = L ,HEXAZEICHEN
+ZKON1:	INC	SP
+	INC	SP
+	JP	ZINP2	;unerlaubter Tastencode
+ALPHA:	CP	41H
+	RET	C
+	CP	5BH
+	JR	C,ALPH1
+	SCF
+	RET
+ALPH1:	CCF
+	RET
+UR.NUM:	CP	30H
+	RET	C
+	CP	3AH
+	JR	C,ALPH1
+	SCF
+	RET
+ALPNU:	CALL	ALPHA
+	RET	NC
+	CALL	UR.NUM
+	RET	NC
+	SCF
+	RET
+HEXAZ:	CALL	UR.NUM
+	RET	NC
+	CP	'A'
+	RET	C
+	CP	'G'
+	JR	C,HEXZ1
+	SCF
+	RET
+HEXZ1:	CCF
+	RET
+UR.TAREP:	CALL	UE.TARO	;TASTATURROUTINE FUER ATS
+	JR	Z,$-3	;ES LIEGT KEIN ZEICHEN AN
+	RET
+BILRO:	PUSH	BC
+	PUSH	DE
+	PUSH	HL
+	LD	BC,960
+	LD	DE,UE.BWSA+880
+	LD	HL,UE.BWSA+960
+	LDIR
+	LD	A,20H	;letzte Zeile loeschen
+	LD	B,80
+BILR1:	LD	(DE),A
+	DJNZ	BILR1
+	POP	HL
+	XOR	A
+	LD	BC,80
+	SBC	HL,BC	;aktuelle BWS-Adresse nach  ROLL
+	LD	A,(UB.ZN)
+	POP	DE
+	POP	BC
+	RET
+;----------------------------------------------------------------------
+;	END
+	PAGE
+;	PN	UK
+;----------------------------------------------------------------------
+;
+;        Einzelzeicheneingabe fuer KMBG
+;
+;----------------------------------------------------------------------
+;
+UK.GETK:	CALL	U1.RSAVE
+	CALL	XY.LIDX	;HL:= Blocklaenge
+	DB	9
+	PUSH	HL
+	CALL	XY.LDDX
+	DB	23
+	EX	DE,HL	;DE:= Pufferzaehler
+	XOR	A
+	POP	HL	;HL:= Blocklaenge
+	SBC	HL,DE
+	PUSH	HL	;Restbyteanzahl retten
+	LD	A,H
+	OR	L
+	CALL	Z,UK.KBW	;Block lesen
+	POP	HL
+	XOR	A
+	CP	H
+	JR	NZ,GETK2
+	LD	A,L
+	CP	1
+	JR	Z,GETK3	;---> letztes Datenbyte des
+GETK2:	CALL	GETK4
+	OR	A
+GETK5:	CALL	U1.RRST
+	RET
+;
+;
+GETK3:	CALL	GETK4
+	SCF
+	JR	GETK5
+;
+GETK4:	CALL	XY.LDDX	;HL:= aktuelle Pufferadresse
+	DB	21
+	LD	A,(HL)	;Datenbyte laden
+	CALL	XY.INCDX	;Pufferzeiger erhoehen
+	DB	21
+	CALL	XY.INCDX	;Pufferzaehler erhoehen
+	DB	23
+	RET
+;
+;******************************************************************
+;
+;        KMBG  Eingabepuffer bereitstellen
+;
+;*******************************************************************
+;
+UK.KLPFB:	CALL	U1.RSAVE
+	CALL	U1.KTIN1
+	LD	HL,100H	;max. Blocklaenge Kassette
+	CALL	XY.STIDX	;max. Blocklaenge initialisieren
+	DB	9
+	PUSH	HL
+	POP	BC	;BC:= Blocklaenge
+	CALL	XY.STDX	;Pufferzaehler "Leer"
+	DB	23
+	LD	HL,UE.PUF	;Systempuffer Kassette
+	CALL	U1.CLRB	;Systempuffer loeschen
+	LD	HL,UE.KPUFF
+	CALL	U1.CLRB
+	CALL	U1.RRST
+	RET
+;
+;******************************************************************
+;
+;        Einlesen eines Blockes von Kassette
+;
+;         - Besonderheit gegenueber MBW: Blockinhalt wird vom
+;           Systempuffer in den E/A-Puffer uebertragen
+;
+;*******************************************************************
+;
+UK.KBW:	CALL	U1.RSAVE
+	CALL	UK.KLPFB
+	LD	(IX+4),02H
+	CALL	UF.EXEC
+	LD	A,(IX+9)
+	OR	(IX+10)
+	JR	Z,UK.KBW1	;EOF
+	CALL	XY.LDDX	;HL:= Blockadresse
+	DB	7
+	LD	B,(IX+9)	;BC:= Blocklaenge
+	LD	C,(IX+10)
+	PUSH	HL	;E/A-Puffer
+	CALL	XY.LDDX
+	DB	25
+	EX	DE,HL
+	POP	HL
+	LDIR		;Transport in E/A-Puffer
+	CALL	XY.LDDX
+	DB	25
+	CALL	XY.STDX	;Pufferzeiger auf Anfang
+	DB	21
+	LD	HL,0
+	CALL	XY.STDX	;Pufferzaehler rueckstellen
+	DB	23
+	CALL	XY.INCDX	;Blockzaehler incrementieren
+	DB	17
+UK.KBW2:	CALL	U1.RRST
+	RET
+;
+UK.KBW1:	CALL	XY.INCDX	;Labelzaehler incrementieren
+	DB	17
+	JR	UK.KBW2
+;
+;********************************************************************
+;
+;        Einzelzeichenausgabe fuer KMBG
+;
+;*********************************************************************
+;
+UK.PUTK:	CALL	U1.RSAVE
+	PUSH	AF	;Zeichen retten
+	CALL	XY.LDDX	;HL:= Pufferzaehler
+	DB	23
+	LD	BC,UE.KMPUL	;BC:= max. Pufferlaenge
+	OR	A
+	SBC	HL,BC
+	CCF
+	CALL	Z,UK.KBA	;---> Puffer voll
+	POP	AF	;Zeichen auskellern
+	CALL	XY.LDDX
+	DB	21
+	LD	(HL),A	;Zeichen in Puffer eintragen
+	CALL	XY.INCDX	;Pufferzeiger erhoehen
+	DB	21
+	CALL	XY.INCDX	;Pufferzaehler erhoehen
+	DB	23
+	CALL	U1.RRST
+	RET
+;
+;******************************************************************
+;
+;        Ausgabepufferbereitstellung fuer KMBG
+;
+;*******************************************************************
+;
+UK.KSPFB:	CALL	U1.RSAVE
+	CALL	U1.KTIN1
+	CALL	XY.LIDX
+	DB	9
+	PUSH	HL
+	POP	BC	;BC:= Blocklaenge
+	LD	HL,0
+	CALL	XY.STDX	;Pufferzaehler = 0
+	DB	23
+	CALL	XY.LDDX
+	DB	25
+	CALL	XY.STDX	;Pufferzeiger setzen
+	DB	21
+	LD	HL,UE.PUF
+	CALL	U1.CLRB
+	CALL	U1.RRST
+	RET
+;
+;*******************************************************************
+;
+;        Ausgabe eines Blockes auf KMBG
+;
+;*******************************************************************
+;
+UK.KBA:	CALL	U1.RSAVE
+	CALL	UK.KSPFB
+	CALL	XY.LDDX
+	DB	7
+	EX	DE,HL	;DE:= Blockadresse
+	PUSH	DE	;Blockadresse retten
+	CALL	XY.LIDX
+	DB	9
+	PUSH	HL
+	POP	BC	;BC:= Blocklaenge
+	POP	DE	;DE:= Blockadresse
+	PUSH	BC	;Blocklaenge retten
+	CALL	XY.LDDX	;HL:= E/A-Pufferanfang
+	DB	25
+	LDIR		;Block in Systempuffer
+	POP	BC	;BC:= Blocklaenge
+	PUSH	HL	;aktuelle Pufferadresse retten
+	LD	HL,UE.KMPUL	;HL:= max. Laenge
+	OR	A
+	SBC	HL,BC	;HL:= Restbyteanzahl
+	CALL	XY.STDX	;Pufferzaehler setzen
+	DB	23
+	PUSH	HL
+	POP	BC	;BC:= Restbyteanzahl
+	CALL	XY.LDDX	;HL:= aktuelle Pufferadresse
+	DB	25
+	EX	DE,HL	;DE:= Pufferanfang
+	POP	HL
+	LDIR
+	EX	DE,HL	;HL:= aktuelle Pufferadresse
+	CALL	XY.STDX	;Pufferzeiger setzen
+	DB	21
+	LD	(IX+4),00H
+	CALL	UF.EXEC	;physische Blockausgabe
+	PUSH	AF
+	CALL	XY.INCDX	;Blockzaehler erhoehen
+	DB	17
+	POP	AF
+	CALL	U1.RRST
+	RET
+;----------------------------------------------------------------------
+;	END
+	PAGE
+;	PN	U1
+;----------------------------------------------------------------------
+;
+;        Allgemeine Unterprogramme
+;
+;----------------------------------------------------------------------
+U1.RSAVE:
+	EX	(SP),HL	;Register retten (nicht AF)
+	PUSH	DE
+	PUSH	BC
+	PUSH	IY
+	PUSH	IX
+	JP	(HL)
+U1.RRST:
+	POP	HL	;Register wieder herstellen
+	POP	IX
+	POP	IY
+	POP	BC
+	POP	DE
+	EX	(SP),HL
+	RET
+U1.CLRB:
+	PUSH	HL	;Bereich loeschen
+	PUSH	DE
+	PUSH	BC
+	PUSH	HL	;IN:  HL= Bereichsanfang
+	POP	DE	;     BC= Bereichslaenge
+	INC	DE
+	XOR	A
+	LD	(HL),A
+	DEC	BC
+	LDIR
+	POP	BC
+	POP	DE
+	POP	HL
+	RET
+;----------------------------------------------------------------------
+U1.KBR4:
+	PUSH	BC
+	LD	B,4
+	CALL	UR.KBR
+	DJNZ	$-3
+	POP	BC
+	RET
+;----------------------------------------------------------------------
+U1.BREAD:
+	CALL	U1.EIN	;BLOCK LESEN VON EINGABE
+	LD	(IX+5),02H
+	CALL	UF.EXEC
+	RET
+U1.BWRIT:
+	CALL	U1.AUS	;BLOCK SCHREIBEN AUF AUSGABE
+	LD	(IX+5),08H
+	CALL	UF.EXEC
+	RET
+U1.COPB2:
+	PUSH	AF
+	SCF
+	JR	$+4
+U1.COPB:
+	PUSH	AF
+	OR	A
+	CALL	U1.EIN
+	LD	(IX+5),02H
+	CALL	C,KX.EXEC2
+	CALL	NC,UF.EXEC
+	PUSH	AF
+	CALL	U1.AUS
+	LD	A,(IX+9)
+	OR	(IX+10)
+	JR	Z,$+10
+	CALL	U1.BWRIT
+	POP	AF
+	JR	C,$-34
+	JR	NC,$-32
+	CALL	UR.KBM
+	POP	AF
+	POP	AF
+	RET
+U1.EIN:
+	PUSH	AF
+	LD	A,(BC.TAB1)
+	LD	(IX+4),A
+	POP	AF
+	RET
+U1.AUS:
+	PUSH	AF
+	LD	A,(BC.TAB1+1)
+	LD	(IX+4),A
+	POP	AF
+	RET
+;----------------------------------------------------------------------
+U1.VS1:
+	PUSH	HL
+	PUSH	BC
+	PUSH	AF
+	LD	A,01H	;1.DATEIVORSATZ IM PUFFER
+	JR	$+6
+U1.VSX:
+	PUSH	HL
+	PUSH	BC
+	PUSH	AF
+	XOR	A	;00-DATEIVORSATZ IM PUFFER
+	LD	B,32
+	LD	HL,UE.PUF
+	CALL	U1.TR
+	POP	AF
+	POP	BC
+	POP	HL
+	RET
+;----------------------------------------------------------------------
+U1.DSVG:
+	PUSH	HL
+	PUSH	DE
+	PUSH	AF
+	LD	B,7	;MRES KASSETTE ?
+	CALL	U1.VORS1
+	LD	DE,UE.PUF+6
+	LD	HL,UA.DS+6
+	LD	B,14
+	LD	A,(DE)
+	CP	(HL)
+	JR	NZ,$+18
+	INC	DE
+	INC	HL
+	DJNZ	$-6
+	LD	A,(UE.PUF+1)
+	LD	C,A	;C <-- NEXT RECORD
+	LD	A,(UE.PUF+3)
+	LD	B,A	;B <-- ANZ.VERZ.EINTRAG.
+	POP	AF
+	POP	DE
+	POP	HL
+	RET
+	POP	AF
+	POP	DE
+	POP	HL
+	POP	IY
+	LD	A,90H
+	CALL	UF.ERANZ
+	JP	UE.SYSTB
+;----------------------------------------------------------------------
+U1.NMVGL:
+	PUSH	BC
+	PUSH	DE
+	PUSH	HL
+	LD	B,6
+	LD	DE,UE.PUF
+	LD	A,(DE)
+	CP	(HL)	;HL:ZU SUCHENDER PROGR.NAME
+	JR	NZ,$+14
+	INC	HL
+	INC	DE
+	DJNZ	$-6
+	LD	A,(UE.PUF+23)	;LABELNR. -->A
+	SCF		;CY=1,WENN PROGR. GEFUNDEN
+	POP	HL
+	POP	DE
+	POP	BC
+	RET
+	OR	A
+	JR	$-5
+;----------------------------------------------------------------------
+U1.VERIN:
+	PUSH	HL
+	PUSH	BC
+	PUSH	AF
+	LD	DE,BC.VTABE	;VERZ. EINGABEGER. EINLESEN
+	JR	$+5
+U1.VERNI:
+	PUSH	HL
+	PUSH	BC
+	PUSH	AF
+	LD	A,(UE.PUF+3)	;ANZ. DATEIEN-->B
+	LD	B,A
+	PUSH	BC
+	LD	HL,UE.PUF
+	LD	BC,32
+	LDIR
+	CALL	UF.EXEC
+	POP	BC
+	DJNZ	$-13
+	POP	AF
+	POP	BC
+	POP	HL
+	RET
+;----------------------------------------------------------------------
+U1.VORST:
+	PUSH	BC
+	CALL	UR.KRWW
+	LD	B,6
+	JR	$+3
+U1.VORS1:
+	PUSH	BC
+	LD	(IX+4),02H
+	CALL	UF.EXEC
+	DJNZ	$-3
+	POP	BC
+	RET
+;----------------------------------------------------------------------
+U1.VZS:
+	PUSH	DE
+	PUSH	BC
+	PUSH	HL
+	PUSH	AF
+	CALL	UR.KBV
+	CALL	UR.KBR
+	LD	DE,UE.PUF
+	LD	BC,6
+	LDIR		;PROGR.NAME --> PUFFER
+	LD	A,(UB.PAR2)	;DATEITYP
+	LD	(DE),A
+	INC	DE
+	LD	A,'D'
+	LD	(DE),A
+	INC	DE
+	LD	A,(UB.PAR3)
+	CP	7FH
+	JR	NZ,$+17
+	LD	HL,UA.KOMMT	;FRAGE KOMMENTAR WENN PAR3=7F
+	CALL	UR.MIMO
+	LD	BC,6
+	LDIR
+	LD	B,9
+	JR	$+4
+	LD	B,15
+	LD	A,' '
+	LD	(DE),A
+	INC	DE
+	DJNZ	$-2
+	LD	A,(UB.PAR1)
+	LD	(DE),A
+	INC	DE
+	LD	B,8
+	XOR	A
+	LD	(DE),A
+	INC	DE
+	DJNZ	$-2
+	LD	HL,32
+	CALL	XY.STIDX
+	DB	9
+	LD	(IX+4),00H
+	CALL	UF.EXEC
+	POP	AF
+	POP	HL
+	POP	BC
+	POP	DE
+	RET
+;----------------------------------------------------------------------
+U1.TR:
+	LD	(HL),A	;A=INHALT
+	INC	HL
+	DJNZ	U1.TR	;B=ANZAHL
+	RET
+;----------------------------------------------------------------------
+U1.INFO:
+	LD	BC,14
+	LDIR
+	RET
+U1.BILO:
+	CALL	U1.RSAVE
+	LD	HL,3370H
+	LD	BC,1120
+	LD	(HL),20H
+	LD	D,H
+	LD	E,L
+	INC	DE
+	LDIR
+	CALL	U1.RRST
+	RET
+;----------------------------------------------------------------------
+U1.TST:
+	OR	A
+	SUB	30H
+	LD	B,A
+	DEC	B
+	RET	Z
+	DEC	B
+	RET	Z
+	SCF
+	RET
+;----------------------------------------------------------------------
+U1.PRADR:
+	PUSH	HL
+	PUSH	BC
+	LD	B,4
+	LD	A,(HL)
+	CP	' '
+	JR	Z,$+9
+	INC	HL
+	DJNZ	$-6
+	OR	A
+	POP	BC
+	POP	HL
+	RET
+	SCF
+	LD	HL,UB.ZN
+	DEC	(HL)
+	JR	$-8
+;---------------------------------------------------------------------
+U1.KRWE:
+	CALL	UR.KRE
+	CALL	UR.KRWW
+	RET
+;---------------------------------------------------------------------
+;	END
+	PAGE
+;	PN	XY ; Unterprogramme
+;**********************************************************************
+;*                                                                    *
+;*       Handling f. IX/IY-adressierte Steuer-Bloecke bzw.            *
+;*                                     Arbeits-Bereiche               *
+;*                                                                    *
+;*--------------------------------------------------------------------*
+;*                                                                    *
+;*       Ausser den angegebenen Registern bzw. Flags wird nur noch    *
+;*       die angegebene Anzahl der ersten freien Stack-Plaetze (je    *
+;*       Byte) veraendert. Weiterer RAM-Platz wird nicht benoetigt.   *
+;*                                                                    *
+;**********************************************************************
+;*                                                                    *
+;*       Technische (Hilfs-) Unter-Programme                          *
+;*                                                                    *
+;**********************************************************************
+			;
+;        Uebernahme von nach dem CALL stehenden Parameter
+;        ++++++++++++++++++++++++++++++++++++++++++++++++
+;        erwarten Stack:           Return-Adresse f.uebergeordnetes UP
+;                       (SP) -->   Return-Adresse f.CALPn
+;        geben Stack zurueck:      Return-Adresse f.uebergeordn.UP + n
+;                                  (DE)
+;                       (SP) -->   (HL)
+;        geben in Reg.zurueck:     (DE):  Wert    1.Parameter-Byte
+;                                  (HL):  Adresse 2.Parameter-Byte
+;        --------------------------------------------------------------
+			;
+CALP1	EQU	$	; 1 Byte-Parameter
+			; ++++++++++++++++++++++++++++++
+	PUSH	HL	; Retten HL
+	POP	HL
+			;
+	EX	DE,HL	; DE <--> RET-Adr.f.CALPn
+	EX	(SP),HL
+	EX	DE,HL
+			;
+	POP	HL	; (SP) --> RET-Adr.f.ueberg.UP
+			;
+	POP	HL	; Laden u. korrig. ...
+	INC	HL
+	PUSH	HL
+CALPE:
+	DEC	HL
+			;
+	DEC	SP	; (SP) --> (DE)
+	DEC	SP
+	DEC	SP	; (SP) --> (HL)
+	DEC	SP
+			;
+	PUSH	DE	; RET-Adr.f.CALPn
+			;
+	LD	E,(HL)	; Laden DE, HL
+	LD	D,0
+	INC	HL
+			;
+	RET
+			;
+			;
+;**********************************************************************
+;*                                                                    *
+;*       Lade-, Speicher- und Transport-Unterprogramme                *
+;*                                                                    *
+;**********************************************************************
+;
+;    CALL  LDDX    'Load':              HL := (IX+d)
+;    DB    d                                              Stack: 4
+;    -----------   ----------------------------------------------------
+			;
+XY.LDDX:
+	CALL	CALP1	; Uebernahme d
+			;
+	PUSH	IX	; HL := IX+d
+	POP	HL	;               <--- LDDY
+	PUSH	AF
+	ADD	HL,DE
+	POP	AF
+			;
+	LD	E,(HL)	; HL := (IX+d)
+	INC	HL
+	LD	D,(HL)
+	EX	DE,HL
+			;
+	POP	DE	; Return
+	POP	DE
+	RET
+			;
+;**********************************************************************
+;
+;    CALL  LIDX    'Load inverse':      LH := (IX+d)
+;    DB    d                                              Stack: 4
+;    -----------   ----------------------------------------------------
+			;
+XY.LIDX:
+	CALL	CALP1	; Uebernahme d
+			;
+	PUSH	IX	; HL := IX+d
+	POP	HL	;               <--- LIDY
+	PUSH	AF
+	ADD	HL,DE
+	POP	AF
+			;
+	LD	D,(HL)	; LH := (IX+d)
+	INC	HL
+	LD	E,(HL)
+	EX	DE,HL
+			;
+	POP	DE	; Return
+	POP	DE
+	RET
+			;
+;**********************************************************************
+;
+;    CALL  STDX    'Store':            (IX+d) := HL
+;    DB    d                                                  Stack: 4
+;    -----------   ----------------------------------------------------
+			;
+XY.STDX:
+	CALL	CALP1	; Uebernahme d
+			;
+	PUSH	IX	; HL := IX+d
+	POP	HL	;               <--- STDY
+	PUSH	AF
+	ADD	HL,DE
+	POP	AF
+			;
+	POP	DE
+	LD	(HL),E	; (IX+d) := HL
+	INC	HL
+	LD	(HL),D
+	EX	DE,HL
+			;
+	POP	DE	; Return
+	RET
+			;
+;**********************************************************************
+;
+;    CALL  STIDX    'Store inverse':    (IX+d) := LH
+;    DB    d                                                  Stack: 4
+;    -----------   ----------------------------------------------------
+			;
+XY.STIDX:
+	CALL	CALP1	; Uebernahme d
+			;
+	PUSH	IX	; HL := IX+d
+	POP	HL	;               <--- STIDY
+	PUSH	AF
+	ADD	HL,DE
+	POP	AF
+			;
+	POP	DE
+	LD	(HL),D	; (IX+d) := LH
+	INC	HL
+	LD	(HL),E
+	EX	DE,HL
+			;
+	POP	DE	; Return
+	RET
+			;
+;**********************************************************************
+;
+;    CALL  INCDX    'Increment':        (IX+d) := (IX+d) + 1
+;    DB    d                                    Flags wie ADC HL,...
+;                                                             Stack: 4
+;    -----------   ----------------------------------------------------
+			;
+XY.INCDX:
+	CALL	CALP1	; Uebernahme d
+			;
+	PUSH	IX	; HL := IX+d
+	POP	HL	;               <--- INCDY
+	ADD	HL,DE
+			;
+	LD	E,(HL)	; DE := (IX+d)
+	INC	HL
+	LD	D,(HL)
+			;
+	PUSH	HL	; DE := (IX+d) + 1
+	LD	HL,1
+	OR	A
+	ADC	HL,DE
+	EX	DE,HL
+	POP	HL
+	LD	(HL),D
+	DEC	HL
+	LD	(HL),E
+			;
+	POP	HL	; Return
+	POP	DE
+	RET
+			;
+;**********************************************************************
+;*                                                                    *
+;*       Unterprogramm  'Unbedingter Sprung'                          *
+;*                                                                    *
+;**********************************************************************
+;
+;    CALL  JMPDX   'Jump':              JMP  (IX+d)
+;    DB    d                                              Stack: 4
+;                                       Achtung!
+;                                           Veraendert freie Stack-Pl.
+;    -----------   ----------------------------------------------------
+			;
+JMPDX:
+	CALL	CALP1	; Uebernahme d
+			;
+	PUSH	IX	; HL := IX+d
+	POP	HL	;               <--- JMPDY
+	PUSH	AF
+	ADD	HL,DE
+	POP	AF
+			;
+	LD	E,(HL)	; HL := (IX+d)
+	INC	HL
+	LD	D,(HL)
+	EX	DE,HL
+			;
+	POP	DE	; Return = Jump
+	EX	(SP),HL
+	EX	DE,HL
+	RET
+			;
+;**********************************************************************
+;	END
+	PAGE
+;	PN	UC
+;----------------------------------------------------------------------
+;
+;       KONVERTIERUNGEN
+;
+;----------------------------------------------------------------------
+;                            HL := HL * 10
+;                                      (ohne Kontrolle auf Uebertrag)
+UC.HL10N:
+	PUSH	HL
+	POP	DE	; alter Wert in DE
+	ADD	HL,HL
+	ADD	HL,HL
+	ADD	HL,DE
+	ADD	HL,HL
+	RET
+;                            HL := HL * 10
+;                                            -->  C: Uebertrag in A
+UC.HL10C:
+	PUSH	HL
+	POP	DE	; alter Wert in DE
+	XOR	A
+	ADD	HL,HL
+	JR	NC,$+3
+	INC	A
+	ADD	A,A
+	ADD	HL,HL
+	JR	NC,$+3
+	INC	A
+	ADD	HL,DE
+	JR	NC,$+3
+	INC	A
+	ADD	A,A
+	ADD	HL,HL
+	JR	NC,$+3
+	INC	A
+	OR	A
+	RET	Z
+	SCF
+	RET
+			;
+;        --------------------------------------------------------------
+;                            Division mit Rest:  A  := HL / DE
+;                                                HL := Rest
+			;      Cy(A) --->  A=255
+			;-------------------------------
+UC.DIVR:
+	XOR	A
+	SBC	HL,DE
+	INC	A
+	JR	NZ,$+5
+	DEC	A
+	JR	C,$+5
+	JR	NC,$-8
+	DEC	A
+	ADD	HL,DE
+	RET
+			;
+;**********************************************************************
+;*                                                                    *
+;*       CV...               Konvertierungen     (convert ...)        *
+;*                                                                    *
+;*--------------------------------------------------------------------*
+;*       ..A..:              in A                                     *
+;*       ..?*.:              von Typ *                                *
+;*       ..?.*:              nach Typ *                               *
+;*                                                                    *
+;*       Typen:              B - binaer                               *
+;*                           X - hexadezimal ASCII                    *
+;*                           A - Adresse binaer (L,H)                 *
+;*                           D - dezimal ASCII                        *
+;*                                                                    *
+;**********************************************************************
+			;
+;                            In A:      Binaer < 16 --> ASCII hexa
+;                            ------------------------------------------
+UC.CVABX:
+	AND	0FH
+	OR	30H
+	CP	3AH
+	RET	C
+	ADD	A,7H
+	RET
+			;
+;        --------------------------------------------------------------
+;                            Byte binaer (HL) --> 2 ASCII hexa (DE)
+;                                                            HL+1, DE+2
+;                            ------------------------------------------
+UC.CVBX:
+	LD	A,(HL)
+	INC	HL	; benutzt: A, 2 Stack-P.
+			;
+	PUSH	AF	;ENTRY,WENN ZEICHEN IN A
+	RRCA
+	RRCA
+	RRCA
+	RRCA
+	CALL	$+4
+	POP	AF
+			;
+	CALL	UC.CVABX
+	LD	(DE),A
+	INC	DE
+	RET
+			;
+;        --------------------------------------------------------------
+;                       Adresse (L,H) binaer (HL) --> 4 ASCII hexa (DE)
+;                                                            HL+2, DE+4
+;                       -----------------------------------------------
+UC.CVAX:
+	INC	HL
+	CALL	UC.CVBX	; benutzt: A, 3 Stack-P.
+	DEC	HL
+	DEC	HL
+	CALL	UC.CVBX
+	INC	HL
+	RET
+			;
+;        --------------------------------------------------------------
+;                       Adresse aus HL, binaer    --> 4 ASCII hexa (DE)
+;                                                                  DE+4
+;                       -----------------------------------------------
+UC.CVHLX:
+	LD	A,H
+	CALL	UC.CVBX+2	; benutzt: A, 3 Stack-P.
+	LD	A,L
+	CALL	UC.CVBX+2
+	RET
+			;
+			;
+;      ---------------------------------------------------------------
+;                            In A:     ASCII hexa --> binaer < 16
+;
+;                                       Datenfehler: Cy, A undefiniert
+;                            ------------------------------------------
+UC.CVAXB:
+	SUB	30H
+	RET	C		;       (A) < '0'
+	CP	10
+	CCF
+	RET	NC
+	CP	11H
+	RET	C		; '9' < (A) < 'A'
+	CP	17H
+	CCF
+	RET	C		; 'F' < (A)
+	SUB	7H
+	RET
+			;
+;        --------------------------------------------------------------
+;                            2 ASCII hexa (DE) --> Byte binaer (HL)
+;                                                            DE+2, HL+1
+;
+;                                       mit Datenfehler-Behandlung
+;                            ------------------------------------------
+UC.CVXB:
+	PUSH	BC
+			; benutzt: A, 3 Stack-P.
+	CALL	UC.CVX1B
+	ADD	A,A
+	ADD	A,A
+	ADD	A,A
+	ADD	A,A
+	LD	C,A
+			;
+	CALL	UC.CVX1B
+	ADD	A,C
+			;
+	LD	(HL),A
+	INC	HL
+	POP	BC
+	RET
+			;
+UC.CVX1B:
+	LD	A,(DE)	; ASCII hexa (DE) --> A binaer,
+	CALL	UC.CVAXB	;                           DE+1
+	CALL	C,UC.CVXER
+	INC	DE
+	RET
+			;
+UC.CVXER:
+	EX	DE,HL	; Datenfehler-Behandlung hexa
+	SET	7,(HL)	;         set cursor
+	CALL	UR.TAREP	; <-+     tast.request
+	LD	(HL),A	;   !     write in conv.-area
+	CALL	UC.CVAXB	;   !     conv.in A
+	JR	C,$-7	; $-$-+     on error ...
+	RES	7,(HL)
+	EX	DE,HL
+	RET
+			;
+;        --------------------------------------------------------------
+;                       4 ASCII hexa (DE) --> Adresse (L,H) binaer (HL)
+;                                                            DE+4, HL+2
+;
+;                                       mit Datenfehler-Behandlung
+;                       -----------------------------------------------
+UC.CVXA:
+	INC	HL
+	CALL	UC.CVXB	; benutzt: A, 4 Stack-P.
+	DEC	HL
+	DEC	HL
+	CALL	UC.CVXB
+	INC	HL
+	RET
+			;
+;        --------------------------------------------------------------
+;                     2 Byte binaer in HL ---> 1...5-stellig dezi (DE),
+;                                                             DE+1...5
+;                                  mit Vor-Null-Unterdrueckung
+;                                                    (nach nicht-dezi),
+;                                  zu wenig Stellen -->
+;                                      '*' in der obersten angeg.Stelle
+;                      ------------------------------------------------
+UC.CVBD5:
+	LD	A,5	; benutzt: A, 7 Stack-P.
+	JR	$+16
+UC.CVBD4:
+	LD	A,4
+	JR	$+12
+UC.CVBD3:
+	LD	A,3
+	JR	$+8
+UC.CVBD2:
+	LD	A,2
+	JR	$+4
+UC.CVBD1:
+	LD	A,1
+			;
+UC.CVBD:
+	PUSH	BC	; Zeichenzahl in A
+	PUSH	HL
+	LD	B,A
+	CALL	UC.CVBD0
+	DJNZ	$-3
+	POP	HL
+	POP	BC
+	RET
+			;
+;                          Abspaltung B-te Stelle dezi von HL nach (DE)
+;                                                                  DE+1
+;                          B-te nicht fuehrende Stelle: '*' nach (DE)
+;                          --------------------------------------------
+UC.CVBD0:
+	PUSH	BC	; benutzt: A, 5 Stack-P.
+			; --------
+	LD	A,L
+	OR	'0'
+	DEC	B
+	JR	Z,$+43	; -------$+
+			;        !
+	PUSH	DE	;        !
+	PUSH	HL	; DE := (B-1)-te Zehner-Potenz
+	LD	HL,1	;        !
+	CALL	UC.HL10N	;        !
+	DJNZ	$-3	;        !
+	EX	DE,HL	;        !
+	POP	HL	;        !
+			;        !
+	CALL	UC.DIVR	; A := HL / B-te Zehner-Potenz
+	POP	DE	;        !     HL := Rest
+			;        !
+	CP	10	; test to decimal
+	JR	C,$+6	; ---$+   !
+	LD	A,'*'	;    !   !
+	JR	$+19	;   -----$+
+			; <--+   !
+	OR	'0'	; conv.to decimal
+			;        !
+	CP	'0'	; Vor-Null ?
+	JR	NZ,$+13	; -------$+
+	DEC	DE	;        !
+	LD	C,A	;        !
+	CALL	UC.CVD1B	;        !
+	LD	A,C	;        !
+	INC	DE	;        !
+	JR	NC,$+4	;        !
+	LD	A,' '	;        !
+			; <------+
+	LD	(DE),A
+	INC	DE
+	POP	BC
+	RET
+			;
+;        --------------------------------------------------------------
+;                      Dezi von (DE) bis (-->DE) nicht-dezi
+;                                                --->      binaer in HL
+;
+;                         Fehler:
+;                         -------
+;                         Cy, NZ: Zahl zu gross, HL ohne letzte Ziffer
+;                         Cy, Z:  Leere Zahl (1.Position keine Ziffer),
+;                                        -->     HL = 0
+;                      ------------------------------------------------
+UC.CVDB:
+	LD	H,0
+	CALL	UC.CVD1B
+	LD	L,A
+	JR	NC,$+6
+	XOR	A
+	LD	L,A
+	SCF
+	RET		; ---> abend C, Z
+			;
+	INC	DE
+	CALL	UC.CVD1B
+	CCF
+	RET	NC		; ---> normal end
+	PUSH	DE
+	PUSH	AF
+	CALL	UC.HL10C
+	JR	C,$+13	;      -----$+
+	POP	AF	;           !
+	ADD	A,L	;           !
+	LD	L,A	;           !
+	JR	NC,$+5	; --$+       !
+	INC	H	;   !       !
+	JR	Z,$+6	;   !    ---!--$+
+	POP	DE	; <-+       !  !
+	JR	$-22	;           !  !
+			;      <----+  !
+	POP	HL	; abend Cy, NZ !
+	DEC	H	;              !
+	EX	DE,HL	;        <-----+
+	POP	DE
+	RET
+			;
+;        --------------------------------------------------------------
+;                            Ziffer dezi (DE) ---> binaer nach A, DE+1
+;                                                  Cy: nicht-dezi
+;                            ------------------------------------------
+UC.CVD1B:
+	LD	A,(DE)
+	SUB	30H
+	RET	C
+	CP	10
+	CCF
+	RET
+			;
+;        --------------------------------------------------------------
+;                    Byte binaer (HL) --> Byte ASCII-Symbol (DE)
+;                                         (sonst: 7FH )
+;                                                     HL+1, DE+1
+;                    --------------------------------------------------
+UC.CVBC:
+	LD	A,(HL)	; benutzt: A, 0 Stack-P.
+	INC	HL	; --------
+	CP	20H
+	JR	NC,$+4
+	LD	A,7FH
+	CP	7FH
+	JR	C,$+4
+	LD	A,7FH
+	LD	(DE),A
+	INC	DE
+	RET
+			;
+;        --------------------------------------------------------------
+;                       Byte ASCII-Symbol (DE)   -->   Byte binaer (HL)
+;                                                      DE+1, HL+1
+;                       -----------------------------------------------
+UC.CVCB:
+	LD	A,(DE)	; benutzt: A, 0 Stack-P.
+	INC	DE
+	CP	20H
+	JR	C,$+7
+	CP	7EH
+	JR	NC,$+3
+	LD	(HL),A
+	INC	HL
+	RET
+			;
+
+;**********************************************************************
+;----------------------------------------------------------------------
+;
+;      KONVERTIERUNGEN
+;
+;----------------------------------------------------------------------
+UC.DKONV:
+	LD	A,(HL)	;DKOI--->ASCII
+	CALL	UC.DK1	;(HL)--->(DE)
+	LD	(DE),A
+	INC	HL
+	INC	DE
+	DJNZ	UC.DKONV
+	RET
+;------------------------------------
+UC.KONV:	LD	A,(HL)	;ASCII--->DKOI
+	CALL	UC.CKONV	;(HL) --->(DE)
+	LD	(DE),A
+	INC	HL
+	INC	DE
+	DJNZ	UC.KONV
+	RET
+;-----------------------------
+UC.DK1:
+	PUSH	HL	;DKOI--->ASCII
+	PUSH	DE
+	PUSH	BC
+	LD	HL,ASCCO
+	LD	DE,DKOI
+	JR	UC.DK2
+UC.CKONV:
+	PUSH	HL	;ASCII ---> DKOI
+	PUSH	DE
+	PUSH	BC
+	LD	HL,DKOI	;HL:= Anfangsadresse
+	LD	DE,ASCCO	;DE:= Anfangsadresse
+UC.DK2:
+	PUSH	AF	;Quellcodebyte retten
+	XOR	A	;CY = 0
+	SBC	HL,DE	;Tabellendistanz berechnen
+	DEC	HL
+	PUSH	HL
+	POP	BC	;BC:= Tabellendistanz - 1
+	EX	DE,HL	;HL:= Anfangsadresse
+	POP	AF	;Zeichen wieder herstellen
+	PUSH	BC	;Tabellendistanz retten
+	LD	BC,UE.COTAL	;BC:= Tabellenlaenge
+	CPIR		;Quellcodebyte suchen
+	SCF		;CY = 1
+	POP	BC	;Tabellendistanz auskellern
+	JR	NZ,UC.KONV2	;---> Quellcodebyte nicht
+	ADD	HL,BC	;Zielcodeadresse berechnen
+	XOR	A	;CY = 0
+	LD	A,(HL)	;Zielcodebyte laden
+UC.KONV2:
+	POP	BC
+	POP	DE
+	POP	HL
+	RET
+;****************************************************************
+;         ASCII - Codetabelle
+;****************************************************************
+ASCCO:
+	DB	' !"#$%&'
+	DB	27H	;'
+	DB	'()*+,-./'
+	DB	'0123456789'
+	DB	':;<=>?@'
+	DB	'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+	DB	'[\]^_`'
+	DB	'abcdefghijklmnopqrstuvwxyz'
+	DB	'{|}~'
+	DB	7FH	;DEL
+;***************************************************************
+;         DKOI - Codetabelle
+;***************************************************************
+DKOI:	DB	40H	;blank
+	DB	4FH	;!
+	DB	7FH	;"
+	DB	7BH	;#
+	DB	5BH	;$
+	DB	6CH	;%
+	DB	50H	;&
+	DB	7DH	;'
+	DB	4DH	;(
+	DB	5DH	;)
+	DB	5CH	;*
+	DB	4EH	;+
+	DB	6BH	;,
+	DB	60H	;-
+	DB	4BH	;.
+	DB	61H	;/
+	DB	0F0H	;0
+	DB	0F1H	;1
+	DB	0F2H	;2
+	DB	0F3H	;3
+	DB	0F4H	;4
+	DB	0F5H	;5
+	DB	0F6H	;6
+	DB	0F7H	;7
+	DB	0F8H	;8
+	DB	0F9H	;9
+	DB	7AH	;:
+	DB	5EH	;;
+	DB	4CH	;<
+	DB	7EH	;=
+	DB	6EH	;>
+	DB	6FH	;?
+	DB	7CH	;@
+	DB	0C1H	;A
+	DB	0C2H	;B
+	DB	0C3H	;C
+	DB	0C4H	;D
+	DB	0C5H	;E
+	DB	0C6H	;F
+	DB	0C7H	;G
+	DB	0C8H	;H
+	DB	0C9H	;I
+	DB	0D1H	;J
+	DB	0D2H	;K
+	DB	0D3H	;L
+	DB	0D4H	;M
+	DB	0D5H	;N
+	DB	0D6H	;O
+	DB	0D7H	;P
+	DB	0D8H	;Q
+	DB	0D9H	;R
+	DB	0E2H	;S
+	DB	0E3H	;T
+	DB	0E4H	;U
+	DB	0E5H	;V
+	DB	0E6H	;W
+	DB	0E7H	;X
+	DB	0E8H	;Y
+	DB	0E9H	;Z
+	DB	4AH	;[
+	DB	0E0H	;\
+	DB	5AH	;]
+	DB	5FH	;^
+	DB	6DH	;_
+	DB	79H	;`
+	DB	81H	;a
+	DB	82H	;b
+	DB	83H	;c
+	DB	84H	;d
+	DB	85H	;e
+	DB	86H	;f
+	DB	87H	;g
+	DB	88H	;h
+	DB	89H	;i
+	DB	91H	;j
+	DB	92H	;k
+	DB	93H	;l
+	DB	94H	;m
+	DB	95H	;n
+	DB	96H	;o
+	DB	97H	;p
+	DB	98H	;q
+	DB	99H	;r
+	DB	0A2H	;s
+	DB	0A3H	;t
+	DB	0A4H	;u
+	DB	0A5H	;v
+	DB	0A6H	;w
+	DB	0A7H	;x
+	DB	0A8H	;y
+	DB	0A9H	;z
+	DB	0C0H	;{
+	DB	6AH	;|
+	DB	0D0H	;}
+	DB	0A1H	;~
+	DB	0FFH	;DEL
+;----------------------------------------------------------------------
+;	END
+	PAGE
+;	PN	LD
+;***********************************************************
+;
+;        Laden von MRES-P-Dateien
+;
+;***********************************************************
+	DW	$
+	DB	'LOAD'
+	LD	A,(UE.BWSA+327H)
+	CALL	U1.TST
+	RET	C
+	CALL	U1.KTINI
+	LD	(IX+3),A
+	CALL	U1.BILO
+	LD	A,13
+	LD	(UB.ZN),A
+LD.DATN:
+	LD	HL,UA.ZKDAT	;Dateiname ?
+	CALL	UR.MIMO
+	RET	C
+	CALL	UR.KRE
+	CALL	UR.KRWW
+	CALL	U1.DSVG
+	LD	A,01H
+	CP	B
+	JR	Z,LD21	;NEU INITIALISIERTE KASSETTE
+LD2:
+	CALL	UK.KBW
+	CALL	U1.NMVGL	;Dateiname vergleichen
+	JR	C,DATFU	;---> Datei gefunden
+	DJNZ	LD2
+LD21:
+	LD	A,91H	;Datei nicht vorhanden
+	CALL	UF.ERANZ	;FEHLERANZEIGE
+	RET
+DATFU:
+	LD	A,(UE.PUF+6)	;TYP
+	CP	'O'
+	PUSH	AF
+	LD	HL,UE.PUF+23
+	LD	A,(HL)
+	PUSH	AF
+	LD	B,A
+	INC	B
+	CALL	UR.POSIK	;Positionieren
+	CALL	UK.KBW
+	POP	AF
+	LD	HL,UE.PUF
+	CP	(HL)
+	JR	Z,DATPO	;Datei richtig positioniert
+	POP	AF
+	LD	A,94H
+	CALL	UF.ERANZ
+	RET
+DATPO:
+	POP	AF
+	JP	Z,RL.BEG
+	LD	A,(UE.BWSA+329H)
+	CP	'V'
+	JR	NZ,LD3
+	LD	HL,UA.ZKLAD	;Ladeadresse ?
+	CALL	UR.MIMO
+	JP	C,LD.DATN
+	CALL	U1.PRADR	;ADRESSE EINGEGEBEN
+	JR	C,$-12
+	EX	DE,HL
+	LD	HL,UB.PAR1
+	CALL	UC.CVXA
+LD4:
+	CALL	UK.KLPFB
+	CALL	UK.GETK
+	CALL	UK.GETK
+	LD	H,A
+	CALL	UK.GETK
+	LD	L,A
+	LD	A,D
+	OR	E
+	JR	Z,LD5
+	LD	DE,(UB.PAR1)
+	EX	DE,HL
+	OR	A
+	SBC	HL,DE
+	EX	DE,HL	;DE:= Verschiebung zur ersten
+LD5:
+	CALL	UR.KBR
+	CALL	LADER
+	LD	(UB.PAR2),HL
+	LD	HL,UE.BWSA+329H
+	LD	B,4
+	LD	A,(HL)
+	CP	'S'
+	JR	Z,START
+	INC	HL
+	DJNZ	$-6
+	CALL	UR.KRW
+	CALL	UR.KRA
+	RET
+START:
+	CALL	UR.KRW
+	CALL	UR.KRA
+	LD	HL,(UB.PAR2)
+	JP	(HL)
+LD3:
+	LD	DE,0
+	JR	LD4
+;--------------------------------------------------------------
+LADER:
+	CALL	UK.KLPFB
+LAD2:
+	CALL	UK.GETK
+	CP	0
+	JR	Z,LDEND
+	LD	B,A
+	CALL	UK.GETK
+	LD	H,A
+	CALL	UK.GETK
+	LD	L,A
+	ADD	HL,DE
+LAD1:
+	CALL	UK.GETK
+	LD	(HL),A
+	CP	(HL)
+	JR	NZ,LADF
+	INC	HL
+	DJNZ	LAD1
+	JR	LAD2
+LDEND:
+	CALL	UK.GETK
+	LD	H,A
+	CALL	UK.GETK
+	LD	L,A
+	RET
+LADF:
+	LD	A,93H
+	CALL	UF.ERANZ
+	RET
+;----------------------------------------------------------------------
+;	END
+	PAGE
+;	PN	RL
+;----------------------------------------------------------------------
+;
+;     RELATIVLADER FUER O-DATEIEN
+;
+;----------------------------------------------------------------------
+RL.BEG:
+	LD	HL,UA.ZKBEG	;BEGINN ?
+	CALL	UR.MIMO
+	JP	C,LD.DATN
+	CALL	U1.PRADR
+	JR	C,RL.BEG
+	EX	DE,HL
+	LD	HL,UB.PATAB
+	CALL	UC.CVXA
+UG:	CALL	UK.KBW
+	LD	HL,(UB.PATAB)	;BGADR---->HL
+	LD	C,001H	;LADEN BLOCKZAEHLER MIT
+			;ANFANGSWERT
+	CALL	UP6	; AUFRUF EINGABE-UP
+;********** TEST BEFEHLSKENNZEICHENBYTE *******************************
+M16:
+	BIT	3,D	;TEST ORG-BEFEHL
+	JP	NZ,OB	;JA--->FEHLER
+	BIT	4,D	;TEST BER -BEFEHL
+	JP	NZ,M10
+	LD	A,007H
+	AND	D	;TEST BEFEHLS LAENGE=0 ?
+	JP	Z,M11
+	LD	B,A	;BEFEHLSLAENGE-->B
+M12:
+	CALL	UP6
+	LD	(HL),D
+	INC	HL
+	DJNZ	M12	;EINGABE BEFEHL
+	CALL	UP6
+	BIT	7,D	;TEST BEFEHLSKENNZEICHENBYTE ?
+	JR	NZ,M16	; JA
+;******* TEST ADRESSKENNZEICHENBYTE ***********************************
+	BIT	5,D	;TEST OB REL.ADR. FOLGT
+	JP	Z,RA	;NEIN-->FEHLER
+	BIT	6,D	;FOLGT BEZUGNAHME AUF
+			;SYMBOLVERZEICHNIS
+	JP	NZ,SV	;JA--->FEHLER
+	BIT	2,D	;MINUS ?
+	JP	NZ,MN
+M17:
+	LD	A,003H
+	AND	D	;TEST ADRESSLAENGE
+	PUSH	AF
+	PUSH	HL
+	CALL	UP6
+	LD	H,D	;ADRESSE ---->HL
+	CALL	UP6
+	LD	L,D
+	PUSH	BC
+	PUSH	HL
+	LD	HL,UB.PATAB
+	LD	C,(HL)	;BEGINN(LADE)ADRESSE--->BC
+	INC	HL
+	LD	B,(HL)
+	POP	HL
+	ADD	HL,BC	;ERMITTELN SPEICHERADRESSE
+	EX	DE,HL	;SP.ADR.--->DE
+	POP	BC
+	POP	HL
+	POP	AF
+	JR	Z,M13
+	BIT	0,A	;NUR L-TEIL DER ADRESSE ?
+	JR	Z,M14	; JA
+;********** ADRESSE IN SPEICHER EINTRAGEN *****************************
+M13:
+	LD	(HL),E
+	PUSH	AF
+	LD	A,E
+	CP	(HL)
+	JP	NZ,ECHO
+	POP	AF
+	INC	HL
+	CP	003H
+	JR	Z,M14
+	OR	A	;NUR H-TEIL DER ADRESSE ?
+	JR	NZ,M15	; JA
+M14:
+	LD	(HL),D
+	PUSH	AF
+	LD	A,D
+	CP	(HL)
+	JR	NZ,ECHO
+	POP	AF
+	INC	HL
+M15:
+	CALL	UP6
+	BIT	7,D	; TEST BEFEHLSKENNZEICHENBYTE
+	JR	NZ,M16
+	JP	BF	; NEIN--->FEHLER
+;----------------------------------------------------------------------
+M10:
+	CALL	UP6	;BEI BER-BEFEHL ADDIEREN DER
+	PUSH	DE	;DEF. BEREICHSLAENGE ZU
+	CALL	UP6	;ADRESSE
+	LD	A,D
+	POP	DE
+	LD	E,A
+	ADD	HL,DE
+	CALL	UP6
+	JP	M16
+M11:
+	CALL	UP6	;BEI BFL=0 SPRUNG ZUM TEST
+	JP	M17	;ADRESSKENNZEICHENBYTE
+;******* UP ZUR ZEICHENWEISE EINGABE DER O-DATEI **********************
+UP6:
+	CALL	UK.GETK
+	LD	D,A
+	DEC	C	;REDUZIEREN BLOCKLAENGE
+	RET	NZ		;RET BEI UNGLEICH NULL
+	AND	A	;IST NAECHSTE BLOCKLAENGE NULL ?
+	JR	Z,M21	;JA-->VERZWEIGUNG ENDEBEH
+	LD	C,A	;NEIN-->EINTRAGEN BLKLAENGE
+	INC	C
+	JR	UP6
+;*********** ENDEBEHANDLUNG *******************************************
+M21:
+	POP	DE
+	PUSH	HL
+	LD	A,15
+	LD	(UB.ZN),A
+	LD	HL,UA.ZKEND+3
+	LD	DE,3460H
+	LD	BC,16
+	LDIR
+	LD	HL,UB.ZN
+	INC	(HL)
+	POP	HL
+	DEC	HL
+	LD	DE,3470H	;HINTER AUSSCHRIFT ENDE
+	CALL	UC.CVHLX
+	LD	HL,UA.STADR	;STARTADRESSE ?
+	CALL	UR.MIMO
+	RET	C
+	EX	DE,HL
+	LD	HL,UB.PATAB+2
+	CALL	UC.CVXA	;STARTADR.-->BINAER
+	LD	A,(UE.BWSA+329H)
+	CP	'S'
+	JR	NZ,$+6
+	LD	HL,(UB.PATAB+2)
+	JP	(HL)
+	CALL	UR.KRW
+	CALL	UR.KRA
+	RET
+;---------------------------------------------------------------------
+ECHO:
+	POP	DE
+	LD	A,93H
+	JR	FMELD
+DATNV:
+	LD	A,91H
+	JR	FMELD
+OB:	LD	A,96H
+	JR	FMELD
+RA:	LD	A,97H
+	JR	FMELD
+SV:	LD	A,98H
+	JR	FMELD
+MN:	LD	A,99H
+	JR	FMELD
+BF:	LD	A,9AH
+FMELD:
+	CALL	UF.ERANZ
+	RET
+;----------------------------------------------------------------------
+;	END
+	PAGE
+;	PN	SV
+;**********************************************************************
+;
+;      Retten von Maschinencodeprogrammen als MRES - P-Datei
+;
+;**********************************************************************
+	DW	$
+	DB	'SAVE'
+	LD	A,(UE.BWSA+327H)
+	CALL	U1.TST
+	RET	C
+	CALL	U1.KTINI
+	LD	(IX+3),A
+	XOR	A
+	LD	(UB.PAR1+1),A
+	CALL	U1.BILO	;BS LOESCHEN
+	CALL	UR.KRE
+	BIT	2,(IX)
+	JR	Z,$+7
+	LD	A,19H
+	CALL	UF.ERANZ
+	CALL	UR.KRWW
+SV20:
+	CALL	U1.DSVG
+	PUSH	BC
+	LD	A,C
+	LD	(UB.PAR1),A	;NEXT RECORD
+	LD	A,13
+	LD	(UB.ZN),A
+SV.DATN:
+	LD	HL,UA.ZKDAT	;Dateiname ?
+	CALL	UR.MIMO
+	RET	C
+	POP	BC
+	DEC	B
+	JR	Z,SV30	;NEUE KASSETTE
+SV21:
+	CALL	UK.KBW
+	CALL	U1.NMVGL
+	JR	C,DATV1	;Dateiname bereits vorhanden
+	DJNZ	SV21
+	JR	SV30
+DATV1:
+	LD	A,01H
+	CP	B
+	CALL	Z,DALO1
+	JR	Z,SV37
+DATVO:
+	LD	A,92H
+	CALL	UF.ERANZ
+	RET
+SV30:
+	LD	A,'P'
+	LD	(UB.PAR2),A
+	CALL	U1.VZS
+SV37:
+	LD	A,(UB.PAR1+1)
+	CP	'L'
+	JR	NZ,SV31
+	LD	HL,UA.ZKDL
+	CALL	UR.MIMO
+	LD	A,(HL)
+	CP	'J'
+	JR	NZ,DATVO
+SV31:
+	LD	A,(UB.PAR1)	;NEXT RECORD
+	LD	B,A
+	PUSH	BC
+	INC	B
+	CALL	UR.POSIK
+	CALL	UK.KBW
+	LD	HL,UE.PUF
+	POP	BC
+	LD	A,(HL)
+	CP	B
+	JR	Z,SAVE3
+	LD	A,94H
+	CALL	UF.ERANZ
+	RET
+SAVE3:
+	LD	HL,UA.ZKBEG	;Beginn ?
+	CALL	UR.MIMO
+	JP	C,SV.DATN
+	CALL	U1.PRADR
+	JR	C,SAVE3
+	EX	DE,HL
+	LD	HL,UB.PAR2
+	CALL	UC.CVXA
+SAVE4:
+	LD	HL,UA.ZKEND	;Ende ?
+	CALL	UR.MIMO
+	JR	C,SAVE3
+	CALL	U1.PRADR
+	JR	C,SAVE4
+	EX	DE,HL
+	LD	HL,UB.PAR3
+	CALL	UC.CVXA
+	CALL	BYANZ
+	JR	C,SAVE3
+	JR	Z,SAVE3
+	CALL	SV.SAVE
+	CALL	UR.KBM
+	CALL	DATS1	;1.DATEISATZ SCHREIBEN
+	CALL	UR.KSL
+	CALL	UR.KRWW
+	CALL	U1.DSVG
+	DEC	B
+	LD	A,(UB.PAR1+1)
+	CP	'L'
+	JR	Z,SAVE5
+	LD	HL,UE.PUF+1
+	INC	(HL)	;NEXT RECORD+1
+	LD	HL,UE.PUF+3
+	LD	B,(HL)
+	INC	(HL)	;ANZ.VERZ.EINTR.+1
+SAVE6:
+	CALL	UR.KBR
+	LD	(IX+4),00H	;NEUEN DS-SATZ AUSGEBEN
+	CALL	UF.EXEC
+SAVE5:
+	CALL	UK.KBW
+	DJNZ	SAVE5
+	CALL	UR.KBR
+	LD	HL,(UB.PAR5)
+	LD	(UE.PUF+25),HL	;DATEILAENGE EINTRAGEN
+	LD	(IX+4),00H
+	CALL	UF.EXEC
+	CALL	UR.KRW
+	CALL	UR.KRA
+	RET
+;----------------------------------------------------------------------
+BYANZ:
+	LD	HL,(UB.PAR3)	;Byteanzahl berechnen
+	LD	DE,(UB.PAR2)
+	OR	A
+	SBC	HL,DE
+	RET
+DATS1:
+	LD	HL,32	;1. Dateisatz schreiben
+	CALL	XY.STIDX
+	DB	9
+	CALL	U1.VSX
+	LD	HL,UE.PUF
+	LD	A,(UB.PAR1)	;NEXT RECORD
+	INC	A
+	LD	(HL),A
+	LD	(IX+4),00H
+	CALL	UF.EXEC
+	RET
+SV.SAVE:
+	LD	HL,0
+	CALL	XY.STDX
+	DB	17
+	LD	HL,80H	;Blocklaenge
+	CALL	XY.STIDX
+	DB	9
+	CALL	UK.KSPFB	;Pufferbereitstellung
+SV.SAVE1:
+	CALL	BYANZ	;Byteanzahl berechnen
+	INC	HL
+	PUSH	HL
+	LD	A,H
+	OR	L
+	POP	HL
+	JR	Z,SVLS2	;---> 0 Byte
+	LD	BC,UE.SVL	;Satzlaenge
+	OR	A
+	SBC	HL,BC
+	JR	C,SVLS	;---> letzter Satz
+	CALL	SVSZ
+	JR	SV.SAVE1
+SVLS:
+	LD	A,L
+	ADD	A,UE.SVL	;A:= Laenge des letzten Satzes
+	CALL	SVSZ2
+SVLS2:
+	XOR	A
+	CALL	UK.PUTK
+	LD	HL,UA.STADR	;Startadresse
+	CALL	UR.MIMO
+	LD	A,(HL)
+	CP	' '
+	JR	Z,STAD0	;KEINE EINGABE (0000)
+	EX	DE,HL
+	LD	HL,UB.PAR4
+	CALL	UC.CVXA
+SVLS1:
+	LD	HL,(UB.PAR4)
+	LD	A,H	;Startadresse ausgeben
+	CALL	UK.PUTK
+	LD	A,L
+	CALL	UK.PUTK
+	LD	C,3
+SVEN2:
+	LD	B,80H
+	XOR	A
+SVEN1:
+	CALL	UK.PUTK
+	DJNZ	SVEN1
+	DEC	C
+	JR	NZ,SVEN2
+	CALL	XY.LDDX
+	DB	17
+	LD	(UB.PAR5),HL
+	RET
+STAD0:
+	LD	HL,0
+	LD	(UB.PAR4),HL
+	JR	SVLS1
+DALO1:
+	PUSH	AF
+	LD	HL,UB.PAR1
+	DEC	(HL)
+	INC	HL
+	LD	A,'L'
+	LD	(HL),A
+	POP	AF
+	RET
+SVSZ:
+	LD	A,UE.SVL
+SVSZ2:
+	PUSH	AF
+	CALL	UK.PUTK
+	LD	DE,(UB.PAR2)
+	LD	A,D
+	CALL	UK.PUTK
+	LD	A,E
+	CALL	UK.PUTK
+	POP	AF
+	LD	B,A
+SVSZ1:
+	LD	A,(DE)
+	CALL	UK.PUTK
+	INC	DE
+	DJNZ	SVSZ1
+	LD	(UB.PAR2),DE
+	RET
+;----------------------------------------------------------------------
+;	END
+	PAGE
+;	PN	KR
+;	END
+	PAGE
+;	PN	FD
+;**********************************************************************
+;
+;      Ein-/Ausgabe von Dateien im freien Format in bzw. aus dem
+;      Editor-Raum von bzw. auf MRES-Kassetten
+;
+;**********************************************************************
+;      Positionieren auf Datei, IN: <C>:= Labelnummer
+;
+POSK:
+	PUSH	BC
+	LD	B,C
+	INC	B
+	CALL	UR.POSIK
+	CALL	KO.KO01
+	LD	A,(UE.PUF)
+	CP	C
+	POP	BC
+	JR	NZ,$+3
+	RET
+	POP	DE
+	LD	A,94H
+	CALL	UF.ERANZ
+	RET
+;----------------------------------------------------------------------
+;      Datei im Verzeichnis suchen
+;      HL:= Dateiname, <B>:= Anzahl Verzeichniseintragungen + 1
+;      <D>:= Dateityp
+;      O:  CY:= 0 Datei nicht vorhanden, <C> unveraendert
+;          CY:= 1 <C>:= Labelnummer
+;      K:  B
+DASU:
+	PUSH	DE
+	DEC	B
+	JR	Z,$+12
+	CALL	KO.KO01
+	CALL	U1.NMVGL
+	JR	C,$+7
+	DJNZ	$-8
+	OR	A
+	POP	DE
+	RET
+	LD	E,A
+	LD	A,(UE.PUF+6)
+	CP	D
+	JR	NZ,$-10
+	LD	C,E
+	SCF
+	JR	$-11
+;----------------------------------------------------------------------
+;      Reservebloecke schreiben
+;
+WRRES:
+	PUSH	BC
+	PUSH	DE
+	PUSH	HL
+	LD	HL,UA.ZKRES
+	CALL	UR.MIMO
+	EX	DE,HL
+	CALL	UC.CVDB
+	LD	A,H
+	OR	L
+	JR	NZ,$+6
+	POP	HL
+	POP	DE
+	POP	BC
+	RET
+	PUSH	HL
+	LD	HL,UE.PUF
+	LD	BC,90H
+	CALL	U1.CLRB
+	LD	HL,80H
+	CALL	XY.STIDX
+	DB	9
+	POP	HL
+	CALL	UK.KBA
+	DEC	HL
+	LD	A,H
+	OR	L
+	JR	NZ,$-24
+	JR	$-30
+;----------------------------------------------------------------------
+;      F/S - Datei in den Editorraum einlesen
+;
+FD.FDINP:
+	LD	HL,0
+	CALL	XY.STDX
+	DB	17
+	CALL	UK.KLPFB	;Pufferbereitstellung
+	LD	HL,UE.BWSA+328H
+	LD	B,5
+	LD	A,(HL)
+	CP	'E'
+	JR	Z,$+7
+	INC	HL
+	DJNZ	$-6
+	JR	$+7
+	LD	HL,(UE.EDEND)
+	JR	$+5
+	LD	HL,UE.TEXAN
+	EXX
+	CALL	DC.INIT	;Dekomprimierung initialisieren
+	EXX
+	LD	A,(UB.PAR2)	;Dateitypmerker
+	CP	'S'
+	PUSH	AF
+	CALL	Z,SDIN	;Zeicheneingabe S- Datei
+	LD	(HL),A
+	OR	A
+	JR	Z,$+20
+	POP	AF
+	JR	Z,$+9
+	CALL	NZ,UK.GETK	;Zeicheneingabe F- Datei
+	LD	(HL),A	;Zeichen in Speicher eintragen
+	CP	(HL)	;Echolesen
+	JR	NZ,$+18
+	OR	A	;<A>:= 0, Z:= 1
+	RET	Z
+	INC	HL	;HL:= HL + 1
+	LD	(UE.EDEND),HL	;Textende
+	JR	$-29
+	POP	AF
+	RET
+SDIN:
+	EXX
+	CALL	DC.DCMPR
+	EXX
+	RET
+	LD	A,93H	;Fehlerschluessel
+	CALL	UF.ERANZ
+	RET
+;----------------------------------------------------------------------
+;      Ausgabe einer F/S - Datei (neuer Bestand)
+;
+FD.FDOUT:
+	LD	HL,0	;Blockzaehler loeschen
+	CALL	XY.STDX
+	DB	17
+	LD	HL,80H	;Blocklaenge eintragen
+	CALL	XY.STIDX
+	DB	9
+	CALL	UK.KSPFB	;Pufferbereitstellung
+	LD	HL,UE.TEXAN	;HL:= Textanfang
+	LD	DE,(UE.EDEND)	;BC:= Textende
+	EXX
+	CALL	CP.INIT
+	EXX
+	OR	A	;CY:= 0
+	PUSH	HL
+	SBC	HL,DE
+	JR	NC,$+21
+	POP	HL
+	LD	A,(UB.PAR2)
+	CP	'S'
+	PUSH	AF
+	LD	A,(HL)
+	CALL	Z,SDOUT
+	POP	AF
+	LD	A,(HL)
+	CALL	NZ,UK.PUTK
+	INC	HL
+	JR	$-23
+	POP	HL	;Endebehandlung
+	LD	BC,288
+	XOR	A
+	CALL	UK.PUTK
+	DEC	BC
+	LD	A,B
+	OR	C
+	JR	NZ,$-7
+	CALL	DSPBB
+	CALL	WRRES	;Reservebloecke schreiben
+	CALL	XY.LDDX	;HL:= Blockzaehler
+	DB	17
+	RET
+SDOUT:
+	EXX
+	CALL	CP.COMPR
+	EXX
+	RET
+;----------------------------------------------------------------------
+;      Ausgabe einer F/S - Datei (alter Bestand)
+;
+FDOWR:
+	LD	HL,0
+	CALL	XY.STDX
+	DB	17
+	LD	HL,UE.TEXAN
+	EXX
+	CALL	CP.INIT
+	EXX
+	PUSH	HL
+FDOW1:
+	CALL	FDUP
+	POP	HL
+FDOW2:
+	PUSH	HL
+	LD	DE,(UE.EDEND)
+	OR	A
+	SBC	HL,DE
+	JR	NC,FDOW3
+	POP	HL
+	LD	A,(UB.PAR2)
+	CP	'S'
+	LD	A,(HL)
+	JR	Z,SDOW
+	CALL	UK.PUTK
+	DEC	BC
+FDOW4:
+	INC	HL
+	LD	A,B
+	OR	C
+	JR	NZ,FDOW2
+	CALL	UK.KBA	;Block schreiben
+	PUSH	HL
+	CALL	FD.DECBZ
+	JR	FDOW1
+FDOW3:
+	POP	HL
+	XOR	A	;Endekennzeichen 00H 
+	CALL	UK.PUTK
+	CALL	UK.KBA
+	CALL	FD.DECBZ
+	OR	A
+	RET
+FD.DECBZ:
+	CALL	XY.LDDX
+	DB	17
+	DEC	HL
+	CALL	XY.STDX
+	DB	17
+	RET
+FDUP:
+	CALL	UK.KBW
+	LD	A,(IX+9)
+	OR	(IX+10)
+	JP	Z,BMGF
+	CALL	UR.KBR
+	CALL	XY.LIDX
+	DB	9
+	PUSH	HL
+	POP	BC
+	CALL	UK.KSPFB
+	RET
+SDOW:
+	CALL	SDOUT
+	LD	A,B
+	AND	C
+	CP	0FFH
+	JR	Z,SDK1
+	CP	0FEH
+	JR	Z,SDK2
+	JP	FDOW4
+SDK2:
+	EX	DE,HL
+	CALL	FDUP
+	LD	A,09H
+	CALL	UK.PUTK
+	DEC	BC
+SDK0:
+	LD	A,';'
+	CALL	UK.PUTK
+	DEC	BC
+	EX	DE,HL
+	JP	FDOW4
+SDK1:
+	EX	DE,HL
+	CALL	FDUP
+	JR	SDK0
+;--------------------------------------------------------------
+;        Startroutine Ein-/Ausgabe
+;
+FSTRT:
+	CALL	U1.BILO
+	CALL	U1.KTINI
+	LD	A,(UE.BWSA+326H)
+	CALL	U1.TST
+	JP	C,STRT1
+	LD	(IX+3),A
+	CALL	UR.KRE
+	CALL	UR.KRWW
+	CALL	U1.DSVG
+	LD	A,14
+	LD	(UB.ZN),A
+	LD	A,(UE.BWSA+328H)
+	CP	'S'
+	JR	Z,$+4
+	LD	A,'F'
+	LD	D,A
+	LD	(UB.PAR2),A
+	LD	HL,UA.ZKSDT
+	JR	Z,$+5
+	LD	HL,UA.ZKDAT
+	CALL	UR.MIMO
+STRT1:
+	POP	IY
+	RET	C
+	PUSH	IY
+	LD	A,'S'
+	CP	D
+	CALL	Z,DECHL
+	CALL	DASU
+	CALL	C,SETJ
+	CALL	NC,SETN
+	RET
+SETJ:
+	PUSH	BC
+	PUSH	DE
+	PUSH	HL
+	EX	DE,HL
+	LD	B,8
+	INC	DE
+	DJNZ	$-1
+	LD	HL,UE.PUF+8
+	LD	BC,6
+	LDIR
+	POP	HL
+	POP	DE
+	POP	BC
+	LD	A,'J'
+	JR	$+4
+SETN:
+	LD	A,'N'
+	LD	(UB.PAR1),A
+	RET
+DECHL:
+	DEC	HL
+	DEC	HL
+	RET
+;****************************************************************
+;        Ausgabeprogramm
+;****************************************************************
+	DW	$
+	DB	'AUS '
+FOUT1:
+	CALL	FSTRT
+	LD	A,(UB.PAR1)
+	CP	'J'	;DATEI SCHON VORHANDEN ?
+	JP	Z,FOLWR	;JA
+;-------------------------------NEIN--> NEUE ERSTELLEN-----------------
+	LD	A,C	;NEXT RECORD
+	LD	(UB.PAR1),A
+	LD	A,7FH
+	LD	(UB.PAR3),A	;PARAMETER KOMMENTARABFRAGE JA
+	CALL	U1.VZS	;NEUEN VERZ.SATZ SCHREIBEN
+	CALL	POSK
+	PUSH	BC
+	CALL	FD.FDOUT
+	PUSH	HL	;BLOCKZAEHLER
+	CALL	UR.KBM
+	LD	HL,32
+	CALL	XY.STIDX
+	DB	9
+	CALL	U1.VSX
+	POP	HL
+	POP	BC
+	PUSH	HL
+	LD	A,C
+	INC	A
+	LD	(UE.PUF),A
+	PUSH	AF
+	LD	(IX+4),00H
+	CALL	UF.EXEC
+	CALL	UR.KRWW
+	CALL	U1.DSVG
+	CALL	UR.KBR
+	POP	AF
+	LD	(UE.PUF+1),A
+	LD	A,B
+	INC	A
+	LD	(UE.PUF+3),A
+	LD	(IX+4),00H
+	CALL	UF.EXEC
+	LD	(IX+4),02H
+	CALL	UF.EXEC
+	DJNZ	$-3
+	CALL	UR.KBR
+	POP	HL
+	LD	(UE.PUF+25),HL
+	LD	(IX+4),00H
+	CALL	UF.EXEC
+END:
+	CALL	UR.KRW
+	CALL	UR.KRA
+	RET
+FOLWR:
+	LD	HL,UA.ZKDL	;DATEI UEBERSCHREIBEN?
+	CALL	UR.MIMO
+	RET	C
+	LD	A,(HL)
+	CP	'J'
+	RET	NZ
+	CALL	POSK
+	CALL	FDOWR
+	CALL	DSPBB
+	CALL	RDEND
+	CALL	DSPBG
+	JR	$-33
+;**********************************************************************
+;      Eingabeprogramm
+;**********************************************************************
+	DW	$
+	DB	'EIN '
+FDIN2:
+	CALL	FSTRT
+	LD	A,(UB.PAR1)
+	CP	'J'
+	JR	Z,$+9
+	LD	A,91H
+	CALL	UF.ERANZ
+	JR	END
+	CALL	POSK
+	CALL	FD.FDINP
+	CALL	DSPBB
+	CALL	RDEND
+	CALL	DSPBG
+	JR	END
+;----------------------------------------------------------------------
+DSPBB:
+	CALL	XY.LDDX
+	DB	17
+	EX	DE,HL
+	LD	HL,UA.ZKBEL
+	CALL	UR.MIMO
+	EX	DE,HL
+	CALL	UC.CVBD3
+	RET
+DSPBG:
+	CALL	XY.LDDX
+	DB	17
+	EX	DE,HL
+	LD	HL,UA.ZKBLG
+	JR	$-16
+RDEND:
+	CALL	UK.KBW
+	LD	A,(IX+9)
+	OR	(IX+10)
+	RET	Z
+	JR	RDEND
+BMGF:
+	LD	A,95H
+	CALL	UF.ERANZ
+	POP	DE
+	POP	DE
+	RET
+;----------------------------------------------------------------------
+;	END
+	PAGE
+;	PN	DC
+;**********************************************************************
+;*       DCMPR:    Dekomprimierung                                    *
+;*                 MRES20-Quelltexte   --->   EDIT - Format F         *
+;**********************************************************************
+			;
+DC.DCMPR	EQU	$
+			; A:  Uebergabe/-nahme Zeichen
+			; HL: Status-Register DCMPR
+			; B:  Position (Spalte)
+			;-------------------------------
+			; INA: Einzelzeichen-Eingabe
+			;      nach Reg. A
+;        --------------------------------------------------------------
+	INC	B	;         Position + 1
+	JP	(HL)
+			;
+;        --------------------------------------------------------------
+			; Status "Neue Zeile"
+			;-------------------------------
+DC.NL:
+	CALL	XY.INCDX	;         Satzzaehler + 1
+	DB	19
+	LD	A,1EH	;         EDIT-New-Line
+	LD	B,1	;         Pos.=1
+	LD	HL,DC.TEXT	;         Status "TEXT"
+	RET
+			;
+;        --------------------------------------------------------------
+			; Status "Text"
+			;-------------------------------
+DC.TEXT:
+	CALL	UK.GETK	;         Einzelzeichen-Eingabe
+	OR	A
+	RET	Z
+	CP	0AH	;         NL ?
+	JR	Z,DC.NL
+	CP	09H	;         TAB ?
+	JR	Z,DC.TAB
+	RET
+			;
+;        --------------------------------------------------------------
+			; Tabulator-Behandlung
+			;-------------------------------
+DC.TAB:
+	LD	A,B
+	CP	40
+	RET	NC
+	LD	HL,DC.SPACE	;         ---> Status "Space"
+	LD	A,' '	;         anstelle TAB Space
+	RET
+			;
+;        --------------------------------------------------------------
+			; Status "Space"
+			;-------------------------------
+DC.SPACE:
+	LD	A,B
+	CP	10+1
+	JR	Z,DC.EOSPC
+	CP	16+1
+	JR	Z,DC.EOSPC
+	CP	35+1
+	JR	Z,DC.EOSPC
+	LD	A,' '
+	RET
+			;
+DC.EOSPC:
+	LD	HL,DC.TEXT	; TAB-Position erreicht
+	JR	DC.TEXT
+			;
+			;
+;**********************************************************************
+DC.INIT:
+	LD	HL,DC.TEXT	; Initialisierung
+	LD	B,1
+	RET
+			;
+;**********************************************************************
+;	END
+	PAGE
+;	PN	CP
+;**********************************************************************
+;*       COMPR:    Komprimierung                                      *
+;*                 EDIT - F/Q-Format   --->  MRES20 - Quelltextformat *
+;**********************************************************************
+			;
+CP.COMPR	EQU	$	; A  Uebergabe/-nahme Zeichen
+			; HL: Status von COMPR
+			; B:  dekr. Tabulator-Zaehler
+			;-------------------------------
+			; OUTA: Einzelzeichen-Ausgabe
+			;         (Zeichen in Reg. A)
+;----------------------------------------------------------------------
+			;
+	CP	1EH	; NL ?
+	JR	Z,CP.NL
+	JP	(HL)
+			;
+;        --------------------------------------------------------------
+			; Status "New-Line"
+			;-------------------------------
+CP.NL:
+	CALL	XY.INCDX	;         Satz-Zaehler + 1
+	DB	19
+	LD	B,3	;         noch 3 TAB erlaubt
+	LD	A,0AH	;         MRES20-NL
+	JR	CP.OUTT
+			;
+;        --------------------------------------------------------------
+			; Status "String"
+			;-------------------------------
+CP.STRNG:
+	CP	27H	;         Apostroph
+	JR	NZ,CP.OUT
+			;
+CP.OUTT:
+	LD	HL,CP.TEXT	;         --> Status "Text"
+	JR	CP.OUT
+			;
+;        --------------------------------------------------------------
+			; Status "Space"
+			;-------------------------------
+CP.SPACE:
+	CP	' '
+	RET	Z
+	CP	09H	;         Tabulator
+	RET	Z
+	LD	HL,CP.TEXT	;         ---> Status "Text"
+	JR	CP.TEXT+8
+			;
+;        --------------------------------------------------------------
+			; Status "Text"
+			;-------------------------------
+CP.TEXT:
+	CP	' '
+	JR	Z,CP.TAB
+	CP	09H	;         Tabulator
+	JR	Z,CP.TAB
+	CP	';'
+	JR	Z,CP.SOKOM
+	CP	27H	;         Apostroph
+	JR	Z,CP.SOSTR
+			;
+;        --------------------------------------------------------------
+			; Status "Kom"
+			;-------------------------------
+CP.KOM	EQU	$
+			;
+;        --------------------------------------------------------------
+			; Einzelzeichen-Ausgabe u. Ret.
+			;-------------------------------
+CP.OUT:
+	CALL	UK.PUTK
+	EXX
+	DEC	BC
+	EXX
+	RET
+			;
+;        --------------------------------------------------------------
+			; Start "Kommentar"
+			;-------------------------------
+CP.SOKOM:
+	LD	A,B	;         0 oder 3 TAB vorher
+	CP	3
+	JR	Z,$+12
+	OR	A
+	JR	Z,$+9	;         --+
+	LD	A,09H	;         <-+!
+	CALL	CP.OUT	;           !!
+	DJNZ	$-5	;           +!
+	LD	A,';'	;         <--+
+	LD	HL,CP.KOM
+	JR	CP.OUT
+			;
+;        --------------------------------------------------------------
+			; Start "String"
+			;-------------------------------
+CP.SOSTR:
+	LD	HL,CP.STRNG
+	JR	CP.OUT
+			;
+;        --------------------------------------------------------------
+			; Tabulator-Behandlung
+			;-------------------------------
+CP.TAB:
+	LD	A,B
+	OR	A
+	LD	A,' '
+	JR	Z,CP.OUT
+	DEC	B
+	LD	A,09H	;         Tabulator MRES20
+	LD	HL,CP.SPACE
+	JR	CP.OUT
+			;
+;**********************************************************************
+			;
+CP.INIT:
+	LD	B,3	; Initialisierung COMPR
+	LD	HL,CP.TEXT
+	RET
+			;
+;**********************************************************************
+;	END
+	PAGE
+;	PN	KV
+;----------------------------------------------------------------------
+;
+;    ANZEIGEN UND AENDERN DES VERZEICHNISSES VON MRES KASSETTEN
+;
+;----------------------------------------------------------------------
+	DW	$
+	DB	'DIR '
+	LD	A,(UE.BWSA+326H)
+	CALL	U1.TST
+	RET	C
+	CALL	U1.KTINI
+	LD	(IX+3),A
+	CALL	U1.BILO
+	CALL	UR.KRE
+	CALL	UR.KRWW
+	CALL	U1.DSVG
+	PUSH	BC
+;----------------------------------------------------------------------
+	CALL	U1.KBR4	;KASS.NAME,NR.,KOMMENTAR ANZEIGEN
+	LD	(IX+4),02H
+	CALL	UF.EXEC
+	LD	HL,UE.PUF+4
+	LD	DE,3240H	;=8.ZEILE,16.SPALTE
+	LD	B,6
+	CALL	UC.DKONV
+	LD	HL,UE.PUF+37
+	INC	DE
+	INC	DE
+	LD	B,3
+	CALL	UC.DKONV
+	INC	DE
+	INC	DE
+	LD	B,11
+	CALL	UC.DKONV
+	LD	HL,3290H
+	LD	A,'='
+	LD	(HL),A
+	PUSH	HL
+	POP	DE
+	INC	DE
+	LD	BC,23
+	LDIR
+;----------------------------------------------------------------------
+	LD	B,3	;POSITIONIEREN VOR DS-SATZ
+	CALL	UF.EXEC
+	DJNZ	$-3
+	CALL	U1.VERIN
+	CALL	UR.KRWW
+	LD	B,7
+	CALL	U1.VORS1
+	POP	BC
+	DEC	B
+	CALL	ANZ
+	INC	B
+	DEC	B
+	JP	Z,KRW
+	INC	B
+	PUSH	BC
+;----------------------------------------------------------------------
+KV.ANF:
+	DEC	B
+	LD	A,B
+	LD	E,B
+	SUB	9
+	JR	C,$+7
+	LD	C,9
+	LD	B,C
+	JR	$+5
+	LD	B,E
+	LD	C,B
+	XOR	A
+	PUSH	AF	;A=RESTL.ANZAHL ODER 0
+	PUSH	BC
+	LD	HL,UB.SATZ
+	LD	(HL),00H
+	INC	HL
+	LD	(HL),55
+	INC	HL
+	LD	(HL),80H
+	INC	HL
+	LD	B,55
+	LD	A,20H
+	CALL	U1.TR	;AUSGABESATZ LOESCHEN
+	LD	A,13
+	LD	(UB.ZN),A
+	CALL	U1.BILO
+	LD	DE,UB.SATZ+18
+	PUSH	DE
+	LD	HL,BC.VTABE+32	;ADR. VERZ.TABELLE
+	PUSH	HL
+;---------------------------MAX 9 SAETZE ANZEIGEN----------------------
+ZLTR:
+	CALL	BSTR	;VTABE-->UB.SATZ
+	POP	DE	;VERZ.ADR.
+	POP	HL	;ADR.AUSGABESATZ
+	PUSH	HL
+	PUSH	DE
+	LD	BC,18
+	OR	A
+	SBC	HL,BC
+	CALL	UR.MIMO	;ANZEIGE EINE ZEILE
+	POP	HL	;VERZ.ADR
+	POP	DE
+	LD	BC,32
+	ADD	HL,BC
+	POP	BC
+	DEC	B
+	JR	Z,$+7
+	PUSH	BC
+	PUSH	DE
+	PUSH	HL	;NEUE VERZ.TAB ADR
+	JR	ZLTR
+;----------------------------------------------------------------------
+	LD	B,C	;ANZAHL DER ANGEZEIGTEN ZEILEN
+	LD	A,(UB.ZN)
+	SUB	B
+	LD	(UB.ZN),A	;KURSOR AUF ANFANG 12.ZEILE
+	PUSH	BC
+	PUSH	DE
+	PUSH	HL
+;------------------------VERZ. ZEIGER AUF 1.ANGEZEIGTE EINTR.
+	PUSH	BC
+	LD	BC,32
+	OR	A
+	SBC	HL,BC
+	POP	BC
+	DJNZ	$-8
+	PUSH	HL
+;----------------------------------------------------------------------
+TABTR:
+	LD	HL,UA.LD
+	CALL	UR.MIMO	;KURSOR AUF ANF.12.ZEILE
+	JP	C,ZEIHO
+	POP	DE
+	PUSH	DE	;ZIELADR.IN VTAB
+	CALL	SPTR	;ZEILE WIEDER IN SPEICHER
+	POP	HL	;ZIELADR.IN VTAB
+	LD	BC,32
+	ADD	HL,BC
+	POP	IY
+	POP	DE
+	POP	BC
+	DEC	B
+	JR	Z,$+9
+	PUSH	BC
+	PUSH	DE
+	PUSH	IY
+	PUSH	HL
+	JR	TABTR
+;--------------------WEITERBLAETTERN ODER AUSGABE----------------------
+	POP	AF
+	OR	A
+	JR	Z,AUSG	;KEINE WEITEREN ANZEIGEN
+	SUB	9
+	JR	C,$+7
+	LD	B,9
+	LD	C,B
+	JR	$+7
+	ADD	A,9
+	LD	B,A
+	LD	C,B
+	XOR	A
+	PUSH	AF
+	PUSH	BC
+	PUSH	DE
+	PUSH	HL
+	LD	A,13
+	LD	(UB.ZN),A
+	CALL	U1.BILO
+	POP	HL
+	POP	DE
+	PUSH	DE
+	PUSH	HL
+	JP	ZLTR
+;----------------------------------------------------------------------
+ZEIHO:
+	LD	HL,UB.ZN
+	LD	A,(HL)
+	SUB	15
+	JR	C,$+23	;WENN IN 12. ZEILE SYS GEDRUECKT
+	DEC	(HL)
+	DEC	(HL)	;ZEILENNR.-2
+	POP	HL
+	LD	BC,32
+	OR	A
+	SBC	HL,BC	;VERZ.ZEIGER RUECKSETZEN
+	POP	IY
+	POP	DE
+	POP	BC
+	INC	B
+	PUSH	BC
+	PUSH	DE
+	PUSH	IY
+	PUSH	HL
+	JR	$+3
+	DEC	(HL)
+	JP	TABTR
+;----------------------------------------------------------------------
+AUSG:
+	PUSH	HL
+	LD	HL,UA.ZRSCH
+	CALL	UR.MIMO
+	LD	A,(HL)
+	POP	HL
+	CP	'J'
+	JR	Z,$+19
+	LD	HL,UA.ANZWD
+	CALL	UR.MIMO
+	LD	A,(HL)
+	CP	'J'
+	POP	BC
+	JP	NZ,KRW
+	PUSH	BC
+	JP	KV.ANF
+;--------------------------------Dateien am Ende loeschen ? ---------
+	CALL	SBC
+	JR	NZ,$+54
+	LD	A,(BC.VTABE+3)
+	DEC	A
+	LD	E,A
+	LD	D,0
+	LD	A,1
+	ADD	A,D
+	LD	D,A
+	DEC	E
+	JR	Z,$+7
+	CALL	SBC
+	JR	Z,$-10
+	POP	BC	;D: Anzahl zu loeschender Dateien
+	LD	A,C
+	SUB	D
+	LD	(UE.PUF+1),A	;DS-Satz korrigieren
+	LD	A,B
+	SUB	D
+	LD	(UE.PUF+3),A
+	CALL	UR.KBR
+	CALL	UR.KBR
+	CALL	UR.KBV
+	LD	(IX+4),08H
+	CALL	UF.EXEC	;und schreiben
+	LD	B,A
+	DEC	B
+	JR	Z,$+34
+	INC	B
+	PUSH	BC
+;-------------------------------------Verzeichnis schreiben -----------
+	POP	BC
+	DEC	B
+	LD	HL,BC.VTABE+32
+	PUSH	BC
+	LD	DE,UE.PUF
+	LD	BC,32
+	LDIR
+	CALL	UR.KBV
+	CALL	UR.KBR
+	LD	(IX+4),08H	;OHNE RAW
+	CALL	UF.EXEC
+	POP	BC
+	DJNZ	$-23
+;---------------------------------------------------------------------
+KRW:
+	CALL	UR.KRW
+	CALL	UR.KRA
+	LD	A,(UE.BWSA+328H)
+	CP	'D'
+	RET	NZ
+	LD	HL,UE.BWSA+23DH
+	NOP
+	CALL	DRU1
+	LD	HL,UE.BWSA+28DH
+	CALL	DRU1
+	CALL	UE.PRINT
+	LD	HL,UB.DTAB
+	LD	DE,UB.DTAB+1
+	LD	BC,40
+	LD	(HL),20H
+	LDIR
+	LD	A,(BC.VTABE+3)
+	LD	B,A
+	DEC	B
+	LD	HL,BC.VTABE
+	LD	DE,32
+P1:	PUSH	BC
+	ADD	HL,DE
+	PUSH	HL
+	PUSH	DE
+	LD	DE,UB.DTAB
+	CALL	BSTR
+	LD	HL,UB.DTAB
+	LD	B,40
+	CALL	DRU2
+	POP	DE
+	POP	HL
+	POP	BC
+	DJNZ	P1
+	RET
+
+DRU1:
+	LD	B,30
+DRU2:
+	LD	A,(HL)
+	INC	HL
+	CALL	KO.KO02
+	DJNZ	DRU2
+	LD	A,1EH
+	CALL	UE.PRINT
+	RET
+;---------------------------------------------------------------------
+BSTR:
+	LD	BC,6	;Aufbereitung des Verz.Satzes
+	PUSH	BC
+	LDIR		;Transport VTABE--->UB.SATZ
+	INC	DE
+	INC	DE
+	INC	DE
+	LD	BC,2
+	LDIR
+	INC	DE
+	INC	DE
+	INC	DE
+	POP	BC
+	PUSH	BC
+	LDIR
+	INC	DE
+	INC	DE
+	INC	DE
+	POP	BC
+	LDIR
+	INC	DE
+	INC	DE
+	INC	DE
+	LD	BC,3
+	LDIR
+	INC	DE
+	INC	DE
+	INC	DE
+	LD	L,(HL)	;Konvertierung Labelnummer
+	LD	H,0
+	CALL	UC.CVBD2
+	RET
+;----------------------------------------------------------------------
+SPTR:
+	LD	A,(HL)
+	CP	09H	;Soll Satz geloescht werden?
+	JR	NZ,$+4
+	XOR	A
+	LD	(HL),A
+	LD	BC,6
+	PUSH	BC
+	LDIR		;Ruecktransport BWSA--->VTABE
+	INC	HL
+	INC	HL
+	INC	HL
+	LD	BC,2
+	LDIR
+	INC	HL
+	INC	HL
+	INC	HL
+	POP	BC
+	PUSH	BC
+	LDIR
+	INC	HL
+	INC	HL
+	INC	HL
+	POP	BC
+	LDIR
+	INC	HL
+	INC	HL
+	INC	HL
+	LD	BC,3
+	LDIR
+	INC	HL
+	INC	HL
+	INC	HL
+	PUSH	DE
+	EX	DE,HL
+	CALL	DBCVM
+	LD	A,L
+	POP	HL
+	LD	(HL),A
+	RET
+;----------------------------------------------------------------------
+DBCVM:
+	LD	B,2	;FELDLAENGE
+	CALL	UC.CVDB	;KONVERTIER. DEZI-->BINAER
+	RET	NC		;OHNE FEHLER
+	RET	NZ
+	INC	DE	;1.ZEICHEN WAR KEINE DEZ.ZAHL
+	DJNZ	$-6
+	RET
+;----------------------------------------------------------------------
+SBC:
+	LD	BC,32
+	OR	A
+	SBC	HL,BC
+	LD	A,(HL)
+	CP	00H
+	RET	
+;---------------------------------------------------------------------
+ANZ:
+	PUSH	BC
+	LD	L,B
+	LD	H,0
+	LD	DE,3332H
+	CALL	UC.CVBD3
+	INC	DE
+	INC	DE
+	LD	HL,AVZS
+	LD	BC,17
+	LDIR
+	POP	BC
+	RET
+;-----------------------------------------------------------------------
+AVZS:	DB	'Verzeichnissaetze'
+;----------------------------------------------------------------------
+;	END
+	PAGE
+;	PN	KI
+;----------------------------------------------------------------------
+;
+;      INITIALISIEREN VON MRES KASSETTEN
+;
+;----------------------------------------------------------------------
+	DW	$
+	DB	'INIT'
+	LD	A,(UE.BWSA+327H)
+	CALL	U1.TST
+	RET	C
+	PUSH	AF
+	CALL	U1.KTINI
+	POP	AF
+	LD	(IX+3),A	;GERAETEADR. -->TAB
+	CALL	UR.KRE	;RES. EIN
+	BIT	2,(IX)
+	JR	Z,$+7
+	LD	A,19H
+	CALL	UF.ERANZ
+	CALL	UR.KRWW	;RUECKSPULEN MIT WARTEN
+	CALL	UR.KBM	;BM SCHREIBEN
+	LD	HL,UE.PUF	;AUFBAU 1.BLOCK
+	LD	A,40H
+	LD	B,80
+	CALL	U1.TR
+	LD	A,00H
+	LD	B,48
+	CALL	U1.TR
+	LD	(IX+10),80H
+	LD	(IX+4),00H	;CMD SCHREIBEN
+	CALL	UF.EXEC
+	CALL	KO.KO03
+KN:	CALL	U1.BILO
+	LD	A,13
+	LD	(UB.ZN),A	;ZEILENNR. 15
+	LD	HL,UA.KNAME	;ABFRAGE KASS.NAME
+	CALL	UR.MIMO
+	RET	C
+	LD	B,6
+	LD	DE,UE.PUF+4	;NAME IN PUFFER
+	CALL	UC.KONV	;MIT KONVERTIERUNG IN DKOI-CODE
+NMR:
+	LD	HL,UA.NR	;ABFR. KASS.NUMMER
+	CALL	UR.MIMO
+	JR	C,KN	;BEI SYS-TASTE ZU VORHERIGER
+	LD	B,3
+	LD	DE,UE.PUF+37
+	CALL	UC.KONV
+KM:	LD	HL,UA.KOMMT	;ABFR. KOMMENTAR
+	CALL	UR.MIMO
+	JR	C,KN
+	LD	B,11
+	LD	DE,UE.PUF+40
+	CALL	UC.KONV
+	CALL	UF.EXEC	;3.BLOCK SCHREIBEN
+	CALL	UR.KBM	;BM , 1.LABEL BEENDET
+	LD	HL,UA.ALTR
+	LD	DE,UE.PUF
+	LD	BC,20H
+	LDIR		;AUSGLEICH LFWSTLNZ->PUFFER
+	LD	(IX+10),20H	;NEUE BLOCKLAENGE
+	LD	(IX+4),00H
+	CALL	UF.EXEC	;SCHREIBEN
+	LD	HL,UA.DS
+	LD	DE,UE.PUF
+	LD	BC,32
+	LDIR		;DS-SATZ --> PUFFER
+	CALL	UF.EXEC
+	LD	A,0A5H
+	LD	B,32
+	LD	HL,UE.PUF
+	CALL	U1.TR
+	LD	B,68H	;103 VERZ.SAETZE
+VERZ:
+	PUSH	BC
+	CALL	UF.EXEC
+	POP	BC
+	DJNZ	VERZ
+	CALL	UR.KBM
+	CALL	U1.VS1	;1.DATEIVORSATZ -->PUFFER
+	LD	(IX+4),00H
+	CALL	UF.EXEC
+	CALL	UR.KSL	;SCHLUSSLUECKE SCHREIBEN
+	CALL	UR.KRW
+	CALL	UR.KRA
+	RET
+;---------------------------------------------------------------------
+;	END
+	PAGE
+;	PN	KH
+;**********************************************************************
+;
+;   Kommando:
+;        KRDx...Block einlesen und anzeigen
+;               zusaetlich werden die entsprechenden Puffer-
+;               adressen angezeigt.
+;        KWRx...Block schreiben, standardmaessig nach 'KRDx'
+;               Ansonsten muessen Blockadresse und Blocklaenge in der
+;               Verstaendigungstabelle eingetragen werden.
+;
+;**********************************************************************
+	DW	$
+	DB	'KRD1'
+	JR	RDSTA
+;
+	DW	$
+	DB	'KRD2'
+RDSTA:
+	CALL	U1.KTINI	;Initialisierung E/A-Tab.
+	LD	A,(UE.BWSA+325H)
+	AND	0FH
+	LD	(IX+3),A	;Subadresse eintragen
+RES:
+	CALL	UR.KRE	;Reservieren
+RD1:
+	LD	(IX+4),02H	;Block wiedergeben
+	CALL	UF.EXEC
+	LD	A,(IX+9)
+	OR	(IX+10)
+	JP	Z,RDBM
+	CALL	BILO
+	CALL	ANZBL	;Block anzeigen
+RD3:
+	CALL	UR.TAREP	;Tastaturabfrage
+	CP	089H
+	JR	Z,RD1	;---> P 10
+	CP	08BH
+RD6:
+	CALL	Z,RD2	;---> P 12
+	JR	Z,RD1
+	CP	0CDH
+RD4:
+	JR	Z,SYSRT	;---> SYS
+	CP	85H
+	CALL	Z,KBRS	;---> P 6
+	CP	86H
+	LD	(IX+10),1
+	PUSH	AF
+	CALL	Z,UR.KLV	;---> P 7
+	POP	AF
+	JR	Z,RD3
+	CP	87H
+	PUSH	AF
+	CALL	Z,UR.KRA	;---> P 8
+	POP	AF
+	JR	Z,RD3
+	CP	88H
+	PUSH	AF
+	CALL	Z,UR.KLR	;---> P 9
+	POP	AF
+	JR	Z,RD3
+	CP	0E2H	;CTRL,US,B : BM SCHREIBEN
+	PUSH	AF
+	CALL	Z,UR.KBM
+	POP	AF
+	JP	Z,RD3
+	CP	83H
+	JP	Z,RES	;---> P 4
+	CP	84H
+	CALL	Z,UR.KRWW	;---> P 5
+	JP	RD3
+SYSRT:
+	CALL	BILO	;Systemruecksprung
+	RET
+RD2:
+	PUSH	AF	;Flags retten
+	CALL	UR.KBR	;Block ruecksetzen
+	CALL	UR.KBR
+	POP	AF
+	RET
+RDBM:
+	CALL	BILO
+	LD	HL,UA.ZKBM	;"Bandmarke"
+	LD	DE,UE.BWSA
+	LD	BC,9
+	LDIR
+	JP	RD3
+ANZBL:
+	CALL	BILO
+ANZB1:
+	LD	HL,UE.PUF
+	CALL	KH.AZBLD	;Bild anzeigen (24 Zeilen)
+	RET		; IN...HL:=akt. Pufferadresse
+KH.AZBLD:
+	LD	B,24	; 24 Zeilen anzeigen
+	LD	DE,UE.BWSA
+KH.AZBL1:
+	PUSH	BC
+	CALL	AZ1Z	; 1 Zeile anzeigen
+	POP	BC
+	PUSH	HL	;akt. Pufferadresse retten
+	EX	DE,HL
+	LD	DE,80
+	ADD	HL,DE	;neuen Zeilenanfang berechnen
+	EX	DE,HL
+	POP	HL
+	DJNZ	KH.AZBL1
+	RET
+;                                IN...HL:= Pufferadresse
+;                                     DE:= Zeilenanfang
+AZ1Z:
+	PUSH	DE	;eine Zeile anzeigen
+	PUSH	HL
+	PUSH	DE
+	POP	HL
+	LD	BC,64
+	ADD	HL,BC
+	PUSH	HL
+	POP	BC	;BC:= Anfang ASCII-Darstellung
+	POP	HL
+	CALL	AZADR	;Adresse anzeigen
+	INC	DE
+	INC	DE
+	CALL	KH.AZ4BY	;1. Vierergruppe
+	INC	DE
+	INC	DE
+	CALL	KH.AZ4BY	;2.      "
+	INC	DE
+	INC	DE
+	CALL	KH.AZ4BY	;3.      "
+	INC	DE
+	INC	DE
+	CALL	KH.AZ4BY	;4.      "
+	POP	DE
+	RET
+AZADR:
+	LD	A,H	;Anzeige der Adresse
+	CALL	UC.CVBX+2
+	LD	A,L
+	CALL	UC.CVBX+2
+	RET
+KH.AZ4BY:
+	XOR	A	;Anzeige einer Vierergruppe
+	LD	(UB.PAR1),A
+AZ4B0:
+	LD	A,(HL)
+	PUSH	AF
+	CALL	UC.CVBX+2	;Code als Hexadezimalzahl
+	POP	AF
+	INC	DE
+	INC	HL
+	CP	20H
+	JR	C,KH.AZ4B1	;nicht darstellbar
+	CP	7FH
+	JR	NC,KH.AZ4B1	;nicht darstellbar
+AZ4B3:
+	LD	(BC),A	;Code als ASCII-Zeichen
+	INC	BC
+	CALL	BLEVG	;Test auf Blockende
+	LD	A,(UB.PAR1)
+	INC	A
+	CP	4
+	RET	Z
+	LD	(UB.PAR1),A
+	JR	AZ4B0
+KH.AZ4B1:
+	LD	A,07FH
+	JR	AZ4B3
+BLEVG:
+	PUSH	DE	;Blockendetest
+	PUSH	HL
+	LD	DE,UE.PUF	;DE:= Pufferanfang
+	OR	A
+	SBC	HL,DE	;HL:= Anzahl der angezeigten
+	EX	DE,HL
+	CALL	XY.LIDX
+	DB	9
+	OR	A
+	SBC	HL,DE
+	POP	HL
+	POP	DE
+	JR	Z,BLEV1
+	RET
+BLEV1:
+	LD	B,12
+BLEV2:
+	INC	SP
+	DJNZ	BLEV2
+	RET		;---> Anzeige beendet
+;*********************************************************************
+	DW	$
+	DB	'KWR1'
+	JR	WRSTA
+;
+	DW	$
+	DB	'KWR2'
+WRSTA:
+	LD	A,(UE.BWSA+325H)
+	LD	IX,UB.KTAB	;Block aufzeichnen
+	BIT	2,(IX)
+	JR	Z,$+9
+	PUSH	AF
+	LD	A,19H
+	CALL	UF.ERANZ
+	POP	AF
+	AND	0FH
+	LD	(IX+3),A
+	LD	(IX+4),00H
+	CALL	UF.EXEC
+	CALL	UR.KBR
+	JP	RD1
+KBRS:
+	CALL	UR.KBR
+	CALL	BILO
+	POP	DE
+	RET
+;----------------------------------------------------
+BILO:
+	LD	HL,3000H
+	LD	BC,800H
+	LD	(HL),20H
+	PUSH	HL
+	POP	DE
+	INC	DE
+	LDIR
+	RET
+;------------------------------------------------------
+;	END
+	PAGE
+;	PN	KX
+;------------------------------------------------------------------
+;
+;          KOPIEREN VON MRES-KASSETTEN       TEIL1
+;
+;----------------------------------------------------------------
+	DW	$
+	DB	'KOPI'
+	CALL	U1.KTINI
+	LD	DE,BC.TAB1
+	LD	HL,UE.BWSA+327H
+	LD	A,(HL)
+	CALL	U1.TST
+	RET	C
+	LD	(DE),A
+	INC	HL
+	XOR	33H
+	CP	(HL)
+	RET	NZ
+	XOR	30H
+	INC	DE
+	LD	(DE),A
+	LD	A,(UE.BWSA+326H)
+	CP	'J'
+	JR	Z,$+7	;BEI KOPIJ WERDEN WEITERE PARAMETER
+	INC	HL	;IGNORIERT
+	INC	HL
+	LD	A,(HL)
+	CP	20H
+	PUSH	AF
+	JR	NZ,$+14
+	CALL	U1.EIN
+	CALL	U1.KRWE
+	CALL	U1.AUS
+	CALL	U1.KRWE
+	CALL	UPA
+	POP	AF
+	JR	Z,$+21
+	CP	'A'
+	JR	Z,$+12
+	CP	'L'
+	JR	NZ,$+13
+	CALL	U1.COPB
+	JP	RSPFR
+	CALL	U1.COPB2
+	JR	$-3
+;-------------------------------------------------------------------
+	CALL	U1.EIN
+	CALL	U1.DSVG
+	CALL	U1.KBR4
+	CALL	U1.BREAD
+	LD	HL,UA.Z7E
+	LD	DE,3163H
+	LD	BC,31
+	LDIR
+	LD	HL,UA.GER
+	LD	DE,31EAH
+	CALL	U1.INFO
+	LD	HL,UA.KNAME+3
+	LD	DE,323AH
+	CALL	U1.INFO
+	LD	HL,UA.NR+3
+	LD	DE,328AH
+	CALL	U1.INFO
+	LD	HL,UA.KOMMT+3
+	LD	DE,32DAH
+	CALL	U1.INFO
+	LD	DE,3203H
+	LD	A,(BC.TAB1)
+	CALL	UC.CVBX+2
+	LD	DE,321BH
+	LD	A,(BC.TAB1+1)
+	CALL	UC.CVBX+2
+	LD	HL,UE.PUF+4
+	LD	DE,3253H
+	LD	B,6
+	CALL	UC.DKONV
+	LD	HL,UE.PUF+37
+	LD	DE,32A3H
+	LD	B,3
+	CALL	UC.DKONV
+	LD	DE,32F3H
+	LD	B,11
+	CALL	UC.DKONV
+	CALL	UR.KBV
+	CALL	UR.KBV
+	CALL	U1.BREAD
+	LD	A,(UE.PUF+3)
+	DEC	A
+	JP	Z,KX.ENDR
+	CALL	U1.VERIN
+	CALL	U1.AUS
+	CALL	U1.DSVG
+	CALL	U1.KBR4
+	LD	(IX+4),02H
+	CALL	UF.EXEC
+	LD	HL,UE.PUF+4
+	LD	DE,326BH
+	LD	B,6
+	CALL	UC.DKONV
+	LD	HL,UE.PUF+37
+	LD	DE,32BBH
+	LD	B,3
+	CALL	UC.DKONV
+	LD	DE,330BH
+	LD	B,11
+	CALL	UC.DKONV
+	CALL	UR.KBV
+	CALL	UR.KBV
+	LD	(IX+4),02H
+	CALL	UF.EXEC
+	CALL	U1.BILO
+	LD	DE,BC.VTABA
+	CALL	U1.VERNI
+	CALL	U1.VORST
+	JP	KY.MD
+RSPFR:
+	PUSH	AF
+	INC	HL
+	INC	HL
+	LD	A,(HL)
+	OR	A
+	CP	'R'
+	JR	NZ,$+8
+	JR	$+3
+KX.ENDR:
+	PUSH	AF
+	SCF
+	JR	$+6
+	CP	'F'
+	JR	NZ,$+23
+	CALL	U1.EIN
+	CALL	C,UR.KRW
+	CALL	UR.KRA
+	CALL	U1.AUS
+	CALL	UR.KRE
+	CALL	C,UR.KRWW
+	CALL	UR.KRA
+	POP	AF
+	RET
+KX.EXEC2:
+	PUSH	AF
+	RES	7,(IX)
+	LD	(IX+1),0
+	CALL	KR.KARO
+	BIT	7,(IX)
+	JR	Z,$+12
+	LD	A,(IX+1)
+	CP	14H
+	JR	Z,$+7
+	CALL	UF.ERANZ
+	POP	AF
+	RET
+	RES	7,(IX)
+	CALL	U1.AUS
+	CALL	UR.KSL
+	POP	AF
+	LD	B,6
+	INC	SP
+	DJNZ	$-1	;STACK BERICHTIGEN
+	JR	RSPFR
+UPA:
+	CALL	U1.EIN
+	CALL	UR.KRE
+	LD	(IX+0),0
+	CALL	U1.AUS
+	CALL	UR.KRE
+	BIT	2,(IX)
+	JR	Z,$+7
+	POP	DE
+	LD	A,19H
+	CALL	UF.ERANZ
+	RET
+;	END
+	PAGE
+;	PN	KY
+;---------------------------------------------------------------------
+;
+;          KOPIEREN VON MRES-KASSETTEN           TEIL 2
+;
+;--------------------------------------------------------------------
+KY.MD:
+	CALL	U1.BILO
+	LD	HL,UA.KOPFR
+	CALL	SATR
+	LD	A,13
+	LD	(UB.ZN),A
+	LD	HL,BC.VTABE+32
+	LD	IY,BC.TAB2
+	LD	(IY+0),0FFH
+	LD	A,(BC.VTABE+3)
+	LD	B,A
+	DEC	B
+;--------------------------------ABFRAGEZYKLUS------------------------
+KY.DFR:
+	PUSH	BC
+	LD	DE,UB.SATZ+26
+	LD	BC,6
+	LDIR
+	INC	DE
+	INC	DE
+	LD	BC,2
+	LDIR
+	LD	BC,24
+	ADD	HL,BC
+	PUSH	HL
+	LD	HL,UB.SATZ
+	CALL	UR.MIMO
+	CALL	C,KU.ZEIR
+	CALL	JHL	;BEI KOPIJ WIRD J GESETZT
+	LD	A,(HL)
+	CP	'J'
+	CALL	NZ,KU.TAB2L
+	POP	HL
+	LD	BC,9
+	OR	A
+	SBC	HL,BC
+	LD	A,(HL)
+	LD	(IY+0),A
+	INC	IY
+	LD	(IY+0),0FFH
+	ADD	HL,BC
+	LD	A,(BC.VTABA+3)
+	CP	01H
+	JR	Z,EZYK1
+	PUSH	HL
+	LD	BC,32
+	OR	A
+	SBC	HL,BC
+	EX	DE,HL
+	POP	HL
+	LD	IX,BC.VTABA
+	LD	B,A
+	DEC	B
+VZVGL:
+	PUSH	BC
+	LD	BC,32
+	ADD	IX,BC
+	PUSH	IX
+	LD	B,7
+	PUSH	DE
+SVGL:
+	LD	A,(DE)
+	CP	(IX+0)
+	JR	NZ,NDA
+	INC	IX
+	INC	DE
+	DJNZ	SVGL
+	CALL	KU.DD	;DATEI SCHON VORHANDEN
+NDA:
+	POP	DE
+	POP	IX
+	POP	BC
+	DJNZ	VZVGL
+EZYK1:
+	POP	BC
+	DJNZ	KY.DFR
+;---------------------------------------------------------------------
+KY.ATAA:
+	LD	B,3	;WARTESCHLEIFE FUER
+	LD	HL,0FFFFH
+	DEC	HL
+	LD	A,H
+	OR	L
+	JR	NZ,$-3
+	DJNZ	$-8
+	LD	HL,UA.EABFR
+	CALL	SATR
+	LD	HL,UB.SATZ
+	CALL	UR.MIMO
+	JR	C,$-6
+	CALL	JHL
+	LD	A,(HL)
+	CP	'J'
+	JP	NZ,KY.MD
+;--------------------------------Labelnummern fuer Ausgabe ---------
+ATAB:
+	LD	B,0
+	LD	HL,BC.TAB2
+	LD	DE,BC.TAB3
+	LD	A,(HL)
+	CP	0FFH	;KEINE DATEI KOPIEREN
+	JP	Z,KX.ENDR
+	LD	A,(BC.VTABA+1)
+ATABE:
+	LD	(DE),A
+	INC	HL
+	INC	DE
+	INC	B
+	PUSH	AF
+	LD	A,(HL)
+	CP	0FFH
+	JR	Z,WEI
+	POP	AF
+	INC	A
+	JR	ATABE
+;------------------------------TAB:NR DER VERZ.EINTRAGUNGEN (EING.)------
+WEI:
+	POP	AF
+	PUSH	BC
+	XOR	A
+	LD	D,A
+	LD	A,(BC.VTABE+3)
+	LD	B,A
+	DEC	B
+	LD	HL,BC.TAB2
+	LD	IY,BC.TAB2A
+	LD	IX,BC.VTABE+32
+ZYK:
+	INC	D
+	LD	A,(HL)
+	CP	(IX+23)
+	JR	NZ,NE
+	LD	A,D
+	LD	(IY+0),A
+	LD	(IY+1),0FFH
+	INC	HL
+	INC	IY
+NE:	PUSH	BC
+	LD	BC,32
+	ADD	IX,BC
+	POP	BC
+	DJNZ	ZYK
+;------------------------------------AUFBAU AUSGABEVERZ.-----
+	LD	A,(BC.VTABA+3)
+	LD	B,A
+	CP	01H
+	JR	Z,EVZ
+	LD	HL,BC.VTABA
+	CALL	KU.VVOR
+	JR	EVZ1
+EVZ:
+	LD	HL,BC.VTABA+32
+EVZ1:
+	LD	IX,BC.TAB2A
+	LD	IY,BC.TAB3
+	EX	DE,HL
+	LD	HL,BC.VTABE+32
+	LD	A,(IX+0)
+	CP	01H
+	JR	Z,VSTR
+	DEC	A
+	LD	B,A
+	CALL	KU.VVOR
+VSTR:
+	LD	BC,32
+	LDIR
+	LD	A,(IY+0)
+	EX	DE,HL
+	LD	BC,9
+	OR	A
+	SBC	HL,BC
+	LD	(HL),A
+	ADD	HL,BC
+	EX	DE,HL
+	LD	A,(IX+1)
+	CP	0FFH
+	JR	Z,COPY
+	SUB	(IX+0)
+	DEC	A
+	LD	B,A
+	CP	00H
+	CALL	NZ,KU.VVOR
+	INC	IY
+	INC	IX
+	JR	VSTR
+;------------------------------------VERZ.SCHREIBEN (NUR NEUE SAETZE)---
+COPY:
+	LD	IX,UB.KTAB
+	CALL	U1.KTIN1
+	LD	(IX+10),20H
+	CALL	U1.AUS
+	LD	A,(BC.VTABA+3)
+	LD	B,A
+	CALL	UR.KBV	;AUSGABEKASSETTE
+	DEC	A
+	JR	NZ,$-4	;VORSTELLEN BIS HINTER LETZTEN ALTEN
+	LD	HL,BC.VTABA	;VERZ.SATZ
+	LD	DE,32
+	ADD	HL,DE
+	DJNZ	$-4	;AUSGABEVERZ.ZEIGER
+	POP	BC
+	LD	A,B
+	PUSH	AF
+VSCHR:
+	LD	DE,UE.PUF
+	LD	BC,32
+	LDIR
+	CALL	UR.KBV
+	CALL	UR.KBR
+	LD	(IX+4),08H
+	CALL	UF.EXEC
+	DEC	A
+	JR	NZ,VSCHR
+;----------------------------------------------------------------
+	LD	DE,33FAH	;''ES WIRD KOPIERT''
+	LD	HL,EWK
+	LD	BC,16
+	LDIR
+;------------------------------KOPIEREN--------------------------
+	LD	HL,BC.TAB2
+	LD	DE,BC.TAB3
+	LD	IY,BC.TAB2A
+	LD	A,(DE)
+	LD	B,A
+	INC	B
+	CALL	UR.POSIK
+	LD	A,(HL)
+	LD	B,A
+	INC	B
+KOPV:
+	CALL	U1.EIN
+	CALL	UR.POSIK
+KOP:
+	CALL	U1.BREAD
+	LD	A,(HL)
+	CP	01H
+	CALL	Z,U1.VSX
+;------------------------ANZEIGE WELCHE DATEI KOPIERT WIRD-------------
+	PUSH	HL
+	PUSH	DE
+	LD	A,(IY+0)
+	LD	B,A
+	DEC	B
+	LD	HL,BC.VTABE+32
+	CP	01H
+	JR	Z,KOPAN
+	CALL	KU.VVOR
+KOPAN:
+	LD	DE,34F0H
+	LD	BC,6
+	LDIR
+	INC	DE
+	INC	DE
+	LD	BC,2
+	LDIR
+	INC	IY
+	POP	DE
+	POP	HL
+;--------------------------------------------------------------------
+	LD	A,(DE)
+	CP	01H
+	CALL	Z,U1.VS1
+	LD	(UE.PUF),A
+	CALL	U1.BWRIT
+	CALL	U1.COPB
+	INC	HL
+	LD	A,(HL)
+	CP	0FFH
+	JR	Z,EOV
+	DEC	HL
+	SUB	(HL)
+	INC	HL
+	INC	DE
+	LD	B,A
+	CP	01H
+	JR	NZ,KOPV
+	JR	KOP
+;-------------------------------------------------------------
+EOV:
+	CALL	U1.VSX
+	LD	A,(BC.VTABA+1)
+	LD	B,A
+	POP	AF
+	PUSH	AF
+	ADD	A,B
+	LD	(UE.PUF),A
+	CALL	U1.KTIN1
+	LD	(IX+10),20H
+	CALL	U1.BWRIT
+	CALL	UR.KSL
+	CALL	KX.ENDR
+	CALL	UR.KRE
+	CALL	U1.DSVG
+	POP	AF
+	PUSH	AF
+	ADD	A,C	;NEXT RECORD UND
+	LD	(UE.PUF+1),A
+	POP	AF
+	ADD	A,B	;ANZAHL VERZ.EINTR. KORRIGIEREN
+	LD	(UE.PUF+3),A
+	CALL	UR.KBR
+	LD	(IX+4),08H
+	CALL	UF.EXEC	;NEUEN DS-SATZ SCHREIBEN
+	CALL	UR.KRW
+	CALL	UR.KRA
+	RET
+;---------------------------------------------------------------
+EWK:	DB	'Es wird kopiert:'
+;---------------------------------------------------------------
+JHL:
+	LD	A,(UB.PAR2)
+	CP	'J'
+	JR	NZ,$+3
+	LD	(HL),A
+	RET
+;--------------------------------------------------------------
+SATR:
+	LD	DE,UB.SATZ
+	LD	BC,54
+	LDIR
+	LD	A,(UE.BWSA+326H)
+	CP	'J'
+	CALL	Z,AJ
+	LD	(UB.PAR2),A
+	RET
+AJ:	PUSH	AF
+	XOR	A
+	LD	(UB.SATZ),A
+	POP	AF
+	RET
+;--------------------------------------------------------------
+;	END
+	PAGE
+;	PN	KU
+;------------------------------------------------------------------
+;
+;          UNTERPROGRAMME FUER KOPI
+;
+;--------------------------------------------------------
+KU.VVOR:
+	PUSH	BC
+	LD	BC,32
+	ADD	HL,BC
+	POP	BC
+	DJNZ	KU.VVOR
+	RET
+KU.TAB2L:
+	POP	DE
+	POP	HL
+	LD	A,(IY+0)
+	CP	0FFH
+	JR	Z,$+36
+	PUSH	IY
+	LD	B,00H
+	LD	A,(IY+0)
+	CP	0FFH
+	JR	NZ,$+4
+	JR	$+7
+	INC	IY
+	INC	B
+	JR	$-12
+	POP	IY
+	PUSH	IY
+	LD	A,(IY+1)
+	LD	(IY+0),A
+	INC	IY
+	DJNZ	$-8
+	POP	IY
+	POP	BC
+	DEC	B
+	LD	A,B
+	CP	00H
+	JR	Z,$+5
+	JP	KY.DFR
+	JP	KY.ATAA
+KU.ZEIR:
+	POP	DE
+	POP	HL
+	LD	A,(UB.ZN)
+	SUB	2
+	CP	13
+	JR	NC,$+6
+	POP	BC
+	JP	KY.MD
+	LD	(UB.ZN),A
+	LD	BC,41
+	OR	A
+	SBC	HL,BC
+	DEC	IY
+	LD	A,(HL)
+	CP	(IY+0)
+	CALL	Z,DECIY
+	INC	IY
+	LD	BC,23
+	OR	A
+	SBC	HL,BC
+	POP	BC
+	INC	B
+	JR	$-52
+DECIY:
+	DEC	IY
+	RET
+KU.DD:
+	PUSH	HL
+	LD	HL,UA.VORH
+	CALL	UR.MIMO
+	JR	C,$+25
+	LD	A,(HL)
+	CP	'J'
+	JR	Z,$+14
+	DEC	IY
+	LD	(IY+0),0FFH
+	LD	DE,80
+	OR	A
+	SBC	HL,DE
+	LD	(HL),20H
+	LD	HL,UB.ZN
+	DEC	(HL)
+	POP	HL
+	RET
+	POP	HL
+	POP	DE
+	LD	IX,UB.KTAB
+	JP	KX.ENDR
+;	END
+	PAGE
+;	PN	KO
+
+;KORREKTUREN FUER KASSETTENPROGRAMME
+
+;------------------------------------
+
+KO.KO01:
+	LD	(IX+5),2	;FUER FD19
+	JP	UF.EXEC
+
+;------------------------------------
+
+KO.KO02:
+	RES	7,A	;FUER KV17 (DRUCKERAUSGABE)
+	CP	20H
+	JR	NC,$+4
+	LD	A,2AH
+	JP	UE.PRINT
+
+;------------------------------------
+
+KO.KO03:
+	CALL	UF.EXEC	;FUER KI14
+	LD	B,49
+	DEC	HL
+	DJNZ	$-1
+	LD	(HL),0D9H
+	RET
+
+;------------------------------------
+
+KO.KO04:
+	LD	(IX+5),C	;FUER UF19
+	JP	UF.EXEC+4
+
+;------------------------------------
+
+KO.KO05:
+	LD	C,(IX+5)	;FUER UF19
+	LD	A,31H
+	CP	C
+	JR	Z,KO051	;BEREITSIGNAL NICHT BEI RESERVIEREN EIN
+	BIT	4,(IX)	;TEST BEREIT
+	JR	Z,KO051	;Z=1 : GERAET IST BEREIT
+
+	LD	B,15
+	LD	(IX+5),31H
+KO052:
+	PUSH	BC
+	CALL	KR.KARO
+	POP	BC
+	DJNZ	KO052	;15x RESERVIEREN EIN
+
+	LD	(IX+4),C
+	BIT	4,(IX)	;GERAET JETZT BEREIT ?
+	JP	NZ,UF.ERA1
+
+KO051:
+	CALL	KR.KARO
+	JP	UF.EXEC1
+
+;------------------------------------
+
+;	END
+	PAGE
+;	PN	BC
+;----------------------------------------------------------------------
+;
+;        BEREICHE FUER KASSETTENKOPIEREN
+;
+;----------------------------------------------------------------------
+BC.TAB1    EQU	0E000H
+BC.EGG     EQU	0	;EINGABEGERAET
+BC.AGG     EQU	1	;AUSGABEGERAET
+BC.VTABA   EQU	0E002H
+BC.VTABE   EQU	0E002H+3200
+BC.TAB2    EQU	0E002H+3200+3200
+BC.TAB2A   EQU	0E002H+3200+3200+104
+BC.TAB3    EQU	0E002H+3200+3200+104+104
+BC.END     EQU	0E002H+3200+3200+104+104+104
+;	ORG	0E000H
+;BC.TAB1:   DS	2
+;
+;BC.EGG     EQU	0	;EINGABEGERAET
+;BC.AGG     EQU	1	;AUSGABEGERAET
+;----------------------------------------------------------------------
+;BC.VTABA:  DS	3200
+;BC.VTABE:  DS	3200
+;----------------------------------------------------------------------
+;BC.TAB2:   DS	104
+;BC.TAB2A:  DS	104
+;BC.TAB3:   DS	104
+;BC.END     EQU	$
+;----------------------------------------------------------------------
+;	END
+

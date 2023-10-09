@@ -1,0 +1,1032 @@
+	PAGE
+;	PN	CC05
+;****************************************************************
+;*               S  Y  S  4    --- Bedienungsprozessor  (C C P) *
+;*                                 console command processor    *
+;*                                 entspricht CP/M version 2.2  *
+;*  Version      -----------------------------------------------*
+;*               reassembliert: M. Herbote --- K EAW  ZFT (WFT) *
+;*  V 4 . 1      -----------------------------------------------*
+;*               Stand        : 19. Juni 1984                   *
+;****************************************************************
+	.PHASE	0DE00H
+CCP	EQU	$
+D055:	JP	J170
+	JP	J165
+
+D060:	DB	07FH
+D065:	DB	0
+D070	EQU	$
+SIG:	DB	'DEG/SYS4'
+
+	DEFB	120	;ORG D055+88H
+
+D075:	DW	SIG
+D080:	DW	0
+
+C015:	LD	E,A	;Konsolenausgabe
+	LD	C,2
+	JP	BDENT
+
+C020:	PUSH	BC
+	CALL	C015
+D085:	POP	BC
+	RET
+
+C025:	LD	A,00DH
+	CALL	C020
+	LD	A,00AH
+	JP	C020
+
+C030:	LD	A,020H
+	JP	C020
+
+C035:	PUSH	BC
+	CALL	C025
+	POP	HL
+C040:	LD	A,M
+	OR	A
+	RET	Z
+	INC	HL
+	PUSH	HL
+	CALL	C015
+	POP	HL
+	JP	C040
+
+C045:	LD	C,13	;"Disketten"system zuruecksetzen
+	JP	BDENT
+
+C050:	LD	E,A	;Bezugslaufwerk
+	LD	C,14	;Bezugslaufwerk festlegen
+	JP	BDENT
+
+J005:	CALL	BDENT
+	LD	(D220),A
+	INC	A
+	RET
+
+C055:	LD	C,15	;Datei eroeffnen
+	JP	J005
+
+C060:	XOR	A
+	LD	(D215),A
+	LD	DE,D195
+	JP	C055
+
+C065:	LD	C,16	;Datei schliessen
+	JP	J005
+
+J010:	LD	C,17	;den ersten    Eintrag suchen
+	JP	J005
+
+C070:	LD	C,18	;den folgenden Eintrag suchen
+	JP	J005
+
+C075:	LD	DE,D195
+	JP	J010
+
+C080:	LD	C,19	;Datei(en) loeschen
+	JP	BDENT
+
+J015:	CALL	BDENT
+	OR	A
+	RET
+
+C085:	LD	C,20	;Aufzeichnung lesen
+	JP	J015
+
+C090:	LD	DE,D195
+	JP	C085
+
+C095:	LD	C,21	;Aufzeichnung schreiben
+	JP	J015
+
+C100:	LD	C,22	;Datei erzeugen
+	JP	J005
+
+C105:	LD	C,23	;Datei umbenennen
+	JP	BDENT
+
+C110:	LD	E,-1
+C115:	LD	C,32	;Benutzernummer verwalten
+	JP	BDENT
+
+C120:	CALL	C110
+D090:	ADD	A,A
+	ADD	A,A
+	ADD	A,A
+	ADD	A,A
+	LD	HL,D225
+	OR	(HL)
+	LD	(D005),A
+	RET
+
+C125:	LD	A,(D225)
+	LD	(000004H),A
+	RET
+
+C130:	CP	'a'	;Klein-  ===> Grossbuchstaben
+	RET	C
+	CP	'{'
+	RET	NC
+	AND	05FH
+	RET
+
+C135:	LD	A,(D170)
+	OR	A
+	JP	Z,J020
+	LD	A,(D225)
+	OR	A
+	LD	A,0
+	CALL	NZ,C050
+	LD	DE,D175
+	CALL	C055
+	JP	Z,J020
+	LD	A,(D185)
+	DEC	A
+	LD	(D190),A
+	LD	DE,D175
+	CALL	C085
+	JP	NZ,J020
+	LD	DE,D065
+	LD	HL,DBUF
+	LD	B,080H
+	CALL	C225
+	LD	HL,D180
+	LD	M,000H
+	INC	HL
+	DEC	M
+	LD	DE,D175
+	CALL	C065
+	JP	Z,J020
+	LD	A,(D225)
+	OR	A
+	CALL	NZ,C050
+	LD	HL,D070
+	CALL	C040
+	CALL	C140
+	JP	Z,J025
+	CALL	C160
+	JP	J175
+
+J020:	CALL	C160
+	CALL	C120
+	LD	C,00AH
+	LD	DE,D060
+	CALL	BDENT
+D095:	CALL	C125
+J025:	LD	HL,D065
+	LD	B,M
+J030:	INC	HL
+	LD	A,B
+	OR	A
+	JP	Z,J035
+	LD	A,M
+	CALL	C130
+	LD	M,A
+	DEC	B
+	JP	J030
+
+J035:	LD	M,A
+	LD	HL,D070
+	LD	(D075),HL
+	RET
+
+C140:	LD	C,11	;Konsolenstatus abfragen
+	CALL	BDENT
+	OR	A
+	RET	Z
+	LD	C,1	;Konsoleneingabe
+	CALL	BDENT
+	OR	A
+	RET
+
+C145:	LD	C,25	;Bezugslaufwerk ermitteln
+	JP	BDENT
+
+C150:	LD	DE,DBUF
+C155:	LD	C,26	;Datenpuffer festlegen
+	JP	BDENT
+
+C160:	LD	HL,D170
+	LD	A,M
+	OR	A
+	RET	Z
+	LD	M,000H
+	XOR	A
+	CALL	C050
+	LD	DE,D175
+	CALL	C080
+	LD	A,(D225)
+	JP	C050
+
+C165:	LD	DE,D100
+	LD	HL,BDOS
+	LD	B,006H
+J040:	LD	A,(DE)
+	CP	M
+	JP	NZ,J185
+	INC	DE
+	INC	HL
+	DEC	B
+	JP	NZ,J040
+	RET
+
+C170:	CALL	C025
+	LD	HL,(D080)
+J045:	LD	A,M
+	CP	' '
+	JP	Z,J050
+	OR	A
+	JP	Z,J050
+	PUSH	HL
+	CALL	C015
+	POP	HL
+	INC	HL
+	JP	J045
+
+J050:	LD	A,03FH
+	CALL	C015
+	CALL	C025
+	CALL	C160
+	JP	J175
+
+C175:	LD	A,(DE)
+	OR	A
+	RET	Z
+	CP	' '
+	JP	C,C170
+	RET	Z
+	CP	'='
+	RET	Z
+	CP	'_'
+	RET	Z
+	CP	'.'
+	RET	Z
+	CP	':'
+	RET	Z
+	CP	';'
+	RET	Z
+	CP	'<'
+	RET	Z
+	CP	'>'
+	RET	Z
+	RET
+
+C180:	LD	A,(DE)
+	OR	A
+	RET	Z
+	CP	020H
+	RET	NZ
+	INC	DE
+	JP	C180
+
+C185:	ADD	A,L
+	LD	L,A
+	RET	NC
+	INC	H
+	RET
+
+C190:	LD	A,000H
+C195:	LD	HL,D195
+	CALL	C185
+	PUSH	HL
+	PUSH	HL
+	XOR	A
+	LD	(D230),A
+	LD	HL,(D075)
+	EX	DE,HL
+	CALL	C180
+	EX	DE,HL
+	LD	(D080),HL
+	EX	DE,HL
+	POP	HL
+	LD	A,(DE)
+	OR	A
+	JP	Z,J055
+	SBC	A,040H
+	LD	B,A
+	INC	DE
+	LD	A,(DE)
+	CP	03AH
+	JP	Z,J060
+	DEC	DE
+J055:	LD	A,(D225)
+	LD	M,A
+	JP	J065
+
+J060:	LD	A,B
+	LD	(D230),A
+	LD	M,B
+	INC	DE
+J065:	LD	B,008H
+J070:	CALL	C175
+	JP	Z,J090
+	INC	HL
+	CP	02AH
+	JP	NZ,J075
+	LD	M,03FH
+	JP	J080
+
+J075:	LD	M,A
+	INC	DE
+J080:	DEC	B
+	JP	NZ,J070
+J085:	CALL	C175
+	JP	Z,J095
+	INC	DE
+	JP	J085
+
+J090:	INC	HL
+	LD	M,020H
+	DEC	B
+	JP	NZ,J090
+J095:	LD	B,003H
+	CP	02EH
+	JP	NZ,J120
+	INC	DE
+J100:	CALL	C175
+	JP	Z,J120
+	INC	HL
+	CP	02AH
+	JP	NZ,J105
+	LD	M,03FH
+	JP	J110
+
+J105:	LD	M,A
+	INC	DE
+J110:	DEC	B
+	JP	NZ,J100
+J115:	CALL	C175
+	JP	Z,J125
+	INC	DE
+	JP	J115
+
+J120:	INC	HL
+	LD	M,020H
+	DEC	B
+	JP	NZ,J120
+J125:	LD	B,003H
+J130:	INC	HL
+	LD	M,000H
+	DEC	B
+	JP	NZ,J130
+	EX	DE,HL
+	LD	(D075),HL
+	POP	HL
+	LD	BC,D010
+J135:	INC	HL
+	LD	A,M
+	CP	03FH
+	JP	NZ,J140
+	INC	B
+J140:	DEC	C
+	JP	NZ,J135
+	LD	A,B
+	OR	A
+	RET
+
+D099:	DB	'DIR ERA TYPESAVEREN USER'
+D100:	DW	01600H
+	DW	0
+	DW	0A500H
+
+C200:	LD	HL,D099
+	LD	C,000H
+J145:	LD	A,C
+	CP	006H
+	RET	NC
+	LD	DE,D200
+	LD	B,004H
+J150:	LD	A,(DE)
+	CP	M
+	JP	NZ,J155
+	INC	DE
+	INC	HL
+	DEC	B
+	JP	NZ,J150
+	LD	A,(DE)
+	CP	020H
+	JP	NZ,J160
+	LD	A,C
+	RET
+
+J155:	INC	HL
+	DEC	B
+	JP	NZ,J155
+J160:	INC	C
+	JP	J145
+
+J165:	XOR	A
+	LD	(D065),A
+J170:	LD	SP,D170
+	PUSH	BC
+	LD	A,C
+	RRA
+	RRA
+	RRA
+	RRA
+	AND	00FH
+	LD	E,A
+	CALL	C115
+	CALL	C045
+	LD	(D170),A
+	POP	BC
+	LD	A,C
+	AND	00FH
+	LD	(D225),A
+	CALL	C050
+	LD	A,(D065)
+	OR	A
+	JP	NZ,J180
+J175:	LD	SP,D170
+	CALL	C025
+	CALL	C145
+	ADD	A,041H
+	CALL	C015
+	LD	A,03EH
+	CALL	C015
+	CALL	C135
+J180:	LD	DE,DBUF
+	CALL	C155
+	CALL	C145
+	LD	(D225),A
+	CALL	C190
+	CALL	NZ,C170
+	LD	A,(D230)
+	OR	A
+	JP	NZ,J325
+	CALL	C200
+	LD	HL,D105
+	LD	E,A
+	LD	D,000H
+	ADD	HL,DE
+	ADD	HL,DE
+	LD	A,M
+	INC	HL
+	LD	H,M
+	LD	L,A
+	JP	(HL)
+
+D105:	DW	D115	;D I R
+	DW	D120	;E R A
+	DW	D130	;T Y P E
+	DW	D135	;S A V E
+	DW	D145	;R E N
+	DW	D155	;U S E R
+	DW	J325
+
+J185:	LD	HL,076F3H	; DI , HALT
+	LD	(D055),HL
+	LD	HL,D055
+	JP	(HL)
+
+C205:	LD	BC,D110
+	JP	C035
+
+D110:	DB	'READ ERROR'
+	DB	0
+
+C210:	LD	BC,D111
+	JP	C035
+
+D111:	DB	'NO FILE'
+	DB	0
+
+C215:	CALL	C190
+	LD	A,(D230)
+	OR	A
+	JP	NZ,C170
+	LD	HL,D200
+	LD	BC,D010
+J190:	LD	A,M
+	CP	' '
+	JP	Z,J195
+	INC	HL
+	SUB	030H
+	CP	00AH
+	JP	NC,C170
+	LD	D,A
+	LD	A,B
+	AND	0E0H
+	JP	NZ,C170
+	LD	A,B
+	RLCA
+	RLCA
+	RLCA
+	ADD	A,B
+	JP	C,C170
+	ADD	A,B
+	JP	C,C170
+	ADD	A,D
+	JP	C,C170
+	LD	B,A
+	DEC	C
+	JP	NZ,J190
+	RET
+
+J195:	LD	A,M
+	CP	' '
+	JP	NZ,C170
+	INC	HL
+	DEC	C
+	JP	NZ,J195
+	LD	A,B
+	RET
+
+C220:	LD	B,003H
+C225:	LD	A,M
+	LD	(DE),A
+	INC	HL
+	INC	DE
+	DEC	B
+	JP	NZ,C225
+	RET
+
+C230:	LD	HL,DBUF
+	ADD	A,C
+	CALL	C185
+	LD	A,M
+	RET
+
+C235:	XOR	A
+	LD	(D195),A
+	LD	A,(D230)
+	OR	A
+	RET	Z
+	DEC	A
+	LD	HL,D225
+	CP	M
+	RET	Z
+	JP	C050
+
+C240:	LD	A,(D230)
+	OR	A
+	RET	Z
+	DEC	A
+	LD	HL,D225
+	CP	M
+	RET	Z
+	LD	A,(D225)
+	JP	C050
+
+	PAGE
+;****************************************************************
+;*               C C P - Funktion:   D I R                      *
+;****************************************************************
+D115:	CALL	C190
+	CALL	C235
+	LD	HL,D200
+	LD	A,M
+	CP	020H
+	JP	NZ,J205
+	LD	B,00BH
+J200:	LD	M,'?'
+	INC	HL
+	DEC	B
+	JP	NZ,J200
+J205:	LD	E,000H
+	PUSH	DE
+	CALL	C075
+	CALL	Z,C210
+J210:	JP	Z,J250
+	LD	A,(D220)
+	RRCA
+	RRCA
+	RRCA
+	AND	060H
+	LD	C,A
+	LD	A,00AH
+	CALL	C230
+	RLA
+	JP	C,J245
+	POP	DE
+	LD	A,E
+	INC	E
+	PUSH	DE
+	AND	003H
+	PUSH	AF
+	JP	NZ,J215
+	CALL	C025
+	PUSH	BC
+	CALL	C145
+	POP	BC
+	ADD	A,041H
+	CALL	C020
+	LD	A,03AH
+	CALL	C020
+	JP	J220
+
+J215:	CALL	C030
+	LD	A,03AH
+	CALL	C020
+J220:	CALL	C030
+	LD	B,001H
+J225:	LD	A,B
+	CALL	C230
+	AND	07FH
+	CP	' '
+	JP	NZ,J235
+	POP	AF
+	PUSH	AF
+	CP	003H
+	JP	NZ,J230
+	LD	A,009H
+	CALL	C230
+	AND	07FH
+	CP	' '
+	JP	Z,J240
+J230:	LD	A,' '
+J235:	CALL	C020
+	INC	B
+	LD	A,B
+	CP	00CH
+	JP	NC,J240
+	CP	009H
+	JP	NZ,J225
+	CALL	C030
+	JP	J225
+
+J240:	POP	AF
+J245:	CALL	C140
+	JP	NZ,J250
+	CALL	C070
+	JP	J210
+
+J250:	POP	DE
+	JP	J375
+
+	PAGE
+;****************************************************************
+;*               C C P - Funktion:   E R A                      *
+;****************************************************************
+D120:	CALL	C190
+	CP	00BH
+	JP	NZ,J255
+	LD	BC,D125
+	CALL	C035
+	CALL	C135
+	LD	HL,D065
+	DEC	M
+	JP	NZ,J175
+	INC	HL
+	LD	A,M
+	CP	059H
+	JP	NZ,J175
+	INC	HL
+	LD	(D075),HL
+J255:	CALL	C235
+	LD	DE,D195
+	CALL	C080
+	INC	A
+	CALL	Z,C210
+	JP	J375
+
+D125:	DB	'ALL (Y/N)?'
+	NOP
+
+	PAGE
+;****************************************************************
+;*               C C P - Funktion:   T Y P E                    *
+;****************************************************************
+D130:	CALL	C190
+	JP	NZ,C170
+	CALL	C235
+	CALL	C060
+	JP	Z,J275
+	CALL	C025
+	LD	HL,D235
+	LD	M,0FFH
+J260:	LD	HL,D235
+	LD	A,M
+	CP	080H
+	JP	C,J265
+	PUSH	HL
+	CALL	C090
+	POP	HL
+	JP	NZ,J270
+	XOR	A
+	LD	M,A
+J265:	INC	M
+	LD	HL,DBUF
+	CALL	C185
+	LD	A,M
+	CP	01AH
+	JP	Z,J375
+	CALL	C015
+	CALL	C140
+	JP	NZ,J375
+	JP	J260
+
+J270:	DEC	A
+	JP	Z,J375
+	CALL	C205
+J275:	CALL	C240
+	JP	C170
+
+	PAGE
+;****************************************************************
+;*               C C P - Funktion:   S A V E                    *
+;****************************************************************
+D135:	CALL	C215
+	PUSH	AF
+	CALL	C190
+	JP	NZ,C170
+	CALL	C235
+	LD	DE,D195
+	PUSH	DE
+	CALL	C080
+	POP	DE
+	CALL	C100
+	JP	Z,J290
+	XOR	A
+	LD	(D215),A
+	POP	AF
+	LD	L,A
+	LD	H,000H
+	ADD	HL,HL
+	LD	DE,TPA
+J280:	LD	A,H
+	OR	L
+	JP	Z,J285
+	DEC	HL
+	PUSH	HL
+	LD	HL,DBUF
+	ADD	HL,DE
+	PUSH	HL
+	CALL	C155
+	LD	DE,D195
+	CALL	C095
+	POP	DE
+	POP	HL
+	JP	NZ,J290
+	JP	J280
+
+J285:	LD	DE,D195
+	CALL	C065
+	INC	A
+	JP	NZ,J295
+J290:	LD	BC,D140
+	CALL	C035
+J295:	CALL	C150
+	JP	J375
+
+D140:	DB	'NO SPACE'
+	NOP
+
+	PAGE
+;****************************************************************
+;*               C C P - Funktion:   R E N                      *
+;****************************************************************
+D145:	CALL	C190
+	JP	NZ,C170
+	LD	A,(D230)
+	PUSH	AF
+	CALL	C235
+	CALL	C075
+	JP	NZ,J320
+	LD	HL,D195
+	LD	DE,D210
+	LD	B,010H
+	CALL	C225
+	LD	HL,(D075)
+	EX	DE,HL
+	CALL	C180
+	CP	'='
+	JP	Z,J300
+	CP	'_'
+	JP	NZ,J315
+J300:	EX	DE,HL
+	INC	HL
+	LD	(D075),HL
+	CALL	C190
+	JP	NZ,J315
+	POP	AF
+	LD	B,A
+	LD	HL,D230
+	LD	A,M
+	OR	A
+	JP	Z,J305
+	CP	B
+	LD	M,B
+	JP	NZ,J315
+J305:	LD	M,B
+	XOR	A
+	LD	(D195),A
+	CALL	C075
+	JP	Z,J310
+	LD	DE,D195
+	CALL	C105
+	JP	J375
+
+J310:	CALL	C210
+	JP	J375
+
+J315:	CALL	C240
+	JP	C170
+
+J320:	LD	BC,D150
+	CALL	C035
+	JP	J375
+
+D150:	DB	'FILE EXISTS'
+	NOP
+
+	PAGE
+;****************************************************************
+;*               C C P - Funktion:   U S E R                    *
+;****************************************************************
+D155:	CALL	C215
+	CP	010H
+	JP	NC,C170
+	LD	E,A
+	LD	A,(D200)
+	CP	020H
+	JP	Z,C170
+	CALL	C115
+	JP	J380
+
+J325:	CALL	C165
+	LD	A,(D200)
+	CP	020H
+	JP	NZ,J330
+	LD	A,(D230)
+	OR	A
+	JP	Z,J380
+	DEC	A
+	LD	(D225),A
+	CALL	C125
+	CALL	C050
+	JP	J380
+
+J330:	LD	DE,D205
+	LD	A,(DE)
+	CP	020H
+	JP	NZ,C170
+	PUSH	DE
+	CALL	C235
+	POP	DE
+	LD	HL,D165
+	CALL	C220
+	CALL	C060
+	JP	Z,J365
+	LD	HL,TPA
+J335:	PUSH	HL
+	EX	DE,HL
+	CALL	C155
+	LD	DE,D195
+	CALL	C085
+	JP	NZ,J340
+	POP	HL
+	LD	DE,DBUF
+	ADD	HL,DE
+	LD	DE,D055
+	LD	A,L
+	SUB	E
+	LD	A,H
+	SBC	A,D
+	JP	NC,J370
+	JP	J335
+
+J340:	POP	HL
+	DEC	A
+	JP	NZ,J370
+	CALL	C240
+	CALL	C190
+	LD	HL,D230
+	PUSH	HL
+	LD	A,M
+	LD	(D195),A
+	LD	A,010H
+	CALL	C195
+	POP	HL
+	LD	A,M
+	LD	(D210),A
+	XOR	A
+	LD	(D215),A
+	LD	DE,FCB1
+	LD	HL,D195
+	LD	B,021H
+	CALL	C225
+	LD	HL,D070
+J345:	LD	A,M
+	OR	A
+	JP	Z,J350
+	CP	020H
+	JP	Z,J350
+	INC	HL
+	JP	J345
+
+J350:	LD	B,0
+	LD	DE,DBUF+1
+J355:	LD	A,M
+	LD	(DE),A
+	OR	A
+	JP	Z,J360
+	INC	B
+	INC	HL
+	INC	DE
+	JP	J355
+
+J360:	LD	A,B
+	LD	(DBUF),A
+	CALL	C025
+	CALL	C150
+	CALL	C120
+	CALL	TPA
+	LD	SP,D170
+	CALL	C125
+	CALL	C050
+	JP	J175
+
+J365:	CALL	C240
+	JP	C170
+
+J370:	LD	BC,D160
+	CALL	C035
+	JP	J375
+
+D160:	DB	'BAD LOAD'
+	DB	0
+
+D165:	DB	'COM'
+
+J375:	CALL	C240
+J380:	CALL	C190
+	LD	A,(D200)
+	SUB	020H
+	LD	HL,D230
+	OR	M
+	JP	NZ,C170
+	JP	J175
+
+	TITLE	'Variablen-Bereiche'
+	PAGE
+	DW	0
+	DW	0
+	DW	0
+	DW	0
+	DW	D085
+	DW	D090
+	DW	D095
+	DW	J180
+D170:	DB	0
+D175:	DB	0
+	DB	'$$$     SUB'
+	DW	0
+D180:	DB	0	;BA
+D185:	DW	0	;BB
+	DW	0	;BD
+	DW	0	;BF
+	DW	0	;C1
+	DW	0	;C3
+	DW	0	;C5
+	DW	0	;C7
+	DW	0	;C9
+	DB	0	;CB
+D190:	DB	0	;CC
+D195:	DB	0	;CD
+D200:	DW	0	;CE
+	DW	0	;D0
+	DW	0	;D2
+	DW	0	;D4
+D205:	DW	0	;D6
+	DW	0	;D8
+	DW	0	;DA
+	DB	0	;DC
+D210:	DW	0	;DD
+	DW	0	;DF
+	DW	0	;E1
+	DW	0	;E3
+	DW	0	;E5
+	DW	0	;E7
+	DW	0	;E9
+	DW	0	;EB
+D215:	DB	0	;ED
+D220:	DB	0	;EE
+D225:	DB	0	;EF
+D230:	DB	0	;F0
+D235:	DW	0	;F1
+	DW	0	;F3
+	DW	0	;F5
+	DW	0	;F7
+	DW	0	;F9
+	DW	0	;FB
+	DW	0	;FD
+	DB	0	;FF
+	
+BDOS	EQU	0E600H	;Anfangsadresse vom  B D O S
+
+
+BDENT	EQU	00005H
+TPA	EQU	00100H
+
+D005	EQU	00004H
+D010	EQU	0000BH
+FCB1	EQU	0005CH
+DBUF	EQU	00080H
+	.DEPHASE
+
+
+;	END
+

@@ -1,0 +1,3975 @@
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1
+
+
+                                	title	'Z80 instruction set exerciser'
+                                
+                                ; zexdoc.src - Z80 documented instruction set exerciser
+                                ; Original Copyright (C) 1994  Frank D. Cringle
+                                ; Changes at 03-Nov-2002 Copyright (C) 2002 J.G.Harston
+                                ; + Source syntax tweeked to assemble with ZMAC Z80 Macro Assembler
+                                ;   and MAXAM Assembler, marked in the source with 'jgh:'
+                                ; + labels on equates mustn't have trailing colon
+                                ; + macros don't understand <...> sequence, so parameters are passed
+                                ;   explicitly
+                                ; + ds n,c not supported, so strings are set to full explicity length
+                                ;
+                                ; This program is free software; you can redistribute it and/or
+                                ; modify it under the terms of the GNU General Public License
+                                ; as published by the Free Software Foundation; either version 2
+                                ; of the License, or (at your option) any later version.
+                                ;
+                                ; This program is distributed in the hope that it will be useful,
+                                ; but WITHOUT ANY WARRANTY; without even the implied warranty of
+                                ; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+                                ; GNU General Public License for more details.
+                                ;
+                                ; You should have received a copy of the GNU General Public License
+                                ; along with this program; if not, write to the Free Software
+                                ; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+                                
+  0000'                         	aseg
+                                	org	100h
+                                
+  0100    C3 0113               	jp	start
+                                
+                                ; machine state before test (needs to be at predictably constant address)
+  0103                          msbt:	ds	14
+  0111                          spbt:	ds	2
+  0001                          msbthi	equ	msbt / 0100h
+  0003                          msbtlo	equ	msbt and 0ffh
+                                
+                                ; For the purposes of this test program, the machine state consists of:
+                                ;	a 2 byte memory operand, followed by
+                                ;	the registers iy,ix,hl,de,bc,af,sp
+                                ; for a total of 16 bytes.
+                                
+                                ; The program tests instructions (or groups of similar instructions)
+                                ; by cycling through a sequence of machine states, executing the test
+                                ; instruction for each one and running a 32-bit crc over the resulting
+                                ; machine states.  At the end of the sequence the crc is compared to
+                                ; an expected value that was found empirically on a real Z80.
+                                
+                                ; A test case is defined by a descriptor which consists of:
+                                ;	a flag mask byte,
+                                ;	the base case,
+                                ;	the incement vector,
+                                ;	the shift vector,
+                                ;	the expected crc,
+                                ;	a short descriptive message.
+                                ;
+                                ; The flag mask byte is used to prevent undefined flag bits from
+                                ; influencing the results.  Documented flags are as per Mostek Z80
+                                ; Technical Manual.
+                                ;
+                                ; The next three parts of the descriptor are 20 byte vectors
+                                ; corresponding to a 4 byte instruction and a 16 byte machine state.
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-1
+
+
+                                ; The first part is the base case, which is the first test case of
+                                ; the sequence.  This base is then modified according to the next 2
+                                ; vectors.  Each 1 bit in the increment vector specifies a bit to be
+                                ; cycled in the form of a binary counter.  For instance, if the byte
+                                ; corresponding to the accumulator is set to 0ffh in the increment
+                                ; vector, the test will be repeated for all 256 values of the
+                                ; accumulator.  Note that 1 bits don't have to be contiguous.  The
+                                ; number of test cases 'caused' by the increment vector is equal to
+                                ; 2^(number of 1 bits).  The shift vector is similar, but specifies a
+                                ; set of bits in the test case that are to be successively inverted.
+                                ; Thus the shift vector 'causes' a number of test cases equal to the
+                                ; number of 1 bits in it.
+                                
+                                ; The total number of test cases is the product of those caused by the
+                                ; counter and shift vectors and can easily become unweildy.  Each
+                                ; individual test case can take a few milliseconds to execute, due to
+                                ; the overhead of test setup and crc calculation, so test design is a
+                                ; compromise between coverage and execution time.
+                                
+                                ; This program is designed to detect differences between
+                                ; implementations and is not ideal for diagnosing the causes of any
+                                ; discrepancies.  However, provided a reference implementation (or
+                                ; real system) is available, a failing test case can be isolated by
+                                ; hand using a binary search of the test space.
+                                
+                                
+  0113                          start:
+  0113    2A 0006               	ld	hl,(6)
+  0116    F9                    	ld	sp,hl
+  0117    11 1DDA               	ld	de,msg1
+  011A    0E 09                 	ld	c,9
+  011C    CD 1DCE               	call	bdos
+                                
+  011F    21 01A0               	ld	hl,tests	; first test case
+  0122                          loop:
+  0122    7E                    	ld	a,(hl)		; end of list ?
+  0123    23                    	inc	hl
+  0124    B6                    	or	(hl)
+  0125    CA 012F               	jp	z,done
+  0128    2B                    	dec	hl
+  0129    CD 1AE2               	call	stt
+  012C    C3 0122               	jp	loop
+                                	
+  012F    11 1DF6               done:	ld	de,msg2
+  0132    0E 09                 	ld	c,9
+  0134    CD 1DCE               	call	bdos
+  0137    C3 0000               	jp	0		; warm boot
+                                
+                                ;tests:
+  013A    01C2                  	dw	adc16
+  013C    0222                  	dw	add16
+  013E    0282                  	dw	add16x
+  0140    02E2                  	dw	add16y
+  0142    0342                  	dw	alu8i
+  0144    03A2                  	dw	alu8r
+  0146    0402                  	dw	alu8rx
+  0148    0462                  	dw	alu8x
+  014A    04C2                  	dw	bitx
+  014C    0522                  	dw	bitz80
+  014E    0582                  	dw	cpd1
+  0150    05E2                  	dw	cpi1
+  0152    0642                  	dw	daaop	; can't use opcode as label
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-2
+
+
+  0154    06A2                  	dw	inca
+  0156    0702                  	dw	incb
+  0158    0762                  	dw	incbc
+  015A    07C2                  	dw	incc
+  015C    0822                  	dw	incd
+  015E    0882                  	dw	incde
+  0160    08E2                  	dw	ince
+  0162    0942                  	dw	inch
+  0164    09A2                  	dw	inchl
+  0166    0A02                  	dw	incix
+  0168    0A62                  	dw	inciy
+  016A    0AC2                  	dw	incl
+  016C    0B22                  	dw	incm
+  016E    0B82                  	dw	incsp
+  0170    0BE2                  	dw	incx
+  0172    0C42                  	dw	incxh
+  0174    0CA2                  	dw	incxl
+  0176    0D02                  	dw	incyh
+  0178    0D62                  	dw	incyl
+  017A    0DC2                  	dw	ld161
+  017C    0E22                  	dw	ld162
+  017E    0E82                  	dw	ld163
+  0180    0EE2                  	dw	ld164
+  0182    0F42                  	dw	ld165
+  0184    0FA2                  	dw	ld166
+  0186    1002                  	dw	ld167
+  0188    1062                  	dw	ld168
+  018A    10C2                  	dw	ld16im
+  018C    1122                  	dw	ld16ix
+  018E    1182                  	dw	ld8bd
+  0190    11E2                  	dw	ld8im
+  0192    1242                  	dw	ld8imx
+  0194    12A2                  	dw	ld8ix1
+  0196    1302                  	dw	ld8ix2
+  0198    1362                  	dw	ld8ix3
+  019A    13C2                  	dw	ld8ixy
+  019C    1422                  	dw	ld8rr
+  019E    1482                  	dw	ld8rrx
+  01A0                          tests:	
+  01A0    14E2                  	dw	lda
+  01A2    1542                  	dw	ldd1
+  01A4    15A2                  	dw	ldd2
+  01A6    1602                  	dw	ldi1
+  01A8    1662                  	dw	ldi2
+  01AA    16C2                  	dw	negop	; jgh: can't use opcode as label
+  01AC    1722                  	dw	rldop	; jgh: can't use opcode as label
+  01AE    1782                  	dw	rot8080
+  01B0    17E2                  	dw	rotxy
+  01B2    1842                  	dw	rotz80
+  01B4    18A2                  	dw	srz80
+  01B6    1902                  	dw	srzx
+  01B8    1962                  	dw	st8ix1
+  01BA    19C2                  	dw	st8ix2
+  01BC    1A22                  	dw	st8ix3
+  01BE    1A82                  	dw	stabd
+  01C0    0000                  	dw	0
+                                
+                                ; jgh: macro syntax changed for ZMAC and MAXAM
+                                ;	can't use opcodes as labels
+                                ;	ZMAC allows &nn as hex, so & removed from local labels
+                                ;
+                                ; === tstr MACRO =====================================================================================
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-3
+
+
+                                tstr	macro	insn1,insn2,insn3,insn4,memop,riy,rix,rhl,rde,rbc,flags,acc,rsp,?lab
+                                ?lab:	db	insn1,insn2,insn3,insn4
+                                	dw	memop,riy,rix,rhl,rde,rbc
+                                	db	flags
+                                	db	acc
+                                	dw	rsp
+                                	if	$-?lab ne 20
+                                	error	'missing parameter'
+                                	endif
+                                	endm
+                                
+                                ; === tmsg  MACRO =====================================================================================
+                                tmsg	macro	msg,?lab
+                                ?lab:	db	msg
+                                	if	$ ge ?lab+31
+                                	error	'message too long'
+                                	else
+                                ;	ds	?lab+30-$,'.'	; jgh: ZMAC/MAXAM don't have char parameter
+                                	endif
+                                	db	'$'
+                                	endm
+                                ; =====================================================================================================
+                                
+                                ; jgh: ZMAC/MAXAM don't recognise <n,m> syntax for macros, so full parameters given
+                                ; jgh: each tmsg has full string, as ZMAC/MAXAM don't have ds n,c pseudo-op
+                                
+                                ; <adc,sbc> hl,<bc,de,hl,sp> (38,912 cycles)
+  01C2    C7                    adc16:	db	0c7h		; flag mask
+                                	tstr	0edh,042h,0,0,0832ch,04f88h,0f22bh,0b339h,07e1fh,01563h,0d3h,089h,0465eh,adc16a
+  01C3    ED 42 00 00     +     adc16a:	db	0edh,042h,0,0
+  01C7    832C 4F88       +     	dw	0832ch,04f88h,0f22bh,0b339h,07e1fh,01563h
+  01CB    F22B B339       +     
+  01CF    7E1F 1563       +     
+  01D3    D3              +     	db	0d3h
+  01D4    89              +     	db	089h
+  01D5    465E            +     	dw	0465eh
+                                	tstr	0,038h,0,0,0,0,0,0f821h,0,0,0,0,0,adc16b	; (1024 cycles)
+  01D7    00 38 00 00     +     adc16b:	db	0,038h,0,0
+  01DB    0000 0000       +     	dw	0,0,0,0f821h,0,0
+  01DF    0000 F821       +     
+  01E3    0000 0000       +     
+  01E7    00              +     	db	0
+  01E8    00              +     	db	0
+  01E9    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,-1,-1,-1,0d7h,0,-1,adc16c	; (38 cycles)
+  01EB    00 00 00 00     +     adc16c:	db	0,0,0,0
+  01EF    0000 0000       +     	dw	0,0,0,-1,-1,-1
+  01F3    0000 FFFF       +     
+  01F7    FFFF FFFF       +     
+  01FB    D7              +     	db	0d7h
+  01FC    00              +     	db	0
+  01FD    FFFF            +     	dw	-1
+  01FF    F8 B4 EA A9           	db	0f8h,0b4h,0eah,0a9h			; expected crc
+                                	tmsg	'<adc,sbc> hl,<bc,de,hl,sp>....',adc16d
+  0203    3C 61 64 63     +     adc16d:	db	'<adc,sbc> hl,<bc,de,hl,sp>....'
+  0207    2C 73 62 63     +     
+  020B    3E 20 68 6C     +     
+  020F    2C 3C 62 63     +     
+  0213    2C 64 65 2C     +     
+  0217    68 6C 2C 73     +     
+  021B    70 3E 2E 2E     +     
+  021F    2E 2E           +     
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-4
+
+
+  0221    24              +     	db	'$'
+                                
+                                ; add hl,<bc,de,hl,sp> (19,456 cycles)
+  0222    C7                    add16:	db	0c7h		; flag mask
+                                	tstr	9,0,0,0,0c4a5h,0c4c7h,0d226h,0a050h,058eah,08566h,0c6h,0deh,09bc9h,add16a
+  0223    09 00 00 00     +     add16a:	db	9,0,0,0
+  0227    C4A5 C4C7       +     	dw	0c4a5h,0c4c7h,0d226h,0a050h,058eah,08566h
+  022B    D226 A050       +     
+  022F    58EA 8566       +     
+  0233    C6              +     	db	0c6h
+  0234    DE              +     	db	0deh
+  0235    9BC9            +     	dw	09bc9h
+                                	tstr	030h,0,0,0,0,0,0,0f821h,0,0,0,0,0,add16b	; (512 cycles)
+  0237    30 00 00 00     +     add16b:	db	030h,0,0,0
+  023B    0000 0000       +     	dw	0,0,0,0f821h,0,0
+  023F    0000 F821       +     
+  0243    0000 0000       +     
+  0247    00              +     	db	0
+  0248    00              +     	db	0
+  0249    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,-1,-1,-1,0d7h,0,-1,add16c	; (38 cycles)
+  024B    00 00 00 00     +     add16c:	db	0,0,0,0
+  024F    0000 0000       +     	dw	0,0,0,-1,-1,-1
+  0253    0000 FFFF       +     
+  0257    FFFF FFFF       +     
+  025B    D7              +     	db	0d7h
+  025C    00              +     	db	0
+  025D    FFFF            +     	dw	-1
+  025F    89 FD B6 35           	db	089h,0fdh,0b6h,035h			; expected crc
+                                	tmsg	'add hl,<bc,de,hl,sp>..........',add16d
+  0263    61 64 64 20     +     add16d:	db	'add hl,<bc,de,hl,sp>..........'
+  0267    68 6C 2C 3C     +     
+  026B    62 63 2C 64     +     
+  026F    65 2C 68 6C     +     
+  0273    2C 73 70 3E     +     
+  0277    2E 2E 2E 2E     +     
+  027B    2E 2E 2E 2E     +     
+  027F    2E 2E           +     
+  0281    24              +     	db	'$'
+                                
+                                ; add ix,<bc,de,ix,sp> (19,456 cycles)
+  0282    C7                    add16x:	db	0c7h		; flag mask
+                                	tstr	0ddh,9,0,0,0ddach,0c294h,0635bh,033d3h,06a76h,0fa20h,094h,068h,036f5h,add16xa
+  0283    DD 09 00 00     +     add16xa:	db	0ddh,9,0,0
+  0287    DDAC C294       +     	dw	0ddach,0c294h,0635bh,033d3h,06a76h,0fa20h
+  028B    635B 33D3       +     
+  028F    6A76 FA20       +     
+  0293    94              +     	db	094h
+  0294    68              +     	db	068h
+  0295    36F5            +     	dw	036f5h
+                                	tstr	0,030h,0,0,0,0,0f821h,0,0,0,0,0,0,add16xb	; (512 cycles)
+  0297    00 30 00 00     +     add16xb:	db	0,030h,0,0
+  029B    0000 0000       +     	dw	0,0,0f821h,0,0,0
+  029F    F821 0000       +     
+  02A3    0000 0000       +     
+  02A7    00              +     	db	0
+  02A8    00              +     	db	0
+  02A9    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,-1,0,-1,-1,0d7h,0,-1,add16xc	; (38 cycles)
+  02AB    00 00 00 00     +     add16xc:	db	0,0,0,0
+  02AF    0000 0000       +     	dw	0,0,-1,0,-1,-1
+  02B3    FFFF 0000       +     
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-5
+
+
+  02B7    FFFF FFFF       +     
+  02BB    D7              +     	db	0d7h
+  02BC    00              +     	db	0
+  02BD    FFFF            +     	dw	-1
+  02BF    C1 33 79 0B           	db	0c1h,033h,079h,00bh			; expected crc
+                                	tmsg	'add ix,<bc,de,ix,sp>..........',add16xd
+  02C3    61 64 64 20     +     add16xd:	db	'add ix,<bc,de,ix,sp>..........'
+  02C7    69 78 2C 3C     +     
+  02CB    62 63 2C 64     +     
+  02CF    65 2C 69 78     +     
+  02D3    2C 73 70 3E     +     
+  02D7    2E 2E 2E 2E     +     
+  02DB    2E 2E 2E 2E     +     
+  02DF    2E 2E           +     
+  02E1    24              +     	db	'$'
+                                
+                                ; add iy,<bc,de,iy,sp> (19,456 cycles)
+  02E2    C7                    add16y:	db	0c7h		; flag mask
+                                	tstr	0fdh,9,0,0,0c7c2h,0f407h,051c1h,03e96h,00bf4h,0510fh,092h,01eh,071eah,add16ya
+  02E3    FD 09 00 00     +     add16ya:	db	0fdh,9,0,0
+  02E7    C7C2 F407       +     	dw	0c7c2h,0f407h,051c1h,03e96h,00bf4h,0510fh
+  02EB    51C1 3E96       +     
+  02EF    0BF4 510F       +     
+  02F3    92              +     	db	092h
+  02F4    1E              +     	db	01eh
+  02F5    71EA            +     	dw	071eah
+                                	tstr	0,030h,0,0,0,0f821h,0,0,0,0,0,0,0,add16yb	; (512 cycles)
+  02F7    00 30 00 00     +     add16yb:	db	0,030h,0,0
+  02FB    0000 F821       +     	dw	0,0f821h,0,0,0,0
+  02FF    0000 0000       +     
+  0303    0000 0000       +     
+  0307    00              +     	db	0
+  0308    00              +     	db	0
+  0309    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,-1,0,0,-1,-1,0d7h,0,-1,add16yc		; (38 cycles)
+  030B    00 00 00 00     +     add16yc:	db	0,0,0,0
+  030F    0000 FFFF       +     	dw	0,-1,0,0,-1,-1
+  0313    0000 0000       +     
+  0317    FFFF FFFF       +     
+  031B    D7              +     	db	0d7h
+  031C    00              +     	db	0
+  031D    FFFF            +     	dw	-1
+  031F    E8 81 7B 9E           	db	0e8h,081h,07bh,09eh			; expected crc
+                                	tmsg	'add iy,<bc,de,iy,sp>..........',add16yd
+  0323    61 64 64 20     +     add16yd:	db	'add iy,<bc,de,iy,sp>..........'
+  0327    69 79 2C 3C     +     
+  032B    62 63 2C 64     +     
+  032F    65 2C 69 79     +     
+  0333    2C 73 70 3E     +     
+  0337    2E 2E 2E 2E     +     
+  033B    2E 2E 2E 2E     +     
+  033F    2E 2E           +     
+  0341    24              +     	db	'$'
+                                
+                                ; aluop a,nn (28,672 cycles)
+  0342    D7                    alu8i:	db	0d7h		; flag mask
+                                	tstr	0c6h,0,0,0,009140h,07e3ch,07a67h,0df6dh,05b61h,00b29h,010h,066h,085b2h,alu8ia
+  0343    C6 00 00 00     +     alu8ia:	db	0c6h,0,0,0
+  0347    9140 7E3C       +     	dw	009140h,07e3ch,07a67h,0df6dh,05b61h,00b29h
+  034B    7A67 DF6D       +     
+  034F    5B61 0B29       +     
+  0353    10              +     	db	010h
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-6
+
+
+  0354    66              +     	db	066h
+  0355    85B2            +     	dw	085b2h
+                                	tstr	038h,0,0,0,0,0,0,0,0,0,0,-1,0,alu8ib		; (2048 cycles)
+  0357    38 00 00 00     +     alu8ib:	db	038h,0,0,0
+  035B    0000 0000       +     	dw	0,0,0,0,0,0
+  035F    0000 0000       +     
+  0363    0000 0000       +     
+  0367    00              +     	db	0
+  0368    FF              +     	db	-1
+  0369    0000            +     	dw	0
+                                	tstr	0,-1,0,0,0,0,0,0,0,0,0d7h,0,0,alu8ic		; (14 cycles)
+  036B    00 FF 00 00     +     alu8ic:	db	0,-1,0,0
+  036F    0000 0000       +     	dw	0,0,0,0,0,0
+  0373    0000 0000       +     
+  0377    0000 0000       +     
+  037B    D7              +     	db	0d7h
+  037C    00              +     	db	0
+  037D    0000            +     	dw	0
+  037F    48 79 93 60           	db	048h,079h,093h,060h			; expected crc
+                                	tmsg	'aluop a,nn....................',alu8id
+  0383    61 6C 75 6F     +     alu8id:	db	'aluop a,nn....................'
+  0387    70 20 61 2C     +     
+  038B    6E 6E 2E 2E     +     
+  038F    2E 2E 2E 2E     +     
+  0393    2E 2E 2E 2E     +     
+  0397    2E 2E 2E 2E     +     
+  039B    2E 2E 2E 2E     +     
+  039F    2E 2E           +     
+  03A1    24              +     	db	'$'
+                                
+                                ; aluop a,<b,c,d,e,h,l,(hl),a> (753,664 cycles)
+  03A2    D7                    alu8r:	db	0d7h		; flag mask
+                                	tstr	080h,0,0,0,0c53eh,0573ah,04c4dh,msbt,0e309h,0a666h,0d0h,03bh,0adbbh,alu8ra
+  03A3    80 00 00 00     +     alu8ra:	db	080h,0,0,0
+  03A7    C53E 573A       +     	dw	0c53eh,0573ah,04c4dh,msbt,0e309h,0a666h
+  03AB    4C4D 0103       +     
+  03AF    E309 A666       +     
+  03B3    D0              +     	db	0d0h
+  03B4    3B              +     	db	03bh
+  03B5    ADBB            +     	dw	0adbbh
+                                	tstr	03fh,0,0,0,0,0,0,0,0,0,0,-1,0,alu8rb		; (16,384 cycles)
+  03B7    3F 00 00 00     +     alu8rb:	db	03fh,0,0,0
+  03BB    0000 0000       +     	dw	0,0,0,0,0,0
+  03BF    0000 0000       +     
+  03C3    0000 0000       +     
+  03C7    00              +     	db	0
+  03C8    FF              +     	db	-1
+  03C9    0000            +     	dw	0
+                                	tstr	0,0,0,0,0ffh,0,0,0,-1,-1,0d7h,0,0,alu8rc	; (46 cycles)
+  03CB    00 00 00 00     +     alu8rc:	db	0,0,0,0
+  03CF    00FF 0000       +     	dw	0ffh,0,0,0,-1,-1
+  03D3    0000 0000       +     
+  03D7    FFFF FFFF       +     
+  03DB    D7              +     	db	0d7h
+  03DC    00              +     	db	0
+  03DD    0000            +     	dw	0
+  03DF    FE 43 B0 16           	db	0feh,043h,0b0h,016h			; expected crc
+                                	tmsg	'aluop a,<b,c,d,e,h,l,(hl),a>..',alu8rd
+  03E3    61 6C 75 6F     +     alu8rd:	db	'aluop a,<b,c,d,e,h,l,(hl),a>..'
+  03E7    70 20 61 2C     +     
+  03EB    3C 62 2C 63     +     
+  03EF    2C 64 2C 65     +     
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-7
+
+
+  03F3    2C 68 2C 6C     +     
+  03F7    2C 28 68 6C     +     
+  03FB    29 2C 61 3E     +     
+  03FF    2E 2E           +     
+  0401    24              +     	db	'$'
+                                
+                                ; aluop a,<ixh,ixl,iyh,iyl> (376,832 cycles)
+  0402    D7                    alu8rx:	db	0d7h		; flag mask
+                                	tstr	0ddh,084h,0,0,0d6f7h,0c76eh,0accfh,02847h,022ddh,0c035h,0c5h,038h,0234bh,alu8rxa
+  0403    DD 84 00 00     +     alu8rxa:	db	0ddh,084h,0,0
+  0407    D6F7 C76E       +     	dw	0d6f7h,0c76eh,0accfh,02847h,022ddh,0c035h
+  040B    ACCF 2847       +     
+  040F    22DD C035       +     
+  0413    C5              +     	db	0c5h
+  0414    38              +     	db	038h
+  0415    234B            +     	dw	0234bh
+                                	tstr	020h,039h,0,0,0,0,0,0,0,0,0,-1,0,alu8rxb	; (8,192 cycles)
+  0417    20 39 00 00     +     alu8rxb:	db	020h,039h,0,0
+  041B    0000 0000       +     	dw	0,0,0,0,0,0
+  041F    0000 0000       +     
+  0423    0000 0000       +     
+  0427    00              +     	db	0
+  0428    FF              +     	db	-1
+  0429    0000            +     	dw	0
+                                	tstr	0,0,0,0,0ffh,0,0,0,-1,-1,0d7h,0,0,alu8rxc	; (46 cycles)
+  042B    00 00 00 00     +     alu8rxc:	db	0,0,0,0
+  042F    00FF 0000       +     	dw	0ffh,0,0,0,-1,-1
+  0433    0000 0000       +     
+  0437    FFFF FFFF       +     
+  043B    D7              +     	db	0d7h
+  043C    00              +     	db	0
+  043D    0000            +     	dw	0
+  043F    A4 02 6D 5A           	db	0a4h,002h,06dh,05ah			; expected crc
+                                	tmsg	'aluop a,<ixh,ixl,iyh,iyl>.....',alu8rxd
+  0443    61 6C 75 6F     +     alu8rxd:	db	'aluop a,<ixh,ixl,iyh,iyl>.....'
+  0447    70 20 61 2C     +     
+  044B    3C 69 78 68     +     
+  044F    2C 69 78 6C     +     
+  0453    2C 69 79 68     +     
+  0457    2C 69 79 6C     +     
+  045B    3E 2E 2E 2E     +     
+  045F    2E 2E           +     
+  0461    24              +     	db	'$'
+                                
+                                ; aluop a,(<ix,iy>+1) (229,376 cycles)
+  0462    D7                    alu8x:	db	0d7h		; flag mask
+                                	tstr	0ddh,086h,1,0,090b7h,msbt-1,msbt-1,032fdh,0406eh,0c1dch,045h,06eh,0e5fah,alu8xa
+  0463    DD 86 01 00     +     alu8xa:	db	0ddh,086h,1,0
+  0467    90B7 0102       +     	dw	090b7h,msbt-1,msbt-1,032fdh,0406eh,0c1dch
+  046B    0102 32FD       +     
+  046F    406E C1DC       +     
+  0473    45              +     	db	045h
+  0474    6E              +     	db	06eh
+  0475    E5FA            +     	dw	0e5fah
+                                	tstr	020h,038h,0,0,0,1,1,0,0,0,0,-1,0,alu8xb	; (16,384 cycles)
+  0477    20 38 00 00     +     alu8xb:	db	020h,038h,0,0
+  047B    0000 0001       +     	dw	0,1,1,0,0,0
+  047F    0001 0000       +     
+  0483    0000 0000       +     
+  0487    00              +     	db	0
+  0488    FF              +     	db	-1
+  0489    0000            +     	dw	0
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-8
+
+
+                                	tstr	0,0,0,0,0ffh,0,0,0,0,0,0d7h,0,0,alu8xc		; (14 cycles)
+  048B    00 00 00 00     +     alu8xc:	db	0,0,0,0
+  048F    00FF 0000       +     	dw	0ffh,0,0,0,0,0
+  0493    0000 0000       +     
+  0497    0000 0000       +     
+  049B    D7              +     	db	0d7h
+  049C    00              +     	db	0
+  049D    0000            +     	dw	0
+  049F    E8 49 67 6E           	db	0e8h,049h,067h,06eh			; expected crc
+                                	tmsg	'aluop a,(<ix,iy>+1)...........',alu8xd
+  04A3    61 6C 75 6F     +     alu8xd:	db	'aluop a,(<ix,iy>+1)...........'
+  04A7    70 20 61 2C     +     
+  04AB    28 3C 69 78     +     
+  04AF    2C 69 79 3E     +     
+  04B3    2B 31 29 2E     +     
+  04B7    2E 2E 2E 2E     +     
+  04BB    2E 2E 2E 2E     +     
+  04BF    2E 2E           +     
+  04C1    24              +     	db	'$'
+                                
+                                ; bit n,(<ix,iy>+1) (2048 cycles)
+  04C2    53                    bitx:	db	053h		; flag mask
+                                	tstr	0ddh,0cbh,1,046h,02075h,msbt-1,msbt-1,03cfch,0a79ah,03d74h,051h,027h,0ca14h,bitxa
+  04C3    DD CB 01 46     +     bitxa:	db	0ddh,0cbh,1,046h
+  04C7    2075 0102       +     	dw	02075h,msbt-1,msbt-1,03cfch,0a79ah,03d74h
+  04CB    0102 3CFC       +     
+  04CF    A79A 3D74       +     
+  04D3    51              +     	db	051h
+  04D4    27              +     	db	027h
+  04D5    CA14            +     	dw	0ca14h
+                                	tstr	020h,0,0,038h,0,0,0,0,0,0,053h,0,0,bitxb	; (256 cycles)
+  04D7    20 00 00 38     +     bitxb:	db	020h,0,0,038h
+  04DB    0000 0000       +     	dw	0,0,0,0,0,0
+  04DF    0000 0000       +     
+  04E3    0000 0000       +     
+  04E7    53              +     	db	053h
+  04E8    00              +     	db	0
+  04E9    0000            +     	dw	0
+                                	tstr	0,0,0,0,0ffh,0,0,0,0,0,0,0,0,bitxc		; (8 cycles)
+  04EB    00 00 00 00     +     bitxc:	db	0,0,0,0
+  04EF    00FF 0000       +     	dw	0ffh,0,0,0,0,0
+  04F3    0000 0000       +     
+  04F7    0000 0000       +     
+  04FB    00              +     	db	0
+  04FC    00              +     	db	0
+  04FD    0000            +     	dw	0
+  04FF    A8 EE 08 67           	db	0a8h,0eeh,008h,067h			; expected crc
+                                	tmsg	'bit n,(<ix,iy>+1).............',bitxd
+  0503    62 69 74 20     +     bitxd:	db	'bit n,(<ix,iy>+1).............'
+  0507    6E 2C 28 3C     +     
+  050B    69 78 2C 69     +     
+  050F    79 3E 2B 31     +     
+  0513    29 2E 2E 2E     +     
+  0517    2E 2E 2E 2E     +     
+  051B    2E 2E 2E 2E     +     
+  051F    2E 2E           +     
+  0521    24              +     	db	'$'
+                                
+                                ; bit n,<b,c,d,e,h,l,(hl),a> (49,152 cycles)
+  0522    53                    bitz80:	db	053h		; flag mask
+                                	tstr	0cbh,040h,0,0,03ef1h,09dfch,07acch,msbt,0be61h,07a86h,050h,024h,01998h,bitz80a
+  0523    CB 40 00 00     +     bitz80a:	db	0cbh,040h,0,0
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-9
+
+
+  0527    3EF1 9DFC       +     	dw	03ef1h,09dfch,07acch,msbt,0be61h,07a86h
+  052B    7ACC 0103       +     
+  052F    BE61 7A86       +     
+  0533    50              +     	db	050h
+  0534    24              +     	db	024h
+  0535    1998            +     	dw	01998h
+                                	tstr	0,03fh,0,0,0,0,0,0,0,0,053h,0,0,bitz80b		; (1024 cycles)
+  0537    00 3F 00 00     +     bitz80b:	db	0,03fh,0,0
+  053B    0000 0000       +     	dw	0,0,0,0,0,0
+  053F    0000 0000       +     
+  0543    0000 0000       +     
+  0547    53              +     	db	053h
+  0548    00              +     	db	0
+  0549    0000            +     	dw	0
+                                	tstr	0,0,0,0,0ffh,0,0,0,-1,-1,0,-1,0,bitz80c		; (48 cycles)
+  054B    00 00 00 00     +     bitz80c:	db	0,0,0,0
+  054F    00FF 0000       +     	dw	0ffh,0,0,0,-1,-1
+  0553    0000 0000       +     
+  0557    FFFF FFFF       +     
+  055B    00              +     	db	0
+  055C    FF              +     	db	-1
+  055D    0000            +     	dw	0
+  055F    7B 55 E6 C8           	db	07bh,055h,0e6h,0c8h			; expected crc
+                                	tmsg	'bit n,<b,c,d,e,h,l,(hl),a>....',bitz80d
+  0563    62 69 74 20     +     bitz80d:	db	'bit n,<b,c,d,e,h,l,(hl),a>....'
+  0567    6E 2C 3C 62     +     
+  056B    2C 63 2C 64     +     
+  056F    2C 65 2C 68     +     
+  0573    2C 6C 2C 28     +     
+  0577    68 6C 29 2C     +     
+  057B    61 3E 2E 2E     +     
+  057F    2E 2E           +     
+  0581    24              +     	db	'$'
+                                
+                                ; cpd<r> (1) (6144 cycles)
+  0582    D7                    cpd1:	db	0d7h		; flag mask
+                                	tstr	0edh,0a9h,0,0,0c7b6h,072b4h,018f6h,msbt+17,08dbdh,1,0c0h,030h,094a3h,cpd1a
+  0583    ED A9 00 00     +     cpd1a:	db	0edh,0a9h,0,0
+  0587    C7B6 72B4       +     	dw	0c7b6h,072b4h,018f6h,msbt+17,08dbdh,1
+  058B    18F6 0114       +     
+  058F    8DBD 0001       +     
+  0593    C0              +     	db	0c0h
+  0594    30              +     	db	030h
+  0595    94A3            +     	dw	094a3h
+                                	tstr	0,010h,0,0,0,0,0,0,0,010,0,-1,0,cpd1b		; (1024 cycles)
+  0597    00 10 00 00     +     cpd1b:	db	0,010h,0,0
+  059B    0000 0000       +     	dw	0,0,0,0,0,010
+  059F    0000 0000       +     
+  05A3    0000 000A       +     
+  05A7    00              +     	db	0
+  05A8    FF              +     	db	-1
+  05A9    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,0,0,cpd1c		; (6 cycles)
+  05AB    00 00 00 00     +     cpd1c:	db	0,0,0,0
+  05AF    0000 0000       +     	dw	0,0,0,0,0,0
+  05B3    0000 0000       +     
+  05B7    0000 0000       +     
+  05BB    D7              +     	db	0d7h
+  05BC    00              +     	db	0
+  05BD    0000            +     	dw	0
+  05BF    A8 7E 6C FA           	db	0a8h,07eh,06ch,0fah			; expected crc
+                                	tmsg	'cpd<r>........................',cpd1d
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-10
+
+
+  05C3    63 70 64 3C     +     cpd1d:	db	'cpd<r>........................'
+  05C7    72 3E 2E 2E     +     
+  05CB    2E 2E 2E 2E     +     
+  05CF    2E 2E 2E 2E     +     
+  05D3    2E 2E 2E 2E     +     
+  05D7    2E 2E 2E 2E     +     
+  05DB    2E 2E 2E 2E     +     
+  05DF    2E 2E           +     
+  05E1    24              +     	db	'$'
+                                
+                                ; cpi<r> (1) (6144 cycles)
+  05E2    D7                    cpi1:	db	0d7h		; flag mask
+                                	tstr	0edh,0a1h,0,0,04d48h,0af4ah,0906bh,msbt,04e71h,1,093h,06ah,0907ch,cpi1a
+  05E3    ED A1 00 00     +     cpi1a:	db	0edh,0a1h,0,0
+  05E7    4D48 AF4A       +     	dw	04d48h,0af4ah,0906bh,msbt,04e71h,1
+  05EB    906B 0103       +     
+  05EF    4E71 0001       +     
+  05F3    93              +     	db	093h
+  05F4    6A              +     	db	06ah
+  05F5    907C            +     	dw	0907ch
+                                	tstr	0,010h,0,0,0,0,0,0,0,010,0,-1,0,cpi1b		; (1024 cycles)
+  05F7    00 10 00 00     +     cpi1b:	db	0,010h,0,0
+  05FB    0000 0000       +     	dw	0,0,0,0,0,010
+  05FF    0000 0000       +     
+  0603    0000 000A       +     
+  0607    00              +     	db	0
+  0608    FF              +     	db	-1
+  0609    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,0,0,cpi1c		; (6 cycles)
+  060B    00 00 00 00     +     cpi1c:	db	0,0,0,0
+  060F    0000 0000       +     	dw	0,0,0,0,0,0
+  0613    0000 0000       +     
+  0617    0000 0000       +     
+  061B    D7              +     	db	0d7h
+  061C    00              +     	db	0
+  061D    0000            +     	dw	0
+  061F    06 DE B3 56           	db	006h,0deh,0b3h,056h			; expected crc
+                                	tmsg	'cpi<r>........................',cpi1d
+  0623    63 70 69 3C     +     cpi1d:	db	'cpi<r>........................'
+  0627    72 3E 2E 2E     +     
+  062B    2E 2E 2E 2E     +     
+  062F    2E 2E 2E 2E     +     
+  0633    2E 2E 2E 2E     +     
+  0637    2E 2E 2E 2E     +     
+  063B    2E 2E 2E 2E     +     
+  063F    2E 2E           +     
+  0641    24              +     	db	'$'
+                                
+                                ; <daa,cpl,scf,ccf>
+  0642    D7                    daaop:	db	0d7h		; flag mask
+                                	tstr	027h,0,0,0,02141h,009fah,01d60h,0a559h,08d5bh,09079h,004h,08eh,0299dh,daaopa
+  0643    27 00 00 00     +     daaopa:	db	027h,0,0,0
+  0647    2141 09FA       +     	dw	02141h,009fah,01d60h,0a559h,08d5bh,09079h
+  064B    1D60 A559       +     
+  064F    8D5B 9079       +     
+  0653    04              +     	db	004h
+  0654    8E              +     	db	08eh
+  0655    299D            +     	dw	0299dh
+                                	tstr	018h,0,0,0,0,0,0,0,0,0,0d7h,-1,0,daaopb	; (65,536 cycles)
+  0657    18 00 00 00     +     daaopb:	db	018h,0,0,0
+  065B    0000 0000       +     	dw	0,0,0,0,0,0
+  065F    0000 0000       +     
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-11
+
+
+  0663    0000 0000       +     
+  0667    D7              +     	db	0d7h
+  0668    FF              +     	db	-1
+  0669    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0,0,0,daaopc		; (1 cycle)
+  066B    00 00 00 00     +     daaopc:	db	0,0,0,0
+  066F    0000 0000       +     	dw	0,0,0,0,0,0
+  0673    0000 0000       +     
+  0677    0000 0000       +     
+  067B    00              +     	db	0
+  067C    00              +     	db	0
+  067D    0000            +     	dw	0
+  067F    9B 4B A6 75           	db	09bh,04bh,0a6h,075h			; expected crc
+                                	tmsg	'<daa,cpl,scf,ccf>.............',daaopd
+  0683    3C 64 61 61     +     daaopd:	db	'<daa,cpl,scf,ccf>.............'
+  0687    2C 63 70 6C     +     
+  068B    2C 73 63 66     +     
+  068F    2C 63 63 66     +     
+  0693    3E 2E 2E 2E     +     
+  0697    2E 2E 2E 2E     +     
+  069B    2E 2E 2E 2E     +     
+  069F    2E 2E           +     
+  06A1    24              +     	db	'$'
+                                
+                                ; <inc,dec> a (3072 cycles)
+  06A2    D7                    inca:	db	0d7h		; flag mask
+                                	tstr	03ch,0,0,0,04adfh,0d5d8h,0e598h,08a2bh,0a7b0h,0431bh,044h,05ah,0d030h,incaa
+  06A3    3C 00 00 00     +     incaa:	db	03ch,0,0,0
+  06A7    4ADF D5D8       +     	dw	04adfh,0d5d8h,0e598h,08a2bh,0a7b0h,0431bh
+  06AB    E598 8A2B       +     
+  06AF    A7B0 431B       +     
+  06B3    44              +     	db	044h
+  06B4    5A              +     	db	05ah
+  06B5    D030            +     	dw	0d030h
+                                	tstr	001h,0,0,0,0,0,0,0,0,0,0,-1,0,incab		; (512 cycles)
+  06B7    01 00 00 00     +     incab:	db	001h,0,0,0
+  06BB    0000 0000       +     	dw	0,0,0,0,0,0
+  06BF    0000 0000       +     
+  06C3    0000 0000       +     
+  06C7    00              +     	db	0
+  06C8    FF              +     	db	-1
+  06C9    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,0,0,incac		; (6 cycles)
+  06CB    00 00 00 00     +     incac:	db	0,0,0,0
+  06CF    0000 0000       +     	dw	0,0,0,0,0,0
+  06D3    0000 0000       +     
+  06D7    0000 0000       +     
+  06DB    D7              +     	db	0d7h
+  06DC    00              +     	db	0
+  06DD    0000            +     	dw	0
+  06DF    D1 88 15 A4           	db	0d1h,088h,015h,0a4h			; expected crc
+                                	tmsg	'<inc,dec> a...................',incad
+  06E3    3C 69 6E 63     +     incad:	db	'<inc,dec> a...................'
+  06E7    2C 64 65 63     +     
+  06EB    3E 20 61 2E     +     
+  06EF    2E 2E 2E 2E     +     
+  06F3    2E 2E 2E 2E     +     
+  06F7    2E 2E 2E 2E     +     
+  06FB    2E 2E 2E 2E     +     
+  06FF    2E 2E           +     
+  0701    24              +     	db	'$'
+                                
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-12
+
+
+                                ; <inc,dec> b (3072 cycles)
+  0702    D7                    incb:	db	0d7h		; flag mask
+                                	tstr	004h,0,0,0,0d623h,0432dh,07a61h,08180h,05a86h,01e85h,086h,058h,09bbbh,incba
+  0703    04 00 00 00     +     incba:	db	004h,0,0,0
+  0707    D623 432D       +     	dw	0d623h,0432dh,07a61h,08180h,05a86h,01e85h
+  070B    7A61 8180       +     
+  070F    5A86 1E85       +     
+  0713    86              +     	db	086h
+  0714    58              +     	db	058h
+  0715    9BBB            +     	dw	09bbbh
+                                	tstr	001h,0,0,0,0,0,0,0,0,0ff00h,0,0,0,incbb	; (512 cycles)
+  0717    01 00 00 00     +     incbb:	db	001h,0,0,0
+  071B    0000 0000       +     	dw	0,0,0,0,0,0ff00h
+  071F    0000 0000       +     
+  0723    0000 FF00       +     
+  0727    00              +     	db	0
+  0728    00              +     	db	0
+  0729    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,0,0,incbc1		; (6 cycles)
+  072B    00 00 00 00     +     incbc1:	db	0,0,0,0
+  072F    0000 0000       +     	dw	0,0,0,0,0,0
+  0733    0000 0000       +     
+  0737    0000 0000       +     
+  073B    D7              +     	db	0d7h
+  073C    00              +     	db	0
+  073D    0000            +     	dw	0
+  073F    5F 68 22 64           	db	05fh,068h,022h,064h			; expected crc
+                                	tmsg	'<inc,dec> b...................',incbd
+  0743    3C 69 6E 63     +     incbd:	db	'<inc,dec> b...................'
+  0747    2C 64 65 63     +     
+  074B    3E 20 62 2E     +     
+  074F    2E 2E 2E 2E     +     
+  0753    2E 2E 2E 2E     +     
+  0757    2E 2E 2E 2E     +     
+  075B    2E 2E 2E 2E     +     
+  075F    2E 2E           +     
+  0761    24              +     	db	'$'
+                                
+                                ; <inc,dec> bc (1536 cycles)
+  0762    D7                    incbc:	db	0d7h		; flag mask
+                                	tstr	003h,0,0,0,0cd97h,044abh,08dc9h,0e3e3h,011cch,0e8a4h,002h,049h,02a4dh,incbca
+  0763    03 00 00 00     +     incbca:	db	003h,0,0,0
+  0767    CD97 44AB       +     	dw	0cd97h,044abh,08dc9h,0e3e3h,011cch,0e8a4h
+  076B    8DC9 E3E3       +     
+  076F    11CC E8A4       +     
+  0773    02              +     	db	002h
+  0774    49              +     	db	049h
+  0775    2A4D            +     	dw	02a4dh
+                                	tstr	008h,0,0,0,0,0,0,0,0,0f821h,0,0,0,incbcb	; (256 cycles)
+  0777    08 00 00 00     +     incbcb:	db	008h,0,0,0
+  077B    0000 0000       +     	dw	0,0,0,0,0,0f821h
+  077F    0000 0000       +     
+  0783    0000 F821       +     
+  0787    00              +     	db	0
+  0788    00              +     	db	0
+  0789    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,0,0,incbcc		; (6 cycles)
+  078B    00 00 00 00     +     incbcc:	db	0,0,0,0
+  078F    0000 0000       +     	dw	0,0,0,0,0,0
+  0793    0000 0000       +     
+  0797    0000 0000       +     
+  079B    D7              +     	db	0d7h
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-13
+
+
+  079C    00              +     	db	0
+  079D    0000            +     	dw	0
+  079F    D2 AE 3B EC           	db	0d2h,0aeh,03bh,0ech			; expected crc
+                                	tmsg	'<inc,dec> bc..................',incbcd
+  07A3    3C 69 6E 63     +     incbcd:	db	'<inc,dec> bc..................'
+  07A7    2C 64 65 63     +     
+  07AB    3E 20 62 63     +     
+  07AF    2E 2E 2E 2E     +     
+  07B3    2E 2E 2E 2E     +     
+  07B7    2E 2E 2E 2E     +     
+  07BB    2E 2E 2E 2E     +     
+  07BF    2E 2E           +     
+  07C1    24              +     	db	'$'
+                                
+                                ; <inc,dec> c (3072 cycles)
+  07C2    D7                    incc:	db	0d7h		; flag mask
+                                	tstr	00ch,0,0,0,0d789h,00935h,0055bh,09f85h,08b27h,0d208h,095h,005h,00660h,incca
+  07C3    0C 00 00 00     +     incca:	db	00ch,0,0,0
+  07C7    D789 0935       +     	dw	0d789h,00935h,0055bh,09f85h,08b27h,0d208h
+  07CB    055B 9F85       +     
+  07CF    8B27 D208       +     
+  07D3    95              +     	db	095h
+  07D4    05              +     	db	005h
+  07D5    0660            +     	dw	00660h
+                                	tstr	001h,0,0,0,0,0,0,0,0,0ffh,0,0,0,inccb		; (512 cycles)
+  07D7    01 00 00 00     +     inccb:	db	001h,0,0,0
+  07DB    0000 0000       +     	dw	0,0,0,0,0,0ffh
+  07DF    0000 0000       +     
+  07E3    0000 00FF       +     
+  07E7    00              +     	db	0
+  07E8    00              +     	db	0
+  07E9    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,0,0,inccc		; (6 cycles)
+  07EB    00 00 00 00     +     inccc:	db	0,0,0,0
+  07EF    0000 0000       +     	dw	0,0,0,0,0,0
+  07F3    0000 0000       +     
+  07F7    0000 0000       +     
+  07FB    D7              +     	db	0d7h
+  07FC    00              +     	db	0
+  07FD    0000            +     	dw	0
+  07FF    C2 84 55 4C           	db	0c2h,084h,055h,04ch			; expected crc
+                                	tmsg	'<inc,dec> c...................',inccd
+  0803    3C 69 6E 63     +     inccd:	db	'<inc,dec> c...................'
+  0807    2C 64 65 63     +     
+  080B    3E 20 63 2E     +     
+  080F    2E 2E 2E 2E     +     
+  0813    2E 2E 2E 2E     +     
+  0817    2E 2E 2E 2E     +     
+  081B    2E 2E 2E 2E     +     
+  081F    2E 2E           +     
+  0821    24              +     	db	'$'
+                                
+                                ; <inc,dec> d (3072 cycles)
+  0822    D7                    incd:	db	0d7h		; flag mask
+                                	tstr	014h,0,0,0,0a0eah,05fbah,065fbh,0981ch,038cch,0debch,043h,05ch,003bdh,incda
+  0823    14 00 00 00     +     incda:	db	014h,0,0,0
+  0827    A0EA 5FBA       +     	dw	0a0eah,05fbah,065fbh,0981ch,038cch,0debch
+  082B    65FB 981C       +     
+  082F    38CC DEBC       +     
+  0833    43              +     	db	043h
+  0834    5C              +     	db	05ch
+  0835    03BD            +     	dw	003bdh
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-14
+
+
+                                	tstr	001h,0,0,0,0,0,0,0,0ff00h,0,0,0,0,incdb	; (512 cycles)
+  0837    01 00 00 00     +     incdb:	db	001h,0,0,0
+  083B    0000 0000       +     	dw	0,0,0,0,0ff00h,0
+  083F    0000 0000       +     
+  0843    FF00 0000       +     
+  0847    00              +     	db	0
+  0848    00              +     	db	0
+  0849    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,0,0,incdc		; (6 cycles)
+  084B    00 00 00 00     +     incdc:	db	0,0,0,0
+  084F    0000 0000       +     	dw	0,0,0,0,0,0
+  0853    0000 0000       +     
+  0857    0000 0000       +     
+  085B    D7              +     	db	0d7h
+  085C    00              +     	db	0
+  085D    0000            +     	dw	0
+  085F    45 23 DE 10           	db	045h,023h,0deh,010h			; expected crc
+                                	tmsg	'<inc,dec> d...................',incdd
+  0863    3C 69 6E 63     +     incdd:	db	'<inc,dec> d...................'
+  0867    2C 64 65 63     +     
+  086B    3E 20 64 2E     +     
+  086F    2E 2E 2E 2E     +     
+  0873    2E 2E 2E 2E     +     
+  0877    2E 2E 2E 2E     +     
+  087B    2E 2E 2E 2E     +     
+  087F    2E 2E           +     
+  0881    24              +     	db	'$'
+                                
+                                ; <inc,dec> de (1536 cycles)
+  0882    D7                    incde:	db	0d7h		; flag mask
+                                	tstr	013h,0,0,0,0342eh,0131dh,028c9h,00acah,09967h,03a2eh,092h,0f6h,09d54h,incdea
+  0883    13 00 00 00     +     incdea:	db	013h,0,0,0
+  0887    342E 131D       +     	dw	0342eh,0131dh,028c9h,00acah,09967h,03a2eh
+  088B    28C9 0ACA       +     
+  088F    9967 3A2E       +     
+  0893    92              +     	db	092h
+  0894    F6              +     	db	0f6h
+  0895    9D54            +     	dw	09d54h
+                                	tstr	008h,0,0,0,0,0,0,0,0f821h,0,0,0,0,incdeb	; (256 cycles)
+  0897    08 00 00 00     +     incdeb:	db	008h,0,0,0
+  089B    0000 0000       +     	dw	0,0,0,0,0f821h,0
+  089F    0000 0000       +     
+  08A3    F821 0000       +     
+  08A7    00              +     	db	0
+  08A8    00              +     	db	0
+  08A9    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,0,0,incdec		; (6 cycles)
+  08AB    00 00 00 00     +     incdec:	db	0,0,0,0
+  08AF    0000 0000       +     	dw	0,0,0,0,0,0
+  08B3    0000 0000       +     
+  08B7    0000 0000       +     
+  08BB    D7              +     	db	0d7h
+  08BC    00              +     	db	0
+  08BD    0000            +     	dw	0
+  08BF    AE C6 D4 2C           	db	0aeh,0c6h,0d4h,02ch			; expected crc
+                                	tmsg	'<inc,dec> de..................',incded
+  08C3    3C 69 6E 63     +     incded:	db	'<inc,dec> de..................'
+  08C7    2C 64 65 63     +     
+  08CB    3E 20 64 65     +     
+  08CF    2E 2E 2E 2E     +     
+  08D3    2E 2E 2E 2E     +     
+  08D7    2E 2E 2E 2E     +     
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-15
+
+
+  08DB    2E 2E 2E 2E     +     
+  08DF    2E 2E           +     
+  08E1    24              +     	db	'$'
+                                
+                                ; <inc,dec> e (3072 cycles)
+  08E2    D7                    ince:	db	0d7h		; flag mask
+                                	tstr	01ch,0,0,0,0602fh,04c0dh,02402h,0e2f5h,0a0f4h,0a10ah,013h,032h,05925h,incea
+  08E3    1C 00 00 00     +     incea:	db	01ch,0,0,0
+  08E7    602F 4C0D       +     	dw	0602fh,04c0dh,02402h,0e2f5h,0a0f4h,0a10ah
+  08EB    2402 E2F5       +     
+  08EF    A0F4 A10A       +     
+  08F3    13              +     	db	013h
+  08F4    32              +     	db	032h
+  08F5    5925            +     	dw	05925h
+                                	tstr	001h,0,0,0,0,0,0,0,0ffh,0,0,0,0,inceb		; (512 cycles)
+  08F7    01 00 00 00     +     inceb:	db	001h,0,0,0
+  08FB    0000 0000       +     	dw	0,0,0,0,0ffh,0
+  08FF    0000 0000       +     
+  0903    00FF 0000       +     
+  0907    00              +     	db	0
+  0908    00              +     	db	0
+  0909    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,0,0,incec		; (6 cycles)
+  090B    00 00 00 00     +     incec:	db	0,0,0,0
+  090F    0000 0000       +     	dw	0,0,0,0,0,0
+  0913    0000 0000       +     
+  0917    0000 0000       +     
+  091B    D7              +     	db	0d7h
+  091C    00              +     	db	0
+  091D    0000            +     	dw	0
+  091F    E1 75 AF CC           	db	0e1h,075h,0afh,0cch			; expected crc
+                                	tmsg	'<inc,dec> e...................',inced
+  0923    3C 69 6E 63     +     inced:	db	'<inc,dec> e...................'
+  0927    2C 64 65 63     +     
+  092B    3E 20 65 2E     +     
+  092F    2E 2E 2E 2E     +     
+  0933    2E 2E 2E 2E     +     
+  0937    2E 2E 2E 2E     +     
+  093B    2E 2E 2E 2E     +     
+  093F    2E 2E           +     
+  0941    24              +     	db	'$'
+                                
+                                ; <inc,dec> h (3072 cycles)
+  0942    D7                    inch:	db	0d7h		; flag mask
+                                	tstr	024h,0,0,0,01506h,0f2ebh,0e8ddh,0262bh,011a6h,0bc1ah,017h,006h,02818h,incha
+  0943    24 00 00 00     +     incha:	db	024h,0,0,0
+  0947    1506 F2EB       +     	dw	01506h,0f2ebh,0e8ddh,0262bh,011a6h,0bc1ah
+  094B    E8DD 262B       +     
+  094F    11A6 BC1A       +     
+  0953    17              +     	db	017h
+  0954    06              +     	db	006h
+  0955    2818            +     	dw	02818h
+                                	tstr	001h,0,0,0,0,0,0,0ff00h,0,0,0,0,0,inchb	; (512 cycles)
+  0957    01 00 00 00     +     inchb:	db	001h,0,0,0
+  095B    0000 0000       +     	dw	0,0,0,0ff00h,0,0
+  095F    0000 FF00       +     
+  0963    0000 0000       +     
+  0967    00              +     	db	0
+  0968    00              +     	db	0
+  0969    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,0,0,inchc		; (6 cycles)
+  096B    00 00 00 00     +     inchc:	db	0,0,0,0
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-16
+
+
+  096F    0000 0000       +     	dw	0,0,0,0,0,0
+  0973    0000 0000       +     
+  0977    0000 0000       +     
+  097B    D7              +     	db	0d7h
+  097C    00              +     	db	0
+  097D    0000            +     	dw	0
+  097F    1C ED 84 7D           	db	01ch,0edh,084h,07dh			; expected crc
+                                	tmsg	'<inc,dec> h...................',inchd
+  0983    3C 69 6E 63     +     inchd:	db	'<inc,dec> h...................'
+  0987    2C 64 65 63     +     
+  098B    3E 20 68 2E     +     
+  098F    2E 2E 2E 2E     +     
+  0993    2E 2E 2E 2E     +     
+  0997    2E 2E 2E 2E     +     
+  099B    2E 2E 2E 2E     +     
+  099F    2E 2E           +     
+  09A1    24              +     	db	'$'
+                                
+                                ; <inc,dec> hl (1536 cycles)
+  09A2    D7                    inchl:	db	0d7h		; flag mask
+                                	tstr	023h,0,0,0,0c3f4h,007a5h,01b6dh,04f04h,0e2c2h,0822ah,057h,0e0h,0c3e1h,inchla
+  09A3    23 00 00 00     +     inchla:	db	023h,0,0,0
+  09A7    C3F4 07A5       +     	dw	0c3f4h,007a5h,01b6dh,04f04h,0e2c2h,0822ah
+  09AB    1B6D 4F04       +     
+  09AF    E2C2 822A       +     
+  09B3    57              +     	db	057h
+  09B4    E0              +     	db	0e0h
+  09B5    C3E1            +     	dw	0c3e1h
+                                	tstr	008h,0,0,0,0,0,0,0f821h,0,0,0,0,0,inchlb	; (256 cycles)
+  09B7    08 00 00 00     +     inchlb:	db	008h,0,0,0
+  09BB    0000 0000       +     	dw	0,0,0,0f821h,0,0
+  09BF    0000 F821       +     
+  09C3    0000 0000       +     
+  09C7    00              +     	db	0
+  09C8    00              +     	db	0
+  09C9    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,0,0,inchlc		; (6 cycles)
+  09CB    00 00 00 00     +     inchlc:	db	0,0,0,0
+  09CF    0000 0000       +     	dw	0,0,0,0,0,0
+  09D3    0000 0000       +     
+  09D7    0000 0000       +     
+  09DB    D7              +     	db	0d7h
+  09DC    00              +     	db	0
+  09DD    0000            +     	dw	0
+  09DF    FC 0D 6D 4A           	db	0fch,00dh,06dh,04ah			; expected crc
+                                	tmsg	'<inc,dec> hl..................',inchld
+  09E3    3C 69 6E 63     +     inchld:	db	'<inc,dec> hl..................'
+  09E7    2C 64 65 63     +     
+  09EB    3E 20 68 6C     +     
+  09EF    2E 2E 2E 2E     +     
+  09F3    2E 2E 2E 2E     +     
+  09F7    2E 2E 2E 2E     +     
+  09FB    2E 2E 2E 2E     +     
+  09FF    2E 2E           +     
+  0A01    24              +     	db	'$'
+                                
+                                ; <inc,dec> ix (1536 cycles)
+  0A02    D7                    incix:	db	0d7h		; flag mask
+                                	tstr	0ddh,023h,0,0,0bc3ch,00d9bh,0e081h,0adfdh,09a7fh,096e5h,013h,085h,00be2h,incixa
+  0A03    DD 23 00 00     +     incixa:	db	0ddh,023h,0,0
+  0A07    BC3C 0D9B       +     	dw	0bc3ch,00d9bh,0e081h,0adfdh,09a7fh,096e5h
+  0A0B    E081 ADFD       +     
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-17
+
+
+  0A0F    9A7F 96E5       +     
+  0A13    13              +     	db	013h
+  0A14    85              +     	db	085h
+  0A15    0BE2            +     	dw	00be2h
+                                	tstr	0,8,0,0,0,0,0f821h,0,0,0,0,0,0,incixb		; (256 cycles)
+  0A17    00 08 00 00     +     incixb:	db	0,8,0,0
+  0A1B    0000 0000       +     	dw	0,0,0f821h,0,0,0
+  0A1F    F821 0000       +     
+  0A23    0000 0000       +     
+  0A27    00              +     	db	0
+  0A28    00              +     	db	0
+  0A29    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,0,0,incixc		; (6 cycles)
+  0A2B    00 00 00 00     +     incixc:	db	0,0,0,0
+  0A2F    0000 0000       +     	dw	0,0,0,0,0,0
+  0A33    0000 0000       +     
+  0A37    0000 0000       +     
+  0A3B    D7              +     	db	0d7h
+  0A3C    00              +     	db	0
+  0A3D    0000            +     	dw	0
+  0A3F    A5 4D BE 31           	db	0a5h,04dh,0beh,031h			; expected crc
+                                	tmsg	'<inc,dec> ix..................',incixd
+  0A43    3C 69 6E 63     +     incixd:	db	'<inc,dec> ix..................'
+  0A47    2C 64 65 63     +     
+  0A4B    3E 20 69 78     +     
+  0A4F    2E 2E 2E 2E     +     
+  0A53    2E 2E 2E 2E     +     
+  0A57    2E 2E 2E 2E     +     
+  0A5B    2E 2E 2E 2E     +     
+  0A5F    2E 2E           +     
+  0A61    24              +     	db	'$'
+                                
+                                ; <inc,dec> iy (1536 cycles)
+  0A62    D7                    inciy:	db	0d7h		; flag mask
+                                	tstr	0fdh,023h,0,0,09402h,0637ah,03182h,0c65ah,0b2e9h,0abb4h,016h,0f2h,06d05h,inciya
+  0A63    FD 23 00 00     +     inciya:	db	0fdh,023h,0,0
+  0A67    9402 637A       +     	dw	09402h,0637ah,03182h,0c65ah,0b2e9h,0abb4h
+  0A6B    3182 C65A       +     
+  0A6F    B2E9 ABB4       +     
+  0A73    16              +     	db	016h
+  0A74    F2              +     	db	0f2h
+  0A75    6D05            +     	dw	06d05h
+                                	tstr	0,8,0,0,0,0f821h,0,0,0,0,0,0,0,inciyb		; (256 cycles)
+  0A77    00 08 00 00     +     inciyb:	db	0,8,0,0
+  0A7B    0000 F821       +     	dw	0,0f821h,0,0,0,0
+  0A7F    0000 0000       +     
+  0A83    0000 0000       +     
+  0A87    00              +     	db	0
+  0A88    00              +     	db	0
+  0A89    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,0,0,inciyc		; (6 cycles)
+  0A8B    00 00 00 00     +     inciyc:	db	0,0,0,0
+  0A8F    0000 0000       +     	dw	0,0,0,0,0,0
+  0A93    0000 0000       +     
+  0A97    0000 0000       +     
+  0A9B    D7              +     	db	0d7h
+  0A9C    00              +     	db	0
+  0A9D    0000            +     	dw	0
+  0A9F    50 5D 51 A3           	db	050h,05dh,051h,0a3h			; expected crc
+                                	tmsg	'<inc,dec> iy..................',inciyd
+  0AA3    3C 69 6E 63     +     inciyd:	db	'<inc,dec> iy..................'
+  0AA7    2C 64 65 63     +     
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-18
+
+
+  0AAB    3E 20 69 79     +     
+  0AAF    2E 2E 2E 2E     +     
+  0AB3    2E 2E 2E 2E     +     
+  0AB7    2E 2E 2E 2E     +     
+  0ABB    2E 2E 2E 2E     +     
+  0ABF    2E 2E           +     
+  0AC1    24              +     	db	'$'
+                                
+                                ; <inc,dec> l (3072 cycles)
+  0AC2    D7                    incl:	db	0d7h		; flag mask
+                                	tstr	02ch,0,0,0,08031h,0a520h,04356h,0b409h,0f4c1h,0dfa2h,0d1h,03ch,03ea2h,incla
+  0AC3    2C 00 00 00     +     incla:	db	02ch,0,0,0
+  0AC7    8031 A520       +     	dw	08031h,0a520h,04356h,0b409h,0f4c1h,0dfa2h
+  0ACB    4356 B409       +     
+  0ACF    F4C1 DFA2       +     
+  0AD3    D1              +     	db	0d1h
+  0AD4    3C              +     	db	03ch
+  0AD5    3EA2            +     	dw	03ea2h
+                                	tstr	001h,0,0,0,0,0,0,0ffh,0,0,0,0,0,inclb		; (512 cycles)
+  0AD7    01 00 00 00     +     inclb:	db	001h,0,0,0
+  0ADB    0000 0000       +     	dw	0,0,0,0ffh,0,0
+  0ADF    0000 00FF       +     
+  0AE3    0000 0000       +     
+  0AE7    00              +     	db	0
+  0AE8    00              +     	db	0
+  0AE9    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,0,0,inclc		; (6 cycles)
+  0AEB    00 00 00 00     +     inclc:	db	0,0,0,0
+  0AEF    0000 0000       +     	dw	0,0,0,0,0,0
+  0AF3    0000 0000       +     
+  0AF7    0000 0000       +     
+  0AFB    D7              +     	db	0d7h
+  0AFC    00              +     	db	0
+  0AFD    0000            +     	dw	0
+  0AFF    56 CD 06 F3           	db	056h,0cdh,006h,0f3h			; expected crc
+                                	tmsg	'<inc,dec> l...................',incld
+  0B03    3C 69 6E 63     +     incld:	db	'<inc,dec> l...................'
+  0B07    2C 64 65 63     +     
+  0B0B    3E 20 6C 2E     +     
+  0B0F    2E 2E 2E 2E     +     
+  0B13    2E 2E 2E 2E     +     
+  0B17    2E 2E 2E 2E     +     
+  0B1B    2E 2E 2E 2E     +     
+  0B1F    2E 2E           +     
+  0B21    24              +     	db	'$'
+                                
+                                ; <inc,dec> (hl) (3072 cycles)
+  0B22    D7                    incm:	db	0d7h		; flag mask
+                                	tstr	034h,0,0,0,0b856h,00c7ch,0e53eh,msbt,0877eh,0da58h,015h,05ch,01f37h,incma
+  0B23    34 00 00 00     +     incma:	db	034h,0,0,0
+  0B27    B856 0C7C       +     	dw	0b856h,00c7ch,0e53eh,msbt,0877eh,0da58h
+  0B2B    E53E 0103       +     
+  0B2F    877E DA58       +     
+  0B33    15              +     	db	015h
+  0B34    5C              +     	db	05ch
+  0B35    1F37            +     	dw	01f37h
+                                	tstr	001h,0,0,0,0ffh,0,0,0,0,0,0,0,0,incmb		; (512 cycles)
+  0B37    01 00 00 00     +     incmb:	db	001h,0,0,0
+  0B3B    00FF 0000       +     	dw	0ffh,0,0,0,0,0
+  0B3F    0000 0000       +     
+  0B43    0000 0000       +     
+  0B47    00              +     	db	0
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-19
+
+
+  0B48    00              +     	db	0
+  0B49    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,0,0,incmc		; (6 cycles)
+  0B4B    00 00 00 00     +     incmc:	db	0,0,0,0
+  0B4F    0000 0000       +     	dw	0,0,0,0,0,0
+  0B53    0000 0000       +     
+  0B57    0000 0000       +     
+  0B5B    D7              +     	db	0d7h
+  0B5C    00              +     	db	0
+  0B5D    0000            +     	dw	0
+  0B5F    B8 3A DC EF           	db	0b8h,03ah,0dch,0efh			; expected crc
+                                	tmsg	'<inc,dec> (hl)................',incmd
+  0B63    3C 69 6E 63     +     incmd:	db	'<inc,dec> (hl)................'
+  0B67    2C 64 65 63     +     
+  0B6B    3E 20 28 68     +     
+  0B6F    6C 29 2E 2E     +     
+  0B73    2E 2E 2E 2E     +     
+  0B77    2E 2E 2E 2E     +     
+  0B7B    2E 2E 2E 2E     +     
+  0B7F    2E 2E           +     
+  0B81    24              +     	db	'$'
+                                
+                                ; <inc,dec> sp (1536 cycles)
+  0B82    D7                    incsp:	db	0d7h		; flag mask
+                                	tstr	033h,0,0,0,0346fh,0d482h,0d169h,0deb6h,0a494h,0f476h,053h,002h,0855bh,incspa
+  0B83    33 00 00 00     +     incspa:	db	033h,0,0,0
+  0B87    346F D482       +     	dw	0346fh,0d482h,0d169h,0deb6h,0a494h,0f476h
+  0B8B    D169 DEB6       +     
+  0B8F    A494 F476       +     
+  0B93    53              +     	db	053h
+  0B94    02              +     	db	002h
+  0B95    855B            +     	dw	0855bh
+                                	tstr	008h,0,0,0,0,0,0,0,0,0,0,0,0f821h,incspb	; (256 cycles)
+  0B97    08 00 00 00     +     incspb:	db	008h,0,0,0
+  0B9B    0000 0000       +     	dw	0,0,0,0,0,0
+  0B9F    0000 0000       +     
+  0BA3    0000 0000       +     
+  0BA7    00              +     	db	0
+  0BA8    00              +     	db	0
+  0BA9    F821            +     	dw	0f821h
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,0,0,incspc		; (6 cycles)
+  0BAB    00 00 00 00     +     incspc:	db	0,0,0,0
+  0BAF    0000 0000       +     	dw	0,0,0,0,0,0
+  0BB3    0000 0000       +     
+  0BB7    0000 0000       +     
+  0BBB    D7              +     	db	0d7h
+  0BBC    00              +     	db	0
+  0BBD    0000            +     	dw	0
+  0BBF    5D AC D5 27           	db	05dh,0ach,0d5h,027h			; expected crc
+                                	tmsg	'<inc,dec> sp..................',incspd
+  0BC3    3C 69 6E 63     +     incspd:	db	'<inc,dec> sp..................'
+  0BC7    2C 64 65 63     +     
+  0BCB    3E 20 73 70     +     
+  0BCF    2E 2E 2E 2E     +     
+  0BD3    2E 2E 2E 2E     +     
+  0BD7    2E 2E 2E 2E     +     
+  0BDB    2E 2E 2E 2E     +     
+  0BDF    2E 2E           +     
+  0BE1    24              +     	db	'$'
+                                
+                                ; <inc,dec> (<ix,iy>+1) (6144 cycles)
+  0BE2    D7                    incx:	db	0d7h		; flag mask
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-20
+
+
+                                	tstr	0ddh,034h,1,0,0fa6eh,msbt-1,msbt-1,02c28h,08894h,05057h,016h,033h,0286fh,incxa
+  0BE3    DD 34 01 00     +     incxa:	db	0ddh,034h,1,0
+  0BE7    FA6E 0102       +     	dw	0fa6eh,msbt-1,msbt-1,02c28h,08894h,05057h
+  0BEB    0102 2C28       +     
+  0BEF    8894 5057       +     
+  0BF3    16              +     	db	016h
+  0BF4    33              +     	db	033h
+  0BF5    286F            +     	dw	0286fh
+                                	tstr	020h,1,0,0,0ffh,0,0,0,0,0,0,0,0,incxb		; (1024 cycles)
+  0BF7    20 01 00 00     +     incxb:	db	020h,1,0,0
+  0BFB    00FF 0000       +     	dw	0ffh,0,0,0,0,0
+  0BFF    0000 0000       +     
+  0C03    0000 0000       +     
+  0C07    00              +     	db	0
+  0C08    00              +     	db	0
+  0C09    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,0,0,incxc		; (6 cycles)
+  0C0B    00 00 00 00     +     incxc:	db	0,0,0,0
+  0C0F    0000 0000       +     	dw	0,0,0,0,0,0
+  0C13    0000 0000       +     
+  0C17    0000 0000       +     
+  0C1B    D7              +     	db	0d7h
+  0C1C    00              +     	db	0
+  0C1D    0000            +     	dw	0
+  0C1F    20 58 14 70           	db	020h,058h,014h,070h			; expected crc
+                                	tmsg	'<inc,dec> (<ix,iy>+1).........',incxd
+  0C23    3C 69 6E 63     +     incxd:	db	'<inc,dec> (<ix,iy>+1).........'
+  0C27    2C 64 65 63     +     
+  0C2B    3E 20 28 3C     +     
+  0C2F    69 78 2C 69     +     
+  0C33    79 3E 2B 31     +     
+  0C37    29 2E 2E 2E     +     
+  0C3B    2E 2E 2E 2E     +     
+  0C3F    2E 2E           +     
+  0C41    24              +     	db	'$'
+                                
+                                ; <inc,dec> ixh (3072 cycles)
+  0C42    D7                    incxh:	db	0d7h		; flag mask
+                                	tstr	0ddh,024h,0,0,0b838h,0316ch,0c6d4h,03e01h,08358h,015b4h,081h,0deh,04259h,incxha
+  0C43    DD 24 00 00     +     incxha:	db	0ddh,024h,0,0
+  0C47    B838 316C       +     	dw	0b838h,0316ch,0c6d4h,03e01h,08358h,015b4h
+  0C4B    C6D4 3E01       +     
+  0C4F    8358 15B4       +     
+  0C53    81              +     	db	081h
+  0C54    DE              +     	db	0deh
+  0C55    4259            +     	dw	04259h
+                                	tstr	0,1,0,0,0,0ff00h,0,0,0,0,0,0,0,incxhb		; (512 cycles)
+  0C57    00 01 00 00     +     incxhb:	db	0,1,0,0
+  0C5B    0000 FF00       +     	dw	0,0ff00h,0,0,0,0
+  0C5F    0000 0000       +     
+  0C63    0000 0000       +     
+  0C67    00              +     	db	0
+  0C68    00              +     	db	0
+  0C69    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,0,0,incxhc		; (6 cycles)
+  0C6B    00 00 00 00     +     incxhc:	db	0,0,0,0
+  0C6F    0000 0000       +     	dw	0,0,0,0,0,0
+  0C73    0000 0000       +     
+  0C77    0000 0000       +     
+  0C7B    D7              +     	db	0d7h
+  0C7C    00              +     	db	0
+  0C7D    0000            +     	dw	0
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-21
+
+
+  0C7F    6F 46 36 62           	db	06fh,046h,036h,062h			; expected crc
+                                	tmsg	'<inc,dec> ixh.................',incxhd
+  0C83    3C 69 6E 63     +     incxhd:	db	'<inc,dec> ixh.................'
+  0C87    2C 64 65 63     +     
+  0C8B    3E 20 69 78     +     
+  0C8F    68 2E 2E 2E     +     
+  0C93    2E 2E 2E 2E     +     
+  0C97    2E 2E 2E 2E     +     
+  0C9B    2E 2E 2E 2E     +     
+  0C9F    2E 2E           +     
+  0CA1    24              +     	db	'$'
+                                
+                                ; <inc,dec> ixl (3072 cycles)
+  0CA2    D7                    incxl:	db	0d7h		; flag mask
+                                	tstr	0ddh,02ch,0,0,04d14h,07460h,076d4h,006e7h,032a2h,0213ch,0d6h,0d7h,099a5h,incxla
+  0CA3    DD 2C 00 00     +     incxla:	db	0ddh,02ch,0,0
+  0CA7    4D14 7460       +     	dw	04d14h,07460h,076d4h,006e7h,032a2h,0213ch
+  0CAB    76D4 06E7       +     
+  0CAF    32A2 213C       +     
+  0CB3    D6              +     	db	0d6h
+  0CB4    D7              +     	db	0d7h
+  0CB5    99A5            +     	dw	099a5h
+                                	tstr	0,1,0,0,0,0ffh,0,0,0,0,0,0,0,incxlb		; (512 cycles)
+  0CB7    00 01 00 00     +     incxlb:	db	0,1,0,0
+  0CBB    0000 00FF       +     	dw	0,0ffh,0,0,0,0
+  0CBF    0000 0000       +     
+  0CC3    0000 0000       +     
+  0CC7    00              +     	db	0
+  0CC8    00              +     	db	0
+  0CC9    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,0,0,incxlc		; (6 cycles)
+  0CCB    00 00 00 00     +     incxlc:	db	0,0,0,0
+  0CCF    0000 0000       +     	dw	0,0,0,0,0,0
+  0CD3    0000 0000       +     
+  0CD7    0000 0000       +     
+  0CDB    D7              +     	db	0d7h
+  0CDC    00              +     	db	0
+  0CDD    0000            +     	dw	0
+  0CDF    02 7B EF 2C           	db	002h,07bh,0efh,02ch			; expected crc
+                                	tmsg	'<inc,dec> ixl.................',incxld
+  0CE3    3C 69 6E 63     +     incxld:	db	'<inc,dec> ixl.................'
+  0CE7    2C 64 65 63     +     
+  0CEB    3E 20 69 78     +     
+  0CEF    6C 2E 2E 2E     +     
+  0CF3    2E 2E 2E 2E     +     
+  0CF7    2E 2E 2E 2E     +     
+  0CFB    2E 2E 2E 2E     +     
+  0CFF    2E 2E           +     
+  0D01    24              +     	db	'$'
+                                
+                                ; <inc,dec> iyh (3072 cycles)
+  0D02    D7                    incyh:	db	0d7h		; flag mask
+                                	tstr	0ddh,024h,0,0,02836h,09f6fh,09116h,061b9h,082cbh,0e219h,092h,073h,0a98ch,incyha
+  0D03    DD 24 00 00     +     incyha:	db	0ddh,024h,0,0
+  0D07    2836 9F6F       +     	dw	02836h,09f6fh,09116h,061b9h,082cbh,0e219h
+  0D0B    9116 61B9       +     
+  0D0F    82CB E219       +     
+  0D13    92              +     	db	092h
+  0D14    73              +     	db	073h
+  0D15    A98C            +     	dw	0a98ch
+                                	tstr	0,1,0,0,0ff00h,0,0,0,0,0,0,0,0,incyhb		; (512 cycles)
+  0D17    00 01 00 00     +     incyhb:	db	0,1,0,0
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-22
+
+
+  0D1B    FF00 0000       +     	dw	0ff00h,0,0,0,0,0
+  0D1F    0000 0000       +     
+  0D23    0000 0000       +     
+  0D27    00              +     	db	0
+  0D28    00              +     	db	0
+  0D29    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,0,0,incyhc		; (6 cycles)
+  0D2B    00 00 00 00     +     incyhc:	db	0,0,0,0
+  0D2F    0000 0000       +     	dw	0,0,0,0,0,0
+  0D33    0000 0000       +     
+  0D37    0000 0000       +     
+  0D3B    D7              +     	db	0d7h
+  0D3C    00              +     	db	0
+  0D3D    0000            +     	dw	0
+  0D3F    2D 96 6C F3           	db	02dh,096h,06ch,0f3h			; expected crc
+                                	tmsg	'<inc,dec> iyh.................',incyhd
+  0D43    3C 69 6E 63     +     incyhd:	db	'<inc,dec> iyh.................'
+  0D47    2C 64 65 63     +     
+  0D4B    3E 20 69 79     +     
+  0D4F    68 2E 2E 2E     +     
+  0D53    2E 2E 2E 2E     +     
+  0D57    2E 2E 2E 2E     +     
+  0D5B    2E 2E 2E 2E     +     
+  0D5F    2E 2E           +     
+  0D61    24              +     	db	'$'
+                                
+                                ; <inc,dec> iyl (3072 cycles)
+  0D62    D7                    incyl:	db	0d7h		; flag mask
+                                	tstr	0ddh,02ch,0,0,0d7c6h,062d5h,0a09eh,07039h,03e7eh,09f12h,090h,0d9h,0220fh,incyla
+  0D63    DD 2C 00 00     +     incyla:	db	0ddh,02ch,0,0
+  0D67    D7C6 62D5       +     	dw	0d7c6h,062d5h,0a09eh,07039h,03e7eh,09f12h
+  0D6B    A09E 7039       +     
+  0D6F    3E7E 9F12       +     
+  0D73    90              +     	db	090h
+  0D74    D9              +     	db	0d9h
+  0D75    220F            +     	dw	0220fh
+                                	tstr	0,1,0,0,0ffh,0,0,0,0,0,0,0,0,incylb		; (512 cycles)
+  0D77    00 01 00 00     +     incylb:	db	0,1,0,0
+  0D7B    00FF 0000       +     	dw	0ffh,0,0,0,0,0
+  0D7F    0000 0000       +     
+  0D83    0000 0000       +     
+  0D87    00              +     	db	0
+  0D88    00              +     	db	0
+  0D89    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,0,0,incylc		; (6 cycles)
+  0D8B    00 00 00 00     +     incylc:	db	0,0,0,0
+  0D8F    0000 0000       +     	dw	0,0,0,0,0,0
+  0D93    0000 0000       +     
+  0D97    0000 0000       +     
+  0D9B    D7              +     	db	0d7h
+  0D9C    00              +     	db	0
+  0D9D    0000            +     	dw	0
+  0D9F    FB CB BA 95           	db	0fbh,0cbh,0bah,095h			; expected crc
+                                	tmsg	'<inc,dec> iyl.................',incyld
+  0DA3    3C 69 6E 63     +     incyld:	db	'<inc,dec> iyl.................'
+  0DA7    2C 64 65 63     +     
+  0DAB    3E 20 69 79     +     
+  0DAF    6C 2E 2E 2E     +     
+  0DB3    2E 2E 2E 2E     +     
+  0DB7    2E 2E 2E 2E     +     
+  0DBB    2E 2E 2E 2E     +     
+  0DBF    2E 2E           +     
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-23
+
+
+  0DC1    24              +     	db	'$'
+                                
+                                ; ld <bc,de>,(nnnn) (32 cycles)
+  0DC2    D7                    ld161:	db	0d7h		; flag mask
+                                	tstr	0edh,04bh,msbtlo,msbthi,0f9a8h,0f559h,093a4h,0f5edh,06f96h,0d968h,086h,0e6h,04bd8h,ld161a
+  0DC3    ED 4B 03 01     +     ld161a:	db	0edh,04bh,msbtlo,msbthi
+  0DC7    F9A8 F559       +     	dw	0f9a8h,0f559h,093a4h,0f5edh,06f96h,0d968h
+  0DCB    93A4 F5ED       +     
+  0DCF    6F96 D968       +     
+  0DD3    86              +     	db	086h
+  0DD4    E6              +     	db	0e6h
+  0DD5    4BD8            +     	dw	04bd8h
+                                	tstr	0,010h,0,0,0,0,0,0,0,0,0,0,0,ld161b		; (2 cycles)
+  0DD7    00 10 00 00     +     ld161b:	db	0,010h,0,0
+  0DDB    0000 0000       +     	dw	0,0,0,0,0,0
+  0DDF    0000 0000       +     
+  0DE3    0000 0000       +     
+  0DE7    00              +     	db	0
+  0DE8    00              +     	db	0
+  0DE9    0000            +     	dw	0
+                                	tstr	0,0,0,0,-1,0,0,0,0,0,0,0,0,ld161c		; (16 cycles)
+  0DEB    00 00 00 00     +     ld161c:	db	0,0,0,0
+  0DEF    FFFF 0000       +     	dw	-1,0,0,0,0,0
+  0DF3    0000 0000       +     
+  0DF7    0000 0000       +     
+  0DFB    00              +     	db	0
+  0DFC    00              +     	db	0
+  0DFD    0000            +     	dw	0
+  0DFF    4D 45 A9 AC           	db	04dh,045h,0a9h,0ach			; expected crc
+                                	tmsg	'ld <bc,de>,(nnnn).............',ld161d
+  0E03    6C 64 20 3C     +     ld161d:	db	'ld <bc,de>,(nnnn).............'
+  0E07    62 63 2C 64     +     
+  0E0B    65 3E 2C 28     +     
+  0E0F    6E 6E 6E 6E     +     
+  0E13    29 2E 2E 2E     +     
+  0E17    2E 2E 2E 2E     +     
+  0E1B    2E 2E 2E 2E     +     
+  0E1F    2E 2E           +     
+  0E21    24              +     	db	'$'
+                                
+                                ; ld hl,(nnnn) (16 cycles)
+  0E22    D7                    ld162:	db	0d7h		; flag mask
+                                	tstr	02ah,msbtlo,msbthi,0,09863h,07830h,02077h,0b1feh,0b9fah,0abb8h,004h,006h,06015h,ld162a
+  0E23    2A 03 01 00     +     ld162a:	db	02ah,msbtlo,msbthi,0
+  0E27    9863 7830       +     	dw	09863h,07830h,02077h,0b1feh,0b9fah,0abb8h
+  0E2B    2077 B1FE       +     
+  0E2F    B9FA ABB8       +     
+  0E33    04              +     	db	004h
+  0E34    06              +     	db	006h
+  0E35    6015            +     	dw	06015h
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0,0,0,ld162b		; (1 cycle)
+  0E37    00 00 00 00     +     ld162b:	db	0,0,0,0
+  0E3B    0000 0000       +     	dw	0,0,0,0,0,0
+  0E3F    0000 0000       +     
+  0E43    0000 0000       +     
+  0E47    00              +     	db	0
+  0E48    00              +     	db	0
+  0E49    0000            +     	dw	0
+                                	tstr	0,0,0,0,-1,0,0,0,0,0,0,0,0,ld162c		; (16 cycles)
+  0E4B    00 00 00 00     +     ld162c:	db	0,0,0,0
+  0E4F    FFFF 0000       +     	dw	-1,0,0,0,0,0
+  0E53    0000 0000       +     
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-24
+
+
+  0E57    0000 0000       +     
+  0E5B    00              +     	db	0
+  0E5C    00              +     	db	0
+  0E5D    0000            +     	dw	0
+  0E5F    5F 97 24 87           	db	05fh,097h,024h,087h			; expected crc
+                                	tmsg	'ld hl,(nnnn)..................',ld162d
+  0E63    6C 64 20 68     +     ld162d:	db	'ld hl,(nnnn)..................'
+  0E67    6C 2C 28 6E     +     
+  0E6B    6E 6E 6E 29     +     
+  0E6F    2E 2E 2E 2E     +     
+  0E73    2E 2E 2E 2E     +     
+  0E77    2E 2E 2E 2E     +     
+  0E7B    2E 2E 2E 2E     +     
+  0E7F    2E 2E           +     
+  0E81    24              +     	db	'$'
+                                	
+                                ; ld sp,(nnnn) (16 cycles)
+  0E82    D7                    ld163:	db	0d7h		; flag mask
+                                	tstr	0edh,07bh,msbtlo,msbthi,08dfch,057d7h,02161h,0ca18h,0c185h,027dah,083h,01eh,0f460h,ld163a
+  0E83    ED 7B 03 01     +     ld163a:	db	0edh,07bh,msbtlo,msbthi
+  0E87    8DFC 57D7       +     	dw	08dfch,057d7h,02161h,0ca18h,0c185h,027dah
+  0E8B    2161 CA18       +     
+  0E8F    C185 27DA       +     
+  0E93    83              +     	db	083h
+  0E94    1E              +     	db	01eh
+  0E95    F460            +     	dw	0f460h
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0,0,0,ld163b		; (1 cycles)
+  0E97    00 00 00 00     +     ld163b:	db	0,0,0,0
+  0E9B    0000 0000       +     	dw	0,0,0,0,0,0
+  0E9F    0000 0000       +     
+  0EA3    0000 0000       +     
+  0EA7    00              +     	db	0
+  0EA8    00              +     	db	0
+  0EA9    0000            +     	dw	0
+                                	tstr	0,0,0,0,-1,0,0,0,0,0,0,0,0,ld163c		; (16 cycles)
+  0EAB    00 00 00 00     +     ld163c:	db	0,0,0,0
+  0EAF    FFFF 0000       +     	dw	-1,0,0,0,0,0
+  0EB3    0000 0000       +     
+  0EB7    0000 0000       +     
+  0EBB    00              +     	db	0
+  0EBC    00              +     	db	0
+  0EBD    0000            +     	dw	0
+  0EBF    7A CE A1 1B           	db	07ah,0ceh,0a1h,01bh			; expected crc
+                                	tmsg	'ld sp,(nnnn)..................',ld163d
+  0EC3    6C 64 20 73     +     ld163d:	db	'ld sp,(nnnn)..................'
+  0EC7    70 2C 28 6E     +     
+  0ECB    6E 6E 6E 29     +     
+  0ECF    2E 2E 2E 2E     +     
+  0ED3    2E 2E 2E 2E     +     
+  0ED7    2E 2E 2E 2E     +     
+  0EDB    2E 2E 2E 2E     +     
+  0EDF    2E 2E           +     
+  0EE1    24              +     	db	'$'
+                                
+                                ; ld <ix,iy>,(nnnn) (32 cycles)
+  0EE2    D7                    ld164:	db	0d7h		; flag mask
+                                	tstr	0ddh,02ah,msbtlo,msbthi,0ded7h,0a6fah,0f780h,0244ch,087deh,0bcc2h,016h,063h,04c96h,ld164a
+  0EE3    DD 2A 03 01     +     ld164a:	db	0ddh,02ah,msbtlo,msbthi
+  0EE7    DED7 A6FA       +     	dw	0ded7h,0a6fah,0f780h,0244ch,087deh,0bcc2h
+  0EEB    F780 244C       +     
+  0EEF    87DE BCC2       +     
+  0EF3    16              +     	db	016h
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-25
+
+
+  0EF4    63              +     	db	063h
+  0EF5    4C96            +     	dw	04c96h
+                                	tstr	020h,0,0,0,0,0,0,0,0,0,0,0,0,ld164b		; (2 cycles)
+  0EF7    20 00 00 00     +     ld164b:	db	020h,0,0,0
+  0EFB    0000 0000       +     	dw	0,0,0,0,0,0
+  0EFF    0000 0000       +     
+  0F03    0000 0000       +     
+  0F07    00              +     	db	0
+  0F08    00              +     	db	0
+  0F09    0000            +     	dw	0
+                                	tstr	0,0,0,0,-1,0,0,0,0,0,0,0,0,ld164c		; (16 cycles)
+  0F0B    00 00 00 00     +     ld164c:	db	0,0,0,0
+  0F0F    FFFF 0000       +     	dw	-1,0,0,0,0,0
+  0F13    0000 0000       +     
+  0F17    0000 0000       +     
+  0F1B    00              +     	db	0
+  0F1C    00              +     	db	0
+  0F1D    0000            +     	dw	0
+  0F1F    85 8B F1 6D           	db	085h,08bh,0f1h,06dh			; expected crc
+                                	tmsg	'ld <ix,iy>,(nnnn).............',ld164d
+  0F23    6C 64 20 3C     +     ld164d:	db	'ld <ix,iy>,(nnnn).............'
+  0F27    69 78 2C 69     +     
+  0F2B    79 3E 2C 28     +     
+  0F2F    6E 6E 6E 6E     +     
+  0F33    29 2E 2E 2E     +     
+  0F37    2E 2E 2E 2E     +     
+  0F3B    2E 2E 2E 2E     +     
+  0F3F    2E 2E           +     
+  0F41    24              +     	db	'$'
+                                	
+                                ; ld (nnnn),<bc,de> (64 cycles)
+  0F42    D7                    ld165:	db	0d7h		; flag mask
+                                	tstr	0edh,043h,msbtlo,msbthi,01f98h,0844dh,0e8ach,0c9edh,0c95dh,08f61h,080h,03fh,0c7bfh,ld165a
+  0F43    ED 43 03 01     +     ld165a:	db	0edh,043h,msbtlo,msbthi
+  0F47    1F98 844D       +     	dw	01f98h,0844dh,0e8ach,0c9edh,0c95dh,08f61h
+  0F4B    E8AC C9ED       +     
+  0F4F    C95D 8F61       +     
+  0F53    80              +     	db	080h
+  0F54    3F              +     	db	03fh
+  0F55    C7BF            +     	dw	0c7bfh
+                                	tstr	0,010h,0,0,0,0,0,0,0,0,0,0,0,ld165b		; (2 cycles)
+  0F57    00 10 00 00     +     ld165b:	db	0,010h,0,0
+  0F5B    0000 0000       +     	dw	0,0,0,0,0,0
+  0F5F    0000 0000       +     
+  0F63    0000 0000       +     
+  0F67    00              +     	db	0
+  0F68    00              +     	db	0
+  0F69    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,-1,-1,0,0,0,ld165c		; (32 cycles)
+  0F6B    00 00 00 00     +     ld165c:	db	0,0,0,0
+  0F6F    0000 0000       +     	dw	0,0,0,0,-1,-1
+  0F73    0000 0000       +     
+  0F77    FFFF FFFF       +     
+  0F7B    00              +     	db	0
+  0F7C    00              +     	db	0
+  0F7D    0000            +     	dw	0
+  0F7F    64 1E 87 15           	db	064h,01eh,087h,015h			; expected crc
+                                	tmsg	'ld (nnnn),<bc,de>.............',ld165d
+  0F83    6C 64 20 28     +     ld165d:	db	'ld (nnnn),<bc,de>.............'
+  0F87    6E 6E 6E 6E     +     
+  0F8B    29 2C 3C 62     +     
+  0F8F    63 2C 64 65     +     
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-26
+
+
+  0F93    3E 2E 2E 2E     +     
+  0F97    2E 2E 2E 2E     +     
+  0F9B    2E 2E 2E 2E     +     
+  0F9F    2E 2E           +     
+  0FA1    24              +     	db	'$'
+                                
+                                ; ld (nnnn),hl (16 cycles)
+  0FA2    D7                    ld166:	db	0d7h		; flag mask
+                                	tstr	022h,msbtlo,msbthi,0,0d003h,07772h,07f53h,03f72h,064eah,0e180h,010h,02dh,035e9h,ld166a
+  0FA3    22 03 01 00     +     ld166a:	db	022h,msbtlo,msbthi,0
+  0FA7    D003 7772       +     	dw	0d003h,07772h,07f53h,03f72h,064eah,0e180h
+  0FAB    7F53 3F72       +     
+  0FAF    64EA E180       +     
+  0FB3    10              +     	db	010h
+  0FB4    2D              +     	db	02dh
+  0FB5    35E9            +     	dw	035e9h
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0,0,0,ld166b		; (1 cycle)
+  0FB7    00 00 00 00     +     ld166b:	db	0,0,0,0
+  0FBB    0000 0000       +     	dw	0,0,0,0,0,0
+  0FBF    0000 0000       +     
+  0FC3    0000 0000       +     
+  0FC7    00              +     	db	0
+  0FC8    00              +     	db	0
+  0FC9    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,-1,0,0,0,0,0,ld166c		; (16 cycles)
+  0FCB    00 00 00 00     +     ld166c:	db	0,0,0,0
+  0FCF    0000 0000       +     	dw	0,0,0,-1,0,0
+  0FD3    0000 FFFF       +     
+  0FD7    0000 0000       +     
+  0FDB    00              +     	db	0
+  0FDC    00              +     	db	0
+  0FDD    0000            +     	dw	0
+  0FDF    A3 60 8B 47           	db	0a3h,060h,08bh,047h			; expected crc
+                                	tmsg	'ld (nnnn),hl..................',ld166d
+  0FE3    6C 64 20 28     +     ld166d:	db	'ld (nnnn),hl..................'
+  0FE7    6E 6E 6E 6E     +     
+  0FEB    29 2C 68 6C     +     
+  0FEF    2E 2E 2E 2E     +     
+  0FF3    2E 2E 2E 2E     +     
+  0FF7    2E 2E 2E 2E     +     
+  0FFB    2E 2E 2E 2E     +     
+  0FFF    2E 2E           +     
+  1001    24              +     	db	'$'
+                                
+                                ; ld (nnnn),sp (16 cycles)
+  1002    D7                    ld167:	db	0d7h		; flag mask
+                                	tstr	0edh,073h,msbtlo,msbthi,0c0dch,0d1d6h,0ed5ah,0f356h,0afdah,06ca7h,044h,09fh,03f0ah,ld167a
+  1003    ED 73 03 01     +     ld167a:	db	0edh,073h,msbtlo,msbthi
+  1007    C0DC D1D6       +     	dw	0c0dch,0d1d6h,0ed5ah,0f356h,0afdah,06ca7h
+  100B    ED5A F356       +     
+  100F    AFDA 6CA7       +     
+  1013    44              +     	db	044h
+  1014    9F              +     	db	09fh
+  1015    3F0A            +     	dw	03f0ah
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0,0,0,ld167b		; (1 cycle)
+  1017    00 00 00 00     +     ld167b:	db	0,0,0,0
+  101B    0000 0000       +     	dw	0,0,0,0,0,0
+  101F    0000 0000       +     
+  1023    0000 0000       +     
+  1027    00              +     	db	0
+  1028    00              +     	db	0
+  1029    0000            +     	dw	0
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-27
+
+
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0,0,-1,ld167c		; (16 cycles)
+  102B    00 00 00 00     +     ld167c:	db	0,0,0,0
+  102F    0000 0000       +     	dw	0,0,0,0,0,0
+  1033    0000 0000       +     
+  1037    0000 0000       +     
+  103B    00              +     	db	0
+  103C    00              +     	db	0
+  103D    FFFF            +     	dw	-1
+  103F    16 58 5F D7           	db	016h,058h,05fh,0d7h			; expected crc
+                                	tmsg	'ld (nnnn),sp..................',ld167d
+  1043    6C 64 20 28     +     ld167d:	db	'ld (nnnn),sp..................'
+  1047    6E 6E 6E 6E     +     
+  104B    29 2C 73 70     +     
+  104F    2E 2E 2E 2E     +     
+  1053    2E 2E 2E 2E     +     
+  1057    2E 2E 2E 2E     +     
+  105B    2E 2E 2E 2E     +     
+  105F    2E 2E           +     
+  1061    24              +     	db	'$'
+                                
+                                ; ld (nnnn),<ix,iy> (64 cycles)
+  1062    D7                    ld168:	db	0d7h		; flag mask
+                                	tstr	0ddh,022h,msbtlo,msbthi,06cc3h,00d91h,06900h,08ef8h,0e3d6h,0c3f7h,0c6h,0d9h,0c2dfh,ld168a
+  1063    DD 22 03 01     +     ld168a:	db	0ddh,022h,msbtlo,msbthi
+  1067    6CC3 0D91       +     	dw	06cc3h,00d91h,06900h,08ef8h,0e3d6h,0c3f7h
+  106B    6900 8EF8       +     
+  106F    E3D6 C3F7       +     
+  1073    C6              +     	db	0c6h
+  1074    D9              +     	db	0d9h
+  1075    C2DF            +     	dw	0c2dfh
+                                	tstr	020h,0,0,0,0,0,0,0,0,0,0,0,0,ld168b		; (2 cycles)
+  1077    20 00 00 00     +     ld168b:	db	020h,0,0,0
+  107B    0000 0000       +     	dw	0,0,0,0,0,0
+  107F    0000 0000       +     
+  1083    0000 0000       +     
+  1087    00              +     	db	0
+  1088    00              +     	db	0
+  1089    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,-1,-1,0,0,0,0,0,0,ld168c		; (32 cycles)
+  108B    00 00 00 00     +     ld168c:	db	0,0,0,0
+  108F    0000 FFFF       +     	dw	0,-1,-1,0,0,0
+  1093    FFFF 0000       +     
+  1097    0000 0000       +     
+  109B    00              +     	db	0
+  109C    00              +     	db	0
+  109D    0000            +     	dw	0
+  109F    BA 10 2A 6B           	db	0bah,010h,02ah,06bh			; expected crc
+                                	tmsg	'ld (nnnn),<ix,iy>.............',ld168d
+  10A3    6C 64 20 28     +     ld168d:	db	'ld (nnnn),<ix,iy>.............'
+  10A7    6E 6E 6E 6E     +     
+  10AB    29 2C 3C 69     +     
+  10AF    78 2C 69 79     +     
+  10B3    3E 2E 2E 2E     +     
+  10B7    2E 2E 2E 2E     +     
+  10BB    2E 2E 2E 2E     +     
+  10BF    2E 2E           +     
+  10C1    24              +     	db	'$'
+                                
+                                ; ld <bc,de,hl,sp>,nnnn (64 cycles)
+  10C2    D7                    ld16im:	db	0d7h		; flag mask
+                                	tstr	1,0,0,0,05c1ch,02d46h,08eb9h,06078h,074b1h,0b30eh,046h,0d1h,030cch,ld16ima
+  10C3    01 00 00 00     +     ld16ima:	db	1,0,0,0
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-28
+
+
+  10C7    5C1C 2D46       +     	dw	05c1ch,02d46h,08eb9h,06078h,074b1h,0b30eh
+  10CB    8EB9 6078       +     
+  10CF    74B1 B30E       +     
+  10D3    46              +     	db	046h
+  10D4    D1              +     	db	0d1h
+  10D5    30CC            +     	dw	030cch
+                                	tstr	030h,0,0,0,0,0,0,0,0,0,0,0,0,ld16imb		; (4 cycles)
+  10D7    30 00 00 00     +     ld16imb:	db	030h,0,0,0
+  10DB    0000 0000       +     	dw	0,0,0,0,0,0
+  10DF    0000 0000       +     
+  10E3    0000 0000       +     
+  10E7    00              +     	db	0
+  10E8    00              +     	db	0
+  10E9    0000            +     	dw	0
+                                	tstr	0,0ffh,0ffh,0,0,0,0,0,0,0,0,0,0,ld16imc		; (16 cycles)
+  10EB    00 FF FF 00     +     ld16imc:	db	0,0ffh,0ffh,0
+  10EF    0000 0000       +     	dw	0,0,0,0,0,0
+  10F3    0000 0000       +     
+  10F7    0000 0000       +     
+  10FB    00              +     	db	0
+  10FC    00              +     	db	0
+  10FD    0000            +     	dw	0
+  10FF    DE 39 19 69           	db	0deh,039h,019h,069h			; expected crc
+                                	tmsg	'ld <bc,de,hl,sp>,nnnn.........',ld16imd
+  1103    6C 64 20 3C     +     ld16imd:	db	'ld <bc,de,hl,sp>,nnnn.........'
+  1107    62 63 2C 64     +     
+  110B    65 2C 68 6C     +     
+  110F    2C 73 70 3E     +     
+  1113    2C 6E 6E 6E     +     
+  1117    6E 2E 2E 2E     +     
+  111B    2E 2E 2E 2E     +     
+  111F    2E 2E           +     
+  1121    24              +     	db	'$'
+                                
+                                ; ld <ix,iy>,nnnn (32 cycles)
+  1122    D7                    ld16ix:	db	0d7h		; flag mask
+                                	tstr	0ddh,021h,0,0,087e8h,02006h,0bd12h,0b69bh,07253h,0a1e5h,051h,013h,0f1bdh,ld16ixa
+  1123    DD 21 00 00     +     ld16ixa:	db	0ddh,021h,0,0
+  1127    87E8 2006       +     	dw	087e8h,02006h,0bd12h,0b69bh,07253h,0a1e5h
+  112B    BD12 B69B       +     
+  112F    7253 A1E5       +     
+  1133    51              +     	db	051h
+  1134    13              +     	db	013h
+  1135    F1BD            +     	dw	0f1bdh
+                                	tstr	020h,0,0,0,0,0,0,0,0,0,0,0,0,ld16ixb		; (2 cycles)
+  1137    20 00 00 00     +     ld16ixb:	db	020h,0,0,0
+  113B    0000 0000       +     	dw	0,0,0,0,0,0
+  113F    0000 0000       +     
+  1143    0000 0000       +     
+  1147    00              +     	db	0
+  1148    00              +     	db	0
+  1149    0000            +     	dw	0
+                                	tstr	0,0,0ffh,0ffh,0,0,0,0,0,0,0,0,0,ld16ixc		; (16 cycles)
+  114B    00 00 FF FF     +     ld16ixc:	db	0,0,0ffh,0ffh
+  114F    0000 0000       +     	dw	0,0,0,0,0,0
+  1153    0000 0000       +     
+  1157    0000 0000       +     
+  115B    00              +     	db	0
+  115C    00              +     	db	0
+  115D    0000            +     	dw	0
+  115F    22 7D D5 25           	db	022h,07dh,0d5h,025h			; expected crc
+                                	tmsg	'ld <ix,iy>,nnnn...............',ld16ixd
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-29
+
+
+  1163    6C 64 20 3C     +     ld16ixd:	db	'ld <ix,iy>,nnnn...............'
+  1167    69 78 2C 69     +     
+  116B    79 3E 2C 6E     +     
+  116F    6E 6E 6E 2E     +     
+  1173    2E 2E 2E 2E     +     
+  1177    2E 2E 2E 2E     +     
+  117B    2E 2E 2E 2E     +     
+  117F    2E 2E           +     
+  1181    24              +     	db	'$'
+                                
+                                ; ld a,<(bc),(de)> (44 cycles)
+  1182    D7                    ld8bd:	db	0d7h		; flag mask
+                                	tstr	00ah,0,0,0,0b3a8h,01d2ah,07f8eh,042ach,msbt,msbt,0c6h,0b1h,0ef8eh,ld8bda
+  1183    0A 00 00 00     +     ld8bda:	db	00ah,0,0,0
+  1187    B3A8 1D2A       +     	dw	0b3a8h,01d2ah,07f8eh,042ach,msbt,msbt
+  118B    7F8E 42AC       +     
+  118F    0103 0103       +     
+  1193    C6              +     	db	0c6h
+  1194    B1              +     	db	0b1h
+  1195    EF8E            +     	dw	0ef8eh
+                                	tstr	010h,0,0,0,0,0,0,0,0,0,0,0,0,ld8bdb		; (2 cycles)
+  1197    10 00 00 00     +     ld8bdb:	db	010h,0,0,0
+  119B    0000 0000       +     	dw	0,0,0,0,0,0
+  119F    0000 0000       +     
+  11A3    0000 0000       +     
+  11A7    00              +     	db	0
+  11A8    00              +     	db	0
+  11A9    0000            +     	dw	0
+                                	tstr	0,0,0,0,0ffh,0,0,0,0,0,0d7h,-1,0,ld8bdc	; (22 cycles)
+  11AB    00 00 00 00     +     ld8bdc:	db	0,0,0,0
+  11AF    00FF 0000       +     	dw	0ffh,0,0,0,0,0
+  11B3    0000 0000       +     
+  11B7    0000 0000       +     
+  11BB    D7              +     	db	0d7h
+  11BC    FF              +     	db	-1
+  11BD    0000            +     	dw	0
+  11BF    B0 81 89 35           	db	0b0h,081h,089h,035h			; expected crc
+                                	tmsg	'ld a,<(bc),(de)>..............',ld8bdd
+  11C3    6C 64 20 61     +     ld8bdd:	db	'ld a,<(bc),(de)>..............'
+  11C7    2C 3C 28 62     +     
+  11CB    63 29 2C 28     +     
+  11CF    64 65 29 3E     +     
+  11D3    2E 2E 2E 2E     +     
+  11D7    2E 2E 2E 2E     +     
+  11DB    2E 2E 2E 2E     +     
+  11DF    2E 2E           +     
+  11E1    24              +     	db	'$'
+                                
+                                ; ld <b,c,d,e,h,l,(hl),a>,nn (64 cycles)
+  11E2    D7                    ld8im:	db	0d7h		; flag mask
+                                	tstr	6,0,0,0,0c407h,0f49dh,0d13dh,00339h,0de89h,07455h,053h,0c0h,05509h,ld8ima
+  11E3    06 00 00 00     +     ld8ima:	db	6,0,0,0
+  11E7    C407 F49D       +     	dw	0c407h,0f49dh,0d13dh,00339h,0de89h,07455h
+  11EB    D13D 0339       +     
+  11EF    DE89 7455       +     
+  11F3    53              +     	db	053h
+  11F4    C0              +     	db	0c0h
+  11F5    5509            +     	dw	05509h
+                                	tstr	038h,0,0,0,0,0,0,0,0,0,0,0,0,ld8imb		; (8 cycles)
+  11F7    38 00 00 00     +     ld8imb:	db	038h,0,0,0
+  11FB    0000 0000       +     	dw	0,0,0,0,0,0
+  11FF    0000 0000       +     
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-30
+
+
+  1203    0000 0000       +     
+  1207    00              +     	db	0
+  1208    00              +     	db	0
+  1209    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0,-1,0,ld8imc		; (8 cycles)
+  120B    00 00 00 00     +     ld8imc:	db	0,0,0,0
+  120F    0000 0000       +     	dw	0,0,0,0,0,0
+  1213    0000 0000       +     
+  1217    0000 0000       +     
+  121B    00              +     	db	0
+  121C    FF              +     	db	-1
+  121D    0000            +     	dw	0
+  121F    F1 DA B5 56           	db	0f1h,0dah,0b5h,056h			; expected crc
+                                	tmsg	'ld <b,c,d,e,h,l,(hl),a>,nn....',ld8imd
+  1223    6C 64 20 3C     +     ld8imd:	db	'ld <b,c,d,e,h,l,(hl),a>,nn....'
+  1227    62 2C 63 2C     +     
+  122B    64 2C 65 2C     +     
+  122F    68 2C 6C 2C     +     
+  1233    28 68 6C 29     +     
+  1237    2C 61 3E 2C     +     
+  123B    6E 6E 2E 2E     +     
+  123F    2E 2E           +     
+  1241    24              +     	db	'$'
+                                
+                                ; ld (<ix,iy>+1),nn (32 cycles)
+  1242    D7                    ld8imx:	db	0d7h		; flag mask
+                                	tstr	0ddh,036h,1,0,01b45h,msbt-1,msbt-1,0d5c1h,061c7h,0bdc4h,0c0h,085h,0cd16h,ld8imxa
+  1243    DD 36 01 00     +     ld8imxa:	db	0ddh,036h,1,0
+  1247    1B45 0102       +     	dw	01b45h,msbt-1,msbt-1,0d5c1h,061c7h,0bdc4h
+  124B    0102 D5C1       +     
+  124F    61C7 BDC4       +     
+  1253    C0              +     	db	0c0h
+  1254    85              +     	db	085h
+  1255    CD16            +     	dw	0cd16h
+                                	tstr	020h,0,0,0,0,0,0,0,0,0,0,0,0,ld8imxb		; (2 cycles)
+  1257    20 00 00 00     +     ld8imxb:	db	020h,0,0,0
+  125B    0000 0000       +     	dw	0,0,0,0,0,0
+  125F    0000 0000       +     
+  1263    0000 0000       +     
+  1267    00              +     	db	0
+  1268    00              +     	db	0
+  1269    0000            +     	dw	0
+                                	tstr	0,0,0,-1,0,0,0,0,0,0,0,-1,0,ld8imxc		; (16 cycles)
+  126B    00 00 00 FF     +     ld8imxc:	db	0,0,0,-1
+  126F    0000 0000       +     	dw	0,0,0,0,0,0
+  1273    0000 0000       +     
+  1277    0000 0000       +     
+  127B    00              +     	db	0
+  127C    FF              +     	db	-1
+  127D    0000            +     	dw	0
+  127F    26 DB 47 7E           	db	026h,0dbh,047h,07eh			; expected crc
+                                	tmsg	'ld (<ix,iy>+1),nn.............',ld8imxd
+  1283    6C 64 20 28     +     ld8imxd:	db	'ld (<ix,iy>+1),nn.............'
+  1287    3C 69 78 2C     +     
+  128B    69 79 3E 2B     +     
+  128F    31 29 2C 6E     +     
+  1293    6E 2E 2E 2E     +     
+  1297    2E 2E 2E 2E     +     
+  129B    2E 2E 2E 2E     +     
+  129F    2E 2E           +     
+  12A1    24              +     	db	'$'
+                                
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-31
+
+
+                                ; ld <b,c,d,e>,(<ix,iy>+1) (512 cycles)
+  12A2    D7                    ld8ix1:	db	0d7h		; flag mask
+                                	tstr	0ddh,046h,1,0,0d016h,msbt-1,msbt-1,04260h,07f39h,00404h,097h,04ah,0d085h,ld8ix1a
+  12A3    DD 46 01 00     +     ld8ix1a:	db	0ddh,046h,1,0
+  12A7    D016 0102       +     	dw	0d016h,msbt-1,msbt-1,04260h,07f39h,00404h
+  12AB    0102 4260       +     
+  12AF    7F39 0404       +     
+  12B3    97              +     	db	097h
+  12B4    4A              +     	db	04ah
+  12B5    D085            +     	dw	0d085h
+                                	tstr	020h,018h,0,0,0,1,1,0,0,0,0,0,0,ld8ix1b		; (32 cycles)
+  12B7    20 18 00 00     +     ld8ix1b:	db	020h,018h,0,0
+  12BB    0000 0001       +     	dw	0,1,1,0,0,0
+  12BF    0001 0000       +     
+  12C3    0000 0000       +     
+  12C7    00              +     	db	0
+  12C8    00              +     	db	0
+  12C9    0000            +     	dw	0
+                                	tstr	0,0,0,0,-1,0,0,0,0,0,0,0,0,ld8ix1c		; (16 cycles)
+  12CB    00 00 00 00     +     ld8ix1c:	db	0,0,0,0
+  12CF    FFFF 0000       +     	dw	-1,0,0,0,0,0
+  12D3    0000 0000       +     
+  12D7    0000 0000       +     
+  12DB    00              +     	db	0
+  12DC    00              +     	db	0
+  12DD    0000            +     	dw	0
+  12DF    CC 11 06 A8           	db	0cch,011h,006h,0a8h			; expected crc
+                                	tmsg	'ld <b,c,d,e>,(<ix,iy>+1)......',ld8ix1d
+  12E3    6C 64 20 3C     +     ld8ix1d:	db	'ld <b,c,d,e>,(<ix,iy>+1)......'
+  12E7    62 2C 63 2C     +     
+  12EB    64 2C 65 3E     +     
+  12EF    2C 28 3C 69     +     
+  12F3    78 2C 69 79     +     
+  12F7    3E 2B 31 29     +     
+  12FB    2E 2E 2E 2E     +     
+  12FF    2E 2E           +     
+  1301    24              +     	db	'$'
+                                
+                                ; ld <h,l>,(<ix,iy>+1) (256 cycles)
+  1302    D7                    ld8ix2:	db	0d7h		; flag mask
+                                	tstr	0ddh,066h,1,0,084e0h,msbt-1,msbt-1,09c52h,0a799h,049b6h,093h,000h,0eeadh,ld8ix2a
+  1303    DD 66 01 00     +     ld8ix2a:	db	0ddh,066h,1,0
+  1307    84E0 0102       +     	dw	084e0h,msbt-1,msbt-1,09c52h,0a799h,049b6h
+  130B    0102 9C52       +     
+  130F    A799 49B6       +     
+  1313    93              +     	db	093h
+  1314    00              +     	db	000h
+  1315    EEAD            +     	dw	0eeadh
+                                	tstr	020h,008h,0,0,0,1,1,0,0,0,0,0,0,ld8ix2b		; (16 cycles)
+  1317    20 08 00 00     +     ld8ix2b:	db	020h,008h,0,0
+  131B    0000 0001       +     	dw	0,1,1,0,0,0
+  131F    0001 0000       +     
+  1323    0000 0000       +     
+  1327    00              +     	db	0
+  1328    00              +     	db	0
+  1329    0000            +     	dw	0
+                                	tstr	0,0,0,0,-1,0,0,0,0,0,0,0,0,ld8ix2c		; (16 cycles)
+  132B    00 00 00 00     +     ld8ix2c:	db	0,0,0,0
+  132F    FFFF 0000       +     	dw	-1,0,0,0,0,0
+  1333    0000 0000       +     
+  1337    0000 0000       +     
+  133B    00              +     	db	0
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-32
+
+
+  133C    00              +     	db	0
+  133D    0000            +     	dw	0
+  133F    FA 2A 4D 03           	db	0fah,02ah,04dh,003h			; expected crc
+                                	tmsg	'ld <h,l>,(<ix,iy>+1)..........',ld8ix2d
+  1343    6C 64 20 3C     +     ld8ix2d:	db	'ld <h,l>,(<ix,iy>+1)..........'
+  1347    68 2C 6C 3E     +     
+  134B    2C 28 3C 69     +     
+  134F    78 2C 69 79     +     
+  1353    3E 2B 31 29     +     
+  1357    2E 2E 2E 2E     +     
+  135B    2E 2E 2E 2E     +     
+  135F    2E 2E           +     
+  1361    24              +     	db	'$'
+                                
+                                ; ld a,(<ix,iy>+1) (128 cycles)
+  1362    D7                    ld8ix3:	db	0d7h		; flag mask
+                                	tstr	0ddh,07eh,1,0,0d8b6h,msbt-1,msbt-1,0c612h,0df07h,09cd0h,043h,0a6h,0a0e5h,ld8ix3a
+  1363    DD 7E 01 00     +     ld8ix3a:	db	0ddh,07eh,1,0
+  1367    D8B6 0102       +     	dw	0d8b6h,msbt-1,msbt-1,0c612h,0df07h,09cd0h
+  136B    0102 C612       +     
+  136F    DF07 9CD0       +     
+  1373    43              +     	db	043h
+  1374    A6              +     	db	0a6h
+  1375    A0E5            +     	dw	0a0e5h
+                                	tstr	020h,0,0,0,0,1,1,0,0,0,0,0,0,ld8ix3b		; (8 cycles)
+  1377    20 00 00 00     +     ld8ix3b:	db	020h,0,0,0
+  137B    0000 0001       +     	dw	0,1,1,0,0,0
+  137F    0001 0000       +     
+  1383    0000 0000       +     
+  1387    00              +     	db	0
+  1388    00              +     	db	0
+  1389    0000            +     	dw	0
+                                	tstr	0,0,0,0,-1,0,0,0,0,0,0,0,0,ld8ix3c		; (16 cycles)
+  138B    00 00 00 00     +     ld8ix3c:	db	0,0,0,0
+  138F    FFFF 0000       +     	dw	-1,0,0,0,0,0
+  1393    0000 0000       +     
+  1397    0000 0000       +     
+  139B    00              +     	db	0
+  139C    00              +     	db	0
+  139D    0000            +     	dw	0
+  139F    A5 E9 AC 64           	db	0a5h,0e9h,0ach,064h			; expected crc
+                                	tmsg	'ld a,(<ix,iy>+1)..............',ld8ix3d
+  13A3    6C 64 20 61     +     ld8ix3d:	db	'ld a,(<ix,iy>+1)..............'
+  13A7    2C 28 3C 69     +     
+  13AB    78 2C 69 79     +     
+  13AF    3E 2B 31 29     +     
+  13B3    2E 2E 2E 2E     +     
+  13B7    2E 2E 2E 2E     +     
+  13BB    2E 2E 2E 2E     +     
+  13BF    2E 2E           +     
+  13C1    24              +     	db	'$'
+                                
+                                ; ld <ixh,ixl,iyh,iyl>,nn (32 cycles)
+  13C2    D7                    ld8ixy:	db	0d7h		; flag mask
+                                	tstr	0ddh,026h,0,0,03c53h,04640h,0e179h,07711h,0c107h,01afah,081h,0adh,05d9bh,ld8ixya
+  13C3    DD 26 00 00     +     ld8ixya:	db	0ddh,026h,0,0
+  13C7    3C53 4640       +     	dw	03c53h,04640h,0e179h,07711h,0c107h,01afah
+  13CB    E179 7711       +     
+  13CF    C107 1AFA       +     
+  13D3    81              +     	db	081h
+  13D4    AD              +     	db	0adh
+  13D5    5D9B            +     	dw	05d9bh
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-33
+
+
+                                	tstr	020h,8,0,0,0,0,0,0,0,0,0,0,0,ld8ixyb		; (4 cycles)
+  13D7    20 08 00 00     +     ld8ixyb:	db	020h,8,0,0
+  13DB    0000 0000       +     	dw	0,0,0,0,0,0
+  13DF    0000 0000       +     
+  13E3    0000 0000       +     
+  13E7    00              +     	db	0
+  13E8    00              +     	db	0
+  13E9    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0,-1,0,ld8ixyc		; (8 cycles)
+  13EB    00 00 00 00     +     ld8ixyc:	db	0,0,0,0
+  13EF    0000 0000       +     	dw	0,0,0,0,0,0
+  13F3    0000 0000       +     
+  13F7    0000 0000       +     
+  13FB    00              +     	db	0
+  13FC    FF              +     	db	-1
+  13FD    0000            +     	dw	0
+  13FF    24 E8 82 8B           	db	024h,0e8h,082h,08bh			; expected crc
+                                	tmsg	'ld <ixh,ixl,iyh,iyl>,nn.......',ld8ixyd
+  1403    6C 64 20 3C     +     ld8ixyd:	db	'ld <ixh,ixl,iyh,iyl>,nn.......'
+  1407    69 78 68 2C     +     
+  140B    69 78 6C 2C     +     
+  140F    69 79 68 2C     +     
+  1413    69 79 6C 3E     +     
+  1417    2C 6E 6E 2E     +     
+  141B    2E 2E 2E 2E     +     
+  141F    2E 2E           +     
+  1421    24              +     	db	'$'
+                                
+                                ; ld <b,c,d,e,h,l,a>,<b,c,d,e,h,l,a> (3456 cycles)
+  1422    D7                    ld8rr:	db	0d7h		; flag mask
+                                	tstr	040h,0,0,0,072a4h,0a024h,061ach,msbt,082c7h,0718fh,097h,08fh,0ef8eh,ld8rra
+  1423    40 00 00 00     +     ld8rra:	db	040h,0,0,0
+  1427    72A4 A024       +     	dw	072a4h,0a024h,061ach,msbt,082c7h,0718fh
+  142B    61AC 0103       +     
+  142F    82C7 718F       +     
+  1433    97              +     	db	097h
+  1434    8F              +     	db	08fh
+  1435    EF8E            +     	dw	0ef8eh
+                                	tstr	03fh,0,0,0,0,0,0,0,0,0,0,0,0,ld8rrb		; (64 cycles)
+  1437    3F 00 00 00     +     ld8rrb:	db	03fh,0,0,0
+  143B    0000 0000       +     	dw	0,0,0,0,0,0
+  143F    0000 0000       +     
+  1443    0000 0000       +     
+  1447    00              +     	db	0
+  1448    00              +     	db	0
+  1449    0000            +     	dw	0
+                                	tstr	0,0,0,0,0ffh,0,0,0,-1,-1,0d7h,-1,0,ld8rrc	; (54 cycles)
+  144B    00 00 00 00     +     ld8rrc:	db	0,0,0,0
+  144F    00FF 0000       +     	dw	0ffh,0,0,0,-1,-1
+  1453    0000 0000       +     
+  1457    FFFF FFFF       +     
+  145B    D7              +     	db	0d7h
+  145C    FF              +     	db	-1
+  145D    0000            +     	dw	0
+  145F    74 4B 01 18           	db	074h,04bh,001h,018h			; expected crc
+                                	tmsg	'ld <bcdehla>,<bcdehla>........',ld8rrd
+  1463    6C 64 20 3C     +     ld8rrd:	db	'ld <bcdehla>,<bcdehla>........'
+  1467    62 63 64 65     +     
+  146B    68 6C 61 3E     +     
+  146F    2C 3C 62 63     +     
+  1473    64 65 68 6C     +     
+  1477    61 3E 2E 2E     +     
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-34
+
+
+  147B    2E 2E 2E 2E     +     
+  147F    2E 2E           +     
+  1481    24              +     	db	'$'
+                                
+                                ; ld <b,c,d,e,ixy,a>,<b,c,d,e,ixy,a> (6912 cycles)
+  1482    D7                    ld8rrx:	db	0d7h		; flag mask
+                                	tstr	0ddh,040h,0,0,0bcc5h,msbt,msbt,msbt,02fc2h,098c0h,083h,01fh,03bcdh,ld8rrxa
+  1483    DD 40 00 00     +     ld8rrxa:	db	0ddh,040h,0,0
+  1487    BCC5 0103       +     	dw	0bcc5h,msbt,msbt,msbt,02fc2h,098c0h
+  148B    0103 0103       +     
+  148F    2FC2 98C0       +     
+  1493    83              +     	db	083h
+  1494    1F              +     	db	01fh
+  1495    3BCD            +     	dw	03bcdh
+                                	tstr	020h,03fh,0,0,0,0,0,0,0,0,0,0,0,ld8rrxb		; (128 cycles)
+  1497    20 3F 00 00     +     ld8rrxb:	db	020h,03fh,0,0
+  149B    0000 0000       +     	dw	0,0,0,0,0,0
+  149F    0000 0000       +     
+  14A3    0000 0000       +     
+  14A7    00              +     	db	0
+  14A8    00              +     	db	0
+  14A9    0000            +     	dw	0
+                                	tstr	0,0,0,0,0ffh,0,0,0,-1,-1,0d7h,-1,0,ld8rrxc	; (54 cycles)
+  14AB    00 00 00 00     +     ld8rrxc:	db	0,0,0,0
+  14AF    00FF 0000       +     	dw	0ffh,0,0,0,-1,-1
+  14B3    0000 0000       +     
+  14B7    FFFF FFFF       +     
+  14BB    D7              +     	db	0d7h
+  14BC    FF              +     	db	-1
+  14BD    0000            +     	dw	0
+  14BF    47 8B A3 6B           	db	047h,08bh,0a3h,06bh			; expected crc
+                                	tmsg	'ld <bcdexya>,<bcdexya>........',ld8rrxd
+  14C3    6C 64 20 3C     +     ld8rrxd:	db	'ld <bcdexya>,<bcdexya>........'
+  14C7    62 63 64 65     +     
+  14CB    78 79 61 3E     +     
+  14CF    2C 3C 62 63     +     
+  14D3    64 65 78 79     +     
+  14D7    61 3E 2E 2E     +     
+  14DB    2E 2E 2E 2E     +     
+  14DF    2E 2E           +     
+  14E1    24              +     	db	'$'
+                                
+                                ; ld a,(nnnn) / ld (nnnn),a (44 cycles)
+  14E2    D7                    lda:	db	0d7h		; flag mask
+                                	tstr	032h,msbtlo,msbthi,0,0fd68h,0f4ech,044a0h,0b543h,00653h,0cdbah,0d2h,04fh,01fd8h,ldaa
+  14E3    32 03 01 00     +     ldaa:	db	032h,msbtlo,msbthi,0
+  14E7    FD68 F4EC       +     	dw	0fd68h,0f4ech,044a0h,0b543h,00653h,0cdbah
+  14EB    44A0 B543       +     
+  14EF    0653 CDBA       +     
+  14F3    D2              +     	db	0d2h
+  14F4    4F              +     	db	04fh
+  14F5    1FD8            +     	dw	01fd8h
+                                	tstr	008h,0,0,0,0,0,0,0,0,0,0,0,0,ldab		; (2 cycle)
+  14F7    08 00 00 00     +     ldab:	db	008h,0,0,0
+  14FB    0000 0000       +     	dw	0,0,0,0,0,0
+  14FF    0000 0000       +     
+  1503    0000 0000       +     
+  1507    00              +     	db	0
+  1508    00              +     	db	0
+  1509    0000            +     	dw	0
+                                	tstr	0,0,0,0,0ffh,0,0,0,0,0,0d7h,-1,0,ldac	; (22 cycles)
+  150B    00 00 00 00     +     ldac:	db	0,0,0,0
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-35
+
+
+  150F    00FF 0000       +     	dw	0ffh,0,0,0,0,0
+  1513    0000 0000       +     
+  1517    0000 0000       +     
+  151B    D7              +     	db	0d7h
+  151C    FF              +     	db	-1
+  151D    0000            +     	dw	0
+  151F    C9 26 2D E5           	db	0c9h,026h,02dh,0e5h			; expected crc
+                                	tmsg	'ld a,(nnnn) / ld (nnnn),a.....',ldad
+  1523    6C 64 20 61     +     ldad:	db	'ld a,(nnnn) / ld (nnnn),a.....'
+  1527    2C 28 6E 6E     +     
+  152B    6E 6E 29 20     +     
+  152F    2F 20 6C 64     +     
+  1533    20 28 6E 6E     +     
+  1537    6E 6E 29 2C     +     
+  153B    61 2E 2E 2E     +     
+  153F    2E 2E           +     
+  1541    24              +     	db	'$'
+                                
+                                ; ldd<r> (1) (44 cycles)
+  1542    D7                    ldd1:	db	0d7h		; flag mask
+                                	tstr	0edh,0a8h,0,0,09852h,068fah,066a1h,msbt+3,msbt+1,1,0c1h,068h,020b7h,ldd1a
+  1543    ED A8 00 00     +     ldd1a:	db	0edh,0a8h,0,0
+  1547    9852 68FA       +     	dw	09852h,068fah,066a1h,msbt+3,msbt+1,1
+  154B    66A1 0106       +     
+  154F    0104 0001       +     
+  1553    C1              +     	db	0c1h
+  1554    68              +     	db	068h
+  1555    20B7            +     	dw	020b7h
+                                	tstr	0,010h,0,0,0,0,0,0,0,0,0,0,0,ldd1b		; (2 cycles)
+  1557    00 10 00 00     +     ldd1b:	db	0,010h,0,0
+  155B    0000 0000       +     	dw	0,0,0,0,0,0
+  155F    0000 0000       +     
+  1563    0000 0000       +     
+  1567    00              +     	db	0
+  1568    00              +     	db	0
+  1569    0000            +     	dw	0
+                                	tstr	0,0,0,0,-1,0,0,0,0,0,0d7h,0,0,ldd1c		; (22 cycles)
+  156B    00 00 00 00     +     ldd1c:	db	0,0,0,0
+  156F    FFFF 0000       +     	dw	-1,0,0,0,0,0
+  1573    0000 0000       +     
+  1577    0000 0000       +     
+  157B    D7              +     	db	0d7h
+  157C    00              +     	db	0
+  157D    0000            +     	dw	0
+  157F    94 F4 27 69           	db	094h,0f4h,027h,069h			; expected crc
+                                	tmsg	'ldd<r> (1)....................',ldd1d
+  1583    6C 64 64 3C     +     ldd1d:	db	'ldd<r> (1)....................'
+  1587    72 3E 20 28     +     
+  158B    31 29 2E 2E     +     
+  158F    2E 2E 2E 2E     +     
+  1593    2E 2E 2E 2E     +     
+  1597    2E 2E 2E 2E     +     
+  159B    2E 2E 2E 2E     +     
+  159F    2E 2E           +     
+  15A1    24              +     	db	'$'
+                                
+                                ; ldd<r> (2) (44 cycles)
+  15A2    D7                    ldd2:	db	0d7h		; flag mask
+                                	tstr	0edh,0a8h,0,0,0f12eh,0eb2ah,0d5bah,msbt+3,msbt+1,2,047h,0ffh,0fbe4h,ldd2a
+  15A3    ED A8 00 00     +     ldd2a:	db	0edh,0a8h,0,0
+  15A7    F12E EB2A       +     	dw	0f12eh,0eb2ah,0d5bah,msbt+3,msbt+1,2
+  15AB    D5BA 0106       +     
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-36
+
+
+  15AF    0104 0002       +     
+  15B3    47              +     	db	047h
+  15B4    FF              +     	db	0ffh
+  15B5    FBE4            +     	dw	0fbe4h
+                                	tstr	0,010h,0,0,0,0,0,0,0,0,0,0,0,ldd2b		; (2 cycles)
+  15B7    00 10 00 00     +     ldd2b:	db	0,010h,0,0
+  15BB    0000 0000       +     	dw	0,0,0,0,0,0
+  15BF    0000 0000       +     
+  15C3    0000 0000       +     
+  15C7    00              +     	db	0
+  15C8    00              +     	db	0
+  15C9    0000            +     	dw	0
+                                	tstr	0,0,0,0,-1,0,0,0,0,0,0d7h,0,0,ldd2c		; (22 cycles)
+  15CB    00 00 00 00     +     ldd2c:	db	0,0,0,0
+  15CF    FFFF 0000       +     	dw	-1,0,0,0,0,0
+  15D3    0000 0000       +     
+  15D7    0000 0000       +     
+  15DB    D7              +     	db	0d7h
+  15DC    00              +     	db	0
+  15DD    0000            +     	dw	0
+  15DF    5A 90 7E D4           	db	05ah,090h,07eh,0d4h			; expected crc
+                                	tmsg	'ldd<r> (2)....................',ldd2d
+  15E3    6C 64 64 3C     +     ldd2d:	db	'ldd<r> (2)....................'
+  15E7    72 3E 20 28     +     
+  15EB    32 29 2E 2E     +     
+  15EF    2E 2E 2E 2E     +     
+  15F3    2E 2E 2E 2E     +     
+  15F7    2E 2E 2E 2E     +     
+  15FB    2E 2E 2E 2E     +     
+  15FF    2E 2E           +     
+  1601    24              +     	db	'$'
+                                
+                                ; ldi<r> (1) (44 cycles)
+  1602    D7                    ldi1:	db	0d7h		; flag mask
+                                	tstr	0edh,0a0h,0,0,0fe30h,003cdh,06058h,msbt+2,msbt,1,004h,060h,02688h,ldi1a
+  1603    ED A0 00 00     +     ldi1a:	db	0edh,0a0h,0,0
+  1607    FE30 03CD       +     	dw	0fe30h,003cdh,06058h,msbt+2,msbt,1
+  160B    6058 0105       +     
+  160F    0103 0001       +     
+  1613    04              +     	db	004h
+  1614    60              +     	db	060h
+  1615    2688            +     	dw	02688h
+                                	tstr	0,010h,0,0,0,0,0,0,0,0,0,0,0,ldi1b		; (2 cycles)
+  1617    00 10 00 00     +     ldi1b:	db	0,010h,0,0
+  161B    0000 0000       +     	dw	0,0,0,0,0,0
+  161F    0000 0000       +     
+  1623    0000 0000       +     
+  1627    00              +     	db	0
+  1628    00              +     	db	0
+  1629    0000            +     	dw	0
+                                	tstr	0,0,0,0,-1,0,0,0,0,0,0d7h,0,0,ldi1c		; (22 cycles)
+  162B    00 00 00 00     +     ldi1c:	db	0,0,0,0
+  162F    FFFF 0000       +     	dw	-1,0,0,0,0,0
+  1633    0000 0000       +     
+  1637    0000 0000       +     
+  163B    D7              +     	db	0d7h
+  163C    00              +     	db	0
+  163D    0000            +     	dw	0
+  163F    9A BD F6 B5           	db	09ah,0bdh,0f6h,0b5h			; expected crc
+                                	tmsg	'ldi<r> (1)....................',ldi1d
+  1643    6C 64 69 3C     +     ldi1d:	db	'ldi<r> (1)....................'
+  1647    72 3E 20 28     +     
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-37
+
+
+  164B    31 29 2E 2E     +     
+  164F    2E 2E 2E 2E     +     
+  1653    2E 2E 2E 2E     +     
+  1657    2E 2E 2E 2E     +     
+  165B    2E 2E 2E 2E     +     
+  165F    2E 2E           +     
+  1661    24              +     	db	'$'
+                                
+                                ; ldi<r> (2) (44 cycles)
+  1662    D7                    ldi2:	db	0d7h		; flag mask
+                                	tstr	0edh,0a0h,0,0,04aceh,0c26eh,0b188h,msbt+2,msbt,2,014h,02dh,0a39fh,ldi2a
+  1663    ED A0 00 00     +     ldi2a:	db	0edh,0a0h,0,0
+  1667    4ACE C26E       +     	dw	04aceh,0c26eh,0b188h,msbt+2,msbt,2
+  166B    B188 0105       +     
+  166F    0103 0002       +     
+  1673    14              +     	db	014h
+  1674    2D              +     	db	02dh
+  1675    A39F            +     	dw	0a39fh
+                                	tstr	0,010h,0,0,0,0,0,0,0,0,0,0,0,ldi2b		; (2 cycles)
+  1677    00 10 00 00     +     ldi2b:	db	0,010h,0,0
+  167B    0000 0000       +     	dw	0,0,0,0,0,0
+  167F    0000 0000       +     
+  1683    0000 0000       +     
+  1687    00              +     	db	0
+  1688    00              +     	db	0
+  1689    0000            +     	dw	0
+                                	tstr	0,0,0,0,-1,0,0,0,0,0,0d7h,0,0,ldi2c		; (22 cycles)
+  168B    00 00 00 00     +     ldi2c:	db	0,0,0,0
+  168F    FFFF 0000       +     	dw	-1,0,0,0,0,0
+  1693    0000 0000       +     
+  1697    0000 0000       +     
+  169B    D7              +     	db	0d7h
+  169C    00              +     	db	0
+  169D    0000            +     	dw	0
+  169F    EB 59 89 1B           	db	0ebh,059h,089h,01bh			; expected crc
+                                	tmsg	'ldi<r> (2)....................',ldi2d
+  16A3    6C 64 69 3C     +     ldi2d:	db	'ldi<r> (2)....................'
+  16A7    72 3E 20 28     +     
+  16AB    32 29 2E 2E     +     
+  16AF    2E 2E 2E 2E     +     
+  16B3    2E 2E 2E 2E     +     
+  16B7    2E 2E 2E 2E     +     
+  16BB    2E 2E 2E 2E     +     
+  16BF    2E 2E           +     
+  16C1    24              +     	db	'$'
+                                
+                                ; neg (16,384 cycles)
+  16C2    D7                    negop:	db	0d7h		; flag mask
+                                	tstr	0edh,044h,0,0,038a2h,05f6bh,0d934h,057e4h,0d2d6h,04642h,043h,05ah,009cch,negopa
+  16C3    ED 44 00 00     +     negopa:	db	0edh,044h,0,0
+  16C7    38A2 5F6B       +     	dw	038a2h,05f6bh,0d934h,057e4h,0d2d6h,04642h
+  16CB    D934 57E4       +     
+  16CF    D2D6 4642       +     
+  16D3    43              +     	db	043h
+  16D4    5A              +     	db	05ah
+  16D5    09CC            +     	dw	009cch
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,-1,0,negopb		; (16,384 cycles)
+  16D7    00 00 00 00     +     negopb:	db	0,0,0,0
+  16DB    0000 0000       +     	dw	0,0,0,0,0,0
+  16DF    0000 0000       +     
+  16E3    0000 0000       +     
+  16E7    D7              +     	db	0d7h
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-38
+
+
+  16E8    FF              +     	db	-1
+  16E9    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0,0,0,negopc		; (1 cycle)
+  16EB    00 00 00 00     +     negopc:	db	0,0,0,0
+  16EF    0000 0000       +     	dw	0,0,0,0,0,0
+  16F3    0000 0000       +     
+  16F7    0000 0000       +     
+  16FB    00              +     	db	0
+  16FC    00              +     	db	0
+  16FD    0000            +     	dw	0
+  16FF    6A 3C 3B BD           	db	06ah,03ch,03bh,0bdh			; expected crc
+                                	tmsg	'neg...........................',negopd
+  1703    6E 65 67 2E     +     negopd:	db	'neg...........................'
+  1707    2E 2E 2E 2E     +     
+  170B    2E 2E 2E 2E     +     
+  170F    2E 2E 2E 2E     +     
+  1713    2E 2E 2E 2E     +     
+  1717    2E 2E 2E 2E     +     
+  171B    2E 2E 2E 2E     +     
+  171F    2E 2E           +     
+  1721    24              +     	db	'$'
+                                
+                                ; <rld,rrd> (7168 cycles)
+  1722    D7                    rldop:	db	0d7h		; flag mask
+                                	tstr	0edh,067h,0,0,091cbh,0c48bh,0fa62h,msbt,0e720h,0b479h,040h,006h,08ae2h,rldopa
+  1723    ED 67 00 00     +     rldopa:	db	0edh,067h,0,0
+  1727    91CB C48B       +     	dw	091cbh,0c48bh,0fa62h,msbt,0e720h,0b479h
+  172B    FA62 0103       +     
+  172F    E720 B479       +     
+  1733    40              +     	db	040h
+  1734    06              +     	db	006h
+  1735    8AE2            +     	dw	08ae2h
+                                	tstr	0,8,0,0,0ffh,0,0,0,0,0,0,0,0,rldopb		; (512 cycles)
+  1737    00 08 00 00     +     rldopb:	db	0,8,0,0
+  173B    00FF 0000       +     	dw	0ffh,0,0,0,0,0
+  173F    0000 0000       +     
+  1743    0000 0000       +     
+  1747    00              +     	db	0
+  1748    00              +     	db	0
+  1749    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,-1,0,rldopc		; (14 cycles)
+  174B    00 00 00 00     +     rldopc:	db	0,0,0,0
+  174F    0000 0000       +     	dw	0,0,0,0,0,0
+  1753    0000 0000       +     
+  1757    0000 0000       +     
+  175B    D7              +     	db	0d7h
+  175C    FF              +     	db	-1
+  175D    0000            +     	dw	0
+  175F    95 5B A3 26           	db	095h,05bh,0a3h,026h			; expected crc
+                                	tmsg	'<rrd,rld>.....................',rldopd
+  1763    3C 72 72 64     +     rldopd:	db	'<rrd,rld>.....................'
+  1767    2C 72 6C 64     +     
+  176B    3E 2E 2E 2E     +     
+  176F    2E 2E 2E 2E     +     
+  1773    2E 2E 2E 2E     +     
+  1777    2E 2E 2E 2E     +     
+  177B    2E 2E 2E 2E     +     
+  177F    2E 2E           +     
+  1781    24              +     	db	'$'
+                                
+                                ; <rlca,rrca,rla,rra> (6144 cycles)
+  1782    D7                    rot8080: db	0d7h		; flag mask
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-39
+
+
+                                	tstr	7,0,0,0,0cb92h,06d43h,00a90h,0c284h,00c53h,0f50eh,091h,0ebh,040fch,rot8080a
+  1783    07 00 00 00     +     rot8080a:	db	7,0,0,0
+  1787    CB92 6D43       +     	dw	0cb92h,06d43h,00a90h,0c284h,00c53h,0f50eh
+  178B    0A90 C284       +     
+  178F    0C53 F50E       +     
+  1793    91              +     	db	091h
+  1794    EB              +     	db	0ebh
+  1795    40FC            +     	dw	040fch
+                                	tstr	018h,0,0,0,0,0,0,0,0,0,0,-1,0,rot8080b		; (1024 cycles)
+  1797    18 00 00 00     +     rot8080b:	db	018h,0,0,0
+  179B    0000 0000       +     	dw	0,0,0,0,0,0
+  179F    0000 0000       +     
+  17A3    0000 0000       +     
+  17A7    00              +     	db	0
+  17A8    FF              +     	db	-1
+  17A9    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0d7h,0,0,rot8080c		; (6 cycles)
+  17AB    00 00 00 00     +     rot8080c:	db	0,0,0,0
+  17AF    0000 0000       +     	dw	0,0,0,0,0,0
+  17B3    0000 0000       +     
+  17B7    0000 0000       +     
+  17BB    D7              +     	db	0d7h
+  17BC    00              +     	db	0
+  17BD    0000            +     	dw	0
+  17BF    25 13 30 AE           	db	025h,013h,030h,0aeh			; expected crc
+                                	tmsg	'<rlca,rrca,rla,rra>...........',rot8080d
+  17C3    3C 72 6C 63     +     rot8080d:	db	'<rlca,rrca,rla,rra>...........'
+  17C7    61 2C 72 72     +     
+  17CB    63 61 2C 72     +     
+  17CF    6C 61 2C 72     +     
+  17D3    72 61 3E 2E     +     
+  17D7    2E 2E 2E 2E     +     
+  17DB    2E 2E 2E 2E     +     
+  17DF    2E 2E           +     
+  17E1    24              +     	db	'$'
+                                
+                                ; shift/rotate (<ix,iy>+1) (416 cycles)
+  17E2    D7                    rotxy:	db	0d7h		; flag mask
+                                	tstr	0ddh,0cbh,1,6,0ddafh,msbt-1,msbt-1,0ff3ch,0dbf6h,094f4h,082h,080h,061d9h,rotxya
+  17E3    DD CB 01 06     +     rotxya:	db	0ddh,0cbh,1,6
+  17E7    DDAF 0102       +     	dw	0ddafh,msbt-1,msbt-1,0ff3ch,0dbf6h,094f4h
+  17EB    0102 FF3C       +     
+  17EF    DBF6 94F4       +     
+  17F3    82              +     	db	082h
+  17F4    80              +     	db	080h
+  17F5    61D9            +     	dw	061d9h
+                                	tstr	020h,0,0,038h,0,0,0,0,0,0,080h,0,0,rotxyb	; (32 cycles)
+  17F7    20 00 00 38     +     rotxyb:	db	020h,0,0,038h
+  17FB    0000 0000       +     	dw	0,0,0,0,0,0
+  17FF    0000 0000       +     
+  1803    0000 0000       +     
+  1807    80              +     	db	080h
+  1808    00              +     	db	0
+  1809    0000            +     	dw	0
+                                	tstr	0,0,0,0,0ffh,0,0,0,0,0,057h,0,0,rotxyc		; (13 cycles)
+  180B    00 00 00 00     +     rotxyc:	db	0,0,0,0
+  180F    00FF 0000       +     	dw	0ffh,0,0,0,0,0
+  1813    0000 0000       +     
+  1817    0000 0000       +     
+  181B    57              +     	db	057h
+  181C    00              +     	db	0
+  181D    0000            +     	dw	0
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-40
+
+
+  181F    71 3A CD 81           	db	071h,03ah,0cdh,081h			; expected crc
+                                	tmsg	'shf/rot (<ix,iy>+1)...........',rotxyd
+  1823    73 68 66 2F     +     rotxyd:	db	'shf/rot (<ix,iy>+1)...........'
+  1827    72 6F 74 20     +     
+  182B    28 3C 69 78     +     
+  182F    2C 69 79 3E     +     
+  1833    2B 31 29 2E     +     
+  1837    2E 2E 2E 2E     +     
+  183B    2E 2E 2E 2E     +     
+  183F    2E 2E           +     
+  1841    24              +     	db	'$'
+                                
+                                ; shift/rotate <b,c,d,e,h,l,(hl),a> (6784 cycles)
+  1842    D7                    rotz80:	db	0d7h		; flag mask
+                                	tstr	0cbh,0,0,0,0ccebh,05d4ah,0e007h,msbt,01395h,030eeh,043h,078h,03dadh,rotz80a
+  1843    CB 00 00 00     +     rotz80a:	db	0cbh,0,0,0
+  1847    CCEB 5D4A       +     	dw	0ccebh,05d4ah,0e007h,msbt,01395h,030eeh
+  184B    E007 0103       +     
+  184F    1395 30EE       +     
+  1853    43              +     	db	043h
+  1854    78              +     	db	078h
+  1855    3DAD            +     	dw	03dadh
+                                	tstr	0,03fh,0,0,0,0,0,0,0,0,080h,0,0,rotz80b		; (128 cycles)
+  1857    00 3F 00 00     +     rotz80b:	db	0,03fh,0,0
+  185B    0000 0000       +     	dw	0,0,0,0,0,0
+  185F    0000 0000       +     
+  1863    0000 0000       +     
+  1867    80              +     	db	080h
+  1868    00              +     	db	0
+  1869    0000            +     	dw	0
+                                	tstr	0,0,0,0,0ffh,0,0,0,-1,-1,057h,-1,0,rotz80c	; (53 cycles)
+  186B    00 00 00 00     +     rotz80c:	db	0,0,0,0
+  186F    00FF 0000       +     	dw	0ffh,0,0,0,-1,-1
+  1873    0000 0000       +     
+  1877    FFFF FFFF       +     
+  187B    57              +     	db	057h
+  187C    FF              +     	db	-1
+  187D    0000            +     	dw	0
+  187F    EB 60 4D 58           	db	0ebh,060h,04dh,058h			; expected crc
+                                	tmsg	'shf/rot <b,c,d,e,h,l,(hl),a>..',rotz80d
+  1883    73 68 66 2F     +     rotz80d:	db	'shf/rot <b,c,d,e,h,l,(hl),a>..'
+  1887    72 6F 74 20     +     
+  188B    3C 62 2C 63     +     
+  188F    2C 64 2C 65     +     
+  1893    2C 68 2C 6C     +     
+  1897    2C 28 68 6C     +     
+  189B    29 2C 61 3E     +     
+  189F    2E 2E           +     
+  18A1    24              +     	db	'$'
+                                
+                                ; <set,res> n,<b,c,d,e,h,l,(hl),a> (7936 cycles)
+  18A2    D7                    srz80:	db	0d7h		; flag mask
+                                	tstr	0cbh,080h,0,0,02cd5h,097abh,039ffh,msbt,0d14bh,06ab2h,053h,027h,0b538h,srz80a
+  18A3    CB 80 00 00     +     srz80a:	db	0cbh,080h,0,0
+  18A7    2CD5 97AB       +     	dw	02cd5h,097abh,039ffh,msbt,0d14bh,06ab2h
+  18AB    39FF 0103       +     
+  18AF    D14B 6AB2       +     
+  18B3    53              +     	db	053h
+  18B4    27              +     	db	027h
+  18B5    B538            +     	dw	0b538h
+                                	tstr	0,07fh,0,0,0,0,0,0,0,0,0,0,0,srz80b		; (128 cycles)
+  18B7    00 7F 00 00     +     srz80b:	db	0,07fh,0,0
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-41
+
+
+  18BB    0000 0000       +     	dw	0,0,0,0,0,0
+  18BF    0000 0000       +     
+  18C3    0000 0000       +     
+  18C7    00              +     	db	0
+  18C8    00              +     	db	0
+  18C9    0000            +     	dw	0
+                                	tstr	0,0,0,0,0ffh,0,0,0,-1,-1,0d7h,-1,0,srz80c	; (62 cycles)
+  18CB    00 00 00 00     +     srz80c:	db	0,0,0,0
+  18CF    00FF 0000       +     	dw	0ffh,0,0,0,-1,-1
+  18D3    0000 0000       +     
+  18D7    FFFF FFFF       +     
+  18DB    D7              +     	db	0d7h
+  18DC    FF              +     	db	-1
+  18DD    0000            +     	dw	0
+  18DF    8B 57 F0 08           	db	08bh,057h,0f0h,008h			; expected crc
+                                	tmsg	'<set,res> n,<bcdehl(hl)a>.....',srz80d
+  18E3    3C 73 65 74     +     srz80d:	db	'<set,res> n,<bcdehl(hl)a>.....'
+  18E7    2C 72 65 73     +     
+  18EB    3E 20 6E 2C     +     
+  18EF    3C 62 63 64     +     
+  18F3    65 68 6C 28     +     
+  18F7    68 6C 29 61     +     
+  18FB    3E 2E 2E 2E     +     
+  18FF    2E 2E           +     
+  1901    24              +     	db	'$'
+                                
+                                ; <set,res> n,(<ix,iy>+1) (1792 cycles)
+  1902    D7                    srzx:	db	0d7h		; flag mask
+                                	tstr	0ddh,0cbh,1,086h,0fb44h,msbt-1,msbt-1,0ba09h,068beh,032d8h,010h,05eh,0a867h,srzxa
+  1903    DD CB 01 86     +     srzxa:	db	0ddh,0cbh,1,086h
+  1907    FB44 0102       +     	dw	0fb44h,msbt-1,msbt-1,0ba09h,068beh,032d8h
+  190B    0102 BA09       +     
+  190F    68BE 32D8       +     
+  1913    10              +     	db	010h
+  1914    5E              +     	db	05eh
+  1915    A867            +     	dw	0a867h
+                                	tstr	020h,0,0,078h,0,0,0,0,0,0,0,0,0,srzxb	; (128 cycles)
+  1917    20 00 00 78     +     srzxb:	db	020h,0,0,078h
+  191B    0000 0000       +     	dw	0,0,0,0,0,0
+  191F    0000 0000       +     
+  1923    0000 0000       +     
+  1927    00              +     	db	0
+  1928    00              +     	db	0
+  1929    0000            +     	dw	0
+                                	tstr	0,0,0,0,0ffh,0,0,0,0,0,0d7h,0,0,srzxc		;(14 cycles)
+  192B    00 00 00 00     +     srzxc:	db	0,0,0,0
+  192F    00FF 0000       +     	dw	0ffh,0,0,0,0,0
+  1933    0000 0000       +     
+  1937    0000 0000       +     
+  193B    D7              +     	db	0d7h
+  193C    00              +     	db	0
+  193D    0000            +     	dw	0
+  193F    CC 63 F9 8A           	db	0cch,063h,0f9h,08ah			; expected crc
+                                	tmsg	'<set,res> n,(<ix,iy>+1).......',srzxd
+  1943    3C 73 65 74     +     srzxd:	db	'<set,res> n,(<ix,iy>+1).......'
+  1947    2C 72 65 73     +     
+  194B    3E 20 6E 2C     +     
+  194F    28 3C 69 78     +     
+  1953    2C 69 79 3E     +     
+  1957    2B 31 29 2E     +     
+  195B    2E 2E 2E 2E     +     
+  195F    2E 2E           +     
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-42
+
+
+  1961    24              +     	db	'$'
+                                
+                                ; ld (<ix,iy>+1),<b,c,d,e> (1024 cycles)
+  1962    D7                    st8ix1:	db	0d7h		; flag mask
+                                	tstr	0ddh,070h,1,0,0270dh,msbt-1,msbt-1,0b73ah,0887bh,099eeh,086h,070h,0ca07h,st8ix1a
+  1963    DD 70 01 00     +     st8ix1a:	db	0ddh,070h,1,0
+  1967    270D 0102       +     	dw	0270dh,msbt-1,msbt-1,0b73ah,0887bh,099eeh
+  196B    0102 B73A       +     
+  196F    887B 99EE       +     
+  1973    86              +     	db	086h
+  1974    70              +     	db	070h
+  1975    CA07            +     	dw	0ca07h
+                                	tstr	020h,003h,0,0,0,1,1,0,0,0,0,0,0,st8ix1b		; (32 cycles)
+  1977    20 03 00 00     +     st8ix1b:	db	020h,003h,0,0
+  197B    0000 0001       +     	dw	0,1,1,0,0,0
+  197F    0001 0000       +     
+  1983    0000 0000       +     
+  1987    00              +     	db	0
+  1988    00              +     	db	0
+  1989    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,-1,-1,0,0,0,st8ix1c		; (32 cycles)
+  198B    00 00 00 00     +     st8ix1c:	db	0,0,0,0
+  198F    0000 0000       +     	dw	0,0,0,0,-1,-1
+  1993    0000 0000       +     
+  1997    FFFF FFFF       +     
+  199B    00              +     	db	0
+  199C    00              +     	db	0
+  199D    0000            +     	dw	0
+  199F    04 62 6A BF           	db	004h,062h,06ah,0bfh			; expected crc
+                                	tmsg	'ld (<ix,iy>+1),<b,c,d,e>......',st8ix1d
+  19A3    6C 64 20 28     +     st8ix1d:	db	'ld (<ix,iy>+1),<b,c,d,e>......'
+  19A7    3C 69 78 2C     +     
+  19AB    69 79 3E 2B     +     
+  19AF    31 29 2C 3C     +     
+  19B3    62 2C 63 2C     +     
+  19B7    64 2C 65 3E     +     
+  19BB    2E 2E 2E 2E     +     
+  19BF    2E 2E           +     
+  19C1    24              +     	db	'$'
+                                
+                                ; ld (<ix,iy>+1),<h,l> (256 cycles)
+  19C2    D7                    st8ix2:	db	0d7h		; flag mask
+                                	tstr	0ddh,074h,1,0,0b664h,msbt-1,msbt-1,0e8ach,0b5f5h,0aafeh,012h,010h,09566h,st8ix2a
+  19C3    DD 74 01 00     +     st8ix2a:	db	0ddh,074h,1,0
+  19C7    B664 0102       +     	dw	0b664h,msbt-1,msbt-1,0e8ach,0b5f5h,0aafeh
+  19CB    0102 E8AC       +     
+  19CF    B5F5 AAFE       +     
+  19D3    12              +     	db	012h
+  19D4    10              +     	db	010h
+  19D5    9566            +     	dw	09566h
+                                	tstr	020h,001h,0,0,0,1,1,0,0,0,0,0,0,st8ix2b		; (16 cycles)
+  19D7    20 01 00 00     +     st8ix2b:	db	020h,001h,0,0
+  19DB    0000 0001       +     	dw	0,1,1,0,0,0
+  19DF    0001 0000       +     
+  19E3    0000 0000       +     
+  19E7    00              +     	db	0
+  19E8    00              +     	db	0
+  19E9    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,-1,0,0,0,0,0,st8ix2c		; (32 cycles)
+  19EB    00 00 00 00     +     st8ix2c:	db	0,0,0,0
+  19EF    0000 0000       +     	dw	0,0,0,-1,0,0
+  19F3    0000 FFFF       +     
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-43
+
+
+  19F7    0000 0000       +     
+  19FB    00              +     	db	0
+  19FC    00              +     	db	0
+  19FD    0000            +     	dw	0
+  19FF    6A 1A 88 31           	db	06ah,01ah,088h,031h			; expected crc
+                                	tmsg	'ld (<ix,iy>+1),<h,l>..........',st8ix2d
+  1A03    6C 64 20 28     +     st8ix2d:	db	'ld (<ix,iy>+1),<h,l>..........'
+  1A07    3C 69 78 2C     +     
+  1A0B    69 79 3E 2B     +     
+  1A0F    31 29 2C 3C     +     
+  1A13    68 2C 6C 3E     +     
+  1A17    2E 2E 2E 2E     +     
+  1A1B    2E 2E 2E 2E     +     
+  1A1F    2E 2E           +     
+  1A21    24              +     	db	'$'
+                                
+                                ; ld (<ix,iy>+1),a (64 cycles)
+  1A22    D7                    st8ix3:	db	0d7h		; flag mask
+                                	tstr	0ddh,077h,1,0,067afh,msbt-1,msbt-1,04f13h,00644h,0bcd7h,050h,0ach,05fafh,st8ix3a
+  1A23    DD 77 01 00     +     st8ix3a:	db	0ddh,077h,1,0
+  1A27    67AF 0102       +     	dw	067afh,msbt-1,msbt-1,04f13h,00644h,0bcd7h
+  1A2B    0102 4F13       +     
+  1A2F    0644 BCD7       +     
+  1A33    50              +     	db	050h
+  1A34    AC              +     	db	0ach
+  1A35    5FAF            +     	dw	05fafh
+                                	tstr	020h,0,0,0,0,1,1,0,0,0,0,0,0,st8ix3b		; (8 cycles)
+  1A37    20 00 00 00     +     st8ix3b:	db	020h,0,0,0
+  1A3B    0000 0001       +     	dw	0,1,1,0,0,0
+  1A3F    0001 0000       +     
+  1A43    0000 0000       +     
+  1A47    00              +     	db	0
+  1A48    00              +     	db	0
+  1A49    0000            +     	dw	0
+                                	tstr	0,0,0,0,0,0,0,0,0,0,0,-1,0,st8ix3c		; (8 cycles)
+  1A4B    00 00 00 00     +     st8ix3c:	db	0,0,0,0
+  1A4F    0000 0000       +     	dw	0,0,0,0,0,0
+  1A53    0000 0000       +     
+  1A57    0000 0000       +     
+  1A5B    00              +     	db	0
+  1A5C    FF              +     	db	-1
+  1A5D    0000            +     	dw	0
+  1A5F    CC BE 5A 96           	db	0cch,0beh,05ah,096h			; expected crc
+                                	tmsg	'ld (<ix,iy>+1),a..............',st8ix3d
+  1A63    6C 64 20 28     +     st8ix3d:	db	'ld (<ix,iy>+1),a..............'
+  1A67    3C 69 78 2C     +     
+  1A6B    69 79 3E 2B     +     
+  1A6F    31 29 2C 61     +     
+  1A73    2E 2E 2E 2E     +     
+  1A77    2E 2E 2E 2E     +     
+  1A7B    2E 2E 2E 2E     +     
+  1A7F    2E 2E           +     
+  1A81    24              +     	db	'$'
+                                
+                                ; ld (<bc,de>),a (96 cycles)
+  1A82    D7                    stabd:	db	0d7h		; flag mask
+                                	tstr	2,0,0,0,00c3bh,0b592h,06cffh,0959eh,msbt,msbt+1,0c1h,021h,0bde7h,stabda
+  1A83    02 00 00 00     +     stabda:	db	2,0,0,0
+  1A87    0C3B B592       +     	dw	00c3bh,0b592h,06cffh,0959eh,msbt,msbt+1
+  1A8B    6CFF 959E       +     
+  1A8F    0103 0104       +     
+  1A93    C1              +     	db	0c1h
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-44
+
+
+  1A94    21              +     	db	021h
+  1A95    BDE7            +     	dw	0bde7h
+                                	tstr	018h,0,0,0,0,0,0,0,0,0,0,0,0,stabdb		; (4 cycles)
+  1A97    18 00 00 00     +     stabdb:	db	018h,0,0,0
+  1A9B    0000 0000       +     	dw	0,0,0,0,0,0
+  1A9F    0000 0000       +     
+  1AA3    0000 0000       +     
+  1AA7    00              +     	db	0
+  1AA8    00              +     	db	0
+  1AA9    0000            +     	dw	0
+                                	tstr	0,0,0,0,-1,0,0,0,0,0,0,-1,0,stabdc		; (24 cycles)
+  1AAB    00 00 00 00     +     stabdc:	db	0,0,0,0
+  1AAF    FFFF 0000       +     	dw	-1,0,0,0,0,0
+  1AB3    0000 0000       +     
+  1AB7    0000 0000       +     
+  1ABB    00              +     	db	0
+  1ABC    FF              +     	db	-1
+  1ABD    0000            +     	dw	0
+  1ABF    7A 4C 11 4F           	db	07ah,04ch,011h,04fh			; expected crc
+                                	tmsg	'ld (<bc,de>),a................',stabdd
+  1AC3    6C 64 20 28     +     stabdd:	db	'ld (<bc,de>),a................'
+  1AC7    3C 62 63 2C     +     
+  1ACB    64 65 3E 29     +     
+  1ACF    2C 61 2E 2E     +     
+  1AD3    2E 2E 2E 2E     +     
+  1AD7    2E 2E 2E 2E     +     
+  1ADB    2E 2E 2E 2E     +     
+  1ADF    2E 2E           +     
+  1AE1    24              +     	db	'$'
+                                
+                                ; start test pointed to by (hl)
+  1AE2                          stt:
+  1AE2    E5                    	push	hl
+  1AE3    7E                    	ld	a,(hl)		; get pointer to test
+  1AE4    23                    	inc	hl
+  1AE5    66                    	ld	h,(hl)
+  1AE6    6F                    	ld	l,a
+  1AE7    7E                    	ld	a,(hl)		; flag mask
+  1AE8    32 1D65               	ld	(flgmsk+1),a
+  1AEB    23                    	inc	hl
+  1AEC    E5                    	push	hl
+  1AED    11 0014               	ld	de,20
+  1AF0    19                    	add	hl,de		; point to incmask
+  1AF1    11 1CDA               	ld	de,counter
+  1AF4    CD 1C49               	call	initmask
+  1AF7    E1                    	pop	hl
+  1AF8    E5                    	push	hl
+  1AF9    11 0028               	ld	de,20+20
+  1AFC    19                    	add	hl,de		; point to scanmask
+  1AFD    11 1D02               	ld	de,shifter
+  1B00    CD 1C49               	call	initmask
+  1B03    21 1D02               	ld	hl,shifter
+  1B06    36 01                 	ld	(hl),1		; first bit
+  1B08    E1                    	pop	hl
+  1B09    E5                    	push	hl
+  1B0A    11 1D42               	ld	de,iut		; copy initial instruction under test
+  1B0D    01 0004               	ld	bc,4
+  1B10    ED B0                 	ldir
+  1B12    11 0103               	ld	de,msbt		; copy initial machine state
+  1B15    01 0010               	ld	bc,16
+  1B18    ED B0                 	ldir
+  1B1A    11 002C               	ld	de,20+20+4	; skip incmask, scanmask and expcrc
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-45
+
+
+  1B1D    19                    	add	hl,de
+  1B1E    EB                    	ex	de,hl
+  1B1F    0E 09                 	ld	c,9
+  1B21    CD 1DCE               	call	bdos		; show test name
+  1B24    CD 1E71               	call	initcrc		; initialise crc
+                                ; test loop
+  1B27                          tlp:
+  1B27    3A 1D42               	ld	a,(iut)
+  1B2A    FE 76                 	cp	076h		; pragmatically avoid halt intructions
+  1B2C    CA 1B3E               	jp	z,tlp2
+  1B2F    E6 DF                 	and	0dfh
+  1B31    FE DD                 	cp	0ddh
+  1B33    C2 1B3B               	jp	nz,tlp1
+  1B36    3A 1D43               	ld	a,(iut+1)
+  1B39    FE 76                 	cp	076h
+  1B3B                          tlp1:
+  1B3B    C4 1D2A               	call	nz,test		; execute the test instruction
+  1B3E                          tlp2:
+  1B3E    CD 1C89               	call	count		; increment the counter
+  1B41    C4 1CAD               	call	nz,shift	; shift the scan bit
+  1B44    E1                    	pop	hl		; pointer to test case
+  1B45    CA 1B7A               	jp	z,tlp3		; done if shift returned NZ
+  1B48    11 003C               	ld	de,20+20+20
+  1B4B    19                    	add	hl,de		; point to expected crc
+  1B4C    CD 1E32               	call	cmpcrc
+  1B4F    11 1E05               	ld	de,okmsg
+  1B52    CA 1B71               	jp	z,tlpok
+  1B55    11 1E0C               	ld	de,ermsg1
+  1B58    0E 09                 	ld	c,9
+  1B5A    CD 1DCE               	call	bdos
+  1B5D    CD 1D99               	call	phex8
+  1B60    11 1E27               	ld	de,ermsg2
+  1B63    0E 09                 	ld	c,9
+  1B65    CD 1DCE               	call	bdos
+  1B68    21 1E85               	ld	hl,crcval
+  1B6B    CD 1D99               	call	phex8
+  1B6E    11 1E2F               	ld	de,crlf
+  1B71                          tlpok:
+  1B71    0E 09                 	ld	c,9
+  1B73    CD 1DCE               	call	bdos
+  1B76    E1                    	pop	hl
+  1B77    23                    	inc	hl
+  1B78    23                    	inc	hl
+  1B79    C9                    	ret
+                                
+  1B7A                          tlp3:
+  1B7A    E5                    	push	hl
+  1B7B    3E 01                 	ld	a,1		; initialise count and shift scanners
+  1B7D    32 1BF0               	ld	(cntbit),a
+  1B80    32 1C14               	ld	(shfbit),a
+  1B83    21 1CDA               	ld	hl,counter
+  1B86    22 1BF1               	ld	(cntbyt),hl
+  1B89    21 1D02               	ld	hl,shifter
+  1B8C    22 1C15               	ld	(shfbyt),hl
+                                
+  1B8F    06 04                 	ld	b,4		; bytes in iut field
+  1B91    E1                    	pop	hl		; pointer to test case
+  1B92    E5                    	push	hl
+  1B93    11 1D42               	ld	de,iut
+  1B96    CD 1BA4               	call	setup		; setup iut
+  1B99    06 10                 	ld	b,16		; bytes in machine state
+  1B9B    11 0103               	ld	de,msbt
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-46
+
+
+  1B9E    CD 1BA4               	call	setup		; setup machine state
+  1BA1    C3 1B27               	jp	tlp
+                                
+                                ; setup a field of the test case
+                                ; b  = number of bytes
+                                ; hl = pointer to base case
+                                ; de = destination
+  1BA4                          setup:
+  1BA4    CD 1BAD               	call	subyte
+  1BA7    23                    	inc	hl
+  1BA8    05                    	dec	b
+  1BA9    C2 1BA4               	jp	nz,setup
+  1BAC    C9                    	ret
+                                
+  1BAD                          subyte:
+  1BAD    C5                    	push	bc
+  1BAE    D5                    	push	de
+  1BAF    E5                    	push	hl
+  1BB0    4E                    	ld	c,(hl)		; get base byte
+  1BB1    11 0014               	ld	de,20
+  1BB4    19                    	add	hl,de		; point to incmask
+  1BB5    7E                    	ld	a,(hl)
+  1BB6    FE 00                 	cp	0
+  1BB8    CA 1BCE               	jp	z,subshf
+  1BBB    06 08                 	ld	b,8		; 8 bits
+  1BBD                          subclp:
+  1BBD    0F                    	rrca
+  1BBE    F5                    	push	af
+  1BBF    3E 00                 	ld	a,0
+  1BC1    DC 1BF3               	call	c,nxtcbit	; get next counter bit if mask bit was set
+  1BC4    A9                    	xor	c		; flip bit if counter bit was set
+  1BC5    0F                    	rrca
+  1BC6    4F                    	ld	c,a
+  1BC7    F1                    	pop	af
+  1BC8    05                    	dec	b
+  1BC9    C2 1BBD               	jp	nz,subclp
+  1BCC    06 08                 	ld	b,8
+  1BCE                          subshf:
+  1BCE    11 0014               	ld	de,20
+  1BD1    19                    	add	hl,de		; point to shift mask
+  1BD2    7E                    	ld	a,(hl)
+  1BD3    FE 00                 	cp	0
+  1BD5    CA 1BE9               	jp	z,substr
+  1BD8    06 08                 	ld	b,8		; 8 bits
+  1BDA                          sbshf1:
+  1BDA    0F                    	rrca
+  1BDB    F5                    	push	af
+  1BDC    3E 00                 	ld	a,0
+  1BDE    DC 1C17               	call	c,nxtsbit	; get next shifter bit if mask bit was set
+  1BE1    A9                    	xor	c		; flip bit if shifter bit was set
+  1BE2    0F                    	rrca
+  1BE3    4F                    	ld	c,a
+  1BE4    F1                    	pop	af
+  1BE5    05                    	dec	b
+  1BE6    C2 1BDA               	jp	nz,sbshf1
+  1BE9                          substr:
+  1BE9    E1                    	pop	hl
+  1BEA    D1                    	pop	de
+  1BEB    79                    	ld	a,c
+  1BEC    12                    	ld	(de),a		; mangled byte to destination
+  1BED    13                    	inc	de
+  1BEE    C1                    	pop	bc
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-47
+
+
+  1BEF    C9                    	ret
+                                
+                                ; get next counter bit in low bit of a
+  1BF0                          cntbit:	ds	1
+  1BF1                          cntbyt:	ds	2
+                                
+  1BF3                          nxtcbit:
+  1BF3    C5                    	push	bc
+  1BF4    E5                    	push	hl
+  1BF5    2A 1BF1               	ld	hl,(cntbyt)
+  1BF8    46                    	ld	b,(hl)
+  1BF9    21 1BF0               	ld	hl,cntbit
+  1BFC    7E                    	ld	a,(hl)
+  1BFD    4F                    	ld	c,a
+  1BFE    07                    	rlca
+  1BFF    77                    	ld	(hl),a
+  1C00    FE 01                 	cp	1
+  1C02    C2 1C0C               	jp	nz,ncb1
+  1C05    2A 1BF1               	ld	hl,(cntbyt)
+  1C08    23                    	inc	hl
+  1C09    22 1BF1               	ld	(cntbyt),hl
+  1C0C                          ncb1:
+  1C0C    78                    	ld	a,b
+  1C0D    A1                    	and	c
+  1C0E    E1                    	pop	hl
+  1C0F    C1                    	pop	bc
+  1C10    C8                    	ret	z
+  1C11    3E 01                 	ld	a,1
+  1C13    C9                    	ret
+                                	
+                                ; get next shifter bit in low bit of a
+  1C14                          shfbit:	ds	1
+  1C15                          shfbyt:	ds	2
+                                
+  1C17                          nxtsbit:
+  1C17    C5                    	push	bc
+  1C18    E5                    	push	hl
+  1C19    2A 1C15               	ld	hl,(shfbyt)
+  1C1C    46                    	ld	b,(hl)
+  1C1D    21 1C14               	ld	hl,shfbit
+  1C20    7E                    	ld	a,(hl)
+  1C21    4F                    	ld	c,a
+  1C22    07                    	rlca
+  1C23    77                    	ld	(hl),a
+  1C24    FE 01                 	cp	1
+  1C26    C2 1C30               	jp	nz,nsb1
+  1C29    2A 1C15               	ld	hl,(shfbyt)
+  1C2C    23                    	inc	hl
+  1C2D    22 1C15               	ld	(shfbyt),hl
+  1C30                          nsb1:
+  1C30    78                    	ld	a,b
+  1C31    A1                    	and	c
+  1C32    E1                    	pop	hl
+  1C33    C1                    	pop	bc
+  1C34    C8                    	ret	z
+  1C35    3E 01                 	ld	a,1
+  1C37    C9                    	ret
+                                	
+                                
+                                ; clear memory at hl, bc bytes
+  1C38                          clrmem:
+  1C38    F5                    	push	af
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-48
+
+
+  1C39    C5                    	push	bc
+  1C3A    D5                    	push	de
+  1C3B    E5                    	push	hl
+  1C3C    36 00                 	ld	(hl),0
+  1C3E    54                    	ld	d,h
+  1C3F    5D                    	ld	e,l
+  1C40    13                    	inc	de
+  1C41    0B                    	dec	bc
+  1C42    ED B0                 	ldir
+  1C44    E1                    	pop	hl
+  1C45    D1                    	pop	de
+  1C46    C1                    	pop	bc
+  1C47    F1                    	pop	af
+  1C48    C9                    	ret
+                                
+                                ; initialise counter or shifter
+                                ; de = pointer to work area for counter or shifter
+                                ; hl = pointer to mask
+  1C49                          initmask:
+  1C49    D5                    	push	de
+  1C4A    EB                    	ex	de,hl
+  1C4B    01 0028               	ld	bc,20+20
+  1C4E    CD 1C38               	call	clrmem		; clear work area
+  1C51    EB                    	ex	de,hl
+  1C52    06 14                 	ld	b,20		; byte counter
+  1C54    0E 01                 	ld	c,1		; first bit
+  1C56    16 00                 	ld	d,0		; bit counter
+  1C58                          imlp:
+  1C58    5E                    	ld	e,(hl)
+  1C59                          imlp1:
+  1C59    7B                    	ld	a,e
+  1C5A    A1                    	and	c
+  1C5B    CA 1C5F               	jp	z,imlp2
+  1C5E    14                    	inc	d
+  1C5F                          imlp2:
+  1C5F    79                    	ld	a,c
+  1C60    07                    	rlca
+  1C61    4F                    	ld	c,a
+  1C62    FE 01                 	cp	1
+  1C64    C2 1C59               	jp	nz,imlp1
+  1C67    23                    	inc	hl
+  1C68    05                    	dec	b
+  1C69    C2 1C58               	jp	nz,imlp
+                                ; got number of 1-bits in mask in reg d
+  1C6C    7A                    	ld	a,d
+  1C6D    E6 F8                 	and	0f8h
+  1C6F    0F                    	rrca
+  1C70    0F                    	rrca
+  1C71    0F                    	rrca			; divide by 8 (get byte offset)
+  1C72    6F                    	ld	l,a
+  1C73    26 00                 	ld	h,0
+  1C75    7A                    	ld	a,d
+  1C76    E6 07                 	and	7		; bit offset
+  1C78    3C                    	inc	a
+  1C79    47                    	ld	b,a
+  1C7A    3E 80                 	ld	a,080h
+  1C7C                          imlp3:
+  1C7C    07                    	rlca
+  1C7D    05                    	dec	b
+  1C7E    C2 1C7C               	jp	nz,imlp3
+  1C81    D1                    	pop	de
+  1C82    19                    	add	hl,de
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-49
+
+
+  1C83    11 0014               	ld	de,20
+  1C86    19                    	add	hl,de
+  1C87    77                    	ld	(hl),a
+  1C88    C9                    	ret
+                                
+                                ; multi-byte counter
+  1C89                          count:
+  1C89    C5                    	push	bc
+  1C8A    D5                    	push	de
+  1C8B    E5                    	push	hl
+  1C8C    21 1CDA               	ld	hl,counter	; 20 byte counter starts here
+  1C8F    11 0014               	ld	de,20		; somewhere in here is the stop bit
+  1C92    EB                    	ex	de,hl
+  1C93    19                    	add	hl,de
+  1C94    EB                    	ex	de,hl
+  1C95                          cntlp:
+  1C95    34                    	inc	(hl)
+  1C96    7E                    	ld	a,(hl)
+  1C97    FE 00                 	cp	0
+  1C99    CA 1CA8               	jp	z,cntlp1	; overflow to next byte
+  1C9C    47                    	ld	b,a
+  1C9D    1A                    	ld	a,(de)
+  1C9E    A0                    	and	b		; test for terminal value
+  1C9F    CA 1CA4               	jp	z,cntend
+  1CA2    36 00                 	ld	(hl),0		; reset to zero
+  1CA4                          cntend:
+  1CA4    C1                    	pop	bc
+  1CA5    D1                    	pop	de
+  1CA6    E1                    	pop	hl
+  1CA7    C9                    	ret
+                                
+  1CA8    23                    cntlp1:	inc	hl
+  1CA9    13                    	inc	de
+  1CAA    C3 1C95               	jp	cntlp
+                                	
+                                
+                                ; multi-byte shifter
+  1CAD                          shift:
+  1CAD    C5                    	push	bc
+  1CAE    D5                    	push	de
+  1CAF    E5                    	push	hl
+  1CB0    21 1D02               	ld	hl,shifter	; 20 byte shift register starts here
+  1CB3    11 0014               	ld	de,20		; somewhere in here is the stop bit
+  1CB6    EB                    	ex	de,hl
+  1CB7    19                    	add	hl,de
+  1CB8    EB                    	ex	de,hl
+  1CB9                          shflp:
+  1CB9    7E                    	ld	a,(hl)
+  1CBA    B7                    	or	a
+  1CBB    CA 1CD5               	jp	z,shflp1
+  1CBE    47                    	ld	b,a
+  1CBF    1A                    	ld	a,(de)
+  1CC0    A0                    	and	b
+  1CC1    C2 1CD1               	jp	nz,shlpe
+  1CC4    78                    	ld	a,b
+  1CC5    07                    	rlca
+  1CC6    FE 01                 	cp	1
+  1CC8    C2 1CCF               	jp	nz,shflp2
+  1CCB    36 00                 	ld	(hl),0
+  1CCD    23                    	inc	hl
+  1CCE    13                    	inc	de
+  1CCF                          shflp2:
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-50
+
+
+  1CCF    77                    	ld	(hl),a
+  1CD0    AF                    	xor	a		; set Z
+  1CD1                          shlpe:
+  1CD1    E1                    	pop	hl
+  1CD2    D1                    	pop	de
+  1CD3    C1                    	pop	bc
+  1CD4    C9                    	ret
+  1CD5                          shflp1:
+  1CD5    23                    	inc	hl
+  1CD6    13                    	inc	de
+  1CD7    C3 1CB9               	jp	shflp
+                                
+  1CDA                          counter: ds	2*20
+  1D02                          shifter: ds	2*20
+                                
+                                ; test harness
+  1D2A                          test:
+  1D2A    F5                    	push	af
+  1D2B    C5                    	push	bc
+  1D2C    D5                    	push	de
+  1D2D    E5                    	push	hl
+                                      if	0
+                                	ld	de,crlf
+                                	ld	c,9
+                                	call	bdos
+                                	ld	hl,iut
+                                	ld	b,4
+                                	call	hexstr
+                                	ld	e,' '
+                                	ld	c,2
+                                	call	bdos
+                                	ld	b,16
+                                	ld	hl,msbt
+                                	call	hexstr
+                                      endif	
+  1D2E    F3                    	di			; disable interrupts
+  1D2F    ED 73 1D8D            	ld	(spsav),sp	; save stack pointer
+  1D33    31 0105               	ld	sp,msbt+2	; point to test-case machine state
+  1D36    FD E1                 	pop	iy		; and load all regs
+  1D38    DD E1                 	pop	ix
+  1D3A    E1                    	pop	hl
+  1D3B    D1                    	pop	de
+  1D3C    C1                    	pop	bc
+  1D3D    F1                    	pop	af
+  1D3E    ED 7B 0111            	ld	sp,(spbt)
+  1D42                          iut:	ds	4		; max 4 byte instruction under test
+  1D46    ED 73 1D8B            	ld	(spat),sp	; save stack pointer
+  1D4A    31 1D8B               	ld	sp,spat
+  1D4D    F5                    	push	af		; save other registers
+  1D4E    C5                    	push	bc
+  1D4F    D5                    	push	de
+  1D50    E5                    	push	hl
+  1D51    DD E5                 	push	ix
+  1D53    FD E5                 	push	iy
+  1D55    ED 7B 1D8D            	ld	sp,(spsav)	; restore stack pointer
+  1D59    FB                    	ei			; enable interrupts
+  1D5A    2A 0103               	ld	hl,(msbt)	; copy memory operand
+  1D5D    22 1D7D               	ld	(msat),hl
+  1D60    21 1D89               	ld	hl,flgsat	; flags after test
+  1D63    7E                    	ld	a,(hl)
+  1D64                          flgmsk:
+  1D64    E6 D7                 	and	0d7h		; mask-out irrelevant bits (self-modified code!)
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-51
+
+
+  1D66    77                    	ld	(hl),a
+  1D67    06 10                 	ld	b,16		; total of 16 bytes of state
+  1D69    11 1D7D               	ld	de,msat
+  1D6C    21 1E85               	ld	hl,crcval
+  1D6F                          tcrc:
+  1D6F    1A                    	ld	a,(de)
+  1D70    13                    	inc	de
+  1D71    CD 1E49               	call	updcrc		; accumulate crc of this test case
+  1D74    05                    	dec	b
+  1D75    C2 1D6F               	jp	nz,tcrc
+                                      if	0
+                                	ld	e,' '
+                                	ld	c,2
+                                	call	bdos
+                                	ld	hl,crcval
+                                	call	phex8
+                                	ld	de,crlf
+                                	ld	c,9
+                                	call	bdos
+                                	ld	hl,msat
+                                	ld	b,16
+                                	call	hexstr
+                                	ld	de,crlf
+                                	ld	c,9
+                                	call	bdos
+                                      endif
+  1D78    E1                    	pop	hl
+  1D79    D1                    	pop	de
+  1D7A    C1                    	pop	bc
+  1D7B    F1                    	pop	af
+  1D7C    C9                    	ret
+                                
+                                ; machine state after test
+  1D7D                          msat:	ds	14	; memop,iy,ix,hl,de,bc,af
+  1D8B                          spat:	ds	2	; stack pointer after test
+                                ; ZMAC/MAXAM doesn't like ':' after label with EQUs
+  1D89                          flgsat	equ	spat-2	; flags
+                                
+  1D8D                          spsav:	ds	2	; saved stack pointer
+                                
+                                ; display hex string (pointer in hl, byte count in b)
+  1D8F                          hexstr:
+  1D8F    7E                    	ld	a,(hl)
+  1D90    CD 1DAB               	call	phex2
+  1D93    23                    	inc	hl
+  1D94    05                    	dec	b
+  1D95    C2 1D8F               	jp	nz,hexstr
+  1D98    C9                    	ret
+                                
+                                ; display hex
+                                ; display the big-endian 32-bit value pointed to by hl
+  1D99                          phex8:
+  1D99    F5                    	push	af
+  1D9A    C5                    	push	bc
+  1D9B    E5                    	push	hl
+  1D9C    06 04                 	ld	b,4
+  1D9E                          ph8lp:
+  1D9E    7E                    	ld	a,(hl)
+  1D9F    CD 1DAB               	call	phex2
+  1DA2    23                    	inc	hl
+  1DA3    05                    	dec	b
+  1DA4    C2 1D9E               	jp	nz,ph8lp
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-52
+
+
+  1DA7    E1                    	pop	hl
+  1DA8    C1                    	pop	bc
+  1DA9    F1                    	pop	af
+  1DAA    C9                    	ret
+                                
+                                ; display byte in a
+  1DAB                          phex2:
+  1DAB    F5                    	push	af
+  1DAC    0F                    	rrca
+  1DAD    0F                    	rrca
+  1DAE    0F                    	rrca
+  1DAF    0F                    	rrca
+  1DB0    CD 1DB4               	call	phex1
+  1DB3    F1                    	pop	af
+                                ; fall through	
+                                
+                                ; display low nibble in a
+  1DB4                          phex1:
+  1DB4    F5                    	push	af
+  1DB5    C5                    	push	bc
+  1DB6    D5                    	push	de
+  1DB7    E5                    	push	hl
+  1DB8    E6 0F                 	and	0fh
+  1DBA    FE 0A                 	cp	10
+  1DBC    DA 1DC1               	jp	c,ph11
+  1DBF    C6 27                 	add	a,'a'-'9'-1
+  1DC1                          ph11:
+  1DC1    C6 30                 	add	a,'0'
+  1DC3    5F                    	ld	e,a
+  1DC4    0E 02                 	ld	c,2
+  1DC6    CD 1DCE               	call	bdos
+  1DC9    E1                    	pop	hl
+  1DCA    D1                    	pop	de
+  1DCB    C1                    	pop	bc
+  1DCC    F1                    	pop	af
+  1DCD    C9                    	ret
+                                
+  1DCE                          bdos:
+  1DCE    F5                    	push	af
+  1DCF    C5                    	push	bc
+  1DD0    D5                    	push	de
+  1DD1    E5                    	push	hl
+  1DD2    CD 0005               	call	5
+  1DD5    E1                    	pop	hl
+  1DD6    D1                    	pop	de
+  1DD7    C1                    	pop	bc
+  1DD8    F1                    	pop	af
+  1DD9    C9                    	ret
+                                
+  1DDA    5A 38 30 20           msg1:	db	'Z80 instruction exerciser',10,13,'$'	;doc
+  1DDE    69 6E 73 74           
+  1DE2    72 75 63 74           
+  1DE6    69 6F 6E 20           
+  1DEA    65 78 65 72           
+  1DEE    63 69 73 65           
+  1DF2    72 0A 0D 24           
+  1DF6    54 65 73 74           msg2:	db	'Tests complete$'
+  1DFA    73 20 63 6F           
+  1DFE    6D 70 6C 65           
+  1E02    74 65 24              
+  1E05    20 20 4F 4B           okmsg:	db	'  OK',10,13,'$'
+  1E09    0A 0D 24              
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-53
+
+
+  1E0C    20 20 45 52           ermsg1:	db	'  ERROR **** crc expected:$'
+  1E10    52 4F 52 20           
+  1E14    2A 2A 2A 2A           
+  1E18    20 63 72 63           
+  1E1C    20 65 78 70           
+  1E20    65 63 74 65           
+  1E24    64 3A 24              
+  1E27    20 66 6F 75           ermsg2:	db	' found:$'
+  1E2B    6E 64 3A 24           
+  1E2F    0A 0D 24              crlf:	db	10,13,'$'
+                                
+                                ; compare crc
+                                ; hl points to value to compare to crcval
+  1E32                          cmpcrc:
+  1E32    C5                    	push	bc
+  1E33    D5                    	push	de
+  1E34    E5                    	push	hl
+  1E35    11 1E85               	ld	de,crcval
+  1E38    06 04                 	ld	b,4
+  1E3A                          cclp:
+  1E3A    1A                    	ld	a,(de)
+  1E3B    BE                    	cp	(hl)
+  1E3C    C2 1E45               	jp	nz,cce
+  1E3F    23                    	inc	hl
+  1E40    13                    	inc	de
+  1E41    05                    	dec	b
+  1E42    C2 1E3A               	jp	nz,cclp
+  1E45                          cce:
+  1E45    E1                    	pop	hl
+  1E46    D1                    	pop	de
+  1E47    C1                    	pop	bc
+  1E48    C9                    	ret
+                                
+                                ; 32-bit crc routine
+                                ; entry: a contains next byte, hl points to crc
+                                ; exit:  crc updated
+  1E49                          updcrc:
+  1E49    F5                    	push	af
+  1E4A    C5                    	push	bc
+  1E4B    D5                    	push	de
+  1E4C    E5                    	push	hl
+  1E4D    E5                    	push	hl
+  1E4E    11 0003               	ld	de,3
+  1E51    19                    	add	hl,de	; point to low byte of old crc
+  1E52    AE                    	xor	(hl)	; xor with new byte
+  1E53    6F                    	ld	l,a
+  1E54    26 00                 	ld	h,0
+  1E56    29                    	add	hl,hl	; use result as index into table of 4 byte entries
+  1E57    29                    	add	hl,hl
+  1E58    EB                    	ex	de,hl
+  1E59    21 1E89               	ld	hl,crctab
+  1E5C    19                    	add	hl,de	; point to selected entry in crctab
+  1E5D    EB                    	ex	de,hl
+  1E5E    E1                    	pop	hl
+  1E5F    01 0004               	ld	bc,4	; c = byte count, b = accumulator
+  1E62                          crclp:
+  1E62    1A                    	ld	a,(de)
+  1E63    A8                    	xor	b
+  1E64    46                    	ld	b,(hl)
+  1E65    77                    	ld	(hl),a
+  1E66    13                    	inc	de
+  1E67    23                    	inc	hl
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-54
+
+
+  1E68    0D                    	dec	c
+  1E69    C2 1E62               	jp	nz,crclp
+                                      if	0
+                                	ld	hl,crcval
+                                	call	phex8
+                                	ld	de,crlf
+                                	ld	c,9
+                                	call	bdos
+                                      endif
+  1E6C    E1                    	pop	hl
+  1E6D    D1                    	pop	de
+  1E6E    C1                    	pop	bc
+  1E6F    F1                    	pop	af
+  1E70    C9                    	ret
+                                
+  1E71                          initcrc:
+  1E71    F5                    	push	af
+  1E72    C5                    	push	bc
+  1E73    E5                    	push	hl
+  1E74    21 1E85               	ld	hl,crcval
+  1E77    3E FF                 	ld	a,0ffh
+  1E79    06 04                 	ld	b,4
+  1E7B                          icrclp:
+  1E7B    77                    	ld	(hl),a
+  1E7C    23                    	inc	hl
+  1E7D    05                    	dec	b
+  1E7E    C2 1E7B               	jp	nz,icrclp
+  1E81    E1                    	pop	hl
+  1E82    C1                    	pop	bc
+  1E83    F1                    	pop	af
+  1E84    C9                    	ret
+                                
+  1E85                          crcval:	ds	4
+                                
+  1E89                          crctab:
+  1E89    00 00 00 00           	db	000h,000h,000h,000h
+  1E8D    77 07 30 96           	db	077h,007h,030h,096h
+  1E91    EE 0E 61 2C           	db	0eeh,00eh,061h,02ch
+  1E95    99 09 51 BA           	db	099h,009h,051h,0bah
+  1E99    07 6D C4 19           	db	007h,06dh,0c4h,019h
+  1E9D    70 6A F4 8F           	db	070h,06ah,0f4h,08fh
+  1EA1    E9 63 A5 35           	db	0e9h,063h,0a5h,035h
+  1EA5    9E 64 95 A3           	db	09eh,064h,095h,0a3h
+  1EA9    0E DB 88 32           	db	00eh,0dbh,088h,032h
+  1EAD    79 DC B8 A4           	db	079h,0dch,0b8h,0a4h
+  1EB1    E0 D5 E9 1E           	db	0e0h,0d5h,0e9h,01eh
+  1EB5    97 D2 D9 88           	db	097h,0d2h,0d9h,088h
+  1EB9    09 B6 4C 2B           	db	009h,0b6h,04ch,02bh
+  1EBD    7E B1 7C BD           	db	07eh,0b1h,07ch,0bdh
+  1EC1    E7 B8 2D 07           	db	0e7h,0b8h,02dh,007h
+  1EC5    90 BF 1D 91           	db	090h,0bfh,01dh,091h
+  1EC9    1D B7 10 64           	db	01dh,0b7h,010h,064h
+  1ECD    6A B0 20 F2           	db	06ah,0b0h,020h,0f2h
+  1ED1    F3 B9 71 48           	db	0f3h,0b9h,071h,048h
+  1ED5    84 BE 41 DE           	db	084h,0beh,041h,0deh
+  1ED9    1A DA D4 7D           	db	01ah,0dah,0d4h,07dh
+  1EDD    6D DD E4 EB           	db	06dh,0ddh,0e4h,0ebh
+  1EE1    F4 D4 B5 51           	db	0f4h,0d4h,0b5h,051h
+  1EE5    83 D3 85 C7           	db	083h,0d3h,085h,0c7h
+  1EE9    13 6C 98 56           	db	013h,06ch,098h,056h
+  1EED    64 6B A8 C0           	db	064h,06bh,0a8h,0c0h
+  1EF1    FD 62 F9 7A           	db	0fdh,062h,0f9h,07ah
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-55
+
+
+  1EF5    8A 65 C9 EC           	db	08ah,065h,0c9h,0ech
+  1EF9    14 01 5C 4F           	db	014h,001h,05ch,04fh
+  1EFD    63 06 6C D9           	db	063h,006h,06ch,0d9h
+  1F01    FA 0F 3D 63           	db	0fah,00fh,03dh,063h
+  1F05    8D 08 0D F5           	db	08dh,008h,00dh,0f5h
+  1F09    3B 6E 20 C8           	db	03bh,06eh,020h,0c8h
+  1F0D    4C 69 10 5E           	db	04ch,069h,010h,05eh
+  1F11    D5 60 41 E4           	db	0d5h,060h,041h,0e4h
+  1F15    A2 67 71 72           	db	0a2h,067h,071h,072h
+  1F19    3C 03 E4 D1           	db	03ch,003h,0e4h,0d1h
+  1F1D    4B 04 D4 47           	db	04bh,004h,0d4h,047h
+  1F21    D2 0D 85 FD           	db	0d2h,00dh,085h,0fdh
+  1F25    A5 0A B5 6B           	db	0a5h,00ah,0b5h,06bh
+  1F29    35 B5 A8 FA           	db	035h,0b5h,0a8h,0fah
+  1F2D    42 B2 98 6C           	db	042h,0b2h,098h,06ch
+  1F31    DB BB C9 D6           	db	0dbh,0bbh,0c9h,0d6h
+  1F35    AC BC F9 40           	db	0ach,0bch,0f9h,040h
+  1F39    32 D8 6C E3           	db	032h,0d8h,06ch,0e3h
+  1F3D    45 DF 5C 75           	db	045h,0dfh,05ch,075h
+  1F41    DC D6 0D CF           	db	0dch,0d6h,00dh,0cfh
+  1F45    AB D1 3D 59           	db	0abh,0d1h,03dh,059h
+  1F49    26 D9 30 AC           	db	026h,0d9h,030h,0ach
+  1F4D    51 DE 00 3A           	db	051h,0deh,000h,03ah
+  1F51    C8 D7 51 80           	db	0c8h,0d7h,051h,080h
+  1F55    BF D0 61 16           	db	0bfh,0d0h,061h,016h
+  1F59    21 B4 F4 B5           	db	021h,0b4h,0f4h,0b5h
+  1F5D    56 B3 C4 23           	db	056h,0b3h,0c4h,023h
+  1F61    CF BA 95 99           	db	0cfh,0bah,095h,099h
+  1F65    B8 BD A5 0F           	db	0b8h,0bdh,0a5h,00fh
+  1F69    28 02 B8 9E           	db	028h,002h,0b8h,09eh
+  1F6D    5F 05 88 08           	db	05fh,005h,088h,008h
+  1F71    C6 0C D9 B2           	db	0c6h,00ch,0d9h,0b2h
+  1F75    B1 0B E9 24           	db	0b1h,00bh,0e9h,024h
+  1F79    2F 6F 7C 87           	db	02fh,06fh,07ch,087h
+  1F7D    58 68 4C 11           	db	058h,068h,04ch,011h
+  1F81    C1 61 1D AB           	db	0c1h,061h,01dh,0abh
+  1F85    B6 66 2D 3D           	db	0b6h,066h,02dh,03dh
+  1F89    76 DC 41 90           	db	076h,0dch,041h,090h
+  1F8D    01 DB 71 06           	db	001h,0dbh,071h,006h
+  1F91    98 D2 20 BC           	db	098h,0d2h,020h,0bch
+  1F95    EF D5 10 2A           	db	0efh,0d5h,010h,02ah
+  1F99    71 B1 85 89           	db	071h,0b1h,085h,089h
+  1F9D    06 B6 B5 1F           	db	006h,0b6h,0b5h,01fh
+  1FA1    9F BF E4 A5           	db	09fh,0bfh,0e4h,0a5h
+  1FA5    E8 B8 D4 33           	db	0e8h,0b8h,0d4h,033h
+  1FA9    78 07 C9 A2           	db	078h,007h,0c9h,0a2h
+  1FAD    0F 00 F9 34           	db	00fh,000h,0f9h,034h
+  1FB1    96 09 A8 8E           	db	096h,009h,0a8h,08eh
+  1FB5    E1 0E 98 18           	db	0e1h,00eh,098h,018h
+  1FB9    7F 6A 0D BB           	db	07fh,06ah,00dh,0bbh
+  1FBD    08 6D 3D 2D           	db	008h,06dh,03dh,02dh
+  1FC1    91 64 6C 97           	db	091h,064h,06ch,097h
+  1FC5    E6 63 5C 01           	db	0e6h,063h,05ch,001h
+  1FC9    6B 6B 51 F4           	db	06bh,06bh,051h,0f4h
+  1FCD    1C 6C 61 62           	db	01ch,06ch,061h,062h
+  1FD1    85 65 30 D8           	db	085h,065h,030h,0d8h
+  1FD5    F2 62 00 4E           	db	0f2h,062h,000h,04eh
+  1FD9    6C 06 95 ED           	db	06ch,006h,095h,0edh
+  1FDD    1B 01 A5 7B           	db	01bh,001h,0a5h,07bh
+  1FE1    82 08 F4 C1           	db	082h,008h,0f4h,0c1h
+  1FE5    F5 0F C4 57           	db	0f5h,00fh,0c4h,057h
+  1FE9    65 B0 D9 C6           	db	065h,0b0h,0d9h,0c6h
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-56
+
+
+  1FED    12 B7 E9 50           	db	012h,0b7h,0e9h,050h
+  1FF1    8B BE B8 EA           	db	08bh,0beh,0b8h,0eah
+  1FF5    FC B9 88 7C           	db	0fch,0b9h,088h,07ch
+  1FF9    62 DD 1D DF           	db	062h,0ddh,01dh,0dfh
+  1FFD    15 DA 2D 49           	db	015h,0dah,02dh,049h
+  2001    8C D3 7C F3           	db	08ch,0d3h,07ch,0f3h
+  2005    FB D4 4C 65           	db	0fbh,0d4h,04ch,065h
+  2009    4D B2 61 58           	db	04dh,0b2h,061h,058h
+  200D    3A B5 51 CE           	db	03ah,0b5h,051h,0ceh
+  2011    A3 BC 00 74           	db	0a3h,0bch,000h,074h
+  2015    D4 BB 30 E2           	db	0d4h,0bbh,030h,0e2h
+  2019    4A DF A5 41           	db	04ah,0dfh,0a5h,041h
+  201D    3D D8 95 D7           	db	03dh,0d8h,095h,0d7h
+  2021    A4 D1 C4 6D           	db	0a4h,0d1h,0c4h,06dh
+  2025    D3 D6 F4 FB           	db	0d3h,0d6h,0f4h,0fbh
+  2029    43 69 E9 6A           	db	043h,069h,0e9h,06ah
+  202D    34 6E D9 FC           	db	034h,06eh,0d9h,0fch
+  2031    AD 67 88 46           	db	0adh,067h,088h,046h
+  2035    DA 60 B8 D0           	db	0dah,060h,0b8h,0d0h
+  2039    44 04 2D 73           	db	044h,004h,02dh,073h
+  203D    33 03 1D E5           	db	033h,003h,01dh,0e5h
+  2041    AA 0A 4C 5F           	db	0aah,00ah,04ch,05fh
+  2045    DD 0D 7C C9           	db	0ddh,00dh,07ch,0c9h
+  2049    50 05 71 3C           	db	050h,005h,071h,03ch
+  204D    27 02 41 AA           	db	027h,002h,041h,0aah
+  2051    BE 0B 10 10           	db	0beh,00bh,010h,010h
+  2055    C9 0C 20 86           	db	0c9h,00ch,020h,086h
+  2059    57 68 B5 25           	db	057h,068h,0b5h,025h
+  205D    20 6F 85 B3           	db	020h,06fh,085h,0b3h
+  2061    B9 66 D4 09           	db	0b9h,066h,0d4h,009h
+  2065    CE 61 E4 9F           	db	0ceh,061h,0e4h,09fh
+  2069    5E DE F9 0E           	db	05eh,0deh,0f9h,00eh
+  206D    29 D9 C9 98           	db	029h,0d9h,0c9h,098h
+  2071    B0 D0 98 22           	db	0b0h,0d0h,098h,022h
+  2075    C7 D7 A8 B4           	db	0c7h,0d7h,0a8h,0b4h
+  2079    59 B3 3D 17           	db	059h,0b3h,03dh,017h
+  207D    2E B4 0D 81           	db	02eh,0b4h,00dh,081h
+  2081    B7 BD 5C 3B           	db	0b7h,0bdh,05ch,03bh
+  2085    C0 BA 6C AD           	db	0c0h,0bah,06ch,0adh
+  2089    ED B8 83 20           	db	0edh,0b8h,083h,020h
+  208D    9A BF B3 B6           	db	09ah,0bfh,0b3h,0b6h
+  2091    03 B6 E2 0C           	db	003h,0b6h,0e2h,00ch
+  2095    74 B1 D2 9A           	db	074h,0b1h,0d2h,09ah
+  2099    EA D5 47 39           	db	0eah,0d5h,047h,039h
+  209D    9D D2 77 AF           	db	09dh,0d2h,077h,0afh
+  20A1    04 DB 26 15           	db	004h,0dbh,026h,015h
+  20A5    73 DC 16 83           	db	073h,0dch,016h,083h
+  20A9    E3 63 0B 12           	db	0e3h,063h,00bh,012h
+  20AD    94 64 3B 84           	db	094h,064h,03bh,084h
+  20B1    0D 6D 6A 3E           	db	00dh,06dh,06ah,03eh
+  20B5    7A 6A 5A A8           	db	07ah,06ah,05ah,0a8h
+  20B9    E4 0E CF 0B           	db	0e4h,00eh,0cfh,00bh
+  20BD    93 09 FF 9D           	db	093h,009h,0ffh,09dh
+  20C1    0A 00 AE 27           	db	00ah,000h,0aeh,027h
+  20C5    7D 07 9E B1           	db	07dh,007h,09eh,0b1h
+  20C9    F0 0F 93 44           	db	0f0h,00fh,093h,044h
+  20CD    87 08 A3 D2           	db	087h,008h,0a3h,0d2h
+  20D1    1E 01 F2 68           	db	01eh,001h,0f2h,068h
+  20D5    69 06 C2 FE           	db	069h,006h,0c2h,0feh
+  20D9    F7 62 57 5D           	db	0f7h,062h,057h,05dh
+  20DD    80 65 67 CB           	db	080h,065h,067h,0cbh
+  20E1    19 6C 36 71           	db	019h,06ch,036h,071h
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-57
+
+
+  20E5    6E 6B 06 E7           	db	06eh,06bh,006h,0e7h
+  20E9    FE D4 1B 76           	db	0feh,0d4h,01bh,076h
+  20ED    89 D3 2B E0           	db	089h,0d3h,02bh,0e0h
+  20F1    10 DA 7A 5A           	db	010h,0dah,07ah,05ah
+  20F5    67 DD 4A CC           	db	067h,0ddh,04ah,0cch
+  20F9    F9 B9 DF 6F           	db	0f9h,0b9h,0dfh,06fh
+  20FD    8E BE EF F9           	db	08eh,0beh,0efh,0f9h
+  2101    17 B7 BE 43           	db	017h,0b7h,0beh,043h
+  2105    60 B0 8E D5           	db	060h,0b0h,08eh,0d5h
+  2109    D6 D6 A3 E8           	db	0d6h,0d6h,0a3h,0e8h
+  210D    A1 D1 93 7E           	db	0a1h,0d1h,093h,07eh
+  2111    38 D8 C2 C4           	db	038h,0d8h,0c2h,0c4h
+  2115    4F DF F2 52           	db	04fh,0dfh,0f2h,052h
+  2119    D1 BB 67 F1           	db	0d1h,0bbh,067h,0f1h
+  211D    A6 BC 57 67           	db	0a6h,0bch,057h,067h
+  2121    3F B5 06 DD           	db	03fh,0b5h,006h,0ddh
+  2125    48 B2 36 4B           	db	048h,0b2h,036h,04bh
+  2129    D8 0D 2B DA           	db	0d8h,00dh,02bh,0dah
+  212D    AF 0A 1B 4C           	db	0afh,00ah,01bh,04ch
+  2131    36 03 4A F6           	db	036h,003h,04ah,0f6h
+  2135    41 04 7A 60           	db	041h,004h,07ah,060h
+  2139    DF 60 EF C3           	db	0dfh,060h,0efh,0c3h
+  213D    A8 67 DF 55           	db	0a8h,067h,0dfh,055h
+  2141    31 6E 8E EF           	db	031h,06eh,08eh,0efh
+  2145    46 69 BE 79           	db	046h,069h,0beh,079h
+  2149    CB 61 B3 8C           	db	0cbh,061h,0b3h,08ch
+  214D    BC 66 83 1A           	db	0bch,066h,083h,01ah
+  2151    25 6F D2 A0           	db	025h,06fh,0d2h,0a0h
+  2155    52 68 E2 36           	db	052h,068h,0e2h,036h
+  2159    CC 0C 77 95           	db	0cch,00ch,077h,095h
+  215D    BB 0B 47 03           	db	0bbh,00bh,047h,003h
+  2161    22 02 16 B9           	db	022h,002h,016h,0b9h
+  2165    55 05 26 2F           	db	055h,005h,026h,02fh
+  2169    C5 BA 3B BE           	db	0c5h,0bah,03bh,0beh
+  216D    B2 BD 0B 28           	db	0b2h,0bdh,00bh,028h
+  2171    2B B4 5A 92           	db	02bh,0b4h,05ah,092h
+  2175    5C B3 6A 04           	db	05ch,0b3h,06ah,004h
+  2179    C2 D7 FF A7           	db	0c2h,0d7h,0ffh,0a7h
+  217D    B5 D0 CF 31           	db	0b5h,0d0h,0cfh,031h
+  2181    2C D9 9E 8B           	db	02ch,0d9h,09eh,08bh
+  2185    5B DE AE 1D           	db	05bh,0deh,0aeh,01dh
+  2189    9B 64 C2 B0           	db	09bh,064h,0c2h,0b0h
+  218D    EC 63 F2 26           	db	0ech,063h,0f2h,026h
+  2191    75 6A A3 9C           	db	075h,06ah,0a3h,09ch
+  2195    02 6D 93 0A           	db	002h,06dh,093h,00ah
+  2199    9C 09 06 A9           	db	09ch,009h,006h,0a9h
+  219D    EB 0E 36 3F           	db	0ebh,00eh,036h,03fh
+  21A1    72 07 67 85           	db	072h,007h,067h,085h
+  21A5    05 00 57 13           	db	005h,000h,057h,013h
+  21A9    95 BF 4A 82           	db	095h,0bfh,04ah,082h
+  21AD    E2 B8 7A 14           	db	0e2h,0b8h,07ah,014h
+  21B1    7B B1 2B AE           	db	07bh,0b1h,02bh,0aeh
+  21B5    0C B6 1B 38           	db	00ch,0b6h,01bh,038h
+  21B9    92 D2 8E 9B           	db	092h,0d2h,08eh,09bh
+  21BD    E5 D5 BE 0D           	db	0e5h,0d5h,0beh,00dh
+  21C1    7C DC EF B7           	db	07ch,0dch,0efh,0b7h
+  21C5    0B DB DF 21           	db	00bh,0dbh,0dfh,021h
+  21C9    86 D3 D2 D4           	db	086h,0d3h,0d2h,0d4h
+  21CD    F1 D4 E2 42           	db	0f1h,0d4h,0e2h,042h
+  21D1    68 DD B3 F8           	db	068h,0ddh,0b3h,0f8h
+  21D5    1F DA 83 6E           	db	01fh,0dah,083h,06eh
+  21D9    81 BE 16 CD           	db	081h,0beh,016h,0cdh
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	1-58
+
+
+  21DD    F6 B9 26 5B           	db	0f6h,0b9h,026h,05bh
+  21E1    6F B0 77 E1           	db	06fh,0b0h,077h,0e1h
+  21E5    18 B7 47 77           	db	018h,0b7h,047h,077h
+  21E9    88 08 5A E6           	db	088h,008h,05ah,0e6h
+  21ED    FF 0F 6A 70           	db	0ffh,00fh,06ah,070h
+  21F1    66 06 3B CA           	db	066h,006h,03bh,0cah
+  21F5    11 01 0B 5C           	db	011h,001h,00bh,05ch
+  21F9    8F 65 9E FF           	db	08fh,065h,09eh,0ffh
+  21FD    F8 62 AE 69           	db	0f8h,062h,0aeh,069h
+  2201    61 6B FF D3           	db	061h,06bh,0ffh,0d3h
+  2205    16 6C CF 45           	db	016h,06ch,0cfh,045h
+  2209    A0 0A E2 78           	db	0a0h,00ah,0e2h,078h
+  220D    D7 0D D2 EE           	db	0d7h,00dh,0d2h,0eeh
+  2211    4E 04 83 54           	db	04eh,004h,083h,054h
+  2215    39 03 B3 C2           	db	039h,003h,0b3h,0c2h
+  2219    A7 67 26 61           	db	0a7h,067h,026h,061h
+  221D    D0 60 16 F7           	db	0d0h,060h,016h,0f7h
+  2221    49 69 47 4D           	db	049h,069h,047h,04dh
+  2225    3E 6E 77 DB           	db	03eh,06eh,077h,0dbh
+  2229    AE D1 6A 4A           	db	0aeh,0d1h,06ah,04ah
+  222D    D9 D6 5A DC           	db	0d9h,0d6h,05ah,0dch
+  2231    40 DF 0B 66           	db	040h,0dfh,00bh,066h
+  2235    37 D8 3B F0           	db	037h,0d8h,03bh,0f0h
+  2239    A9 BC AE 53           	db	0a9h,0bch,0aeh,053h
+  223D    DE BB 9E C5           	db	0deh,0bbh,09eh,0c5h
+  2241    47 B2 CF 7F           	db	047h,0b2h,0cfh,07fh
+  2245    30 B5 FF E9           	db	030h,0b5h,0ffh,0e9h
+  2249    BD BD F2 1C           	db	0bdh,0bdh,0f2h,01ch
+  224D    CA BA C2 8A           	db	0cah,0bah,0c2h,08ah
+  2251    53 B3 93 30           	db	053h,0b3h,093h,030h
+  2255    24 B4 A3 A6           	db	024h,0b4h,0a3h,0a6h
+  2259    BA D0 36 05           	db	0bah,0d0h,036h,005h
+  225D    CD D7 06 93           	db	0cdh,0d7h,006h,093h
+  2261    54 DE 57 29           	db	054h,0deh,057h,029h
+  2265    23 D9 67 BF           	db	023h,0d9h,067h,0bfh
+  2269    B3 66 7A 2E           	db	0b3h,066h,07ah,02eh
+  226D    C4 61 4A B8           	db	0c4h,061h,04ah,0b8h
+  2271    5D 68 1B 02           	db	05dh,068h,01bh,002h
+  2275    2A 6F 2B 94           	db	02ah,06fh,02bh,094h
+  2279    B4 0B BE 37           	db	0b4h,00bh,0beh,037h
+  227D    C3 0C 8E A1           	db	0c3h,00ch,08eh,0a1h
+  2281    5A 05 DF 1B           	db	05ah,005h,0dfh,01bh
+  2285    2D 02 EF 8D           	db	02dh,002h,0efh,08dh
+                                	end
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	S
+
+
+Macros:
+TMSG            TSTR            
+
+Symbols:
+01C2 	ADC16           01C3 	ADC16A          01D7 	ADC16B          
+01EB 	ADC16C          0203 	ADC16D          0222 	ADD16           
+0223 	ADD16A          0237 	ADD16B          024B 	ADD16C          
+0263 	ADD16D          0282 	ADD16X          0283 	ADD16XA         
+0297 	ADD16XB         02AB 	ADD16XC         02C3 	ADD16XD         
+02E2 	ADD16Y          02E3 	ADD16YA         02F7 	ADD16YB         
+030B 	ADD16YC         0323 	ADD16YD         0342 	ALU8I           
+0343 	ALU8IA          0357 	ALU8IB          036B 	ALU8IC          
+0383 	ALU8ID          03A2 	ALU8R           03A3 	ALU8RA          
+03B7 	ALU8RB          03CB 	ALU8RC          03E3 	ALU8RD          
+0402 	ALU8RX          0403 	ALU8RXA         0417 	ALU8RXB         
+042B 	ALU8RXC         0443 	ALU8RXD         0462 	ALU8X           
+0463 	ALU8XA          0477 	ALU8XB          048B 	ALU8XC          
+04A3 	ALU8XD          1DCE 	BDOS            04C2 	BITX            
+04C3 	BITXA           04D7 	BITXB           04EB 	BITXC           
+0503 	BITXD           0522 	BITZ80          0523 	BITZ80A         
+0537 	BITZ80B         054B 	BITZ80C         0563 	BITZ80D         
+1E45 	CCE             1E3A 	CCLP            1C38 	CLRMEM          
+1E32 	CMPCRC          1BF0 	CNTBIT          1BF1 	CNTBYT          
+1CA4 	CNTEND          1C95 	CNTLP           1CA8 	CNTLP1          
+1C89 	COUNT           1CDA 	COUNTER         0582 	CPD1            
+0583 	CPD1A           0597 	CPD1B           05AB 	CPD1C           
+05C3 	CPD1D           05E2 	CPI1            05E3 	CPI1A           
+05F7 	CPI1B           060B 	CPI1C           0623 	CPI1D           
+1E62 	CRCLP           1E89 	CRCTAB          1E85 	CRCVAL          
+1E2F 	CRLF            0642 	DAAOP           0643 	DAAOPA          
+0657 	DAAOPB          066B 	DAAOPC          0683 	DAAOPD          
+012F 	DONE            1E0C 	ERMSG1          1E27 	ERMSG2          
+1D64 	FLGMSK          1D89 	FLGSAT          1D8F 	HEXSTR          
+1E7B 	ICRCLP          1C58 	IMLP            1C59 	IMLP1           
+1C5F 	IMLP2           1C7C 	IMLP3           06A2 	INCA            
+06A3 	INCAA           06B7 	INCAB           06CB 	INCAC           
+06E3 	INCAD           0702 	INCB            0703 	INCBA           
+0717 	INCBB           0762 	INCBC           072B 	INCBC1          
+0763 	INCBCA          0777 	INCBCB          078B 	INCBCC          
+07A3 	INCBCD          0743 	INCBD           07C2 	INCC            
+07C3 	INCCA           07D7 	INCCB           07EB 	INCCC           
+0803 	INCCD           0822 	INCD            0823 	INCDA           
+0837 	INCDB           084B 	INCDC           0863 	INCDD           
+0882 	INCDE           0883 	INCDEA          0897 	INCDEB          
+08AB 	INCDEC          08C3 	INCDED          08E2 	INCE            
+08E3 	INCEA           08F7 	INCEB           090B 	INCEC           
+0923 	INCED           0942 	INCH            0943 	INCHA           
+0957 	INCHB           096B 	INCHC           0983 	INCHD           
+09A2 	INCHL           09A3 	INCHLA          09B7 	INCHLB          
+09CB 	INCHLC          09E3 	INCHLD          0A02 	INCIX           
+0A03 	INCIXA          0A17 	INCIXB          0A2B 	INCIXC          
+0A43 	INCIXD          0A62 	INCIY           0A63 	INCIYA          
+0A77 	INCIYB          0A8B 	INCIYC          0AA3 	INCIYD          
+0AC2 	INCL            0AC3 	INCLA           0AD7 	INCLB           
+0AEB 	INCLC           0B03 	INCLD           0B22 	INCM            
+0B23 	INCMA           0B37 	INCMB           0B4B 	INCMC           
+0B63 	INCMD           0B82 	INCSP           0B83 	INCSPA          
+0B97 	INCSPB          0BAB 	INCSPC          0BC3 	INCSPD          
+0BE2 	INCX            0BE3 	INCXA           0BF7 	INCXB           
+0C0B 	INCXC           0C23 	INCXD           0C42 	INCXH           
+0C43 	INCXHA          0C57 	INCXHB          0C6B 	INCXHC          
+0C83 	INCXHD          0CA2 	INCXL           0CA3 	INCXLA          
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	S-1
+
+
+0CB7 	INCXLB          0CCB 	INCXLC          0CE3 	INCXLD          
+0D02 	INCYH           0D03 	INCYHA          0D17 	INCYHB          
+0D2B 	INCYHC          0D43 	INCYHD          0D62 	INCYL           
+0D63 	INCYLA          0D77 	INCYLB          0D8B 	INCYLC          
+0DA3 	INCYLD          1E71 	INITCRC         1C49 	INITMASK        
+1D42 	IUT             0DC2 	LD161           0DC3 	LD161A          
+0DD7 	LD161B          0DEB 	LD161C          0E03 	LD161D          
+0E22 	LD162           0E23 	LD162A          0E37 	LD162B          
+0E4B 	LD162C          0E63 	LD162D          0E82 	LD163           
+0E83 	LD163A          0E97 	LD163B          0EAB 	LD163C          
+0EC3 	LD163D          0EE2 	LD164           0EE3 	LD164A          
+0EF7 	LD164B          0F0B 	LD164C          0F23 	LD164D          
+0F42 	LD165           0F43 	LD165A          0F57 	LD165B          
+0F6B 	LD165C          0F83 	LD165D          0FA2 	LD166           
+0FA3 	LD166A          0FB7 	LD166B          0FCB 	LD166C          
+0FE3 	LD166D          1002 	LD167           1003 	LD167A          
+1017 	LD167B          102B 	LD167C          1043 	LD167D          
+1062 	LD168           1063 	LD168A          1077 	LD168B          
+108B 	LD168C          10A3 	LD168D          10C2 	LD16IM          
+10C3 	LD16IMA         10D7 	LD16IMB         10EB 	LD16IMC         
+1103 	LD16IMD         1122 	LD16IX          1123 	LD16IXA         
+1137 	LD16IXB         114B 	LD16IXC         1163 	LD16IXD         
+1182 	LD8BD           1183 	LD8BDA          1197 	LD8BDB          
+11AB 	LD8BDC          11C3 	LD8BDD          11E2 	LD8IM           
+11E3 	LD8IMA          11F7 	LD8IMB          120B 	LD8IMC          
+1223 	LD8IMD          1242 	LD8IMX          1243 	LD8IMXA         
+1257 	LD8IMXB         126B 	LD8IMXC         1283 	LD8IMXD         
+12A2 	LD8IX1          12A3 	LD8IX1A         12B7 	LD8IX1B         
+12CB 	LD8IX1C         12E3 	LD8IX1D         1302 	LD8IX2          
+1303 	LD8IX2A         1317 	LD8IX2B         132B 	LD8IX2C         
+1343 	LD8IX2D         1362 	LD8IX3          1363 	LD8IX3A         
+1377 	LD8IX3B         138B 	LD8IX3C         13A3 	LD8IX3D         
+13C2 	LD8IXY          13C3 	LD8IXYA         13D7 	LD8IXYB         
+13EB 	LD8IXYC         1403 	LD8IXYD         1422 	LD8RR           
+1423 	LD8RRA          1437 	LD8RRB          144B 	LD8RRC          
+1463 	LD8RRD          1482 	LD8RRX          1483 	LD8RRXA         
+1497 	LD8RRXB         14AB 	LD8RRXC         14C3 	LD8RRXD         
+14E2 	LDA             14E3 	LDAA            14F7 	LDAB            
+150B 	LDAC            1523 	LDAD            1542 	LDD1            
+1543 	LDD1A           1557 	LDD1B           156B 	LDD1C           
+1583 	LDD1D           15A2 	LDD2            15A3 	LDD2A           
+15B7 	LDD2B           15CB 	LDD2C           15E3 	LDD2D           
+1602 	LDI1            1603 	LDI1A           1617 	LDI1B           
+162B 	LDI1C           1643 	LDI1D           1662 	LDI2            
+1663 	LDI2A           1677 	LDI2B           168B 	LDI2C           
+16A3 	LDI2D           0122 	LOOP            1D7D 	MSAT            
+0103 	MSBT            0001 	MSBTHI          0003 	MSBTLO          
+1DDA 	MSG1            1DF6 	MSG2            1C0C 	NCB1            
+16C2 	NEGOP           16C3 	NEGOPA          16D7 	NEGOPB          
+16EB 	NEGOPC          1703 	NEGOPD          1C30 	NSB1            
+1BF3 	NXTCBIT         1C17 	NXTSBIT         1E05 	OKMSG           
+1DC1 	PH11            1D9E 	PH8LP           1DB4 	PHEX1           
+1DAB 	PHEX2           1D99 	PHEX8           1722 	RLDOP           
+1723 	RLDOPA          1737 	RLDOPB          174B 	RLDOPC          
+1763 	RLDOPD          1782 	ROT8080         1783 	ROT8080A        
+1797 	ROT8080B        17AB 	ROT8080C        17C3 	ROT8080D        
+17E2 	ROTXY           17E3 	ROTXYA          17F7 	ROTXYB          
+180B 	ROTXYC          1823 	ROTXYD          1842 	ROTZ80          
+1843 	ROTZ80A         1857 	ROTZ80B         186B 	ROTZ80C         
+1883 	ROTZ80D         1BDA 	SBSHF1          1BA4 	SETUP           
+1C14 	SHFBIT          1C15 	SHFBYT          1CB9 	SHFLP           
+1CD5 	SHFLP1          1CCF 	SHFLP2          1CAD 	SHIFT           
+'Z80 instruction set exerciser'	MACRO-80 3.44	09-Dec-81	PAGE	S-2
+
+
+1D02 	SHIFTER         1CD1 	SHLPE           1D8B 	SPAT            
+0111 	SPBT            1D8D 	SPSAV           18A2 	SRZ80           
+18A3 	SRZ80A          18B7 	SRZ80B          18CB 	SRZ80C          
+18E3 	SRZ80D          1902 	SRZX            1903 	SRZXA           
+1917 	SRZXB           192B 	SRZXC           1943 	SRZXD           
+1962 	ST8IX1          1963 	ST8IX1A         1977 	ST8IX1B         
+198B 	ST8IX1C         19A3 	ST8IX1D         19C2 	ST8IX2          
+19C3 	ST8IX2A         19D7 	ST8IX2B         19EB 	ST8IX2C         
+1A03 	ST8IX2D         1A22 	ST8IX3          1A23 	ST8IX3A         
+1A37 	ST8IX3B         1A4B 	ST8IX3C         1A63 	ST8IX3D         
+1A82 	STABD           1A83 	STABDA          1A97 	STABDB          
+1AAB 	STABDC          1AC3 	STABDD          0113 	START           
+1AE2 	STT             1BBD 	SUBCLP          1BCE 	SUBSHF          
+1BE9 	SUBSTR          1BAD 	SUBYTE          1D6F 	TCRC            
+1D2A 	TEST            01A0 	TESTS           1B27 	TLP             
+1B3B 	TLP1            1B3E 	TLP2            1B7A 	TLP3            
+1B71 	TLPOK           1E49 	UPDCRC          
+
+
+
+No Fatal error(s)
+
+
+    1A63 	ST8IX3D         
+1A82 	STABD           1A83 	STABDA         

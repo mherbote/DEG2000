@@ -1,0 +1,50 @@
+	TITLE 'Definitionen zum Betriebssystem'
+	PAGE
+;	PN	SD01.Definitionen
+;****************************************************************
+;*                  Definitionen zum Betriebssystem             *
+;*                  D E G 2 0 0 0    Version 1 . 2              *
+;****************************************************************
+SD.GENE  EQU    16             ;Geraetevariante:
+                               ;  1 ...  TAP2/TAP3
+                               ;  2 ...  MiniTAP mit TRAM
+                               ;  4 ...  MiniTAP mit OPS ZWG
+                               ;  8 ...  MiniTAP mit OPS ROBOTRON
+                               ; 16 ...  DEG2000 Emulator
+
+SD.SYSTA EQU    0              ;Startadresse
+SD.BWSA  EQU    03000H         ;Anf.adr. Bildwiederholspeicher
+SD.RAM   EQU    00C00H         ;Anf. ArbeitsRAM
+SD.SPACE EQU    020H
+SD.NL    EQU    01EH           ;NEW LINE
+SD.TAB   EQU    009H           ;Tabulator
+SD.ZEIT1 EQU    2              ;Zeitkonst. Fkt.wdhlg.
+SD.ZEIT2 EQU    16             ;    "       "    "
+SD.CTCK0 EQU    080H           ;CTC-Adresse Kanal 0
+SD.CTCKA EQU    2              ;CTC-Kanal 2 (fuer KMBG Robotron)
+SD.AMB   EQU    04FH           ;Ausgabeadresse der   A M B
+
+;DEFINITIONEN ZUM EDITOR
+
+SD.EDITA EQU    01000H         ;Startadresse
+SD.VPI   EQU    08000H         ;Vorbereich  Eingabepuffer
+SD.PFFI  EQU    08010H         ;            Eingabepuffer
+SD.NPI   EQU    08410H         ;Nachbereich Eingabepuffer
+SD.PFFA  EQU    08420H         ;            Ausgabepuffer
+SD.NPA   EQU    08820H         ;Nachbereich Ausgabepuffer
+SD.DEAT  EQU    00F70H         ;Dynamische  E/A-Tabelle (RAM)
+SD.TPA   EQU    08830H         ;Anf.adr. Textpuffer
+SD.TPE   EQU    0FBFFH         ;Endeadr. Textpuffer
+SD.BPA   EQU    SD.BWSA-400H   ;Anf.adr. Bildpuffer
+SD.PSANZ EQU    28             ;Anzahl programm. PF-Tasten
+SD.TABZA EQU    10             ;Tabulatorenzahl
+SD.QTAB1 EQU    0              ;1. Tabulator
+SD.QTAB2 EQU    9              ;2.   "
+SD.QTAB3 EQU    15             ;3.   "
+SD.QTAB4 EQU    34             ;4.   "
+
+				;Stand: 28.Januar 85 - K EAW/wfvm..MSH
+
+
+;	END
+

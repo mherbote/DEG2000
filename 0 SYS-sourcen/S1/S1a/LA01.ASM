@@ -1,0 +1,594 @@
+	TITLE	'ROBOTRON -Lochbandroutine  -Initialisierungsprogramm'
+;****************************************************************
+;*               ROBOTRON - Lochbandroutine   OS-Version: 1.0   *
+;*               -----------------------------------------------*
+;*               Programmierer: Salm             --- RVB        *
+;*               -----------------------------------------------*
+;*               Stand        : 17.April 1980                   *
+;****************************************************************
+
+
+;****************************************************************
+;* L P I S I     PIO initialisieren , SIF 1000                  *
+;* IN      :     IX Anfangsadresse der E/A-Tabelle              *
+;*               HL Anfangsadresse der PIO-Steuertabelle        *
+;*               A  Kanalnr 0=OUTPUT   1=INPUT                  *
+;* SP      :     4  Plaetze                                     *
+;****************************************************************
+LA.LPISI:
+	PUSH	BC	;Reg. retten
+	CALL	LA.PADR	;Toradr berechnen fuer DAT-TOR A
+	INC	C	;DAT-TOR B
+	INC	C	;KOM-TOR A
+	LD	B,3	;Zaehler fuer PIO-Ladezyklus
+	DI		;Interrupt sperren
+	OTIR		;PIO laden
+	INC	C	;KOM-TOR B
+	LD	B,5	;Zaehler fuer PIO-Ladezyklus
+	OTIR		;PIO laden
+	EI		;Interrupt freigeben
+	RES	0,(IX+0)	;Geraetebit frei
+	DEC	C	;KOM-TOR A
+	DEC	C	;DAT-TOR B
+	DEC	C	;DAT-TOR A
+	IN	B	;READY einschalten,(C)
+	POP	BC	;REG rueckstellen
+	RET		;Ruecksprung
+;****************************************************************
+;*               PIO-Konstanten fuer LBL 1210                   *
+;****************************************************************
+LA.PLBL:
+	DB	LOW(LT.ITABL)	;Interruptvektor   A-PORT
+	DB	4FH	;Byteinput-MODE
+	DB	83H	;Interruptfreigabe gesetzt
+	DB	LOW(LT.ITABL+2)	;Interruptvektor   B-PORT
+	DB	0CFH	;BIT-MODE
+	DB	0F8H	;I/O-Maske
+	DB	0B7H	;Interruptsteuerung
+	DB	0BFH	;Interruptmaske
+	TITLE	'ROBOTRON -Lochbandroutine  -E/A-Steuerprogramm'
+	PAGE
+;****************************************************************
+;* L B L A       Steuermodul fuer LBL 1210                      *
+;* IN    :       IX Anfangsadresse fuer E/A-Tabelle             *
+;* SP    :       10 PLAETZE                                     *
+;****************************************************************
+;----0010
+LA.LBLA:
+	CALL	LA.SAVE	;Register retten
+	LD	(LS.LBLIX),IX	;Anf-Adr der E/A-Tab fuer Int-Beh retten
+;----0020
+	BIT	0,(IX+0)	;Geraet frei ?
+	JR	Z,LA.LBLA1	;ja
+	SET	1,(IX+0)	;Besetztstatus (D0=1 und D1=1)
+	JR	LA.LBLA4
+;----0030
+LA.LBLA1:
+	CALL	LA.CLREA	;E/A-Tab part. loeschen
+	CALL	LA.CCPTR	;E/A-Tab-KOM pruefen
+;----0040
+	JR	C,LBLA3	;KOM nicht vorh
+	LD	A,1	;Inputkanal einstellen
+;----0050
+	CALL	LA.COUT	;PIO mit Maschinencode laden
+	IN	A	;RUF abschalten,(C)
+	LD	HL,LS.LBLIX+2	;Arbeitszellen fuer LBL 1210
+;----0060
+	CALL	LA.LBAL	;Arbeitszellen laden , Geraet besetzt
+	IM	2		;Interrupt fuer jedes Zeichen
+	DEC	C	;DAT-TOR A
+	OUT	(C),A	;RUF einschalten
+;----0070
+LA.LBLA2:
+	CALL	LA.RETRN	;Register rueckstellen
+	EI		;Interrupt freigeben
+	RET		;Ruecksprung
+LA.LBLA3:
+	LD	(IX+1),11H	;KOM-Fehler
+	SET	7,(IX+0)	;Fehlerbed
+;----0080
+LA.LBLA4:
+	CALL	LA.RETEA	;Verzweigung zum E/A-Monitor vorber.
+	JR	LA.LBLA2
+	TITLE	'Interruptbehandlungsprogramm'
+	PAGE
+;****************************************************************
+;* I L B L E     Interruptbehandlungsprogramm                   *
+;*               fuer LBL 1210 bei END                          *
+;* SP      :     10 PLAETZE                                     *
+;****************************************************************
+;----0090
+LA.ILBLE:
+	CALL	LA.SAVE	;Register retten
+	LD	IX,(LS.LBLIX)	;Anfangsadresse der E/A-Tabelle
+	LD	A,1	;Inputkanal einstellen
+	CALL	LA.PADR	;PIO-ADR errechnen DAT-TOR A
+	IN	A	;Lesen,(C)
+	AND	(IX+12)	;Paritybit Aausblenden
+	LD	HL,(LS.LBLP)	;uebertragen nach Pointeradresse
+	LD	M,A
+;----0100
+	BIT	4,(IX+4)	;Lesen bis EOB ?
+	JR	NZ,LA.ILBL3	;ja
+;----0140
+LA.ILBL1:
+	LD	HL,LS.LBLIX+2	;Arbeitszellen fuer LBL 1210
+	CALL	LA.LBAZV	;Arbeitszellen neu einstellen
+	JR	Z,LA.ILBL4	;letztes Zeichen verarbeitet ?
+	OUT	(C),A	;RUF einschalten
+;----0130
+LA.ILBL2:
+	CALL	LA.RETRN	;Register rueckstellen
+	EI		;Interrupt freigeben
+	RETI		;Ruecksprung
+;----0110
+LA.ILBL3:
+	CP	(IX+11)	;EOB-Zeichen ?
+	JR	NZ,LA.ILBL1	;nein
+;----0120
+LA.ILBL4:
+	RES	0,(IX+0)	;Geraet frei
+	CALL	LA.RETEA	;verzw zum E/A-Monitor vorber.
+	JR	LA.ILBL2
+;****************************************************************
+;* I L B L S     Interruptbehandlungsprogramm                   *
+;*               fuer LBL 1210 bei Status (STA-E3)              *
+;* SP      :     10 PLAETZE                                     *
+;****************************************************************
+;----0140
+LA.ILBLS:
+	CALL	LA.SAVE	;Register retten
+	LD	IX,(LS.LBLIX)	;Anfangsadr der E/A-Tab
+	LD	A,1	;Inputkanal einstellen
+;----0150
+	CALL	LA.STA3	;Status Bit 3 auswerten
+	CALL	LA.RETEA	;verzw zum E/A-Monitor vorbereiten
+	CALL	LA.RETRN	;Register rueckstellen
+	EI		;Interrupt freigeben
+	RETI		;Ruecksprung
+	PAGE
+;****************************************************************
+;* C C P T R     Kommandocodekontrolle LBL 1210                 *
+;*               zugelassene Code der E/A-Schnittstelle         *
+;*                 02=vorwaertslesen   ohne NUL und DEL         *
+;*                 0A=vorwaertslesen   mit  NUL und DEL         *
+;*                 12=vorwaertslesen   ohne NUL und DEL bis EOB *
+;*                 06=rueckwaertslesen ohne NUL und DEL         *
+;*                 0E=rueckwaertslesen mit  NUL und DEL         *
+;*                 03=Vorwaertsaustrieb                         *
+;*                 07=Rueckwaertsaustrieb                       *
+;* IN      :     IX Anfangsadr der E/A-Tab                      *
+;* OUT     :     B  Maschinenkommando                           *
+;*               CY KOM nicht vorhanden                         *
+;* KILL    :     AF,C,HL                                        *
+;* SP      :     2 PLAETZE                                      *
+;****************************************************************
+LA.CCPTR:
+	LD	HL,LA.CPTRT	;Anfangsadr der KOM-Code-Tab
+	CALL	LA.CCOMP	;Kommandovergleich
+	RET		;Ruecksprung
+;****************************************************************
+;*               Tabelle enthaelt Anzahl der moeglichen         *
+;*               E/A-Schnittstellencode und Maschinencode       *
+;****************************************************************
+LA.CPTRT:
+	DW	0007H	;Anzahl
+	DW	0102H	;vorwaertslesen   ohne NUL und DEL
+	DW	0506H	;rueckwaertslesen ohne NUL und DEL
+	DW	0112H	;vorwaertslesen   ohne NUL und DEL bis EOB
+	DW	030AH	;vorwaertslesen   mit  NUL und DEL
+	DW	070EH	;rueckwaertslesen mit  NUL und DEL
+	DW	0003H	;Vorwaertsaustrieb
+	DW	0407H	;Rueckwaertsaustrieb
+	TITLE	'INITIALISIERUNGSPROGRAMM'
+	PAGE
+;****************************************************************
+;* S P I S I     PIO Initialisieren , SIF 1000                  *
+;* IN      :     IX Anfangsadr der E/A-Tab                      *
+;*               HL Anfangsadr der PIO-Steuertab                *
+;*               A  KANALNR 0=OUTPUT   1=INPUT                  *
+;* SP      :     4  Plaetze                                     *
+;****************************************************************
+LA.SPISI:
+	PUSH	BC	;Reg retten
+	CALL	LA.PADR	;Toradr berechnen fuer DAT-TOR A
+	INC	C	;DAT-TOR B
+	INC	C	;KOM-TOR A
+	LD	B,3	;Zaehler fuer PIO-Ladezyklus
+	DI		;Interrupt sperren
+	OTIR		;PIO laden
+	INC	C	;KOM-TOR B
+	LD	B,5	;Zaehler fuer PIO-Ladezyklus
+	OTIR		;PIO laden
+	EI		;Interrupt freigeben
+	RES	0,(IX+0)	;Geraetebit frei
+	DEC	C	;KOM-TOR A
+	DEC	C	;DAT-TOR B
+	DEC	C	;DAT-TOR A
+	IN	B	;READY einschalten,(C)
+	POP	BC	;Reg rueckstellen
+	RET		;Ruecksprung
+;****************************************************************
+;*               PIO-Konstanten fuer LBS 1215                   *
+;****************************************************************
+LA.PLBS:
+	DB	LOW(LT.ITABS)	;Interruptvektor   A-PORT
+	DB	0FH	;Byteoutput-MODE
+	DB	83H	;Interruptfreigabe gesetzt
+	DB	LOW(LT.ITABS+2)	;Interruptvektor   B-PORT
+	DB	0CFH	;BIT-MODE
+	DB	70H	;I/O-MASKE
+	DB	0B7H	;Interruptsteuerung
+	DB	0BFH	;Interruptmaske
+	TITLE	'E/A-Steuerprogramm'
+	PAGE
+;****************************************************************
+;* L B S A       Steuermodul fuer LBS 1215                      *
+;* IN    :       IX Anfangsadr der E/A-Tab                      *
+;* SP    :       10 PLAETZE                                     *
+;****************************************************************
+;----0010
+LA.LBSA:
+	CALL	LA.SAVE	;Register retten
+	LD	(LS.LBSIX),IX	;Anf-adr der E/A-Tab fuer Int-beh retten
+;----0020
+	BIT	0,(IX+0)	;Geraet frei ?
+	JR	Z,LA.LBSA1	;ja
+	SET	1,(IX+0)	;Besetztstatus (D0=1 UND D1=1)
+	JR	LA.LBSA4
+;----0030
+LA.LBSA1:	CALL	LA.CLREA	;E/A-Tab part. loeschen
+	CALL	LA.CCPTP	;E/A-Tab-KOM pruefen
+;----0040
+	JR	C,LA.LBSA3	;KOM nicht vorhanden
+	XOR	A	;Outputkanal einstellen
+;----0080
+	CALL	LA.COUT	;PIO mit Maschinencode laden
+	IN	A	;RUF abschalten,(C)
+	LD	HL,LS.LBSIX+2	;Arbeitszellen fuer LBS 1215
+;----0090
+	CALL	LA.LBAL	;Arbeitszellen laden , Geraet besetzt
+	DEC	C	;DAT TOR A
+	IM	2		;Interrupt fuer jedes Zeichen
+;----0100
+	BIT	0,(IX+4)	;Steuer KOM ?
+	JR	NZ,LA.LBSA5	;ja
+;----0130
+	CALL	LA.DATO	;1.Zeichen ausgeben
+;----0070
+LA.LBSA2:
+	CALL	LA.RETRN	;Register rueckstellen
+	EI		;Interrupt freigeben
+	RET		;Ruecksprung
+;----0050
+LA.LBSA3:
+	LD	(IX+1),11H	;KOM-Fehler
+	SET	7,(IX+0)	;Fehlerbed
+;----0060
+LA.LBSA4:
+	CALL	LA.RETEA	;verzw zum E/A-Monitor vorbereiten
+	JR	LA.LBSA2
+;----0110
+LA.LBSA5:
+	XOR	A	;LBK-Austrieb einstellen
+	BIT	2,(IX+4)	;LBK-Austrieb-KOM ?
+	JR	Z,LA.LBSA6	;ja
+	SET	3,A	;Ruecktransport einstellen
+;----0120
+LA.LBSA6:
+	OUT	(C),A	;KOM-Zusatz ausgeben
+	JR	LA.LBSA4
+	TITLE	'Interruptbehandlungsprogramm'
+	PAGE
+;****************************************************************
+;* I L B S E     Interruptbehandlungsprogramm                   *
+;*               fuer LBS 1215 bei END                          *
+;* SP      :     10  Plaetze                                    *
+;****************************************************************
+;----0140
+LA.ILBSE:
+	CALL	SAVE	;Register retten
+	LD	IX,(LS.LBSIX)	;Anfangsadr der E/A-Tab
+	XOR	A	;Outputkanal einstellen
+;----0150
+	CALL	LA.RUFAB	;Status lesen
+;----0160
+	BIT	4,A	;Bandendevorwarnung ?
+	JR	Z,LA.ILBS1	;nein
+	SET	1,(IX+0)	;Vorwarnung anzeigen (Datentraegerende)
+;----0170
+LA.ILBS1:
+	BIT	5,A	;Paritaetsfehler ?
+	JR	Z,LA.ILBS2	;nein
+	LD	(IX+1),31H	;Paritaetsfehler anzeigen
+	JR	LA.ILBS5
+;----0180
+LA.ILBS2:
+	LD	HL,LS.LBSIX+2	;Arbeitszellen fuer LBS 1215
+	CALL	LA.LBAZV	;Arbeitszellen neu einstellen
+;----0190
+	JR	Z,LA.ILBS5	;letztes Zeichen verarbeitet
+	BIT	4,(IX+4)	;Stanzen bis EOB ?
+	JR	NZ,LA.ILBS6	;ja
+;----0200
+LA.ILBS3:
+	DEC	C	;DAT-TOR A
+	CALL	LA.DATO	;Naechstes Zeichen ausgeben
+;----0210
+LA.ILBS4:
+	CALL	LA.RETRN	;Register rueckstellen
+	EI		;Interrupt freigeben
+	RETI		;Ruecksprung
+;----0220
+LA.ILBS5:
+	RES	0,(IX+0)	;Geraet frei
+	CALL	LA.RETEA	;verzw zum E/A-Monitor vorbereiten
+	JR	LA.ILBS4
+LA.ILBS6:
+	LD	HL,(LS.LBSP)	;EOB-Zeichen ?
+	DEC	HL
+	LD	A,M
+	CP	(IX+11)
+	JR	Z,LA.ILBS5	;ja
+	JR	LA.ILBS3
+;****************************************************************
+;* I L B S S     Interruptbehandlungsprogramm                   *
+;*               fuer LBS 1215 bei Status (TA-A3)               *
+;* SP      :     10  Plaetze                                    *
+;****************************************************************
+;----0230
+LA.ILBSS:
+	CALL	LA.SAVE	;Register retten
+	LD	IX,(LS.LBSIX)	;Anfangsadr der E/A-Tab
+	XOR	A	;Outputkanal einstellen
+	CALL	LA.STA3	;Status Bit 3 auswerten
+;----0240
+	CALL	LA.RETEA	;verzw zum E/A-Monitor vorbereiten
+;----0250
+	CALL	LA.RETRN	;Register rueckstellen
+	EI		;Interrupt freigeben
+	RETI		;Ruecksprung
+	PAGE
+;****************************************************************
+;* D A T O       DATEN PARITAETSGERECHT                         *
+;* IN    :       C  Adresse fuer DAT TOR A                      *
+;* KILL  :       AF,HL                                          *
+;****************************************************************
+LA.DATO:
+	LD	HL,(LS.LBSP)	;Zeichen bereitstellen
+	LD	A,M
+	OR	A	;Anzahl Bit gerade ?
+	JPPE	LA.DATO1	;ja
+	OR	(IX+12)	;Paritybit setzen
+LA.DATO1:
+	OUT	(C),A
+	RET
+;****************************************************************
+;* C C P T P     Kommandocodekontrolle LBS 1215                 *
+;*               zugelassene Code der E/A-Schnittstelle         *
+;*                 08=stanzen mit  autom. Aufzeichnungsw.       *
+;*                 18=wie 08 bis EOB                            *
+;*                 00=stanzen ohne autom. Aufzeichnungsw.       *
+;*                 10=wie 00 bis EOB                            *
+;*                 01=LBK-Austrieb                              *
+;*                 05=Ruecktransport                            *
+;* IN      :     IX Anfangsadr der E/A-Tab                      *
+;* OUT     :     B  Maschinenkommando                           *
+;*               CY KOM nicht vorhanden                         *
+;* KILL    :     AF,C,HL                                        *
+;* SP      :     2  Plaetze                                     *
+;****************************************************************
+LA.CCPTP:
+	LD	HL,LA.CPTPT	;Anfangsadr der KOM-Code-Tab
+	CALL	LA.CCOMP	;Kommandovergleich
+	RET		;Ruecksprung
+;****************************************************************
+;*               Tabelle enthaelt Anzahl der moeglichen         *
+;*               E/A-Schnittstellencode und Maschinencode       *
+;****************************************************************
+LA.CPTPT:
+	DW	0006H	;Anzahl
+	DW	0108H	;stanzen mit autom. Aufzeichnungsw.
+	DW	0118H	;stanzen mit autom. Aufz.-w. bis EOB
+	DW	0005H	;Ruecktransport
+	DW	0500H	;stanzen ohne auto. Aufzeichnungsw.
+	DW	0510H	;stanzen ohne auto. Aufz.-w. bis EOB
+	DW	0001H	;LBK-Austrieb
+	TITLE	'Unterprogramme Leser/Stanzer'
+	PAGE
+;****************************************************************
+;* C C O M P     Kommandovergleich                              *
+;* IN      :     IX Anfangsadr der E/A-Tabelle                  *
+;*               HL Anfangsadr der KOM-Tabelle                  *
+;* OUT     :     B  Maschinenkommando                           *
+;*               CY KOM nicht vorhanden                         *
+;* KILL    :     AF,C                                           *
+;****************************************************************
+LA.CCOMP:
+	LD	A,(IX+4)	;KOM in E/A-Tab
+	LD	C,M	;Anzahl    Tab-Plaetze
+	INC	HL	;Naechster Tab-Platz
+	LD	B,M
+LA.CCMP1:
+	INC	HL	;dto
+	CPI		;Kommandovergleich
+	JR	Z,LA.CCMP2	;Kommando vorhanden
+	JP	PE,LA.CCMP1	;Tab noch nicht abgearb.
+	SCF		;Kommando nicht vorhanden
+	RET		;Ruecksprung
+LA.CCMP2:
+	LD	B,M	;Maschinencode laden
+	OR	A	;CY loeschen
+	RET		;Ruecksprung
+;****************************************************************
+;* C O U T       Maschinen KOM - Ausgabe                        *
+;* IN    :       A  Kanalnr   0=OUTPUT   1=INPUT                *
+;*               B  Maschinen KOM                               *
+;* KILL  :       F,C                                            *
+;* SP    :       2  Plaetze                                     *
+;****************************************************************
+LA.COUT:
+	CALL	LA.PADR	;PIO-Adr errechnen
+	INC	C	;Adr fuer DAT TOR B
+	OUT	(C),B	;Ausgabe des KOM
+	RET		;Ruecksprung
+;****************************************************************
+;* S T A 3       Status Bit 3 auswerten                         *
+;* IN    :       IX Anfangsadr der E/A-Tabelle                  *
+;*               A  Kanalnr   0=OUTPUT   1=INPUT                *
+;* KILL  :       C,F                                            *
+;* SP    :       4 Plaetze                                      *
+;****************************************************************
+LA.STA3:
+	CALL	LA.RUFAB	;Status lesen und RUF abschalten
+	BIT	6,A	;Statusbit 3 = Bandende ?
+	JR	NZ,LA.STA31	;ja
+	LD	(IX+1),3FH	;undef. Fehler in Interruptsteuerpro.
+	JR	LA.STA32
+LA.STA31:
+	BIT	0,(IX+4)	;Steuer KOM ?
+	JR	NZ,LA.STA33	;ja , keine Fehleranzeige
+	LD	(IX+1),21H	;Bandende/Bandriss
+LA.STA32:
+	SET	7,(IX+0)	;Fehlerbed
+LA.STA33:
+	RES	0,(IX+0)	;Geraet frei
+	RET		;Ruecksprung
+;****************************************************************
+;* R U F A B     Status lesen,RUF abschalten (IN auf DAT-TOR B) *
+;* IN      :     IX Anfangsadr der E/A-Tabelle                  *
+;*               A  Kanalnr   0=OUTPUT   1=INPUT                *
+;* OUT     :     A  Status                                      *
+;*               C  PIO-Adr   DAT-TOR A                         *
+;* SP      :     2  Plaetze                                     *
+;****************************************************************
+LA.RUFAB:
+	CALL	LA.PADR	;Toradr errechnen DAT-TOR A
+	INC	C	;DAT-TOR B
+	IN	A	;Status lesen,(C)
+	RET		;Ruecksprung
+	PAGE
+;****************************************************************
+;* P A D R       PIO-Adr aus der Basisadr errechnen             *
+;* IN    :       IX Anfangsadr der E/A-Tabelle                  *
+;*               A  Kanalnr   0=OUTPUT   1=INPUT                *
+;* OUT   :       C  PIO-Adresse                                 *
+;****************************************************************
+LA.PADR:
+	LD	C,(IX+2)	;Basisadr der ADA K6022
+	AND	1	;CY loeschen , Kanalnr begrenzen
+	RLA		;Kanalnr * 2
+	RLA		;        * 2
+	ADD	A,C	;Toradr berechnen
+	LD	C,A	;PIOadr bereitstellen
+	RET		;Ruecksprung
+;****************************************************************
+;* L B A L       Lochbandarbeitszellen laden , Geraet besetzt   *
+;* IN    :       IX Anfangsadr der E/A-Tabelle                  *
+;*               HL Anfangsadr der veraenderlichen              *
+;*                  Arbeitszellen (P,RB)                        *
+;* KILL  :       DE                                             *
+;****************************************************************
+LA.LBAL:
+	LD	E,(IX+7)	;Pufferanfangsadr laden
+	LD	D,(IX+8)
+	LD	M,E
+	INC	HL
+	LD	M,D
+	INC	HL	;Restbytezaehler laden
+	LD	D,(IX+9)
+	LD	E,(IX+10)
+	LD	M,D
+	INC	HL
+	LD	M,E
+	SET	0,(IX+0)	;Geraet besetzt
+	RET		;Ruecksprung
+;****************************************************************
+;* L B A Z V     Lochbandarbeitszellen veraendern               *
+;* IN      :     HL Anfangsadr der veraenderlichen              *
+;*                  Arbeitszellen (P,RB)                        *
+;* OUT     :     Z  Restbytezaehler=0                           *
+;* KILL    :     F ,DE                                          *
+;* SP      :     2  Plaetze                                     *
+;****************************************************************
+LA.LBAZV:
+	LD	E,M	;Pufferzeiger erhoehen
+	INC	HL
+	LD	D,M
+	INC	DE
+	LD	M,D
+	DEC	HL
+	LD	M,E
+	INC	HL	;Restbytezaehler vermindern
+	INC	HL
+	LD	D,M
+	INC	HL
+	LD	E,M
+	EX	DE,HL
+	SCF		;-1
+	PUSH	DE
+	LD	DE,0
+	SBC	A,HL,DE	;RZ-0-1
+	POP	DE
+	EX	DE,HL
+	LD	M,E
+	DEC	HL
+	LD	M,D
+	RET		;Ruecksprung
+	PAGE
+;****************************************************************
+;* S A V E       Register retten                                *
+;* SP    :       12 Plaetze                                     *
+;****************************************************************
+LA.SAVE:
+	EX	(SP),HL	;Ruecksprung sichern
+	PUSH	AF	;Register retten
+	PUSH	BC
+	PUSH	DE
+	PUSH	IX
+	PUSH	IY
+	JP	(HL)	;Ruecksprung
+;****************************************************************
+;* R E T E A     Ruecksprung zum E/A-Monitor vorbereiten        *
+;* OUT     :     im SP nach gekellerten Registerinhalten        *
+;*               Ruecksprungadr zum E/A-Monitor einfuegen       *
+;* KILL    :     B ,HL                                          *
+;****************************************************************
+LA.RETEA:
+	DI		;Zyklus SP auf Luecke einstellen
+	LD	B,14
+	INC	SP
+	DJNZ	$-1
+	LD	L,(IX+5)	;Ruecksprungadr zum E/A-Monitor laden
+	LD	H,(IX+6)
+	LD	B,8	;SP umspeichern
+	DEC	SP
+	DEC	SP
+	EX	(SP),HL
+	DJNZ	$-3
+	EI
+	RET		;Ruecksprung
+;****************************************************************
+;* R E T R N     Register rueckstellen                          *
+;****************************************************************
+LA.RETRN:
+	POP	HL	;Ruecksprung sichern
+	POP	IY	;Register rueckstellen
+	POP	IX
+	POP	DE
+	POP	BC
+	POP	AF
+	EX	(SP),HL
+	RET		;Ruecksprung
+;****************************************************************
+;* C L R E A     loeschen der E/A-Tabelle                       *
+;* IN      :     IX Anfangsadr der E/A-Tabelle                  *
+;* KILL    :     A                                              *
+;****************************************************************
+LA.CLREA:
+	XOR	A	;A loeschen
+	LD	(IX+0),A	;Statusbyte
+	LD	(IX+1),A	;Fehlerschluesselbyte
+	RET		;Ruecksprung
+;	END
+

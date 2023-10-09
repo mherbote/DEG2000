@@ -1,0 +1,1351 @@
+	TITLE	'Drucker-Verbindungsmodul'
+	PAGE
+;	PN	PR07
+;****************************************************************
+;*               Drucker-Verbindungsmodul fuer Version 1.2      *
+;*  Version      -----------------------------------------------*
+;*               Programmierer: M. Herbote --- K EAW  ZFT (WFT) *
+;*  V 1 . 2      -----------------------------------------------*
+;*               Stand        : 21.August 1984                  *
+;****************************************************************
+PR.PRINA:
+	PUSH	BC
+	LD	C,A
+	LD	IX,SM.EADRU+3
+	CALL	P1.PRIO
+	POP	BC
+	RET
+
+
+	DW	$
+	DB	'DINI'
+	LD	IX,SM.EADRU+3
+	LD	A,LOW(SY.ISRA0)
+	LD	(IX+3),A
+	XOR	A
+	LD	(IX+11),A
+	LD	A,(PR.PAR)	;char per inch
+	CP	'0'
+	JR	Z,PR.CPI10
+	CP	'2'
+	JR	NZ,PR.CPI
+	SET	0,(IX+4)
+	JR	PR.CPI
+PR.CPI10:
+	RES	0,(IX+4)
+PR.CPI:
+	LD	A,(PR.PAR+1)	;line per inch
+	CP	'6'
+	JR	Z,PR.LPI6
+	CP	'8'
+	JR	NZ,PR.LPI
+	SET	1,(IX+4)
+	JR	PR.LPI
+PR.LPI6:
+	RES	1,(IX+4)
+PR.LPI:
+	LD	A,(PR.PAR+2)	;ohne/mit Nulldurchstreichung
+	CP	'O'
+	JR	Z,PR.ONULL
+	CP	'M'
+	JR	NZ,PR.ONULL
+	LD	A,-1
+	JR	PR.NULL
+PR.ONULL:
+	XOR	A
+PR.NULL:
+	LD	(IX+12),A
+	CALL	P1.MRES
+PR.SYS:
+	JP	SY.SYSTB
+
+	PAGE
+;****************************************************************
+;*               EDITOR-Raum der Version 1 alles drucken        *
+;****************************************************************
+	DW	$
+	DB	'PRET'
+	LD	IX,SM.EADRU+3
+	LD	HL,SD.TPA+1
+	CALL	PR.END
+	JP	C,SY.SYSTB
+	DEC	HL
+PR.M2:
+	CALL	PR.END
+	JP	Z,SY.SYSTB
+	LD	C,(HL)
+	CALL	P1.PRIO
+	INC	HL
+	JR	PR.M2
+;****************************************************************
+;*               Seitenvorschub bei  1 1 5 2 / 1 1 5 7          *
+;****************************************************************
+	DW	$
+	DB	'PAGE'
+	LD	IX,SM.EADRU+3
+	LD	C,00CH
+	CALL	P1.PRIO
+	JR	PR.SYS
+
+	PAGE
+;****************************************************************
+;*               EDITOR-Raum der Version 1  von anz  drucken    *
+;****************************************************************
+	DW	$
+	DB	'PRIN'
+	LD	IX,SM.EADRU+3
+	LD	DE,PR.PAR
+	CALL	S1.IDH
+	PUSH	HL
+	INC	DE
+	CALL	S1.IDH
+	EX	(SP),HL
+	EX	DE,HL
+	LD	HL,SD.TPA-1
+PR.PR1:
+	DEC	DE
+	LD	A,D
+	OR	E
+	JR	Z,PR.PR3
+	LD	A,01EH
+PR.PR2:
+	INC	HL
+	CALL	PR.END
+	JP	Z,SY.SYSTB
+	CP	(HL)
+	JR	NZ,PR.PR2
+	JR	PR.PR1
+PR.PR3:
+	POP	DE
+	INC	HL
+PR.PR4:
+	CALL	PR.END
+	JP	Z,SY.SYSTB
+	LD	C,(HL)
+	CALL	P1.PRIO
+	INC	HL
+	LD	A,01EH
+	CP	C
+	JR	NZ,PR.PR4
+	DEC	DE
+	LD	A,D
+	OR	E
+	JR	NZ,PR.PR4
+	JP	SY.SYSTB
+
+PR.END:
+	PUSH	HL
+	PUSH	DE
+	LD	DE,(SM.END)
+	EX	DE,HL
+	OR	A
+	SBC	HL,DE
+	POP	DE
+	POP	HL
+	RET
+
+PR.PAR EQU	SD.BWSA	+ 10*80 + 7
+
+;	END
+	TITLE	'Drucker-Routine'
+	PAGE
+;	PN	P108
+;****************************************************************
+;*               Drucker-Routine  1152 , 1154 , 1156 , 1157     *
+;*                                BD 4000 , S 6001              *
+;*               -----------------------------------------------*
+;*               Programmierer: M. Herbote --- K EAW  ZFT (WFT) *
+;*               -----------------------------------------------*
+;*               Stand        : 17.August 1984                  *
+;****************************************************************
+
+;****************************************************************
+;*               Aufbau der E/A-Tabelle  (Adresse ueber  IX)    *
+;*               ===============================================*
+;*                                                              *
+;*               Byte  ! Bedeutung                              *
+;*               ------!----------------------------------------*
+;*               -  3  ! Laengenbyte                            *
+;*               -  2  ! Praefixbyte 1                          *
+;*               -  1  ! Praefixbyte 2                          *
+;*                  0  ! Status - "1BH"-Merker                  *
+;*                  1  ! Fehlerschluessel      (z.Z. unbenutzt) *
+;*                  2  ! Basisadresse (wird bei DINIT gesetzt)  *
+;*                  3  ! L-Teil Interruptvektor, bei INT-Betrieb*
+;*                  4  ! Kommando bei DINIT                     *
+;*                     ! bit 0 = 0 ...   CPI = 10 Zoll          *
+;*                     !       = 1 ...   CPI = 12 Zoll          *
+;*                     !     1 = 0 ...   LPI =  6 Zoll          *
+;*                     !       = 1 ...   LPI =  8 Zoll          *
+;*                  5  ! Adresse Eintrittspunkt (z.Z.unbenutzt) *
+;*                  7  ! Blockadresse          (z.Z. unbenutzt) *
+;*                  9  ! Blocklaenge           (z.Z. unbenutzt) *
+;*                 11  ! Wert fuer Farbbandstellung             *
+;*                 12  ! ungleich Null ...  Nulldurchstreichung *
+;****************************************************************
+
+	PAGE	
+P1.ES2   EQU   00H              ;00H ... Generierung   D E G 2 0 0 0
+                                ;4xH ... Generierung   E S   2 0 0 0
+
+P1.DRU   EQU   00000010B        ;Drucker Typ
+                                ;Bit 0  ...   1152/1157  PIO
+                                ;    1  ...   1152/1157  SIO
+                                ;    2  ...   1154       GNI
+                                ;    3  ...   1154       ASCII
+                                ;    4  ...
+                                ;    5  ...
+                                ;    6  ...   BD 4000
+                                ;    7  ...   S 6001
+
+P1.ANST   EQU   00001000B       ;Ansteuerung
+                                ;Bit 0  ...   A D A
+                                ;    1  ...   A T D 1
+                                ;    2  ...   A T D 2
+                                ;    3  ...   A T S
+                                ;    4  ...
+                                ;    5  ...   S-A1
+                                ;    6  ...   S-A2
+                                ;    7  ...   S-A3
+
+P1.PRINT:
+	RET
+	
+	IF	P1.DRU AND 00000011B
+P1.PIO   EQU   1                ;1 ... PIO-Schnittstelle 1
+                                ;2 ... PIO-Schnittstelle 2
+	ENDIF
+
+;	ORG	07C00H
+	IF	P1.ES2 AND 40H
+P1.DINIT:
+	JP	P1.MRES
+P1.PRINT:
+	JP	P1.PRI
+	DB	'...'
+	DB	P1.ES2
+	DW	0
+	DW	0
+	DB	0
+
+P1.PRI:
+	PUSH	AF
+	LD	A,C
+	CP	20H
+	JR	NC,PRI1
+	CP	1EH
+	JR	Z,PRI1
+	POP	AF
+	RET
+P1.PRI1:
+	POP	AF
+	JP	PRIO
+	ENDIF
+
+	TITLE	'Drucker-Initialisierung'
+	PAGE
+;****************************************************************
+;*               Drucker - Initialisierung                      *
+;****************************************************************
+P1.MRES:
+	PUSH	AF	;Register retten
+	PUSH	BC
+	PUSH	DE
+	PUSH	HL
+	PUSH	IX
+	PUSH	IY
+
+
+;                B a s i s a d r e s s e   bereitstellen
+
+	IF	P1.ANST AND 10000000B
+	LD	C,088H	;Koppelinterface
+	ENDIF
+
+	IF	P1.ANST AND 00001000B
+	LD	C,0B0H	;A T S
+	ENDIF
+
+	IF	P1.ANST AND 00000110B
+	LD	C,0B8H	;A T D
+	ENDIF
+
+	IF	P1.ANST AND 00000001B
+	LD	C,040H	;A D A
+	ENDIF
+
+
+	IF	P1.ANST AND 10001111B
+	LD	(IX+2),C	;Basisadresse in E/A-Tabelle setzen
+	ENDIF
+
+	PAGE
+	IF	P1.DRU AND 1
+	IF	P1.ANST AND 6
+;****************************************************************
+;*               Drucker  1 1 5 2 / 1 1 5 7  ueber  A T D       *
+;****************************************************************
+	LD	A,08FH
+	INC	C
+
+	IF	P1.ANST AND 2
+	INC	C
+	ENDIF
+
+	OUT	(C),A	;Adresse ( + 2 / + 1 )
+	LD	A,0CFH
+	INC	C
+
+	IF	P1.ANST AND 4
+	INC	C
+	ENDIF
+
+	OUT	(C),A	;Adresse + 3
+	LD	A,0FEH
+	OUT	(C),A	;Adresse + 3
+	LD	A,3
+	OUT	(C),A	;Adresse + 3
+	DEC	C
+
+	IF	P1.ANST AND 4
+	DEC	C
+	ENDIF
+
+	OUT	(C),A	;Adresse ( + 2 / + 1 )
+	LD	A,1
+
+	IF	P1.ANST AND 2
+	DEC	C
+	ENDIF
+
+	IF	P1.ANST AND 4
+	INC	C
+	ENDIF
+
+	OUT	(C),A	;Adresse ( + 1 / + 2 )
+	XOR	A
+	OUT	(C),A	;Adresse ( + 1 / + 2 )
+	DEC	C
+
+	IF	P1.ANST AND 4
+	DEC	C
+	ENDIF
+
+	IN	A,(C)	;Adresse + 0,(C)
+	BIT	0,(IX+4)	;char per inch
+	JR	Z,$+7
+	LD	HL,P1.CPI12	;=1 ... 12 CPI
+	JR	$+5
+	LD	HL,CPI10	;=0 ... 10 CPI
+	CALL	P1.CPI
+
+	BIT	1,(IX+4)	;char per line
+	JR	Z,$+7
+	LD	HL,LPI8	;=1 ...  8 LPI
+	JR	$+5
+	LD	HL,LPI6	;=0 ...  6 LPI
+	CALL	P1.CPI
+	ENDIF
+
+	ENDIF
+
+	PAGE
+	IF	P1.DRU AND 4
+	IF	P1.ANST AND 1
+;****************************************************************
+;*               Drucker  1 1 5 4 / GNI ueber  A D A            *
+;****************************************************************
+	LD	A,00FH
+	INC	C
+	INC	C
+	OUT	(C),A	;Adresse + 2
+	LD	A,(IX+3)	;L-Teil Interruptvektor
+	OUT	(C),A	;Adresse + 2
+	LD	A,083H
+	OUT	(C),A	;Adresse + 2
+	LD	A,0CFH
+	INC	C
+	OUT	(C),A	;Adresse + 3
+	LD	A,0F0H
+	OUT	(C),A	;Adresse + 3
+	LD	A,(IX+11)	;00H bzw. 04H Farbbandstellung
+	AND	4
+	DEC	C
+	DEC	C
+	OUT	(C),A	;Adresse + 1
+	ENDIF
+	ENDIF
+
+	IF	P1.DRU AND 80H
+	IF	P1.ANST AND 80H
+;****************************************************************
+;*               Schreibmaschine S 6 0 0 1  ueber Koppelinterf. *
+;****************************************************************
+	PUSH	BC
+	INC	C
+	INC	C
+	LD	HL,P1.STW
+	LD	B,2
+	OTIR		;Adresse + 2   Kanal A
+	INC	C
+	LD	B,3
+	OTIR		;Adresse + 3   Kanal B
+	POP	BC
+
+	BIT	0,(IX+4)	;char per inch
+	JR	Z,$+6
+	LD	A,6	;=1 ... 12 CPI
+	JR	$+4
+	LD	A,5	;=0 ... 10 CPI
+	CALL	P1.ZEI
+	BIT	1,(IX+4)	;line per inch
+	JR	Z,$+6
+	LD	A,3	;=1 ... 1 1/2 zeilig
+	JR	$+4
+	LD	A,2	;=0 ... 1     zeilig
+	CALL	P1.ZEI
+	ENDIF
+	ENDIF
+
+	PAGE
+	IF	P1.DRU AND 40H
+	IF	P1.ANST AND 1
+;****************************************************************
+;*               Bediendrucker  4 0 0 0   ueber  A D A          *
+;****************************************************************
+	INC	C	;Control Kanal A
+	INC	C
+	LD	A,(IX+3)	;L(Adr. Interruptadress-Tabelle)
+	OUT	(C),A	;Adresse + 2
+	LD	A,00FH	;Modus 0 = Byte-Ausgabe
+	OUT	(C),A
+	LD	A,083H	;Interrupt-Freigabe
+	OUT	(C),A
+	INC	C	;Control Kanal B
+	LD	A,0CFH	;Modus 3 = Bit-E/A
+	OUT	(C),A	;Adresse + 3
+	LD	A,060H	;E: Bit 6,5 (Status)
+	OUT	(C),A	;   (wird nicht ausgewertet)
+	LD	A,007H	;keine Interruptfreigabe
+	DEC	C
+	DEC	C	;Daten Kanal B (Kommandos)
+	XOR	A	;0: FBU
+	OUT	(C),A
+	DEC	C	;Daten Kanal A
+	LD	A,022H	; schwarz (Grundstellung)
+	BIT	2,(IX+11)
+	JR	Z,$+3
+	DEC	A	;21H rot
+	OUT	(C),A
+	INC	C	;Daten Kanal B
+	LD	A,001H	;Kommando 01H: Druck lt. Code-Tabelle
+	OUT	(C),A
+	DEC	C	;bereit fuer Druck Daten auf Kanal A
+	ENDIF
+	ENDIF
+
+	PAGE
+	IF	P1.DRU AND 00001000B
+	IF	P1.ANST AND 1
+;****************************************************************
+;*               Drucker  1 1 5 4 / ASCII  ueber  A D A         *
+;****************************************************************
+	INC	C
+	INC	C
+	LD	A,00FH	;Byte - Ausgabe
+	OUT	(C),A	;Adresse + 2
+	INC	C
+	LD	A,0CFH	;Bit  - Ein-/Ausgabe
+	OUT	(C),A	;Adresse + 3
+	LD	A,0F0H
+	OUT	(C),A
+	DEC	C	;Ausgabe der Synchronisation
+	DEC	C
+	DEC	C
+	XOR	A
+	OUT	(C),A	;Adresse + 0
+	INC	C
+	LD	A,3	;PRIME und STROBE
+	OUT	(C),A	;Adresse + 1
+	LD	A,0
+	OUT	(C),A
+	LD	A,2	;STROBE
+	OUT	(C),A
+	XOR	A
+	OUT	(C),A
+P1.ASC1:
+	IN	A,(C)
+	BIT	7,0
+	JR	Z,P1.ASC2
+	LD	A,1
+	OUT	(C),A
+	XOR	A
+	OUT	(C),A
+	DEC	C
+	CALL	P1.ZEIZ
+	INC	C
+	JR	P1.ASC1
+P1.ASC2:
+	DEC	C
+	ENDIF
+	ENDIF
+
+	PAGE
+	IF	P1.DRU AND 2
+	IF	P1.ANST AND 8
+;****************************************************************
+;*               Drucker  1 1 5 2 / 1 1 5 7  ueber  A T S       *
+;****************************************************************
+	INC	C
+	INC	C
+	INC	C
+	LD	HL,P1.SIOTB	;Initialisierung SIO  Kanal B
+	LD	B,10
+	OTIR		;Adresse + 3
+
+	LD	A,7	;Initialisierung CTC
+	ADD	A,C
+	LD	C,A
+	LD	A,7
+	OUT	(C),A	;Adresse + 10
+	LD	A,1
+	OUT	(C),A
+
+	LD	A,C
+	SUB	7
+	LD	C,A
+P1.IN1:
+	DEC	C
+	IN	A,(C)	;Adresse + 2,(C)
+	INC	C
+	CALL	P1.STAT
+	JR	NZ,P1.IN1
+	DEC	C
+	DEC	C
+	DEC	C
+
+	LD	A,7FH
+	CALL	P1.ZEI
+	LD	A,0
+	CALL	P1.ZEI
+
+	BIT	0,(IX+4)	;char per inch
+	JR	Z,$+7
+	LD	HL,P1.CPI12	;=1 ... 12 CPI
+	JR	$+5
+	LD	HL,P1.CPI10	;=0 ... 10 CPI
+	CALL	P1.CPI
+
+	BIT	1,(IX+4)	;line per inch
+	JR	Z,$+7
+	LD	HL,P1.LPI8	;=1 ...  8 LPI
+	JR	$+5
+	LD	HL,P1.LPI6	;=0 ...  6 LPI
+	CALL	P1.CPI
+	ENDIF
+	ENDIF
+
+	PAGE
+	IF	P1.DRU AND 10000000B
+	IF	P1.ANST AND 01100000B
+;****************************************************************
+;*               Schreibmaschine S 6 0 0 1 ueber Spezialinterf. *
+;****************************************************************
+	OUT	(C),8FH	;RESET Memory on SL6001
+	XOR	A	;A=0
+
+	IF	P1.ANST AND 00100000B
+	LD	C,8CH	;Adress
+	OUT	(C),A	;Latching on Printboard
+	OUT	(C),8AH	;Latching on SL6001
+	OUT	(C),88H	;Sign on SL6001-Keyboard
+	OUT	(C),8DH	;Delete Latch on Printboard
+	LD	HL,400H
+	CALL	P1.TIM
+	INC	A
+	CALL	P1.MR1
+	XOR	A	;A=0
+	CALL	P1.MR1
+	OUT	(C),8FH	;RESET all
+	LD	HL,4000H
+	ENDIF
+
+	IF	P1.NST AND 01000000B
+	CALL	P1.MR1
+	LD	A,1
+	CALL	P1.MR1
+	OUT	(C),8FH
+	LD	HL,2000H
+	ENDIF
+
+	CALL	P1.TIM
+	ENDIF
+	ENDIF
+
+	LD	(IX+0),1	;Merker CPI/LPI-Steuerzeichenfolgen
+	SET	1,(IX-1)	;OPEN - Bit setzen
+	SET	2,(IX-1)	;Richtungsbit: Ausgabe
+	JP	P1.M2
+
+	PAGE
+	IF	P1.DRU AND 10000000B
+
+	IF	P1.ANST AND 01000000B
+P1.MR1:
+	OUT	(C),8CH
+	OUT	(C),8DH
+	LD	HL,16
+	CALL	P1.TIM
+	OUT	(C),8AH
+	OUT	(C),8BH
+	OUT	(C),88H
+	LD	HL,300H
+	CALL	P1.TIM
+	RET
+	ENDIF
+
+	IF	P1.ANST AND 00100000B
+P1.MR1:
+	OUT	(C),A	;latching on Printboard
+	OUT	(C),8BH	;follow   on S 6001
+	OUT	(C),8AH	;latching on S 6001
+	LD	HL,400H
+	CALL	P1.TIM
+	RET
+	ENDIF
+
+	IF	P1.ANST AND 01100000B
+P1.PZKB	EQU	48	;number of lower-case signs at table
+P1.PZGB	EQU	56	;number of upper-case signs at table
+	ENDIF
+
+	IF	P1.ANST AND 10000000B
+P1.STW:
+	DB	00001111B	;Byteausgabe   Kanal A
+	DB	00000011B	;INT-Sperre
+	DB	11001111B	;Bit-Mode      Kanal B
+	DB	11110000B	;I/O-Maske
+	DB	00000011B	;INT-Sperre
+	ENDIF
+
+	ENDIF
+
+	TITLE	'Zeichenausgabe an den Drucker'
+	PAGE
+;****************************************************************
+;*               Ausgabe eines Zeichens an den Drucker          *
+;****************************************************************
+P1.PRIO:
+	PUSH	AF	;Register retten
+	PUSH	BC
+	PUSH	DE
+	PUSH	HL
+	PUSH	IX
+	PUSH	IY
+	LD	A,C	;auszugebendes Zeichen
+
+	IF	P1.ANST AND 10001111B
+	LD	C,(IX+2)	;C  laden mit Basisadresse
+	ENDIF
+
+	BIT	1,(IX-1)	;OPEN - Bit gesetzt ?
+	JR	Z,P1.M2	;nein
+
+	IF	P1.DRU AND 11111100B
+	CP	0CH
+	JR	Z,P1.M2
+	ENDIF
+
+	CP	80H
+	JR	NC,$+4
+	JR	$+6
+	LD	A,'.'
+	JR	P1.M3
+	CP	1BH
+	JR	NZ,P1.CL1
+	LD	(IX+0),5
+P1.CL1:
+	CP	1EH	;Zeilenendezeichen
+	JR	Z,P1.M1
+
+	IF	P1.DRU AND 10000011B
+	LD	B,A
+	DEC	(IX+0)
+	LD	A,(IX+0)
+	CP	0
+	LD	A,B
+	JR	Z,$+4	    ;-----+
+	JR	NC,P1.M3	;     |
+	LD	(IX+0),1	;<----+
+	LD	B,A	;Zeichen retten
+	LD	A,(IX+12)	;Nullen durchstreichen ?
+	OR	A
+	LD	A,B	;Zeichen zurueckladen
+	JR	Z,P1.M3	;=0 ... nicht durchstreichen
+	CP	'0'
+	JR	NZ,P1.M3
+	CALL	P1.ZEI
+	LD	A,8
+	CALL	P1.ZEI
+	LD	A,'/'
+	ENDIF
+
+P1.M3:
+	CALL	P1.ZEI
+	JR	P1.M2
+P1.M1:
+	CALL	P1.ZEIZ
+P1.M2:
+	POP	IY
+	POP	IX
+	POP	HL
+	POP	DE
+	POP	BC
+	POP	AF
+	RET
+	PAGE
+P1.ZEI	EQU	$
+
+	IF	P1.DRU AND 4
+	IF	P1.ANST AND 1
+;****************************************************************
+;*               1154/GNI  mit  A D A                           *
+;****************************************************************
+	OUT	(C),A	;Adresse + 0
+	EI
+	HALT
+	ENDIF
+	ENDIF
+
+	IF	P1.DRU AND 00001000B
+	IF	P1.ANST AND 1
+;****************************************************************
+;*               1154/ASCII mit  A D A                          *
+;****************************************************************
+	CPL
+	OUT	(C),A	;Adresse + 0
+	INC	C
+	LD	A,2	;STROBE
+	OUT	(C),A	;Adresse + 1
+	XOR	A
+	OUT	(C),A
+	DEC	C
+	PUSH	DE
+	LD	DE,0D00H
+	DEC	DE
+	LD	A,D
+	OR	E
+	JR	NZ,$-3
+	POP	DE
+	ENDIF
+	ENDIF
+
+	IF	P1.DRU AND 40H
+	IF	P1.ANST AND 1
+;****************************************************************
+;*               BD 4000 mit  A D A                             *
+;****************************************************************
+	PUSH	AF
+	AND	07FH	;herstellen gerade Paritaet
+	JP	PE,$+5
+	OR	080H
+	OUT	(C),A	;Adresse + 0
+	POP	AF
+	EI
+	HALT
+	ENDIF
+	ENDIF
+
+	PAGE
+	IF	P1.DRU AND 1
+	IF	P1.ANST AND 6
+;****************************************************************
+;*               1152/1157  mit  A T D                          *
+;****************************************************************
+	OUT	(C),A	;Adresse + 0
+	INC	C
+
+	IF	P1.ANST AND 4
+	INC	C
+	ENDIF
+
+P1.M4:
+	IN	A,(C)	;Adresse ( + 1 / + 2 ),(C)
+
+	IF	P1.ANST AND 2
+	BIT	3,A
+	ENDIF
+
+	IF	P1.ANST AND 4
+	BIT	4,A
+	ENDIF
+
+	JR	NZ,P1.M4
+	DEC	C
+
+	IF	P1.ANST AND 4
+	DEC	C
+	ENDIF
+
+	IN	A,(C)	;Adresse + 0,(C)
+	PUSH	BC
+	LD	B,0
+	DJNZ	0
+	POP	BC
+	ENDIF
+	ENDIF
+
+	PAGE
+	IF	P1.DRU AND 2
+	IF	P1.ANST AND 8
+;****************************************************************
+;*               1152/1157  mit  A T S                          *
+;****************************************************************
+	PUSH	AF
+	INC	C
+	INC	C
+	INC	C
+P1.B1:
+	CALL	P1.STAT
+	BIT	2,A
+	JR	Z,P1.B1
+	POP	AF
+	DEC	C
+	OUT	(C),A	;Adresse + 2
+P1.B3:
+	IN	A,(C)
+	AND	7FH
+	CP	11H
+	JR	Z,P1.B4
+	CP	13H
+	JR	Z,P1.B3
+P1.B4:
+	INC	C
+P1.B6:
+	DEC	C
+	IN	A,(C)	;Adresse + 2,(C)
+	INC	C
+	CALL	P1.STAT
+	JR	NZ,P1.B6
+	DEC	C
+	DEC	C
+	DEC	C
+	RET
+
+P1.SIOTB:
+	DB	4	;Steuerworte  S I O
+	DB	45H	;WR4
+	DB	1
+	DB	00H	;WR1
+	DB	3
+	DB	41H	;WR3
+	DB	5
+	DB	28H	;WR5
+	DB	0
+	DB	30H	;WR0
+
+P1.STAT:
+	XOR	A
+	OUT	(C),A
+	IN	A,(C)
+	BIT	0,A
+	ENDIF
+	ENDIF
+
+	PAGE
+	IF	P1.DRU AND 80H
+	IF	P1.ANST AND 01100000B
+;****************************************************************
+;*               S 6 0 0 1  mit  Spezialinteface                *
+;****************************************************************
+	LD	A,C	;device-control for a single sign
+	LD	HL,P1.PTAKB	;table of lower-case signs
+	LD	BC,P1.PZKB	;number   lower-case signs
+	CPIR		;compare
+	JR	Z,P1.PRIZK
+	LD	HL,P1.PTAGB	;table of upper-case signs
+	LD	BC,P1.PZGB	;number   upper-case signs
+	CPIR
+	JR	Z,P1.PRIZG
+	LD	A,' '	;space if no sign is matched
+P1.PRIZK:
+	OUT	(C),8FH	;Reset all
+	PUSH	AF	;save sign
+	LD	A,0EH	;shift sign
+	JR	P1.PRIZ2
+P1.PRIZG:
+	OUT	(C),8FH	;Reset all
+	PUSH	AF	;save sign
+	LD	A,0FH	;lock sign
+P1.PRIZ2	EQU	$
+
+	IF	P1.ANST AND 00100000B
+	LD	C,8CH	;Address
+	ENDIF
+
+	CALL	P1.MR2
+	LD	HL,200H
+	CALL	P1.TIM	;time-loop
+	OUT	(C),8FH	;Reset all
+	LD	HL,200H
+	CALL	P1.TIM
+	POP	AF	;real sign now
+	CALL	P1.MR2
+	LD	HL,200H
+	CALL	P1.TIM
+	OUT	(C),8FH	;Reset all
+
+	IF	P1.ANST AND 00100000B
+	LD	HL,300H
+	ENDIF
+
+	IF	P1.ANST AND 01000000B
+	LD	HL,2E0H
+	ENDIF
+
+	CALL	P1.TIM
+	LD	HL,200H
+	CALL	P1.TIM
+	RET
+	ENDIF
+	ENDIF
+
+	PAGE
+	IF	P1.DRU AND 80H
+	IF	P1.ANST AND 01100000B
+
+	IF	P1.ANST AND 01000000B
+P1.MR2:
+	OUT	(C),8CH
+	OUT	(C),8DH
+	CALL	P1.PRIZU
+	ENDIF
+
+	IF	P1.ANST AND 00100000B
+P1.MR2:
+	OUT	(C),A	;latching on Printboard
+	OUT	(C),8AH	;latching on S6001
+	OUT	(C),88H	;sign on S6001-Keyboard
+	ENDIF
+
+	RET
+
+P1.TIM:
+	PUSH	HL	;time-loop here , Input:<HL>
+	CALL	P1.TIM1
+	POP	HL
+P1.TIM1:
+	LD	A,L
+	OR	H
+	RET	Z
+	DEC	HL
+	JR	P1.TIM1
+
+	IF	P1.ANST AND 01000000B
+P1.PRIZU:
+	LD	HL,16
+	CALL	P1.TIM
+	OUT	(C),8AH
+	OUT	(C),8BH
+	OUT	(C),88H
+	ENDIF
+
+	ENDIF
+	ENDIF
+
+	PAGE
+	IF	P1.DRU AND 80H
+	IF	P1.ANST AND 80H
+;****************************************************************
+;*               S 6 0 0 1  mit  Koppelinterface                *
+;****************************************************************
+	PUSH	BC
+	PUSH	AF
+	LD	HL,P1.CTBS6	;Codeumwandlung ASCII ===> S6001
+	LD	D,0
+	LD	E,A
+	ADD	HL,DE
+	LD	A,(HL)
+	CPL
+	PUSH	AF
+	INC	C
+P1.TOUT:
+	IN	A,(C)	;Adresse + 1,(C)
+	BIT	5,A
+	JR	NZ,TOUT	;kein bereit
+	POP	AF
+	DEC	C
+	OUT	(C),A	;Ausgabe Zeichen
+	LD	A,0FDH
+	INC	C
+	OUT	(C),A	;STB High
+	LD	A,0FFH
+	OUT	(C),A	;STB Low
+	LD	A,0FDH
+	OUT	(C),A	;STB High
+	OR	A
+	POP	AF
+	POP	BC
+	ENDIF
+	ENDIF
+
+	RET		;return vom UP "ZEI"
+
+	PAGE
+P1.ZEIZ	EQU	$
+
+	IF	P1.DRU AND 3	;1152/1157
+	IF	P1.ANST AND 00001110B	;A T D / A T S
+	LD	A,00DH
+	CALL	P1.ZEI
+	LD	A,00AH
+	CALL	P1.ZEI
+	ENDIF
+	ENDIF
+
+	IF	P1.DRU AND 4	;1154/GNI
+	IF	P1.ANST AND 1	;A D A
+	INC	C
+	LD	A,1
+	CALL	P1.KOUT
+	LD	A,2
+	CALL	P1.KOUT
+	CALL	P1.WAIT
+	CALL	P1.WAIT
+	DEC	C
+	RET
+P1.KOUT:
+	OUT	(C),A	;Adresse + 1
+	IN	A,(C)	;Adresse + 1,(C)
+	BIT	5,A
+	JR	NZ,KOUT+2
+	RET
+P1.WAIT:
+	LD	B,20H
+	PUSH	BC
+	LD	B,0FFH
+	DJNZ	0
+	POP	BC
+	DJNZ	P1.WAIT+2
+	ENDIF
+	ENDIF
+
+	IF	P1.DRU AND 8	;1154/ASCII
+	IF	P1.ANST AND 1	;A D A
+	LD	A,00DH
+	CALL	P1.ZEI
+	PUSH	DE
+	LD	DE,00C00H
+	DEC	DE
+	LD	A,D
+	OR	E
+	JR	NZ,$-3
+	POP	DE
+	LD	A,00AH
+	CALL	P1.ZEI
+	ENDIF
+	ENDIF
+
+	IF	P1.DRU AND 40H	;BD 4000
+	IF	P1.ANST AND 1
+	CALL	P1.ZEI
+	ENDIF
+	ENDIF
+
+	IF	P1.DRU AND 80H	;S 6001
+	IF	P1.ANST AND 11100000B
+	CALL	P1.ZEI
+	ENDIF
+	ENDIF
+
+	RET		;return vom UP "ZEIZ"
+
+	PAGE
+	IF	P1.DRU AND 00000011B	;1152/1157 PIO
+
+	IF	P1.PIO AND 1	;P I O 1
+P1.CPI10:
+	DB	01BH
+	DB	'[0 K'
+P1.CPI12:
+	DB	01BH
+	DB	'[1 K'
+P1.LPI6:
+	DB	01BH
+	DB	'[0 L'
+P1.LPI8:
+	DB	01BH
+	DB	'[5 L'
+
+P1.CPI:
+	LD	B,5
+	ENDIF
+
+	IF	P1.PIO AND 2	;P I O 2
+P1.CPI10:	DB	1
+P1.CPI12:	DB	2
+P1.LPI6:	DB	5
+P1.LPI8:	DB	6
+
+P1.CPI:	LD	B,1
+	ENDIF
+
+
+P1.CPI1:
+	LD	A,(HL)
+	INC	HL
+	CALL	P1.ZEI
+	DJNZ	P1.CPI1
+	RET
+	ENDIF
+
+	PAGE
+	IF	P1.DRU AND 80H
+	IF	P1.ANST AND 01100000B
+P1.PTAGB:
+	DB	26H	; &     table of upper-case signs
+	DB	3BH	; ;
+	DB	5FH	; _
+	DB	3DH	; =
+	DB	25H	; %
+	DB	2BH	; +
+	DB	28H	; (
+	DB	29H	; )
+	DB	3CH	; <
+	DB	3EH	; >
+	DB	2FH	; /
+	DB	3AH	; :
+	DB	40H	; $
+	DB	08H	; BS
+	DB	09H	; TAB
+	DB	24H	; DOLLAR
+	DB	7FH	; RUBOUT
+	DB	22H	; ""
+	DB	3FH	; ?
+	DB	21H	; !
+	DB	27H	; '
+	DB	41H	; A
+	DB	42H	; B
+	DB	43H	; C
+	DB	44H	; D
+	DB	45H	; E
+	DB	46H	; F
+	DB	47H	; G
+	DB	48H	; H
+	DB	49H	; I
+	DB	4AH	; J
+	DB	4BH	; K
+	DB	4CH	; L
+	DB	4DH	; M
+	DB	4EH	; N
+	DB	4FH	; O
+	DB	50H	; P
+	DB	51H	; Q
+	DB	52H	; R
+	DB	53H	; S
+	DB	54H	; T
+	DB	55H	; U
+	DB	56H	; V
+	DB	57H	; W
+	DB	58H	; X
+	DB	59H	; Y
+	DB	5AH	; Z
+	DB	5BH
+	DB	5CH
+	DB	5DH
+	DB	5EH
+	DB	03H	;Sperrschrift
+	DB	04H	;Sparschrift
+	DB	05H	;Schattenschrift
+	DB	06H	;Unterstreichen
+	DB	07H	;Fettschrift
+
+	ENDIF
+	ENDIF
+
+	PAGE
+	IF	P1.DRU AND 80H
+	IF	P1.ANST AND 01100000B
+P1.PTAKB:
+	DB	40H	; @     table of lower-case signs
+	DB	23H	; #
+	DB	2AH	; *
+	DB	2CH	; ,
+	DB	2EH	; .
+	DB	2DH	; -
+	DB	1EH	; newline
+	DB	20H	; space
+	DB	30H	; 0
+	DB	31H	; 1
+	DB	32H	; 2
+	DB	33H	; 3
+	DB	34H	; 4
+	DB	35H	; 5
+	DB	36H	; 6
+	DB	37H	; 7
+	DB	38H	; 8
+	DB	39H	; 9
+	DB	61H	; a
+	DB	62H	; b
+	DB	63H	; c
+	DB	64H	; d
+	DB	65H	; e
+	DB	66H	; f
+	DB	67H	; g
+	DB	68H	; h
+	DB	69H	; i
+	DB	6AH	; j
+	DB	6BH	; k
+	DB	6CH	; l
+	DB	6DH	; m
+	DB	6EH	; n
+	DB	6FH	; o
+	DB	70H	; p
+	DB	71H	; q
+	DB	72H	; r
+	DB	73H	; s
+	DB	74H	; t
+	DB	75H	; u
+	DB	76H	; v
+	DB	77H	; w
+	DB	78H	; x
+	DB	79H	; y
+	DB	7AH	; z
+	DB	7BH
+	DB	7CH
+	DB	7DH
+	DB	7EH
+
+	ENDIF
+	ENDIF
+
+	PAGE
+	IF	P1.DRU AND 80H
+	IF	P1.ANST AND 80H
+P1.CTBS6:
+	DW	1D1DH
+	DB	0A5H
+	DB	0A6H
+	DB	0A7H
+	DB	0A8H
+	DB	0A9H
+	DB	0AAH
+	DB	1CH
+	DB	19H
+	DB	0AH
+	DB	08H
+	DB	0CH
+	DB	1EH
+	DB	0BH
+	DB	1DH
+	DB	80H
+	DB	81H
+	DB	82H
+	DB	83H
+	DB	84H
+	DB	90H
+	DB	91H
+	DB	92H
+	DB	93H
+	DB	94H
+	DW	1D1DH
+	DW	1D1DH
+	DB	1EH
+	DB	1FH
+	DB	1DH	;20
+	DB	21H
+	DB	22H
+	DB	23H
+	DB	5EH
+	DB	25H
+	DB	26H
+	DB	27H
+	DB	'()*+,-./'
+	DB	'0123456789'
+	DB	':;'
+	DB	24H
+	DB	3DH
+	DB	20H
+	DB	3FH
+	DB	3CH
+	DB	'ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]'
+	DB	40H
+	DB	5FH
+	DB	3EH
+	DB	'abcdefghijklmnopqrstuvwxyz{|}'
+	DB	7EH
+	DB	1DH
+	DB	80H
+	DB	81H
+	DB	82H
+	DB	83H
+	DB	84H
+	DB	1DH
+	DW	1D1DH
+	DW	1D1DH
+	DW	1D1DH
+	DW	1D1DH
+	DW	1D1DH
+	DB	90H
+	DB	91H
+	DB	92H
+	DB	93H
+	DB	94H
+	DB	1DH
+	DW	1D1DH
+	DW	1D1DH
+	DW	1D1DH
+	DW	1D1DH
+	DW	1D1DH
+	DB	0A0H
+	DB	0A1H
+	DB	0A2H
+	DB	0A3H
+	DB	0A4H
+	DB	0A5H
+	DB	0A6H
+	DB	0A7H
+	DB	0A8H
+	DB	0A9H
+	DB	0AAH
+	DW	1D1DH
+	DB	0ADH
+	DB	0AEH
+	DB	0AFH
+	DB	0B0H
+	DB	0B1H
+	DW	1D1DH
+	DW	1D1DH
+	DW	1D1DH
+	DW	1D1DH
+	DW	1D1DH
+	DW	1D1DH
+	DW	1D1DH
+	DB	0C0H
+	DB	0C1H
+	DB	0C2H
+	DW	1D1DH
+	DB	1DH
+	DB	0C6H
+	DB	0C7H
+	DB	0C8H
+	DB	0C9H
+	DB	0CAH
+	DW	1D1DH
+	DW	1D1DH
+	DB	0CFH
+	DB	0D0H
+	DB	0D1H
+	DB	0D2H
+	DW	1D1DH
+	DW	1D1DH
+	DW	1D1DH
+	DW	1D1DH
+	DW	1D1DH
+	DW	1D1DH
+	DB	0FFH
+	ENDIF
+	ENDIF
+
+;	END
+

@@ -1,0 +1,320 @@
+;	speicherumschaltungen fuer DEG2000-BIOS     08.05.86
+;	====================================================
+;
+um	macro
+;
+um1::
+	ld	(hlret),hl	; HL retten
+	pop	hl		; RET-Adresse ==> HL
+um1r1:
+	ld	(s1ret),sp	; SP retten                (s3ret),sp
+um1r2:
+	ld	sp,s1neu	; SP neu laden             sp,s3neu
+	push	hl		; HL ==> Stack
+	ld	hl,(hlret)	; HL wieder herstellen
+um1r3:
+	nop			;                          jp resp0
+	nop
+	nop
+	push	bc
+	push	hl
+	ld	bc,004C0h
+	ld	hl,um1r4
+	otir
+	pop	hl
+	pop	bc
+	ret
+um1r4:
+	DB	0F0H	;Startbyte
+	DB	003H	;wahl   0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
+	DB	001H	;um1   {0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0}
+	DB	0FFH	;Endbyte
+;
+;
+um2::
+	nop			;                          jp setp0
+	nop
+	nop
+	push	af
+	push	bc
+	push	de
+	push	hl
+	ld	bc,004C0h
+	ld	hl,um21
+	otir
+	pop	hl
+	pop	de
+	pop	bc
+	pop	af
+	ret
+um21:
+	DB	0F0H	;Startbyte
+	DB	003H	;wahl   0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
+	DB	002H	;um2   {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0}
+	DB	0FFH	;Endbyte
+;
+;
+um2e:	call	um2
+um2er:	ld	sp,(s1ret)
+	ret
+	endm
+;
+;
+;
+	page
+;
+;
+;
+skmb::
+	push	af
+	xor	a
+	ld	i,a
+	pop	af
+	ret
+;
+rkmb::
+	push	af
+	ld	a,high abios
+	ld	i,a
+	pop	af
+	ret
+;
+;
+sdir::
+	ld	(hlret),hl	; HL retten
+	pop	hl		; RET-Adresse ==> HL
+	ld	(s2ret),sp	; SP retten
+	ld	sp,s2neu	; SP neu laden
+	push	hl		; HL ==> Stack
+	ld	hl,(hlret)	; HL wieder herstellen
+	push	bc
+	push	hl
+	ld	bc,006C0h
+	ld	hl,sdir1
+	otir
+	pop	hl
+	pop	bc
+	ret
+sdir1:
+	DB	0F0H	;Startbyte
+	DB	004H	;wahl 
+	DB	00DH	;D000-FFFF
+	DB	00FH
+	DB	004H	;sdir  4
+	DB	0FFH	;Endbyte
+;
+rdir::
+	push	bc
+	push	hl
+	ld	bc,006C0h
+	ld	hl,rdir1
+	otir
+	pop	hl
+	pop	bc
+	ld	(hlret),hl	; HL retten
+	pop	hl		; RET-Adresse ==> HL
+	ld	sp,(s2ret)	; SP alt laden
+	push	hl		; HL ==> Stack
+	ld	hl,(hlret)	; HL wieder herstellen
+	ret
+rdir1:
+	DB	0F0H	;Startbyte
+	DB	004H	;wahl
+	DB	00DH	;D000-FFFF
+	DB	00FH
+	DB	000H	;rdir  0
+	DB	0FFH	;Endbyte
+;
+;
+setla::			; Laufwerk A zuschalten System 0-8
+	push	bc
+	push	hl
+	ld	bc,006C0h
+	ld	hl,setla1
+	otir
+	pop	hl
+	pop	bc
+	ret
+setla1:
+	DB	0F0H	;Startbyte
+	DB	004H	;wahl
+	DB	000H	;bereich von
+	DB	007H	;bereich bis
+	DB	000H	;"System" Laufwerk A
+	DB	0FFH	;Endbyte
+;
+resla::			; Laufwerk A wegschalten System 0-8
+	push	bc
+	push	hl
+	ld	bc,006C0h
+	ld	hl,resla1
+	otir
+	pop	hl
+	pop	bc
+	ret
+resla1:	
+	DB	0F0H	;Startbyte
+	DB	004H	;wahl
+	DB	000H	;bereich von
+	DB	007H	;bereich bis
+	DB	001H	;"System"
+	DB	0FFH	;Endbyte
+;
+;
+;setlp::	
+	; ld	(hlret),hl	; HL retten
+	; pop	hl		; RET-Adresse ==> HL
+	; ld	(s2ret),sp	; SP retten
+	; ld	sp,s2neu	; SP neu laden
+	; push	hl		; HL ==> Stack
+	; ld	hl,(hlret)	; HL wieder herstellen
+	; push	bc
+	; push	de
+	; push	af
+	; ld	bc,0c000h+str	; System  -TRAM (C000H-FFFFH) wegschalten
+	; ld	e,4
+	; call	up31
+	; out	(sbst+4),a	; RESET-Sperre aus
+	; pop	af		; zusatz-PFS                   zuschalten
+	; out	(sbst+2),a
+	; out	(sbst+3),a	; RESET-Sperre ein
+	; pop	de
+	; pop	bc
+	ret
+;
+;reslp::
+	; push	af
+	; push	bc
+	; push	de
+	; out	(sbst+4),a	; RESET-Sperre aus
+	; xor	a		; zusatz-PFS                  wegschalten
+	; out	(sbst+2),a
+	; out	(sbst+3),a	; RESET-Sperre ein
+	; ld	bc,0c000h+str	; System  -TRAM (C000H-FFFFH)  zuschalten
+	; ld	e,4
+	; call	up21
+	; pop	de
+	; pop	bc
+	; pop	af
+	; ld	(hlret),hl	; HL retten
+	; pop	hl		; RET-Adresse ==> HL
+	; ld	sp,(s2ret)	; SP alt laden
+	; push	hl		; HL ==> Stack
+	; ld	hl,(hlret)	; HL wieder herstellen
+	ret
+;
+;
+setp0::
+ if orig eq 0
+	push	bc
+	push	hl
+	ld	bc,005C0h
+	ld	hl,setp1
+	otir
+	jr	setp2
+setp1:
+	DB	0F0H	;Startbyte
+	DB	001H	;wahl
+	DB	000H	;Bereich
+	DB	004H	;BereichNr		"Anwender"
+	DB	0FFH	;Endbyte
+setp2:
+	pop	hl
+	pop	bc
+ endif
+	ret
+;
+resp0::
+ if orig eq 0
+	push	bc
+	push	hl
+	ld	bc,005C0h
+	ld	hl,resp1
+	otir
+	jr	resp2
+resp1:
+	DB	0F0H	;Startbyte
+	DB	001H	;wahl
+	DB	000H	;Bereich
+	DB	000H	;BereichNr		"System"	001H?
+	DB	0FFH	;Endbyte
+resp2:
+	pop	hl
+	pop	bc
+ endif
+	ret
+;
+;
+;
+	page
+um11:	ld	a,0c3h
+	ld	(um1r3),a
+	ld	hl,resp0
+	ld	(um1r3+1),hl
+	ld	(um2),a
+	ld	hl,setp0
+	ld	(um2+1),hl
+	ld	hl,s3ret
+	ld	(um1r1+2),hl
+	ld	(um2er+2),hl
+	ld	(br271+2),hl
+	ld	(getpf2+2),hl
+	ld	hl,s3neu
+	ld	(um1r2+1),hl
+	ret
+;
+um12:	xor	a
+	ld	(um1r3+0),a
+	ld	(um1r3+1),a
+	ld	(um1r3+2),a
+	ld	(um2+0),a
+	ld	(um2+1),a
+	ld	(um2+2),a
+	ld	hl,s1ret
+	ld	(um1r1+2),hl
+	ld	(um2er+2),hl
+	ld	(br271+2),hl
+	ld	(getpf2+2),hl
+	ld	hl,s1neu
+	ld	(um1r2+1),hl
+	ret
+;
+;
+;
+ if not opsdk
+opsmac	macro
+gdma	equ	$
+s2neu	equ	gdma+128+10h
+s2ret	equ	s2neu
+	endm
+ endif
+ if not tramdk
+ttanz::	defb	0
+tram::	defb	0
+ttrk::	defb	0
+ endif
+;
+;
+gosys	macro
+	jp	0
+	endm
+;
+gosys1	macro
+	push	bc
+	push	hl
+	ld	bc,004C0h
+	ld	hl,gosy2
+	otir
+	pop	hl
+	pop	bc
+	jp	0
+gosy2:
+	DB	0F0H	;Startbyte
+	DB	003H	;wahl
+	DB	003H	;GoSys1
+	DB	0FFH	;Endbyte
+	endm
+;
+;
+;
+

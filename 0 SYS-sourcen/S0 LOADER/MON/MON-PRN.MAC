@@ -1,0 +1,1780 @@
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1
+
+
+                                        .z80
+                                        title   'monitor   MH-Computer   1184  2.2'
+                                ;*********************************************************
+                                ;*  monitor   MH - computer      Stand: 30.November 1984 *
+                                ;*                                                       *
+                                ;*  Version  2 . 2               by   Marcus Herbote     *
+                                ;*********************************************************
+                                
+  000D                          cr      equ     00dh
+  000A                          lf      equ     00ah
+  0007                          bell    equ     007h
+  00FF                          rub     equ     0ffh
+  0000                          fil     equ     000h
+  0007                          max     equ     007h
+                                
+  0038                          rst7    equ     038h
+                                ;
+                                ;       csts    0ffh in A, falls Zeichen da
+                                ;       iochk   in A aktuelle IO-Konfiguration
+                                ;       ioset   veraendern IO in C-Register
+                                ;       memck   in B high in A low memory
+                                ;       trap    Breakpoint entry
+                                ;
+                                        page    87
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-1
+
+
+                                
+                                ;
+                                ;       im  ROM  auf Adresse 0
+                                ;
+  0000'                         beginn:
+  0000'   3E 03                         ld      a,3
+  0002'   D3 83                         out     (83h),a
+  0004'                         anf:                                    ;um Start von beliebiger Stelle
+  0004'   21 0012'                      ld      hl,hauptp
+  0007'   11 F000                       ld      de,0f000h               ;Transport aller Zellen
+  000A'   01 0FFF                       ld      bc,0fffh                ;4k Transfer
+  000D'   ED B0                         ldir
+  000F'   C3 F000                       jp      0f000h
+                                ;
+  0012'                         hauptp:
+                                ;
+                                        .phase  0f000h                  ;Start des Monitors
+                                ;
+                                ; ---   Start des eigentlichen Monitors ---
+                                ;
+                                ;       Anfang verschiebbar
+                                ;
+                                ;
+                                ;       Vector Table
+                                ;
+                                
+                                ;
+  F000    C3 F0AE                       jp      begin
+  F003    C3 F6E9                       jp      ci
+  F006    C3 F712                       jp      ri
+  F009    C3 F52B                       jp      co
+  F00C    C3 F5AA                       jp      poo
+  F00F    C3 F594                       jp      lo
+  F012    C3 F5E9                       jp      csts
+  F015    C3 F3C3                       jp      iobyte
+  F018    C3 F1B7                       jp      ioset
+  F01B    C3 F677                       jp      memck
+                                ;
+  F01E                          trap:
+  F01E    C3 F763                       jp      restart
+                                ;
+  F021    F8A2                          defw    tabstart                ;Tabellen Start user Bereich
+                                                                        ;Sprungtabelle immer indirekt verwenden
+  F023    F8C0                          defw    lastmon                 ;Adresse letzte belegte Zelle
+                                                                        ;des Monitors danach patch frei
+                                ;
+                                ;
+  F025                          msg:
+  F025    0D 0A 00 00                   defb    cr,lf,0,0,0,bell
+  F029    00 07                 
+  F02B    6D 6F 6E 69                   defm    'monitor_______MH_-_computer_____Version 2.2',cr,lf
+  F02F    74 6F 72 5F           
+  F033    5F 5F 5F 5F           
+  F037    5F 5F 4D 48           
+  F03B    5F 2D 5F 63           
+  F03F    6F 6D 70 75           
+  F043    74 65 72 5F           
+  F047    5F 5F 5F 5F           
+  F04B    56 65 72 73           
+  F04F    69 6F 6E 20           
+  F053    32 2E 32 0D           
+  F057    0A                    
+  F058    3D 3D 3D 3D                   defm    '===========================================',cr,lf,lf
+  F05C    3D 3D 3D 3D           
+  F060    3D 3D 3D 3D           
+  F064    3D 3D 3D 3D           
+  F068    3D 3D 3D 3D           
+  F06C    3D 3D 3D 3D           
+  F070    3D 3D 3D 3D           
+  F074    3D 3D 3D 3D           
+  F078    3D 3D 3D 3D           
+  F07C    3D 3D 3D 3D           
+  F080    3D 3D 3D 0D           
+  F084    0A 0A                 
+  F086    28 43 29 20                   defm    '(C) Nov 1984       by  Marcus Herbote',cr,lf,0
+  F08A    4E 6F 76 20           
+  F08E    31 39 38 34           
+  F092    20 20 20 20           
+  F096    20 20 20 62           
+  F09A    79 20 20 4D           
+  F09E    61 72 63 75           
+  F0A2    73 20 48 65           
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-2
+
+
+  F0A6    72 62 6F 74           
+  F0AA    65 0D 0A 00           
+  0089                          msgl    equ     $-msg
+                                        page
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-3
+
+
+                                
+                                ;
+                                ;       init  Teil
+                                ;
+  F0AE    AF                    begin:  xor     a
+  F0AF    32 F8B4                       ld      (iobyt),a
+                                ;
+  F0B2    31 F0B6                       ld      sp,ahead-4
+  F0B5    C3 F685                       jp      memsiz+1
+  F0B8    F0BA                          defw    ahead
+  F0BA    F9                    ahead:  ld      sp,hl
+  F0BB    EB                            ex      de,hl
+  F0BC    01 0023                       ld      bc,endx-exit
+  F0BF    21 F84D                       ld      hl,exit
+  F0C2    ED B0                         ldir
+  F0C4    EB                            ex      de,hl
+  F0C5    01 FFA1                       ld      bc,-5fh
+  F0C8    09                            add     hl,bc
+  F0C9    E5                            push    hl
+  F0CA    21 0000                       ld      hl,0
+  F0CD    06 0A                         ld      b,10                    ;Register
+  F0CF                          stkit:
+  F0CF    E5                            push    hl
+  F0D0    10 FD                         djnz    stkit
+  F0D2                          hello:
+  F0D2    0E 0C                         ld      c,0ch
+  F0D4    CD F52B                       call    co
+  F0D7    06 89                         ld      b,msgl
+  F0D9    CD F4EB                       call    tom1
+  F0DC                          start:
+  F0DC    11 F0DC                       ld      de,start
+  F0DF    D5                            push    de
+  F0E0    CD F5E1                       call    crlf
+  F0E3    0E 23                         ld      c,'#'
+  F0E5    CD F52B                       call    co
+                                ;
+  F0E8    CD F7DB               star0:  call    ti
+  F0EB    E6 7F                         and     7fh
+  F0ED    28 F9                         jr      z,star0
+  F0EF    D6 41                         sub     'A'
+  F0F1    F8                            ret     m
+  F0F2    FE 1A                         cp      'Z'-'A'+1
+  F0F4    D0                            ret     nc
+  F0F5    87                            add     a,a
+  F0F6    21 F106                       ld      hl,tbl
+  F0F9    85                            add     a,l
+  F0FA    6F                            ld      l,a
+  F0FB    7C                            ld      a,h
+  F0FC    CE 00                         adc     a,0
+  F0FE    67                            ld      h,a
+  F0FF    7E                            ld      a,(hl)
+  F100    23                            inc     hl
+  F101    66                            ld      h,(hl)
+  F102    6F                            ld      l,a
+  F103    0E 02                         ld      c,2
+  F105    E9                            jp      (hl)                    ;exec
+                                ;
+                                        page
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-4
+
+
+                                
+  F106                          tbl:
+  F106    F16F                          defw    assign
+  F108    F1BC                          defw    bye
+  F10A    F1E9                          defw    comp
+  F10C    F20A                          defw    disp
+  F10E    F221                          defw    eof
+  F110    F23D                          defw    fill
+  F112    F24A                          defw    goto
+  F114    F649                          defw    hexn
+  F116    F147                          defw    boot1
+  F118    F298                          defw    test
+  F11A    F8BB                          defw    kexec
+  F11C    F728                          defw    load
+  F11E    F2B6                          defw    move
+  F120    F5CE                          defw    null
+  F122    F8B5                          defw    oexec
+  F124    F1CA                          defw    puta
+  F126    F7FC                          defw    query
+  F128    F2C1                          defw    read
+  F12A    F37A                          defw    subs
+  F12C    F3A3                          defw    type
+  F12E    F5B9                          defw    unlo
+  F130    F827                          defw    verify
+  F132    F40F                          defw    write
+  F134    F44C                          defw    xam
+  F136    F3C7                          defw    where
+  F138    F51C                          defw    size
+                                ;
+                                        page
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-5
+
+
+                                
+                                ;
+                                ;       boot  eines beliebigen Betriebssystems
+                                ;
+  F13A                          flpmsg:
+  F13A    0D 0A                         defb    cr,lf
+  F13C    53 4F 46 54                   defm    'SOFTBOOT'
+  F140    42 4F 4F 54           
+  F144    0D 0A 00                      defb    cr,lf,0
+                                ;
+  F147                          boot1:
+  F147    21 F13A                       ld      hl,flpmsg               ;falls da
+  F14A    CD F164                       call    print
+  F14D    CD F6E9                       call    ci
+                                ;
+  F150    21 0080                       ld      hl,80h                  ;booten
+  F153    16 00                         ld      d,0                     ;trk    0
+  F155    1E 01                         ld      e,1                     ;sector 1
+  F157    06 01                         ld      b,1                     ;lesen
+  F159    0E 00                         ld      c,0                     ;drive  0
+  F15B    CD F8BE                       call    soft
+  F15E    DA F500                       jp      c,error                 ;fehler
+  F161    C3 0000                       jp      0                       ;und Starten   (80h)
+                                ;
+                                ;       print routine
+                                ;
+  F164                          print:
+  F164    7E                            ld      a,(hl)
+  F165    B7                            or      a
+  F166    C8                            ret     z
+  F167    4F                            ld      c,a
+  F168    CD F52B                       call    co
+  F16B    23                            inc     hl
+  F16C    C3 F164                       jp      print
+                                ;
+                                ;       IOBYTE  assigne
+                                ;
+                                ;       000000xx        console
+                                ;       0000xx00        reader
+                                ;       00xx0000        punch
+                                ;       xx000000        lister
+                                ;
+                                ;       00 =            teletype cons
+                                ;
+  F16F                          assign:                                         ;zuweisung
+  F16F    CD F7DB                       call    ti
+  F172    21 F839                       ld      hl,ltbl
+  F175    01 0400                       ld      bc,400h
+  F178    11 0005                       ld      de,5
+  F17B    BE                    arep0:  cp      (hl)
+  F17C    28 06                         jr      z,arep1
+  F17E    19                            add     hl,de
+  F17F    0C                            inc     c
+  F180    10 F9                         djnz    arep0
+  F182    18 15                         jr      lxerr
+  F184    59                    arep1:  ld      e,c
+  F185    CD F7DB               arep22: call    ti
+  F188    FE 3D                         cp      '='
+  F18A    20 F9                         jr      nz,arep22
+  F18C    CD F7DB                       call    ti
+  F18F    01 0400                       ld      bc,400h
+  F192    23                    arep33: inc     hl
+  F193    BE                            cp      (hl)
+  F194    28 06                         jr      z,lxa4
+  F196    0C                            inc     c
+  F197    10 F9                         djnz    arep33
+  F199    C3 F500               lxerr:  jp      error
+  F19C    3E 03                 lxa4:   ld      a,3
+  F19E    1C                            inc     e
+  F19F    1D                    lxa5:   dec     e
+  F1A0    28 08                         jr      z,lxa6
+  F1A2    CB 21                         sla     c
+  F1A4    CB 21                         sla     c
+  F1A6    17                            rla
+  F1A7    17                            rla
+  F1A8    18 F5                         jr      lxa5
+  F1AA    2F                    lxa6:   cpl
+  F1AB    57                            ld      d,a
+  F1AC    CD F6DA               lxa7:   call    pchk
+  F1AF    30 FB                         jr      nc,lxa7
+  F1B1    3A F8B4                       ld      a,(iobyt)
+  F1B4    A2                            and     d
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-6
+
+
+  F1B5    B1                            or      c
+  F1B6    4F                            ld      c,a
+                                ;
+                                ;       ioset
+                                ;
+  F1B7                          ioset:
+  F1B7    79                            ld      a,c
+  F1B8    32 F8B4                       ld      (iobyt),a
+  F1BB    C9                            ret
+                                ;
+                                ;       bye     Command
+                                ;
+  F1BC                          bye:
+  F1BC    CD F5E1                       call    crlf
+  F1BF    CD F7D5               lxby:   call    ki
+  F1C2    FE 1E                         cp      1eh                     ;CRTL N
+  F1C4    20 F9                         jr      nz,lxby
+  F1C6    D1                            pop     de
+  F1C7    C3 F0D2                       jp      hello
+                                ;
+                                ;       put ASCII into MEM
+                                ;
+  F1CA                          puta:
+  F1CA    CD F60A                       call    expr1
+  F1CD    CD F5E1                       call    crlf
+  F1D0    E1                            pop     hl
+  F1D1    CD F7D5               arep11: call    ki
+  F1D4    FE 04                         cp      4
+  F1D6    CA F523                       jp      z,lfadr
+  F1D9    FE 5F                         cp      '_'
+  F1DB    28 08                         jr      z,arep34
+  F1DD    77                            ld      (hl),a
+  F1DE    4F                            ld      c,a
+  F1DF    23                            inc     hl
+  F1E0    CD F52B               arep23: call    co
+  F1E3    18 EC                         jr      arep11
+  F1E5    2B                    arep34: dec     hl
+  F1E6    4E                            ld      c,(hl)
+  F1E7    18 F7                         jr      arep23
+                                ;
+                                ;       compare bin
+                                ;
+  F1E9                          comp:
+  F1E9    CD F5DC                       call    exlf
+  F1EC    CD F515               lxc:    call    riff
+  F1EF    BE                            cp      (hl)
+  F1F0    C4 F1F8                       call    nz,cerr
+  F1F3    CD F639                       call    hildx
+  F1F6    18 F4                         jr      lxc
+                                ;
+                                ;       m Ausgabe
+                                ;
+  F1F8                          cerr:
+  F1F8    47                            ld      b,a
+  F1F9    CD F526                       call    hlsp
+  F1FC    7E                            ld      a,(hl)
+  F1FD    CD F65A                       call    lbyte
+  F200    CD F529                       call    blk
+  F203    78                            ld      a,b
+  F204    CD F65A                       call    lbyte
+  F207    C3 F5E1                       jp      crlf
+                                ;
+                                ;       display
+                                ;
+  F20A                          disp:
+  F20A    CD F5DC                       call    exlf
+  F20D    CD F523               lxd0:   call    lfadr
+  F210    CD F529               lxd1:   call    blk
+  F213    7E                            ld      a,(hl)
+  F214    CD F65A                       call    lbyte
+  F217    CD F639                       call    hildx
+  F21A    7D                            ld      a,l
+  F21B    E6 0F                         and     00fh
+  F21D    20 F1                         jr      nz,lxd1
+  F21F    18 EC                         jr      lxd0
+                                ;
+                                ;       eof ausgabe
+                                ;
+  F221                          eof:
+  F221    CD F60A                       call    expr1
+  F224    CD F5A3                       call    peol
+  F227    0E 3A                         ld      c,':'
+  F229    CD F5AA                       call    poo
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-7
+
+
+  F22C    AF                            xor     a
+  F22D    CD F6BE                       call    pbyte
+  F230    E1                            pop     hl
+  F231    CD F6B9                       call    padr
+  F234    21 0000                       ld      hl,0
+  F237    CD F6B9                       call    padr
+  F23A    C3 F5CE                       jp      null
+                                ;
+                                ;       fill
+                                ;
+  F23D                          fill:
+  F23D    CD F5FF                       call    expr3
+  F240    71                    lxf:    ld      (hl),c
+  F241    CD F63F                       call    hilo
+  F244    30 FA                         jr      nc,lxf
+  F246    D1                            pop     de
+  F247    C3 F0DC                       jp      start
+                                ;
+                                ;       exec other prgs
+                                ;
+  F24A                          goto:
+  F24A    CD F6DA                       call    pchk
+  F24D    38 40                         jr      c,lxg3
+  F24F    28 10                         jr      z,lxg0
+  F251    CD F631                       call    exf
+  F254    D1                            pop     de
+  F255    21 0034                       ld      hl,ploc
+  F258    39                            add     hl,sp
+  F259    72                            ld      (hl),d
+  F25A    2B                            dec     hl
+  F25B    73                            ld      (hl),e
+  F25C    78                            ld      a,b
+  F25D    FE 0D                         cp      cr
+  F25F    28 2E                         jr      z,lxg3
+  F261    16 02                 lxg0:   ld      d,2
+  F263    21 0035                       ld      hl,tloc
+  F266    39                            add     hl,sp
+  F267    E5                    lxg1:   push    hl
+  F268    CD F60A                       call    expr1
+  F26B    58                            ld      e,b
+  F26C    C1                            pop     bc
+  F26D    E1                            pop     hl
+  F26E    78                            ld      a,b
+  F26F    B1                            or      c
+  F270    28 0A                         jr      z,lxg2
+  F272    71                            ld      (hl),c
+  F273    23                            inc     hl
+  F274    70                            ld      (hl),b
+  F275    23                            inc     hl
+  F276    0A                            ld      a,(bc)
+  F277    77                            ld      (hl),a
+  F278    23                            inc     hl
+  F279    3E FF                         ld      a,0ffh
+  F27B    02                            ld      (bc),a
+  F27C    7B                    lxg2:   ld      a,e
+  F27D    FE 0D                         cp      cr
+  F27F    28 03                         jr      z,lxg2a
+  F281    15                            dec     d
+  F282    20 E3                         jr      nz,lxg1
+  F284    3E C3                 lxg2a:  ld      a,0c3h
+  F286    32 0038                       ld      (rst7),a
+  F289    21 F01E                       ld      hl,trap
+  F28C    22 0039                       ld      (rst7+1),hl
+  F28F    CD F5E1               lxg3:   call    crlf
+  F292    D1                            pop     de
+  F293    21 0016                       ld      hl,22
+  F296    39                            add     hl,sp
+  F297    E9                            jp      (hl)
+                                ;
+                                ;       test
+                                ;
+  F298                          test:
+  F298    CD F5DC                       call    exlf
+  F29B    7E                    lxt11:  ld      a,(hl)
+  F29C    47                            ld      b,a
+  F29D    2F                            cpl
+  F29E    77                            ld      (hl),a
+  F29F    AE                            xor     (hl)
+  F2A0    28 0E                         jr      z,lxt2
+  F2A2    D5                            push    de
+  F2A3    50                            ld      d,b
+  F2A4    5F                            ld      e,a
+  F2A5    CD F526                       call    hlsp
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-8
+
+
+  F2A8    CD F80E                       call    bits
+  F2AB    CD F5E1                       call    crlf
+  F2AE    42                            ld      b,d
+  F2AF    D1                            pop     de
+  F2B0    70                    lxt2:   ld      (hl),b
+  F2B1    CD F639                       call    hildx
+  F2B4    18 E5                         jr      lxt11
+                                ;
+                                ;       lde
+                                ;
+  F2B6                          move:
+  F2B6    CD F5FF                       call    expr3
+  F2B9    7E                    lxm:    ld      a,(hl)
+  F2BA    02                            ld      (bc),a
+  F2BB    03                            inc     bc
+  F2BC    CD F639                       call    hildx
+  F2BF    18 F8                         jr      lxm
+                                ;
+                                ;       read routine
+                                ;
+  F2C1                          read:
+  F2C1    CD F60A                       call    expr1
+  F2C4    78                            ld      a,b
+  F2C5    D6 0D                         sub     cr
+  F2C7    47                            ld      b,a
+  F2C8    4F                            ld      c,a
+  F2C9    D1                            pop     de
+  F2CA    28 04                         jr      z,lxr00
+  F2CC    CD F60A                       call    expr1
+  F2CF    C1                            pop     bc
+  F2D0    EB                    lxr00:  ex      de,hl
+  F2D1    D9                            exx
+  F2D2    CD F5E1                       call    crlf
+  F2D5    CD F722               lod0:   call    rix
+  F2D8    D6 3A                         sub     ':'
+  F2DA    47                            ld      b,a
+  F2DB    E6 FE                         and     0feh
+  F2DD    20 F6                         jr      nz,lod0
+  F2DF    57                            ld      d,a
+  F2E0    CD F35B                       call    sbyte
+  F2E3    5F                            ld      e,a
+  F2E4    CD F35B                       call    sbyte
+  F2E7    F5                            push    af
+  F2E8    CD F35B                       call    sbyte
+  F2EB    D9                            exx
+  F2EC    D1                            pop     de
+  F2ED    5F                            ld      e,a
+  F2EE    C5                            push    bc
+  F2EF    D5                            push    de
+  F2F0    E5                            push    hl
+  F2F1    19                            add     hl,de
+  F2F2    E3                            ex      (sp),hl
+  F2F3    DD E1                         pop     ix
+  F2F5    D9                            exx
+  F2F6    E1                            pop     hl
+  F2F7    CD F35B                       call    sbyte
+  F2FA    3D                            dec     a
+  F2FB    78                            ld      a,b
+  F2FC    C1                            pop     bc
+  F2FD    20 03                         jr      nz,arepa
+  F2FF    09                            add     hl,bc
+  F300    DD 09                         add     ix,bc
+  F302    1C                    arepa:  inc     e
+  F303    1D                            dec     e
+  F304    28 19                         jr      z,done
+  F306    3D                            dec     a
+  F307    28 22                         jr      z,lodr
+  F309    CD F35B               lxl11:  call    sbyte
+  F30C    CD F36E                       call    store
+  F30F    20 F8                         jr      nz,lxl11
+  F311    CD F35B               lod4:   call    sbyte
+  F314    28 BF                         jr      z,lod0
+  F316    DD E5                 err2:   push    ix
+  F318    E1                            pop     hl
+  F319    CD F655                       call    ladr
+  F31C    C3 F500                       jp      error
+  F31F    7C                    done:   ld      a,h
+  F320    B5                            or      l
+  F321    C8                            ret     z
+  F322    EB                            ex      de,hl
+  F323    21 0034                       ld      hl,ploc
+  F326    39                            add     hl,sp
+  F327    72                            ld      (hl),d
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-9
+
+
+  F328    2B                            dec     hl
+  F329    73                            ld      (hl),e
+  F32A    C9                            ret
+  F32B    2E 01                 lodr:   ld      l,1
+  F32D    CD F34B               lxl12:  call    lod03
+  F330    38 07                         jr      c,lxl33
+  F332    CD F36E               lxl5:   call    store
+  F335    20 F6                         jr      nz,lxl12
+  F337    18 D8                         jr      lod4
+  F339    4F                    lxl33:  ld      c,a
+  F33A    CD F34B                       call    lod03
+  F33D    47                            ld      b,a
+  F33E    D9                            exx
+  F33F    C5                            push    bc
+  F340    D9                            exx
+  F341    E3                            ex      (sp),hl
+  F342    09                            add     hl,bc
+  F343    7D                            ld      a,l
+  F344    CD F36E                       call    store
+  F347    7C                            ld      a,h
+  F348    E1                            pop     hl
+  F349    18 E7                         jr      lxl5
+  F34B    2D                    lod03:  dec     l
+  F34C    20 07                         jr      nz,lxl01
+  F34E    CD F35B                       call    sbyte
+  F351    1D                            dec     e
+  F352    67                            ld      h,a
+  F353    2E 08                         ld      l,8
+  F355    CD F35B               lxl01:  call    sbyte
+  F358    CB 24                         sla     h
+  F35A    C9                            ret
+                                
+  F35B                          sbyte:
+  F35B    C5                            push    bc
+  F35C    CD F6A6                       call    ribble
+  F35F    07                            rlca
+  F360    07                            rlca
+  F361    07                            rlca
+  F362    07                            rlca
+  F363    4F                            ld      c,a
+  F364    CD F6A6                       call    ribble
+  F367    B1                            or      c
+  F368    4F                            ld      c,a
+  F369    82                            add     a,d
+  F36A    57                            ld      d,a
+  F36B    79                            ld      a,c
+  F36C    C1                            pop     bc
+  F36D    C9                            ret
+                                
+  F36E                          store:
+  F36E    DD 77 00                      ld      (ix+0),a
+  F371    DD BE 00                      cp      (ix+0)
+  F374    20 A0                         jr      nz,err2
+  F376    DD 23                         inc     ix
+  F378    1D                            dec     e
+  F379    C9                            ret
+                                
+                                ;       subst
+                                ;
+  F37A                          subs:
+  F37A    CD F60A                       call    expr1
+  F37D    E1                            pop     hl
+  F37E    7E                    lxs0:   ld      a,(hl)
+  F37F    CD F65A                       call    lbyte
+  F382    CD F6D5                       call    copck
+  F385    D8                            ret     c
+  F386    28 0F                         jr      z,lxs1
+  F388    FE 5F                         cp      '_'
+  F38A    28 14                         jr      z,lxs2
+  F38C    E5                            push    hl
+  F38D    CD F631                       call    exf
+  F390    D1                            pop     de
+  F391    E1                            pop     hl
+  F392    73                            ld      (hl),e
+  F393    78                            ld      a,b
+  F394    FE 0D                         cp      cr
+  F396    C8                            ret     z
+  F397    23                    lxs1:   inc     hl
+  F398    7D                    lxs3:   ld      a,l
+  F399    E6 07                         and     7
+  F39B    CC F523                       call    z,lfadr
+  F39E    18 DE                         jr      lxs0
+  F3A0    2B                    lxs2:   dec     hl
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-10
+
+
+  F3A1    18 F5                         jr      lxs3
+                                ;
+                                ;       type
+                                ;
+  F3A3                          type:
+  F3A3    CD F5DC                       call    exlf
+  F3A6    CD F523               lxt0:   call    lfadr
+  F3A9    06 40                         ld      b,32+32
+  F3AB    7E                    lxt1:   ld      a,(hl)
+  F3AC    E6 7F                         and     7fh
+  F3AE    FE 20                         cp      ' '
+  F3B0    30 02                         jr      nc,lxt3
+  F3B2    3E 2E                 lxt22:  ld      a,'.'
+  F3B4    FE 7C                 lxt3:   cp      7ch
+  F3B6    30 FA                         jr      nc,lxt22
+  F3B8    4F                            ld      c,a
+  F3B9    CD F52B                       call    co
+  F3BC    CD F639                       call    hildx
+  F3BF    10 EA                         djnz    lxt1
+  F3C1    18 E3                         jr      lxt0
+                                ;
+                                ;       iobyte
+                                ;
+  F3C3                          iobyte:
+  F3C3    3A F8B4                       ld      a,(iobyt)
+  F3C6    C9                            ret
+                                ;
+                                ;       search
+                                ;
+  F3C7                          where:
+  F3C7    16 00                         ld      d,0
+  F3C9    CD F60A               lxw00:  call    expr1
+  F3CC    E1                            pop     hl
+  F3CD    65                            ld      h,l
+  F3CE    E5                            push    hl
+  F3CF    33                            inc     sp
+  F3D0    14                            inc     d
+  F3D1    78                            ld      a,b
+  F3D2    D6 0D                         sub     cr
+  F3D4    20 F3                         jr      nz,lxw00
+  F3D6    47                            ld      b,a
+  F3D7    4F                            ld      c,a
+  F3D8    67                            ld      h,a
+  F3D9    6A                            ld      l,d
+  F3DA    2D                            dec     l
+  F3DB    39                            add     hl,sp
+  F3DC    E5                            push    hl
+  F3DD    C5                            push    bc
+  F3DE    C5                    findc:  push    bc
+  F3DF    CD F5E1                       call    crlf
+  F3E2    C1                            pop     bc
+  F3E3    E1                    find:   pop     hl
+  F3E4    DD E1                         pop     ix
+  F3E6    5A                            ld      e,d
+  F3E7    DD 7E 00                      ld      a,(ix+0)
+  F3EA    ED B1                         cpir
+  F3EC    E2 F40A                       jp      po,done2
+  F3EF    DD E5                         push    ix
+  F3F1    E5                            push    hl
+  F3F2    1D                    found:  dec     e
+  F3F3    28 0B                         jr      z,tell
+  F3F5    DD 7E FF                      ld      a,(ix-1)
+  F3F8    BE                            cp      (hl)
+  F3F9    20 E8                         jr      nz,find
+  F3FB    23                            inc     hl
+  F3FC    DD 2B                         dec     ix
+  F3FE    18 F2                         jr      found
+  F400    E1                    tell:   pop     hl
+  F401    E5                            push    hl
+  F402    2B                            dec     hl
+  F403    C5                            push    bc
+  F404    CD F655                       call    ladr
+  F407    C1                            pop     bc
+  F408    18 D4                         jr      findc
+  F40A    33                    done2:  inc     sp
+  F40B    1D                            dec     e
+  F40C    20 FC                         jr      nz,done2
+  F40E    C9                            ret
+                                ;
+                                ;       write
+                                ;
+  F40F                          write:
+  F40F    CD F5DC                       call    exlf
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-11
+
+
+  F412    CD F5A3               lxw0:   call    peol
+  F415    01 003A                       ld      bc,':'
+  F418    CD F5AA                       call    poo
+  F41B    D5                            push    de
+  F41C    E5                            push    hl
+  F41D    04                    lxw1:   inc     b
+  F41E    CD F63F                       call    hilo
+  F421    38 24                         jr      c,lxw4
+  F423    3E 18                         ld      a,24
+  F425    90                            sub     b
+  F426    20 F5                         jr      nz,lxw1
+  F428    E1                            pop     hl
+  F429    CD F42F                       call    lxw2
+  F42C    D1                            pop     de
+  F42D    18 E3                         jr      lxw0
+  F42F    57                    lxw2:   ld      d,a
+  F430    78                            ld      a,b
+  F431    CD F6BE                       call    pbyte
+  F434    CD F6B9                       call    padr
+  F437    AF                            xor     a
+  F438    CD F6BE                       call    pbyte
+  F43B    7E                    lxw3:   ld      a,(hl)
+  F43C    CD F6BE                       call    pbyte
+  F43F    23                            inc     hl
+  F440    10 F9                         djnz    lxw3
+  F442    AF                            xor     a
+  F443    92                            sub     d
+  F444    C3 F6BE                       jp      pbyte
+  F447    E1                    lxw4:   pop     hl
+  F448    D1                            pop     de
+  F449    AF                            xor     a
+  F44A    18 E3                         jr      lxw2
+                                ;
+                                ;       xam!user reg
+                                ;
+  F44C                          xam:
+  F44C    CD F7DB                       call    ti
+  F44F    21 F870                       ld      hl,actbl
+  F452    FE 0D                         cp      cr
+  F454    28 5A                         jr      z,lxx6
+  F456    FE 27                         cp      27h
+  F458    20 0A                         jr      nz,lxx0
+  F45A    21 F889                       ld      hl,prmtb
+  F45D    CD F7DB                       call    ti
+  F460    FE 0D                         cp      cr
+  F462    28 4C                         jr      z,lxx6
+  F464    BE                    lxx0:   cp      (hl)
+  F465    28 09                         jr      z,lxx1
+  F467    CB 7E                         bit     7,(hl)
+  F469    C2 F500                       jp      nz,error
+  F46C    23                            inc     hl
+  F46D    23                            inc     hl
+  F46E    18 F4                         jr      lxx0
+  F470    CD F529               lxx1:   call    blk
+  F473    23                    lxx2:   inc     hl
+  F474    7E                            ld      a,(hl)
+  F475    47                            ld      b,a
+  F476    E6 3F                         and     3fh
+  F478    EB                            ex      de,hl
+  F479    6F                            ld      l,a
+  F47A    26 00                         ld      h,0
+  F47C    39                            add     hl,sp
+  F47D    EB                            ex      de,hl
+  F47E    23                            inc     hl
+  F47F    1A                            ld      a,(de)
+  F480    CD F65A                       call    lbyte
+  F483    CB 78                         bit     7,b
+  F485    28 05                         jr      z,lxx3
+  F487    1B                            dec     de
+  F488    1A                            ld      a,(de)
+  F489    CD F65A                       call    lbyte
+  F48C    CD F6D5               lxx3:   call    copck
+  F48F    D8                            ret     c
+  F490    28 19                         jr      z,lxx5
+  F492    E5                            push    hl
+  F493    C5                            push    bc
+  F494    CD F631                       call    exf
+  F497    E1                            pop     hl
+  F498    F1                            pop     af
+  F499    C5                            push    bc
+  F49A    F5                            push    af
+  F49B    7D                            ld      a,l
+  F49C    12                            ld      (de),a
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-12
+
+
+  F49D    C1                            pop     bc
+  F49E    CB 78                         bit     7,b
+  F4A0    28 03                         jr      z,lxx4
+  F4A2    13                            inc     de
+  F4A3    7C                            ld      a,h
+  F4A4    12                            ld      (de),a
+  F4A5    C1                    lxx4:   pop     bc
+  F4A6    E1                            pop     hl
+  F4A7    78                            ld      a,b
+  F4A8    FE 0D                         cp      cr
+  F4AA    C8                            ret     z
+  F4AB    CB 7E                 lxx5:   bit     7,(hl)
+  F4AD    C0                            ret     nz
+  F4AE    18 C3                         jr      lxx2
+  F4B0    CD F5E1               lxx6:   call    crlf
+  F4B3    CD F529               lxx7:   call    blk
+  F4B6    7E                            ld      a,(hl)
+  F4B7    23                            inc     hl
+  F4B8    B7                            or      a
+  F4B9    F8                            ret     m
+  F4BA    4F                            ld      c,a
+  F4BB    CD F52B                       call    co
+  F4BE    0E 3D                         ld      c,'='
+  F4C0    CD F52B                       call    co
+  F4C3    7E                            ld      a,(hl)
+  F4C4    47                            ld      b,a
+  F4C5    E6 3F                         and     3fh
+  F4C7    23                            inc     hl
+  F4C8    EB                            ex      de,hl
+  F4C9    6F                            ld      l,a
+  F4CA    26 00                         ld      h,0
+  F4CC    39                            add     hl,sp
+  F4CD    EB                            ex      de,hl
+  F4CE    CB 70                         bit     6,b
+  F4D0    20 0F                         jr      nz,lxx9
+  F4D2    1A                            ld      a,(de)
+  F4D3    CD F65A                       call    lbyte
+  F4D6    CB 78                         bit     7,b
+  F4D8    28 D9                         jr      z,lxx7
+  F4DA    1B                            dec     de
+  F4DB    1A                            ld      a,(de)
+  F4DC    CD F65A               lxx8:   call    lbyte
+  F4DF    18 D2                         jr      lxx7
+  F4E1    E5                    lxx9:   push    hl
+  F4E2    1A                            ld      a,(de)
+  F4E3    67                            ld      h,a
+  F4E4    1B                            dec     de
+  F4E5    1A                            ld      a,(de)
+  F4E6    6F                            ld      l,a
+  F4E7    7E                            ld      a,(hl)
+  F4E8    E1                            pop     hl
+  F4E9    18 F1                         jr      lxx8
+                                        page
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-13
+
+
+                                
+                                ;
+                                ;       message output routine
+                                ;
+  F4EB                          tom1:
+  F4EB    21 F025                       ld      hl,msg
+  F4EE                          tom:
+  F4EE    4E                            ld      c,(hl)
+  F4EF    23                            inc     hl
+  F4F0    CD F52B                       call    co
+  F4F3    10 F9                         djnz    tom
+  F4F5    CD F5E9                       call    csts
+  F4F8    B7                            or      a
+  F4F9    C8                            ret     z
+                                ;
+                                ;       if CRTL_C abort
+                                ;
+  F4FA                          cchk:
+  F4FA    CD F7D5                       call    ki
+  F4FD    FE 03                         cp      3
+  F4FF    C0                            ret     nz
+                                ;
+                                ;       error
+                                ;
+  F500                          error:
+  F500    CD F684                       call    memsiz
+  F503    11 FFEA                       ld      de,-22
+  F506    19                            add     hl,de
+  F507    F9                            ld      sp,hl
+  F508    0E 07                         ld      c,7
+  F50A    CD F52B                       call    co
+  F50D    0E 2A                         ld      c,'*'
+  F50F    CD F52B                       call    co
+  F512    C3 F0DC                       jp      start
+                                ;
+                                ;       reader input
+                                ;               abort on carry, compare with D
+                                ;
+  F515                          riff:
+  F515    CD F712                       call    ri
+  F518    38 E6                         jr      c,error
+  F51A    BA                            cp      d
+  F51B    C9                            ret
+                                ;
+                                ;       search mem
+                                ;
+  F51C                          size:
+  F51C    CD F684                       call    memsiz
+  F51F    01 0023                       ld      bc,endx-exit
+  F522    09                            add     hl,bc
+                                ;
+  F523                          lfadr:
+  F523    CD F5E1                       call    crlf
+                                ;
+  F526                          hlsp:
+  F526    CD F655                       call    ladr
+                                ;
+  F529                          blk:
+  F529    0E 20                         ld      c,' '
+                                ;
+                                ;       +++ main co routine +++  mod
+                                ;
+  F52B                          co:
+  F52B    3A F8B4                       ld      a,(iobyt)
+  F52E    E6 03                         and     3
+  F530    20 5F                         jr      nz,co1
+                                ;
+  F532                          ttyout:
+  F532    E5                            push    hl
+  F533    C5                            push    bc
+  F534    D5                            push    de
+  F535    C5                            push    bc
+                                
+  F536    AF                            xor     a
+  F537    D3 C1                         out     (0c1h),a
+  F539    D3 C0                         out     (0c0h),a
+                                
+  F53B    C1                            pop     bc
+  F53C    79                            ld      a,c
+  F53D    FE 00                         cp      0
+  F53F    28 31                         jr      z,toute
+  F541    FE 0C                         cp      0ch
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-14
+
+
+  F543    28 39                         jr      z,toutff
+  F545    FE 0D                         cp      cr
+  F547    28 18                         jr      z,toutcr
+  F549    FE 0A                         cp      lf
+  F54B    28 1F                         jr      z,toutlf
+  F54D    FE 07                         cp      bell
+  F54F    28 3A                         jr      z,toutb
+  F551    2A F8BE                       ld      hl,(bpos)
+  F554    77                            ld      (hl),a
+  F555    23                            inc     hl
+  F556    22 F8BE                       ld      (bpos),hl
+  F559    11 3780                       ld      de,bws+80*24
+  F55C    B7                            or      a
+  F55D    ED 52                         sbc     hl,de
+  F55F    20 11                         jr      nz,toute
+  F561    21 3050               toutcr: ld      hl,bws+80
+  F564    11 3000                       ld      de,bws
+  F567    01 0780                       ld      bc,80*24
+  F56A    ED B0                 tout:   ldir
+  F56C    21 3730               toutlf: ld      hl,bws+23*80
+  F56F    22 F8BE                       ld      (bpos),hl
+  F572                          toute:
+  F572    3E 47                         ld      a,01000111b
+  F574    D3 C0                         out     (0c0h),a
+  F576    3E 84                         ld      a,10000100b
+  F578    D3 C1                         out     (0c1h),a
+                                
+  F57A    D1                            pop     de
+  F57B    C1                            pop     bc
+  F57C    E1                            pop     hl
+  F57D    C9                            ret
+  F57E    21 3000               toutff: ld      hl,bws
+  F581    11 3001                       ld      de,bws+1
+  F584    01 07D0                       ld      bc,80*25
+  F587    36 20                         ld      (hl),' '
+  F589    18 DF                         jr      tout
+  F58B    3E BE                 toutb:  ld      a,10111110b
+  F58D    D3 A2                         out     (atss2),a
+  F58F    18 E1                         jr      toute
+                                ;
+  F591                          co1:
+  F591    C3 F8A8                       jp      userco                          ;dort Sprung moeglich
+                                ;
+                                ;       +++ main lo routine +++   mod
+                                ;
+  F594                          lo:
+  F594    3A F8B4                       ld      a,(iobyt)
+  F597    E6 C0                         and     0c0h
+  F599    CA F532                       jp      z,ttyout                        ;AL=T
+  F59C    FE 80                         cp      10000000b
+  F59E    C2 F8AE                       jp      nz,userlo
+  F5A1                          lo1:
+  F5A1    79                            ld      a,c
+  F5A2    C9                            ret
+                                ;
+                                ;
+                                ;
+  F5A3                          peol:
+  F5A3    0E 0D                         ld      c,cr
+  F5A5    CD F5AA                       call    poo
+  F5A8    0E 0A                         ld      c,lf
+                                ;
+                                ;       +++ main poo routine +++
+                                ;
+  F5AA                          poo:
+  F5AA    3A F8B4                       ld      a,(iobyt)
+  F5AD    E6 30                         and     00110000b
+  F5AF    CA F52B                       jp      z,co                            ;AP=T
+  F5B2    FE 10                         cp      00010000b
+  F5B4    C2 F8AB                       jp      nz,userpoo
+  F5B7                          lxlpo:
+  F5B7    79                            ld      a,c
+  F5B8    C9                            ret
+                                ;
+                                ;       unload
+                                ;
+  F5B9                          unlo:
+  F5B9    CD F5DC                       call    exlf
+  F5BC    CD F66E                       call    lead
+  F5BF    CD F669                       call    mark
+  F5C2    4E                    lxo:    ld      c,(hl)
+  F5C3    CD F5AA                       call    poo
+  F5C6    CD F63F                       call    hilo
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-15
+
+
+  F5C9    30 F7                         jr      nc,lxo
+  F5CB    CD F669                       call    mark
+                                ;
+                                ;       goto null
+                                ;       null punch
+                                ;
+  F5CE                          null:
+  F5CE    CD F66E                       call    lead
+  F5D1    C9                            ret
+                                ;
+  F5D2                          conv:
+  F5D2    E6 0F                         and     00fh
+  F5D4    C6 90                         add     a,90h
+  F5D6    27                            daa
+  F5D7    CE 40                         adc     a,40h
+  F5D9    27                            daa
+  F5DA    4F                            ld      c,a                             ;hex to ASC
+  F5DB    C9                            ret
+                                ;
+  F5DC                          exlf:
+  F5DC    CD F60C                       call    expr
+  F5DF    D1                            pop     de
+  F5E0    E1                            pop     hl
+                                ;
+  F5E1                          crlf:
+  F5E1    E5                            push    hl
+  F5E2    06 05                         ld      b,5
+  F5E4    CD F4EB                       call    tom1
+  F5E7    E1                            pop     hl
+  F5E8    C9                            ret
+                                ;
+                                ;       +++ main status routine +++
+                                ;
+  F5E9                          csts:
+  F5E9    3A F8B4                       ld      a,(iobyt)
+  F5EC    E6 03                         and     3
+  F5EE    20 0C                         jr      nz,cs0
+  F5F0                          ttycsts:
+  F5F0    DB A1                         in      a,(atss1)
+  F5F2    CB 5F                         bit     3,a
+  F5F4    3E 00                         ld      a,0
+  F5F6    20 02                         jr      nz,tsts
+  F5F8    3E FF                         ld      a,0ffh
+  F5FA    B7                    tsts:   or      a
+  F5FB    C9                            ret
+                                
+  F5FC    C3 F8B1               cs0:    jp      usercsts                        ;user bereich
+                                ;
+  F5FF                          expr3:
+  F5FF    0C                            inc     c
+  F600    CD F60C                       call    expr
+  F603    CD F5E1                       call    crlf
+  F606    C1                            pop     bc
+  F607    D1                            pop     de
+  F608    E1                            pop     hl
+  F609    C9                            ret
+                                ;
+  F60A                          expr1:
+  F60A    0E 01                         ld      c,1
+                                ;
+  F60C                          expr:
+  F60C    21 0000                       ld      hl,0
+  F60F    CD F7DB               ex0:    call    ti
+  F612    47                    ex1:    ld      b,a
+  F613    CD F6A9                       call    nibble
+  F616    38 08                         jr      c,lxex2
+  F618    29                            add     hl,hl
+  F619    29                            add     hl,hl
+  F61A    29                            add     hl,hl
+  F61B    29                            add     hl,hl
+  F61C    B5                            or      l
+  F61D    6F                            ld      l,a
+  F61E    18 EF                         jr      ex0
+  F620    E3                    lxex2:  ex      (sp),hl
+  F621    E5                            push    hl
+  F622    78                            ld      a,b
+  F623    CD F6DD                       call    qchk
+  F626    30 02                         jr      nc,lxex3
+  F628    0D                            dec     c
+  F629    C8                            ret     z
+  F62A    C2 F500               lxex3:  jp      nz,error
+  F62D    0D                            dec     c
+  F62E    20 DC                         jr      nz,expr
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-16
+
+
+  F630    C9                            ret
+  F631                          exf:
+  F631    0E 01                         ld      c,1
+  F633    21 0000                       ld      hl,0
+  F636    C3 F612                       jp      ex1
+                                ;
+  F639                          hildx:
+  F639    CD F63F                       call    hilo
+  F63C    D0                            ret     nc
+  F63D    D1                            pop     de
+  F63E    C9                            ret
+                                ;
+  F63F                          hilo:
+  F63F    23                            inc     hl
+  F640    7C                            ld      a,h
+  F641    B5                            or      l
+  F642    37                            scf
+  F643    C8                            ret     z
+  F644    7B                            ld      a,e
+  F645    95                            sub     l
+  F646    7A                            ld      a,d
+  F647    9C                            sbc     a,h
+  F648    C9                            ret
+                                ;
+                                ;       hex math
+                                ;
+  F649                          hexn:
+  F649    CD F5DC                       call    exlf
+  F64C    E5                            push    hl
+  F64D    19                            add     hl,de
+  F64E    CD F526                       call    hlsp
+  F651    E1                            pop     hl
+  F652    B7                            or      a
+  F653    ED 52                         sbc     hl,de
+  F655                          ladr:
+  F655    7C                            ld      a,h
+  F656    CD F65A                       call    lbyte
+  F659    7D                            ld      a,l
+  F65A                          lbyte:
+  F65A    F5                            push    af
+  F65B    0F                            rrca
+  F65C    0F                            rrca
+  F65D    0F                            rrca
+  F65E    0F                            rrca
+  F65F    CD F663                       call    lxr22
+  F662    F1                            pop     af
+  F663    CD F5D2               lxr22:  call    conv
+  F666    C3 F52B                       jp      co
+                                ;
+  F669                          mark:
+  F669    01 08FF                       ld      bc,8ffh
+  F66C    18 03                         jr      leo
+                                ;
+  F66E                          lead:
+  F66E    01 4800                       ld      bc,4800h
+  F671    CD F5AA               leo:    call    poo
+  F674    10 FB                         djnz    leo
+  F676    C9                            ret
+                                ;
+  F677                          memck:
+  F677    E5                            push    hl
+  F678    CD F684                       call    memsiz
+  F67B    7D                            ld      a,l
+  F67C    D6 3C                         sub     3ch
+  F67E    30 01                         jr      nc,lxbz
+  F680    25                            dec     h
+  F681    44                    lxbz:   ld      b,h
+  F682    E1                            pop     hl
+  F683    C9                            ret
+                                ;
+  F684                          memsiz:
+  F684    C5                            push    bc
+  F685    21 FFFF                       ld      hl,-1
+  F688    24                    lxm0:   inc     h
+  F689    7E                            ld      a,(hl)
+  F68A    2F                            cpl
+  F68B    77                            ld      (hl),a
+  F68C    BE                            cp      (hl)
+  F68D    2F                            cpl
+  F68E    77                            ld      (hl),a
+  F68F    20 F7                         jr      nz,lxm0
+  F691    24                    lxm1:   inc     h
+  F692    7C                            ld      a,h
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-17
+
+
+  F693    FE F0                         cp      0f0h                            ;all RAM
+  F695    28 08                         jr      z,lxm2                          ;ready 0f000h
+  F697    7E                            ld      a,(hl)
+  F698    2F                            cpl
+  F699    77                            ld      (hl),a
+  F69A    BE                            cp      (hl)
+  F69B    2F                            cpl
+  F69C    77                            ld      (hl),a
+  F69D    28 F2                         jr      z,lxm1
+  F69F    25                    lxm2:   dec     h
+  F6A0    01 FFDD                       ld      bc,exit-endx
+  F6A3    09                            add     hl,bc
+  F6A4    C1                            pop     bc
+  F6A5    C9                            ret
+                                ;
+  F6A6                          ribble:
+  F6A6    CD F722                       call    rix
+  F6A9                          nibble:
+  F6A9    D6 30                         sub     '0'
+  F6AB    D8                            ret     c
+  F6AC    FE 17                         cp      'G'-'0'
+  F6AE    3F                            ccf
+  F6AF    D8                            ret     c
+  F6B0    FE 0A                         cp      10
+  F6B2    3F                            ccf
+  F6B3    D0                            ret     nc
+  F6B4    D6 07                         sub     'A'-'9'-1
+  F6B6    FE 0A                         cp      00ah
+  F6B8    C9                            ret
+                                ;
+  F6B9                          padr:
+  F6B9    7C                            ld      a,h
+  F6BA    CD F6BE                       call    pbyte
+  F6BD    7D                            ld      a,l
+                                ;
+  F6BE                          pbyte:
+  F6BE    F5                            push    af
+  F6BF    0F                            rrca
+  F6C0    0F                            rrca
+  F6C1    0F                            rrca
+  F6C2    0F                            rrca
+  F6C3    CD F5D2                       call    conv
+  F6C6    CD F5AA                       call    poo
+  F6C9    F1                            pop     af
+  F6CA    F5                            push    af
+  F6CB    CD F5D2                       call    conv
+  F6CE    CD F5AA                       call    poo
+  F6D1    F1                            pop     af
+  F6D2    82                            add     a,d
+  F6D3    57                            ld      d,a
+  F6D4    C9                            ret
+                                ;
+  F6D5                          copck:
+  F6D5    0E 2D                         ld      c,'-'
+  F6D7    CD F52B                       call    co
+  F6DA                          pchk:
+  F6DA    CD F7DB                       call    ti
+  F6DD                          qchk:
+  F6DD    FE 20                         cp      ' '
+  F6DF    C8                            ret     z
+  F6E0    FE 2C                         cp      ','
+  F6E2    C8                            ret     z
+  F6E3    FE 0D                         cp      cr
+  F6E5    37                            scf
+  F6E6    C8                            ret     z
+  F6E7    3F                            ccf
+  F6E8    C9                            ret
+                                ;
+                                ;       +++ main ci routine +++
+                                ;
+  F6E9                          ci:
+  F6E9    3A F8B4                       ld      a,(iobyt)
+  F6EC    E6 03                         and     3
+  F6EE    20 1F                         jr      nz,ci1
+  F6F0                          ttyin:
+  F6F0    DB A1                         in      a,(atss1)
+  F6F2    CB 5F                         bit     3,a
+  F6F4    20 FA                         jr      nz,ttyin
+  F6F6    C5                            push    bc
+  F6F7    F5                            push    af
+  F6F8    DB A0                         in      a,(atsd)
+  F6FA    47                            ld      b,a
+  F6FB    F1                            pop     af
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-18
+
+
+  F6FC    CB 57                         bit     2,a
+  F6FE    20 0C                         jr      nz,ta21
+  F700    78                            ld      a,b
+  F701    FE 60                         cp      60h
+  F703    30 07                         jr      nc,ta21
+  F705    FE 40                         cp      40h
+  F707    38 03                         jr      c,ta21
+  F709    D6 40                         sub     40h
+  F70B    47                            ld      b,a
+  F70C    78                    ta21:   ld      a,b
+  F70D    C1                            pop     bc
+  F70E    C9                            ret
+                                
+  F70F    C3 F8A2               ci1:    jp      userci
+                                ;
+                                ;       +++ main ri routine +++
+                                ;
+  F712                          ri:
+  F712    3A F8B4                       ld      a,(iobyt)
+  F715    E6 0C                         and     00001100b
+  F717    CA F6E9                       jp      z,ci                            ;AP=T
+  F71A    FE 04                         cp      00000100b
+  F71C    C2 F8A5                       jp      nz,userri
+  F71F                          lxlpi:                                          ;AP=P
+  F71F    C3 F8A5                       jp      userri
+                                ;
+  F722                          rix:
+  F722    CD F515                       call    riff
+  F725    E6 7F                         and     7fh
+  F727    C9                            ret
+                                ;
+  F728                          load:
+  F728    CD F60A                       call    expr1
+  F72B    E1                            pop     hl
+  F72C    CD F5E1                       call    crlf
+  F72F    16 FF                         ld      d,0ffh
+  F731    06 04                 lxl0:   ld      b,4
+  F733    CD F515               lxll1:  call    riff
+  F736    20 F9                         jr      nz,lxl0
+  F738    10 F9                         djnz    lxll1
+  F73A    CD F515               lxl2:   call    riff
+  F73D    28 FB                         jr      z,lxl2
+  F73F    77                            ld      (hl),a
+  F740    3E 07                         ld      a,7
+                                ;       +++ out tty +++
+  F742    23                    lxl3:   inc     hl
+  F743    CD F515                       call    riff
+  F746    28 03                         jr      z,lxel
+  F748    77                            ld      (hl),a
+  F749    18 F7                         jr      lxl3
+  F74B    1E 01                 lxel:   ld      e,1
+  F74D    CD F515               lxel0:  call    riff
+  F750    20 09                         jr      nz,lxel1
+  F752    1C                            inc     e
+  F753    3E 07                         ld      a,7                             ;max +++
+  F755    BB                            cp      e
+  F756    20 F5                         jr      nz,lxel0
+  F758    C3 F655                       jp      ladr
+  F75B    72                    lxel1:  ld      (hl),d
+  F75C    23                            inc     hl
+  F75D    1D                            dec     e
+  F75E    20 FB                         jr      nz,lxel1
+  F760    77                            ld      (hl),a
+  F761    18 DF                         jr      lxl3
+                                ;
+                                ;
+                                ;
+                                        page
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-19
+
+
+                                
+  F763                          restart:
+  F763    E5                            push    hl      
+  F764    D5                            push    de
+  F765    C5                            push    bc
+  F766    F5                            push    af
+  F767    CD F684                       call    memsiz
+  F76A    EB                            ex      de,hl
+  F76B    21 000A                       ld      hl,10
+  F76E    39                            add     hl,sp
+  F76F    06 04                         ld      b,4
+  F771    EB                            ex      de,hl
+  F772    2B                    lxr0:   dec     hl
+  F773    72                            ld      (hl),d
+  F774    2B                            dec     hl
+  F775    73                            ld      (hl),e
+  F776    D1                            pop     de
+  F777    10 F9                         djnz    lxr0
+  F779    C1                            pop     bc
+  F77A    0B                            dec     bc
+  F77B    F9                            ld      sp,hl
+  F77C    21 0025                       ld      hl,tlocx
+  F77F    39                            add     hl,sp
+  F780    7E                            ld      a,(hl)
+  F781    91                            sub     c
+  F782    23                            inc     hl
+  F783    20 04                         jr      nz,lxr1
+  F785    7E                            ld      a,(hl)
+  F786    90                            sub     b
+  F787    28 0C                         jr      z,lxr3
+  F789    23                    lxr1:   inc     hl
+  F78A    23                            inc     hl
+  F78B    7E                            ld      a,(hl)
+  F78C    91                            sub     c
+  F78D    20 05                         jr      nz,lxr2
+  F78F    23                            inc     hl
+  F790    7E                            ld      a,(hl)
+  F791    90                            sub     b
+  F792    28 01                         jr      z,lxr3
+  F794    03                    lxr2:   inc     bc
+  F795    21 0020               lxr3:   ld      hl,llocx
+  F798    39                            add     hl,sp
+  F799    73                            ld      (hl),e
+  F79A    23                            inc     hl      
+  F79B    72                            ld      (hl),d
+  F79C    23                            inc     hl
+  F79D    23                            inc     hl
+  F79E    71                            ld      (hl),c
+  F79F    23                            inc     hl
+  F7A0    70                            ld      (hl),b
+  F7A1    C5                            push    bc
+  F7A2    0E 40                         ld      c,'@'
+  F7A4    CD F52B                       call    co
+  F7A7    E1                            pop     hl
+  F7A8    CD F655                       call    ladr
+  F7AB    21 0025                       ld      hl,tlocx
+  F7AE    39                            add     hl,sp
+  F7AF    01 0200                       ld      bc,200h
+  F7B2    5E                    lxr4:   ld      e,(hl)
+  F7B3    71                            ld      (hl),c
+  F7B4    23                            inc     hl
+  F7B5    56                            ld      d,(hl)
+  F7B6    71                            ld      (hl),c
+  F7B7    23                            inc     hl
+  F7B8    7B                            ld      a,e
+  F7B9    B2                            or      d
+  F7BA    28 02                         jr      z,lxr5
+  F7BC    7E                            ld      a,(hl)
+  F7BD    12                            ld      (de),a
+  F7BE    23                    lxr5:   inc     hl
+  F7BF    10 F1                         djnz    lxr4
+  F7C1    08                            ex      AF,AF'
+  F7C2    D9                            exx
+  F7C3    E5                            push    hl
+  F7C4    D5                            push    de
+  F7C5    C5                            push    bc
+  F7C6    F5                            push    af
+  F7C7    DD E5                         push    ix
+  F7C9    FD E5                         push    iy
+  F7CB    ED 57                         ld      a,i
+  F7CD    47                            ld      b,a
+  F7CE    ED 5F                         ld      a,r
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-20
+
+
+  F7D0    4F                            ld      c,a
+  F7D1    C5                            push    bc
+  F7D2    C3 F0DC                       jp      start
+                                ;
+                                ;
+                                ;
+  F7D5                          ki:
+  F7D5    CD F6E9                       call    ci
+  F7D8    E6 7F                         and     7fh
+  F7DA    C9                            ret
+                                ;
+  F7DB                          ti:
+  F7DB    CD F7D5                       call    ki
+  F7DE    C8                            ret     z
+  F7DF    3C                            inc     a
+  F7E0    F8                            ret     m
+  F7E1    3D                            dec     a
+  F7E2    FE 0D                         cp      cr
+  F7E4    C8                            ret     z
+  F7E5    FE 4E                         cp      'N'
+  F7E7    C8                            ret     z
+  F7E8    FE 6E                         cp      'n'
+  F7EA    28 0D                         jr      z,lxt
+  F7EC    C5                            push    bc
+  F7ED    4F                            ld      c,a
+  F7EE    CD F52B                       call    co
+  F7F1    79                            ld      a,c
+  F7F2    C1                            pop     bc
+  F7F3    FE 40                         cp      'A'-1
+  F7F5    D8                            ret     c
+  F7F6    FE 7B                         cp      'z'+1
+  F7F8    D0                            ret     nc
+  F7F9    E6 5F                 lxt:    and     5fh
+  F7FB    C9                            ret
+                                ;
+                                ;
+                                ;
+  F7FC                          query:
+  F7FC    CD F7DB                       call    ti
+  F7FF    FE 4F                         cp      'O'
+  F801    28 1C                         jr      z,quo
+  F803    FE 49                         cp      'I'
+  F805    C2 F500                       jp      nz,error
+  F808    CD F60A                       call    expr1
+  F80B    C1                            pop     bc
+  F80C    ED 58                         in      e,(c)
+  F80E    06 08                 bits:   ld      b,8
+  F810    CD F529                       call    blk
+  F813    CB 23                 lxq2:   sla     e
+  F815    3E 18                         ld      a,'0' shr 1
+  F817    8F                            adc     a,a
+  F818    4F                            ld      c,a
+  F819    CD F52B                       call    co
+  F81C    10 F5                         djnz    lxq2
+  F81E    C9                            ret
+  F81F    CD F60C               quo:    call    expr
+  F822    D1                            pop     de
+  F823    C1                            pop     bc
+  F824    ED 59                         out     (c),e
+  F826    C9                            ret
+                                ;
+                                ;       verify
+                                ;
+  F827                          verify:
+  F827    CD F5FF                       call    expr3
+  F82A    0A                    veri0:  ld      a,(bc)
+  F82B    BE                            cp      (hl)
+  F82C    28 05                         jr      z,lxbbn
+  F82E    C5                            push    bc
+  F82F    CD F1F8                       call    cerr
+  F832    C1                            pop     bc
+  F833    03                    lxbbn:  inc     bc
+  F834    CD F639                       call    hildx
+  F837    18 F1                         jr      veri0
+                                ;
+                                        page
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-21
+
+
+                                
+                                ;
+                                ;       io lookup table
+                                ;
+  F839                          ltbl:
+  F839    43 54 56 42                   defb    'C','T','V','B','U'
+  F83D    55                    
+  F83E    52 54 50 43                   defb    'R','T','P','C','U'
+  F842    55                    
+  F843    50 54 50 43                   defb    'P','T','P','C','U'
+  F847    55                    
+  F848    4C 54 56 4C                   defb    'L','T','V','L','U'
+  F84C    55                    
+                                
+  F84D                          exit:
+  F84D    C1                            pop     bc
+  F84E    79                            ld      a,c
+  F84F    ED 4F                         ld      r,a
+  F851    78                            ld      a,b
+  F852    ED 47                         ld      i,a
+  F854    FD E1                         pop     iy
+  F856    DD E1                         pop     ix
+  F858    F1                            pop     af
+  F859    C1                            pop     bc
+  F85A    D1                            pop     de
+  F85B    E1                            pop     hl
+  F85C    08                            ex      AF,AF'
+  F85D    D9                            exx
+  F85E    D1                            pop     de
+  F85F    C1                            pop     bc
+  F860    F1                            pop     af
+  F861    E1                            pop     hl
+  F862    F9                            ld      sp,hl
+  F863    00                            nop
+  F864    21 0000                       ld      hl,0
+  F867    C3 0000                       jp      0
+                                
+  F86A    0000                          defw    0
+  F86C    00                            defb    0
+  F86D    0000                          defw    0
+  F86F    00                            defb    0                               ;trap area
+                                
+  F870                          endx:
+  0015                          aloc    equ     15h
+  0013                          bloc    equ     13h
+  0012                          cloc    equ     12h
+  0011                          dloc    equ     11h
+  0010                          eloc    equ     10h
+  0014                          floc    equ     14h
+  0031                          hloc    equ     31h
+  0030                          lloc    equ     30h
+  0034                          ploc    equ     34h
+  0017                          sloc    equ     17h
+  0035                          tloc    equ     35h
+  0025                          tlocx   equ     25h
+  0020                          llocx   equ     20h
+                                
+  0009                          aploc   equ     9
+  000B                          bploc   equ     0bh
+  000A                          cploc   equ     0ah
+  000D                          dploc   equ     0dh
+  000C                          eploc   equ     0ch
+  0008                          fploc   equ     8
+  000F                          hploc   equ     0fh
+  000E                          lploc   equ     0eh
+  0007                          xloc    equ     7
+  0005                          yloc    equ     5
+  0002                          rloc    equ     2
+  0003                          iloc    equ     3
+                                
+                                        page
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-22
+
+
+                                
+  F870                          actbl:
+  F870    41 15                         defb    'A',aloc or 0
+  F872    42 13                         defb    'B',bloc or 0
+  F874    43 12                         defb    'C',cloc or 0
+  F876    44 11                         defb    'D',dloc or 0
+  F878    45 10                         defb    'E',eloc or 0
+  F87A    46 14                         defb    'F',floc or 0
+  F87C    48 31                         defb    'H',hloc or 0
+  F87E    4C 30                         defb    'L',lloc or 0
+  F880    4D F1                         defb    'M',hloc or 0c0h
+  F882    50 B4                         defb    'P',ploc or 080h
+  F884    53 97                         defb    'S',sloc or 080h
+  F886    49 03                         defb    'I',iloc or 0
+                                
+  F888    C1                            defb    0c1h
+                                
+  F889                          prmtb:
+  F889    41 09                         defb    'A',aploc or 0
+  F88B    42 0B                         defb    'B',bploc or 0
+  F88D    43 0A                         defb    'C',cploc or 0
+  F88F    44 0D                         defb    'D',dploc or 0
+  F891    45 0C                         defb    'E',eploc or 0
+  F893    46 08                         defb    'F',fploc or 0
+  F895    48 0F                         defb    'H',hploc or 0
+  F897    4C 0E                         defb    'L',lploc or 0
+  F899    4D CF                         defb    'M',hploc or 0c0h
+  F89B    58 87                         defb    'X',xloc or 080h
+  F89D    59 85                         defb    'Y',yloc or 080h
+  F89F    52 02                         defb    'R',rloc or 0
+                                
+  F8A1    C1                            defb    0c1h
+                                
+  F8A2                          tabstart:                                       ;Tabelle Sprungvectoren
+  F8A2    C3 F6F0               userci:         jp      ttyin
+  F8A5    C3 F6F0               userri:         jp      ttyin
+  F8A8    C3 F532               userco:         jp      ttyout
+  F8AB    C3 F532               userpoo:        jp      ttyout
+  F8AE    C3 F532               userlo:         jp      ttyout
+  F8B1    C3 F5F0               usercsts:       jp      ttycsts
+                                
+  F8B4    00                    iobyt:  defb    0
+  F8B5                          oexec:  defs    3
+  F8B8                          iexec:  defs    3
+  F8BB                          kexec:  defs    3
+                                ;
+  3000                          bws     equ     3000h
+  00A0                          atsd    equ     0a0h
+  00A1                          atss1   equ     0a1h
+  00A2                          atss2   equ     0a2h
+                                
+  F8BE                          bpos:   defs    0
+                                        page
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    1-23
+
+
+                                
+                                ;       include SOFT.MAC
+                                
+  F8BE                          soft:
+  F8BE    AF                            xor     a
+  F8BF    C9                            ret
+                                
+                                
+                                
+  F8C0                          lastmon:
+  F8C0    00                            defb    0                               ;last storage
+                                        .dephase
+                                
+                                        end     beginn
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    S
+
+
+Macros:
+
+Symbols:
+F870    ACTBL           F0BA    AHEAD           0015    ALOC            
+0004'   ANF             0009    APLOC           F17B    AREP0           
+F184    AREP1           F1D1    AREP11          F185    AREP22          
+F1E0    AREP23          F192    AREP33          F1E5    AREP34          
+F302    AREPA           F16F    ASSIGN          00A0    ATSD            
+00A1    ATSS1           00A2    ATSS2           F0AE    BEGIN           
+0000'   BEGINN          0007    BELL            F80E    BITS            
+F529    BLK             0013    BLOC            F147    BOOT1           
+000B    BPLOC           F8BE    BPOS            3000    BWS             
+F1BC    BYE             F4FA    CCHK            F1F8    CERR            
+F6E9    CI              F70F    CI1             0012    CLOC            
+F52B    CO              F591    CO1             F1E9    COMP            
+F5D2    CONV            F6D5    COPCK           000A    CPLOC           
+000D    CR              F5E1    CRLF            F5FC    CS0             
+F5E9    CSTS            F20A    DISP            0011    DLOC            
+F31F    DONE            F40A    DONE2           000D    DPLOC           
+0010    ELOC            F870    ENDX            F221    EOF             
+000C    EPLOC           F316    ERR2            F500    ERROR           
+F60F    EX0             F612    EX1             F631    EXF             
+F84D    EXIT            F5DC    EXLF            F60C    EXPR            
+F60A    EXPR1           F5FF    EXPR3           0000    FIL             
+F23D    FILL            F3E3    FIND            F3DE    FINDC           
+0014    FLOC            F13A    FLPMSG          F3F2    FOUND           
+0008    FPLOC           F24A    GOTO            0012'   HAUPTP          
+F0D2    HELLO           F649    HEXN            F639    HILDX           
+F63F    HILO            0031    HLOC            F526    HLSP            
+000F    HPLOC           F8B8    IEXEC           0003    ILOC            
+F8B4    IOBYT           F3C3    IOBYTE          F1B7    IOSET           
+F8BB    KEXEC           F7D5    KI              F655    LADR            
+F8C0    LASTMON         F65A    LBYTE           F66E    LEAD            
+F671    LEO             000A    LF              F523    LFADR           
+0030    LLOC            0020    LLOCX           F594    LO              
+F5A1    LO1             F728    LOAD            F2D5    LOD0            
+F34B    LOD03           F311    LOD4            F32B    LODR            
+000E    LPLOC           F839    LTBL            F19C    LXA4            
+F19F    LXA5            F1AA    LXA6            F1AC    LXA7            
+F833    LXBBN           F1BF    LXBY            F681    LXBZ            
+F1EC    LXC             F20D    LXD0            F210    LXD1            
+F74B    LXEL            F74D    LXEL0           F75B    LXEL1           
+F199    LXERR           F620    LXEX2           F62A    LXEX3           
+F240    LXF             F261    LXG0            F267    LXG1            
+F27C    LXG2            F284    LXG2A           F28F    LXG3            
+F731    LXL0            F355    LXL01           F309    LXL11           
+F32D    LXL12           F73A    LXL2            F742    LXL3            
+F339    LXL33           F332    LXL5            F733    LXLL1           
+F71F    LXLPI           F5B7    LXLPO           F2B9    LXM             
+F688    LXM0            F691    LXM1            F69F    LXM2            
+F5C2    LXO             F813    LXQ2            F772    LXR0            
+F2D0    LXR00           F789    LXR1            F794    LXR2            
+F663    LXR22           F795    LXR3            F7B2    LXR4            
+F7BE    LXR5            F37E    LXS0            F397    LXS1            
+F3A0    LXS2            F398    LXS3            F7F9    LXT             
+F3A6    LXT0            F3AB    LXT1            F29B    LXT11           
+F2B0    LXT2            F3B2    LXT22           F3B4    LXT3            
+F412    LXW0            F3C9    LXW00           F41D    LXW1            
+F42F    LXW2            F43B    LXW3            F447    LXW4            
+F464    LXX0            F470    LXX1            F473    LXX2            
+F48C    LXX3            F4A5    LXX4            F4AB    LXX5            
+F4B0    LXX6            F4B3    LXX7            F4DC    LXX8            
+F4E1    LXX9            F669    MARK            0007    MAX             
+F677    MEMCK           F684    MEMSIZ          F2B6    MOVE            
+F025    MSG             0089    MSGL            F6A9    NIBBLE          
+F5CE    NULL            F8B5    OEXEC           F6B9    PADR            
+F6BE    PBYTE           F6DA    PCHK            F5A3    PEOL            
+0034    PLOC            F5AA    POO             F164    PRINT           
+F889    PRMTB           F1CA    PUTA            F6DD    QCHK            
+F7FC    QUERY           F81F    QUO             F2C1    READ            
+F763    RESTART         F712    RI              F6A6    RIBBLE          
+F515    RIFF            F722    RIX             0002    RLOC            
+0038    RST7            00FF    RUB             F35B    SBYTE           
+F51C    SIZE            0017    SLOC            F8BE    SOFT            
+F0E8    STAR0           F0DC    START           F0CF    STKIT           
+F36E    STORE           F37A    SUBS            F70C    TA21            
+F8A2    TABSTART        F106    TBL             F400    TELL            
+F298    TEST            F7DB    TI              0035    TLOC            
+0025    TLOCX           F4EE    TOM             F4EB    TOM1            
+F56A    TOUT            F58B    TOUTB           F561    TOUTCR          
+F572    TOUTE           F57E    TOUTFF          F56C    TOUTLF          
+F01E    TRAP            F5FA    TSTS            F5F0    TTYCSTS         
+'monitor   MH-Computer   1184  2.2'     MACRO-80 3.44   09-Dec-81       PAGE    S-1
+
+
+F6F0    TTYIN           F532    TTYOUT          F3A3    TYPE            
+F5B9    UNLO            F8A2    USERCI          F8A8    USERCO          
+F8B1    USERCSTS        F8AE    USERLO          F8AB    USERPOO         
+F8A5    USERRI          F82A    VERI0           F827    VERIFY          
+F3C7    WHERE           F40F    WRITE           F44C    XAM             
+0007    XLOC            0005    YLOC            
+
+
+
+No Fatal error(s)
+

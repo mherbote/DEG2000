@@ -1,0 +1,13 @@
+;****************************************************************
+;*               Interruptvektortabelle LBL 1210                *
+;****************************************************************
+LT.ITABL: DW	LA.ILBLE	;INTBEHANDLUNG ENDE
+          DW	LA.ILBLS	;INTBEHANDLUNG STATUS
+;****************************************************************
+;*               Interruptvektortabelle LBS 1215                *
+;****************************************************************
+LT.ITABS: DW	LA.ILBSE	;INTBEHANDLUNG ENDE
+          DW	LA.ILBSS	;INTBEHANDLUNG STATUS
+;
+;      END
+
