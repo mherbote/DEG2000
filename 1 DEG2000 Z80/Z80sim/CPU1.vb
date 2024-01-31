@@ -2136,7 +2136,7 @@ Public Class CPU1
 
         Catch ex As Exception
             MsgBox("CPU1.CPU: " + ex.Message & vbCrLf &
-                   "PC=" + COMMON.HexAnzeige_WordByte(COMMON.vZ80cpu.PC, "B ") & vbCrLf &
+                   "PC=" + COMMON.HexAnzeige_WordByte(COMMON.vZ80cpu.PC, "B") & vbCrLf &
                    "HL=" + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.H) + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.L) & vbCrLf &
                    "DE=" + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.D) + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.E) & vbCrLf &
                    "BC=" + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.B) + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.C)

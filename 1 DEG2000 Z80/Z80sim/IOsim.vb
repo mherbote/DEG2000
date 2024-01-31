@@ -114,6 +114,7 @@ Public Class IOsim
 #Region "Set Port's for Keyboard A0H"
         port(&HA0, 0) = New op_funcb(AddressOf Tast_in_d)
         port(&HA1, 0) = New op_funcb(AddressOf Tast_in_s1)
+        port(&HA0, 1) = New op_funcb(AddressOf Tast_out_s0)
         port(&HA1, 1) = New op_funcb(AddressOf Tast_out_s1)
         port(&HA2, 1) = New op_funcb(AddressOf Tast_out_s2)
 #End Region
@@ -808,11 +809,41 @@ Public Class IOsim
     Private Function Tast_in_s1() As Byte
         Tast_in_s1 = GetStat()
     End Function
-    Private Function Tast_out_s1() As Byte
+
+    Private Function Tast_out_s0(ByVal data As Byte) As Byte
+        Dim i As Int16
+
+        Select Case data
+            Case 4                                                                   'Fehleranzeige ein
+                Call Tastatur.Fehleranzeige(Drawing.Color.Red)
+            Case 14                                                                  'Fehleranzeige aus
+                Call Tastatur.Fehleranzeige(Drawing.Color.WhiteSmoke)
+            Case 24                                                                  'Fehleranzeige ein & Hupe lang
+                Call Tastatur.Fehleranzeige(Drawing.Color.Red)
+                Tastatur.Refresh()
+                For i = 1 To 3
+                    My.Computer.Audio.Play(COMMON.WavVerzeichnis + "\Alarm05.wav")
+                    Threading.Thread.Sleep(1000)
+                Next i
+            Case 5                                                                   'Hupe lang
+                My.Computer.Audio.Play(COMMON.WavVerzeichnis + "\Alarm05.wav")
+                Threading.Thread.Sleep(3000)
+            Case 6                                                                   'Hupe kurz
+                My.Computer.Audio.Play(COMMON.WavVerzeichnis + "\Windows Error.wav")
+                Threading.Thread.Sleep(3000)
+            Case 7                                                                   'INS_MOD ein
+                Tastatur.Button122.BackColor = Drawing.Color.Red
+            Case 17                                                                  'INS_MOD aus
+                Tastatur.Button122.BackColor = Drawing.Color.WhiteSmoke
+        End Select
+
+        Tast_out_s0 = 0
+    End Function
+    Private Function Tast_out_s1(ByVal data As Byte) As Byte
 
         Tast_out_s1 = 0
     End Function
-    Private Function Tast_out_s2() As Byte
+    Private Function Tast_out_s2(ByVal data As Byte) As Byte
 
         Tast_out_s2 = 0
     End Function

@@ -157,6 +157,7 @@ Public Class Haupt
         COMMON.MemVerzeichnis = ProgVerz + My.Settings.MemVerzeichnis
         COMMON.COMVerzeichnis = ProgVerz + My.Settings.COMVerzeichnis
         COMMON.TapeVerzeichnis = ProgVerz + My.Settings.TapeVerzeichnis
+        COMMON.WavVerzeichnis = ProgVerz + My.Settings.WavVerzeichnis
         COMMON.FontDateinameStart = ProgVerz + My.Settings.FontVerzeichnis + "\" + My.Settings.FontDateiname
         COMMON.FontDateiname = COMMON.FontDateinameStart
 

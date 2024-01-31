@@ -157,9 +157,18 @@ Module ED
         op_outca = out(COMMON.vZ80cpu.A)
     End Function '79    'op_outca
     Private Function out(ByVal par1 As Byte) As Integer
-        Call COMMON.vZ80cpu.busfront(COMMON.CPU_OUT)
-        Call Haupt.IOsim.io_out(COMMON.vZ80cpu.C, par1)
-        out = 12
+        Try
+            Call COMMON.vZ80cpu.busfront(COMMON.CPU_OUT)
+            Call Haupt.IOsim.io_out(COMMON.vZ80cpu.C, par1)
+            out = 12
+        Catch ex As Exception
+            MsgBox("ED.out: " + ex.Message & vbCrLf &
+                   "PC=" + COMMON.HexAnzeige_WordByte(COMMON.vZ80cpu.PC, "B") & vbCrLf &
+                   "HL=" + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.H) + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.L) & vbCrLf &
+                   "DE=" + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.D) + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.E) & vbCrLf &
+                   "BC=" + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.B) + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.C)
+                  )
+        End Try
     End Function ' out
 #End Region
 

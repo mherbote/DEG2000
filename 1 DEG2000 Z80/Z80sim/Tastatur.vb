@@ -22,7 +22,7 @@ Public Class Tastatur
     Private Sub Tastatur_Load(sender As System.Object, e As System.EventArgs) Handles MyBase.Load
         Call Init_PF()
         Call Init_PFi()
-        Call Init_ET2(Drawing.Color.WhiteSmoke)
+        Call Fehleranzeige(Drawing.Color.WhiteSmoke)
         Call UmschalterWeiss()
         Call HideFocus()
         Shift = False
@@ -472,8 +472,8 @@ Public Class Tastatur
     End Sub
 #End Region
 
-#Region "Umschalter ET2-Anzeige"
-    Private Sub Init_ET2(color As Drawing.Color)
+#Region "Umschalter Fehleranzeige"
+    Public Sub Fehleranzeige(color As Drawing.Color)
         Button47.BackColor = color
         Button48.BackColor = color
         Button49.BackColor = color
@@ -953,12 +953,13 @@ Public Class Tastatur
         Call HideFocus()
     End Sub
     Private Sub ET2_Click(sender As Object, e As EventArgs) Handles Button63.Click
-        Select Case Button48.BackColor
-            Case Drawing.Color.WhiteSmoke
-                Call Init_ET2(Drawing.Color.Red)
-            Case Drawing.Color.Red
-                Call Init_ET2(Drawing.Color.WhiteSmoke)
-        End Select
+        'Select Case Button48.BackColor
+        '    Case Drawing.Color.WhiteSmoke
+        '        Call Init_ET2(Drawing.Color.Red)
+        '    Case Drawing.Color.Red
+        '        Call Init_ET2(Drawing.Color.WhiteSmoke)
+        'End Select
+
         Call Click2Buffer(&H200 + COMMON.KeyCodes2(0))      'A00   'RESET
         Call HideFocus()
     End Sub
@@ -1058,6 +1059,8 @@ Public Class Tastatur
         Call HideFocus()
     End Sub
     Private Sub RES_Click(sender As Object, e As EventArgs) Handles Button43.Click
+        Call Fehleranzeige(Drawing.Color.WhiteSmoke)         'Fehleranzeige deaktivieren
+
         Call Click2Buffer(&H200 + COMMON.KeyCodes2(19))      'F57
         Call HideFocus()
     End Sub
