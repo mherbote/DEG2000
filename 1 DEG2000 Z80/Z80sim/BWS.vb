@@ -666,18 +666,21 @@ Public Class BWS
 
 #Region "ControlArray"
     Public Sub ResetControlArray(ByVal BackColor As Color, ByVal ForeColor As Color)
-        Dim _pX1, _pY1 As Integer
-
         _BWSbcControlArray = BackColor
         _BWSfcControlArray = ForeColor
+
+        Call ResetControlArray2()
+    End Sub
+    Public Sub ResetControlArray2()
+        Dim _pX1, _pY1 As Integer
 
         For _pY1 = 24 To BWSy - 1
             For _pX1 = 0 To BWSx - 1
                 Select Case _pY1
                     Case 24
-                        Call BWS_Zeichen(_pX1, _pY1, 45, BackColor, ForeColor, cCursor)
+                        Call BWS_Zeichen(_pX1, _pY1, 45, _BWSbcControlArray, _BWSfcControlArray, cCursor)
                     Case Else
-                        Call BWS_Zeichen(_pX1, _pY1, 32, BackColor, ForeColor, cCursor)
+                        Call BWS_Zeichen(_pX1, _pY1, 32, _BWSbcControlArray, _BWSfcControlArray, cCursor)
                 End Select
             Next _pX1
         Next _pY1

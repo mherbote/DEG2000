@@ -131,6 +131,10 @@ Public Class IOsim
         port(&HFF, 0) = New op_funcb(AddressOf Time_in)
 #End Region
 
+#Region "Port's for Corect BWS FDH"
+        port(&HFD, 1) = New op_funcb(AddressOf CorrBWS_out)
+#End Region
+
         KeyProc = False
     End Sub
     Private Function io_trap(ByVal Data As Byte) As Byte
@@ -1205,6 +1209,14 @@ Public Class IOsim
         Catch ex As Exception
             MsgBox("IOsim.DateTime_out: " + ex.Message)
         End Try
+    End Function
+#End Region
+
+#Region "Corect BWS FDH"
+    Private Function CorrBWS_out() As Byte
+        Call BWS.ResetControlArray2()
+
+        CorrBWS_out = 0
     End Function
 #End Region
 
