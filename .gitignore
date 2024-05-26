@@ -1,0 +1,19 @@
+/.vs/
+/1 DEG2000 Z80/.vs/
+/1 DEG2000 Z80/packages/
+/1 DEG2000 Z80/Z80sim/bin/
+/1 DEG2000 Z80/Z80sim/obj/
+/2 CASerzeugen/.vs/
+/2 CASerzeugen/CASerzeugen/.vs/
+/2 CASerzeugen/CASerzeugen/bin/
+/2 CASerzeugen/CASerzeugen/obj/
+/8 PAS/MRES_BIN/lib/
+/8 PAS/MRES_IMG/lib/
+/9 Test/BWSnew/obj/
+/9 Test/Terminal/Tastatur/obj/
+/9 Test/Terminal/Terminal/Terminal/obj/
+/9 Test/Terminal/TerminalG/obj/
+/9 Test/Terminal/TerminalTest/TerminalTest/obj/
+/9 Test/WPF-Test1/WPF-Test/obj/
+/9 Test/WPF-Test2/WPF-Test/obj/
+/9 Test/Z80_SIM/__history/

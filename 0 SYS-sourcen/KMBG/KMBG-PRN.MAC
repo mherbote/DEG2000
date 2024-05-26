@@ -1,0 +1,1658 @@
+# file opened: KMBG.MAC
+   1  0000              	;PAGE	87
+   2  0000              	ORG	04000H
+   3  4000              	INCLUDE KR05.MAC
+# file opened: KR05.MAC
+   1+ 4000              05
+   2+ 4000              ;****************************************************************
+   3+ 4000              ;*               BAMOS   ---   Kassettenmagnetband              *
+   4+ 4000              ;* OS - Version  -----------------------------------------------*
+   5+ 4000              ;*               Programmierer: Hildebrandt      --- RVB        *
+   6+ 4000              ;*               auf aktuellen Stand gebracht 12.Dezember 1983  *
+   7+ 4000              ;*               durch        : Marcus Herbote   --- IfR - OE-S *
+   8+ 4000              ;* V 1 . 2       -----------------------------------------------*
+   9+ 4000              ;*               Stand        : 01.Januar 1981                  *
+  10+ 4000              ;****************************************************************
+  11+ 4000
+  12+ 4000
+  13+ 4000              ;****************************************************************
+  14+ 4000              ;*               Geraetebedienroutine fuer Kassettenmagnetband  *
+  15+ 4000              ;*               Anschluss von zwei Laufwerken K5200            *
+  16+ 4000              ;*               an einer AKB K5020                             *
+  17+ 4000              ;*               -----------------------------------------------*
+  18+ 4000              ;*               E/A-Tabelle                                    *
+  19+ 4000              ;*               Byte 0    Status                               *
+  20+ 4000              ;*               Byte 1    Fehlerschluessel                     *
+  21+ 4000              ;*               Byte 2    Basisadresse der AKB                 *
+  22+ 4000              ;*               Byte 3    Subadresse                           *
+  23+ 4000              ;*               Byte 4    Kommando                             *
+  24+ 4000              ;*               Byte 5    L-Teil Adresse Eintrittspunkt        *
+  25+ 4000              ;*               Byte 6    H-Teil Adresse Eintrittspunkt        *
+  26+ 4000              ;*               Byte 7    L-Teil Blockadresse                  *
+  27+ 4000              ;*               Byte 8    H-Teil Blockadresse                  *
+  28+ 4000              ;*               Byte 9    H-Teil Blocklaenge (Bit 15...Bit 8)  *
+  29+ 4000              ;*               Byte 10   L-Teil Blocklaenge (Bit  7...Bit 0)  *
+  30+ 4000              ;*                         n      bei suchen Bandmarke          *
+  31+ 4000              ;*               Byte 11   Anzahl Lese-/Schreib wiederholen     *
+  32+ 4000              ;*               Byte 12   Anzahl Blocklueckenverlaengerungen   *
+  33+ 4000              ;*               -----------------------------------------------*
+  34+ 4000              ;*               Status                                         *
+  35+ 4000              ;*               Bit 0     0 Geraet frei                        *
+  36+ 4000              ;*                         1 Geraet besetzt                     *
+  37+ 4000              ;*               Bit 1     0                                    *
+  38+ 4000              ;*                         1 Datentraegerende                   *
+  39+ 4000              ;*               Bit 2     0 Aufzeichnen erlaubt                *
+  40+ 4000              ;*                         1 Aufzeichnen verboten               *
+  41+ 4000              ;*               Bit 3     0 Kassettenseite A                   *
+  42+ 4000              ;*                         1 Kassettenseite B                   *
+  43+ 4000              ;*               Bit 4     0 Geraet       bereit                *
+  44+ 4000              ;*                         1 Geraet nicht bereit                *
+  45+ 4000              ;*               Bit 5     0 Geraet nicht reserviert            *
+  46+ 4000              ;*                         1 Geraet       reserviert            *
+  47+ 4000              ;*               Bit 6     0 Aufzeichnungsverf.  38 CM*S**-1    *
+  48+ 4000              ;*                         1 Aufzeichnungsverf.  19 CM*S**-1    *
+  49+ 4000              ;*               Bit 7     0 Kommando fehlerfrei ausgefuehrt    *
+  50+ 4000              ;*                         1 Fehler (siehe Fehlerschluessel)    *
+  51+ 4000              ;****************************************************************
+  52+ 4000              	; PAGE
+  53+ 4000              ;****************************************************************
+  54+ 4000              ;*               Kommandos:                                     *
+  55+ 4000              ;*                 Hex   Kommando                               *
+  56+ 4000              ;*                 00    Aufzeichnem mit RAW (2=<Blockl. =<256) *
+  57+ 4000              ;*                 08    Aufzeichnen ohne RAW                   *
+  58+ 4000              ;*                 02    Wiedergabe (es wird der naechste Block *
+  59+ 4000              ;*                       gelesen , Adresse und Laenge werden in *
+  60+ 4000              ;*                       der E/A-Tabelle uebermittelt           *
+  61+ 4000              ;*                 11    einen Block vorsetzen                  *
+  62+ 4000              ;*                 15    einen BlocK ruecksetzen                *
+  63+ 4000              ;*                 21    umspulen                               *
+  64+ 4000              ;*                 31    reservieren ein                        *
+  65+ 4000              ;*                 41    reservieren aus                        *
+  66+ 4000              ;*                 51    schreiben einer Bandmarke (Steuerblock)*
+  67+ 4000              ;*                 61    schreiben Schlussluecke                *
+  68+ 4000              ;*                 71    suche n-te Bandmarke vorwaerts         *
+  69+ 4000              ;*                 75    suche n-te Bandmarke rueckwaerts       *
+  70+ 4000              ;*               -----------------------------------------------*
+  71+ 4000              ;*               Fehlerschluessel                               *
+  72+ 4000              ;*                 Hex   Fehler                                 *
+  73+ 4000              ;*                 10    falsches Kommando                      *
+  74+ 4000              ;*                 11    angewaehltes Geraet nicht reserviert   *
+  75+ 4000              ;*                 12    Subadresse falsch                      *
+  76+ 4000              ;*                 13    Pufferl. kleiner 12 oder groesser 256  *
+  77+ 4000              ;*                 14    Ende der Aufzeichnungen auf dieser     *
+  78+ 4000              ;*                       Kassettenseite (Lesen)                 *
+  79+ 4000              ;*                 15    angewaehltes Geraet besetzt            *
+  80+ 4000              ;*                 16    Ende/Anfang der Aufzeichnungen         *
+  81+ 4000              ;*                       (Bandmarke suchen)                     *
+  82+ 4000              ;*                 17    gelesener Block laenger 260 Byte       *
+  83+ 4000              ;*                 18    Bandmarke nicht gefunden               *
+  84+ 4000              ;*                 19    Aufzeichnen verboten                   *
+  85+ 4000              ;*                       (mit Kommando: Aufzeichnen)            *
+  86+ 4000              ;*                 21    Fehler nach festgelegter Anzahl        *
+  87+ 4000              ;*                       Lesewiederholungen                     *
+  88+ 4000              ;*                 22    Fehler nach festgelegter Anzahl        *
+  89+ 4000              ;*                       Schreibwiederholungen                  *
+  90+ 4000              ;*                 23    kein Echosignal vom Eingabekanal       *
+  91+ 4000              ;*                       bei  RAW                               *
+  92+ 4000              ;****************************************************************
+  93+ 4000              	; PAGE
+  94+ 4000              ;****************************************************************
+  95+ 4000              ;*               Hinweise zur Arbeit mit der Geraetebedienr.    *
+  96+ 4000              ;*                - IM2 einstellen , SP und I-Register laden    *
+  97+ 4000              ;*                - E/A-Tabelle laden (Basisadresse AKB)        *
+  98+ 4000              ;*                - Adresse E/A-Tabelle in IX laden             *
+  99+ 4000              ;*                - programmieren AKB durch Aufruf des UP's     *
+ 100+ 4000              ;*                    KR.INIT  (CALL KR.INIT)                   *
+ 101+ 4000              ;*                - laden Schluessel fuer Kommando , Subadresse *
+ 102+ 4000              ;*                    Adresse Eintrittspunkt                    *
+ 103+ 4000              ;*                - Aufruf Geraetebedienroutine immer mit       *
+ 104+ 4000              ;*                    CALL   KR.BRKMB                           *
+ 105+ 4000              ;*                - wird keine Parallelarbeit mit anderen       *
+ 106+ 4000              ;*                  Programmen gewuenscht , kann wie in         *
+ 107+ 4000              ;*                  folgendem Beispiel verfahren werden:        *
+ 108+ 4000              ;*                        ...                                   *
+ 109+ 4000              ;*                        CALL KR.BRKMB ;Aufruf                 *
+ 110+ 4000              ;*                  MARKE:HALT                                  *
+ 111+ 4000              ;*                        JR   MARKE-#                          *
+ 112+ 4000              ;*                  ADREP:............  ;Adresse Eintrittspunkt *
+ 113+ 4000              ;*                        ...                                   *
+ 114+ 4000              ;*                - bei Rueckkehr der Bedienroutine zum Ein-    *
+ 115+ 4000              ;*                  trittspunkt ist die Adresse des folgenden   *
+ 116+ 4000              ;*                  Befehls , bei dem der letzte Interrupt      *
+ 117+ 4000              ;*                  angenommen wurde , noch im SP .             *
+ 118+ 4000              ;*                  Wird , wie im obigen Beispiel , diese       *
+ 119+ 4000              ;*                  Adresse nicht mehr benoetigt , so ist der   *
+ 120+ 4000              ;*                  SP  um 2 zu erhoehen.                       *
+ 121+ 4000              ;****************************************************************
+ 122+ 4000
+ 123+ 4000
+ 124+ 4000              ;****************************************************************
+ 125+ 4000              ;*               CTCKA = 0,1,2,3  CTC-KANAL                     *
+ 126+ 4000              ;*               CTCBA = Basisadresse CTC (Standard: 80H)       *
+ 127+ 4000              ;****************************************************************
+ 128+ 4000              CTCKA	EQU	2	;CTC-Kanal 2
+ 129+ 4000              CTCBA	EQU	80H	;Basisadresse CTC
+ 130+ 4000              	; TITLE	'Steuerteil Geraetebedienroutine'
+ 131+ 4000              	; PAGE
+ 132+ 4000              ;****************************************************************
+ 133+ 4000              ;*               Steuerteil der Geraetebedienroutine            *
+ 134+ 4000              ;****************************************************************
+ 135+ 4000              ;----0010
+ 136+ 4000 F3           BRKMB:	DI
+ 137+ 4001 DD E5        	PUSH	IX	;Reg. retten
+ 138+ 4003 CD 5A 45     	CALL	RRET
+ 139+ 4006 DD 22 52 0E  	LD	(KS.AEATB),IX	;Adr. E/A-Tabelle
+ 140+ 400A              ;----0020
+ 141+ 400A DD CB 00 C6  	SET	0,(IX)	;Besetztbit
+ 142+ 400E              ;----0030
+ 143+ 400E DD CB 00 BE  	RES	7,(IX)	;Fehlerbit
+ 144+ 4012 DD 36 01 00  	LD	(IX+1),0	;Fehlerschluessel
+ 145+ 4016              ;----0040
+ 146+ 4016 FB           STT00:	EI
+ 147+ 4017              ;----0050
+ 148+ 4017              ;----0060
+ 149+ 4017 DD 7E 02     STT01:	LD	A,(IX+2)	;Basisadresse
+ 150+ 401A C6 04        	ADD	A,4
+ 151+ 401C 4F           	LD	C,A	;rel. Adr. 4
+ 152+ 401D 3E 31        	LD	A,31H	;Kommando reservieren ein ?
+ 153+ 401F DD BE 04     	CP	(IX+4)
+ 154+ 4022 CA 7E 41     	JP	Z,STT30	;Sprung nach reservieren ein
+ 155+ 4025              ;----0070
+ 156+ 4025 3E 41        	LD	A,41H	;Kommando reservieren aus ?
+ 157+ 4027 DD BE 04     	CP	(IX+4)
+ 158+ 402A CA AF 41     	JP	Z,STT40	;Sprung nach reservieren aus
+ 159+ 402D              ;----0080
+ 160+ 402D              ;****************************************************************
+ 161+ 402D              ;*               pruefen , ob adresseiertes Geraet reserviert , *
+ 162+ 402D              ;*               und Anwahl einschalten                         *
+ 163+ 402D              ;****************************************************************
+ 164+ 402D ED 78        	IN	A,(C)
+ 165+ 402F E6 03        	AND	3	;ruecksetzen
+ 166+ 4031 0C           	INC	C	;rel. Adr. 5
+ 167+ 4032 ED 40        	IN	B,(C)
+ 168+ 4034 DD CB 03 46  	BIT	0,(IX+3)
+ 169+ 4038 28 0E        	JR	Z,STT02	;Sprung wenn LW2
+ 170+ 403A CB 4F        	BIT	1,A
+ 171+ 403C C2 58 43     	JP	NZ,STF02	;Geraet nicht reserviert
+ 172+ 403F CB 60        	BIT	4,B
+ 173+ 4041 CA 5C 43     	JP	Z,STF03	;Geraet nicht bereit
+ 174+ 4044 CB DF        	SET	3,A	;Anwahl Geraet 1
+ 175+ 4046 18 0C        	JR	STT03
+ 176+ 4048 CB 47        STT02:	BIT	0,A
+ 177+ 404A C2 58 43     	JP	NZ,STF02	;Geraet nicht reserviert
+ 178+ 404D CB 58        	BIT	3,B
+ 179+ 404F CA 5C 43     	JP	Z,STF03	;Geraet nicht bereit
+ 180+ 4052 CB D7        	SET	2,A	;Anwahl Geraet 2
+ 181+ 4054 0D           STT03:	DEC	C	;rel. Adr. 4
+ 182+ 4055 ED 79        	OUT	(C),A	;einschalten Anwahl
+ 183+ 4057              ;----0090
+ 184+ 4057              	; PAGE
+ 185+ 4057              ;****************************************************************
+ 186+ 4057              ;*               Analyse Kommando                               *
+ 187+ 4057              ;****************************************************************
+ 188+ 4057 DD 7E 04     	LD	A,(IX+4)	;Kommando
+ 189+ 405A E6 77        	AND	077H	;Bit 3 ausblenden
+ 190+ 405C FE 00        	CP	0	;Aufzeichnen mit/ohne RAW ?
+ 191+ 405E CA 84 40     	JP	Z,STT10	;Sprung zum Aufzeichnungszweig
+ 192+ 4061              ;----0100
+ 193+ 4061 FE 02        	CP	02H
+ 194+ 4063 CA 24 41     	JP	Z,STT20	;Sprung zum Eingabezweig
+ 195+ 4066              ;----0110
+ 196+ 4066 E6 F0        	AND	0F0H
+ 197+ 4068 FE 10        	CP	10H
+ 198+ 406A CA F9 41     	JP	Z,STT60	;Block vor-/ruecksetzen
+ 199+ 406D              ;----0120
+ 200+ 406D FE 20        	CP	20H
+ 201+ 406F CA C3 41     	JP	Z,STT50	;umspulen
+ 202+ 4072              ;----0130
+ 203+ 4072 FE 50        	CP	50H
+ 204+ 4074 CA 09 42     	JP	Z,STT70	;schreiben einer Bandmarke
+ 205+ 4077              ;----0140
+ 206+ 4077 FE 60        	CP	60H
+ 207+ 4079 CA 35 42     	JP	Z,STT80	;schreiben einer Schlussluecke
+ 208+ 407C              ;----0150
+ 209+ 407C FE 70        	CP	70H
+ 210+ 407E CA 45 42     	JP	Z,STT90	;suche Bandmarke
+ 211+ 4081              ;----0160
+ 212+ 4081 C3 64 43     	JP	STF07	;Fehler: kein gueltiges Kommando
+ 213+ 4084              ;----0170
+ 214+ 4084              ;****************************************************************
+ 215+ 4084              ;*               Aufzeichnungszweig                             *
+ 216+ 4084              ;****************************************************************
+ 217+ 4084              ;----0180
+ 218+ 4084 DD CB 00 4E  STT10:	BIT	1,(IX)
+ 219+ 4088 20 07        	JR	NZ,STT06
+ 220+ 408A              ;----0190
+ 221+ 408A ED 50        	IN	D,(C)
+ 222+ 408C CB 7A        	BIT	7,D	;Signal AEB
+ 223+ 408E CC 0E 46     	CALL	Z,MBAN	;MB einziehen beim Schreiben
+ 224+ 4091              ;----0200
+ 225+ 4091
+ 226+ 4091              	; PAGE
+ 227+ 4091              ;****************************************************************
+ 228+ 4091              ;*               Pufferspeicher laden                           *
+ 229+ 4091              ;****************************************************************
+ 230+ 4091              STT06	EQU	$
+ 231+ 4091 21 65 0E     STT12:	LD	HL,KS.PUFFS	;Adr. Puffersp.
+ 232+ 4094 36 AA        	LD	(HL),0AAH	;Praeambel
+ 233+ 4096 23           	INC	HL
+ 234+ 4097 EB           	EX	DE,HL
+ 235+ 4098 DD 6E 07     	LD	L,(IX+7)
+ 236+ 409B DD 66 08     	LD	H,(IX+8)	;Adresse Block
+ 237+ 409E DD 46 09     	LD	B,(IX+9)
+ 238+ 40A1 DD 4E 0A     	LD	C,(IX+10)
+ 239+ 40A4 ED B0        	LDIR
+ 240+ 40A6 D5           	PUSH	DE
+ 241+ 40A7 21 00 00     	LD	HL,0
+ 242+ 40AA 22 5E 0E     	LD	(KS.CRCZ),HL
+ 243+ 40AD 21 66 0E     	LD	HL,KS.PUFFS+1
+ 244+ 40B0 06 00        	LD	B,0
+ 245+ 40B2 DD 7E 0A     	LD	A,(IX+10)
+ 246+ 40B5 B7           	OR	A
+ 247+ 40B6 20 02        	JR	NZ,$+4
+ 248+ 40B8 06 01        	LD	B,1
+ 249+ 40BA 4F           	LD	C,A
+ 250+ 40BB CD B6 45     	CALL	CRC	;berechne CRC-Zeichen
+ 251+ 40BE E1           	POP	HL
+ 252+ 40BF 72           	LD	(HL),D	;1.Byte CRC
+ 253+ 40C0 23           	INC	HL
+ 254+ 40C1 73           	LD	(HL),E	;2.Byte CRC
+ 255+ 40C2 23           	INC	HL
+ 256+ 40C3 36 AA        	LD	(HL),0AAH	;Postambel
+ 257+ 40C5              ;----0220
+ 258+ 40C5              ;****************************************************************
+ 259+ 40C5              ;*               Arbeitsbereich laden                           *
+ 260+ 40C5              ;****************************************************************
+ 261+ 40C5 CD 7B 43     	CALL	E322
+ 262+ 40C8              ;----0230
+ 263+ 40C8 CD 83 43     STTEP:	CALL	E32A	;Einsprung bei Wiederholung
+ 264+ 40CB DD 66 09     	LD	H,(IX+9)
+ 265+ 40CE DD 6E 0A     	LD	L,(IX+10)
+ 266+ 40D1 11 04 00     	LD	DE,4
+ 267+ 40D4 19           	ADD	HL,DE
+ 268+ 40D5 22 5A 0E     	LD	(KS.ZEIN),HL
+ 269+ 40D8 22 58 0E     	LD	(KS.ZAUS),HL
+ 270+ 40DB              ;----0240
+ 271+ 40DB DD 7E 02     STT16:	LD	A,(IX+2)
+ 272+ 40DE C6 05        	ADD	A,5
+ 273+ 40E0 4F           	LD	C,A	;rel. Adr. 5
+ 274+ 40E1 3E 02        	LD	A,2
+ 275+ 40E3 ED 79        	OUT	(C),A	;AUF=1
+ 276+ 40E5 00           	NOP
+ 277+ 40E6 ED 78        	IN	A,(C)
+ 278+ 40E8 CB 77        	BIT	6,A
+ 279+ 40EA C2 68 43     	JP	NZ,STF0B
+ 280+ 40ED              ;----0250
+ 281+ 40ED 0C           	INC	C	;rel. Adr. 6
+ 282+ 40EE CD DC 45     	CALL	AEBEI	;Signal AEB auf Interrupt
+ 283+ 40F1              ;----0260
+ 284+ 40F1 0D           	DEC	C
+ 285+ 40F2 0D           	DEC	C	;rel. Adr. 4
+ 286+ 40F3 ED 78        	IN	A,(C)
+ 287+ 40F5              ;----0270
+ 288+ 40F5 CB E7        STT17:	SET	4,A	;TRV=1
+ 289+ 40F7 F3           	DI
+ 290+ 40F8 ED 79        	OUT	(C),A	;einschalten Transport vorwaerts
+ 291+ 40FA              ;----0280
+ 292+ 40FA 3E 28        	LD	A,28H
+ 293+ 40FC CD F5 45     	CALL	WART
+ 294+ 40FF 0D           	DEC	C
+ 295+ 4100 2E D2        	LD	L,0D2H
+ 296+ 4102 CD FD 45     	CALL	EINIE	;Int. Eingabekanal einschalten , R A W
+ 297+ 4105              ;----0320
+ 298+ 4105 0D           STT15:	DEC	C	;rel. Adr. 2
+ 299+ 4106 3E 83        	LD	A,83H
+ 300+ 4108 ED 79        	OUT	(C),A	;Int.freigabe Ausgabekanal
+ 301+ 410A              ;----0330
+ 302+ 410A 0D           	DEC	C
+ 303+ 410B 0D           	DEC	C	;rel. Adr. 0
+ 304+ 410C 3E AA        	LD	A,0AAH
+ 305+ 410E ED 79        	OUT	(C),A	;Ausgabe Praeambel
+ 306+ 4110              ;----0340
+ 307+ 4110 CD E5 45     	CALL	STAE	;Status auf Int.
+ 308+ 4113 FB           	EI
+ 309+ 4114 DD CB 00 46  STT14:	BIT	0,(IX)
+ 310+ 4118 20 FA        	JR	NZ,STT14
+ 311+ 411A 3A 60 0E     	LD	A,(KS.FEHLZ)
+ 312+ 411D B7           	OR	A
+ 313+ 411E C2 04 47     	JP	NZ,FEHLB
+ 314+ 4121 C3 30 45     	JP	KOMED
+ 315+ 4124
+ 316+ 4124              	; PAGE
+ 317+ 4124              ;****************************************************************
+ 318+ 4124              ;*               Eingabezweig                                   *
+ 319+ 4124              ;****************************************************************
+ 320+ 4124 DD CB 00 4E  STT20:	BIT	1,(IX)	;Datentraegerende
+ 321+ 4128 20 07        	JR	NZ,STT21
+ 322+ 412A              ;----0360
+ 323+ 412A ED 78        	IN	A,(C)
+ 324+ 412C CB 7F        	BIT	7,A
+ 325+ 412E CC 0E 46     	CALL	Z,MBAN	;MB einziehen beim Lesen
+ 326+ 4131              ;----0370
+ 327+ 4131 CD 7B 43     STT21:	CALL	E322
+ 328+ 4134              ;----0380
+ 329+ 4134 11 00 00     STT22:	LD	DE,0	;Einsprung
+ 330+ 4137 ED 53 5A 0E  	LD	(KS.ZEIN),DE	;ZEIN=0
+ 331+ 413B 21 65 0E     	LD	HL,KS.PUFFS
+ 332+ 413E 22 56 0E     	LD	(KS.PZEIN),HL	;Zeiger auf Pufferanfang
+ 333+ 4141 AF           	XOR	A
+ 334+ 4142 32 60 0E     	LD	(KS.FEHLZ),A
+ 335+ 4145              ;----0390
+ 336+ 4145 2E 7C        	LD	L,LOW(KT.IEL)	;L-Teil Int.-vektor Lesen
+ 337+ 4147 0D           	DEC	C	;rel. Adr. 3
+ 338+ 4148 CD FD 45     	CALL	EINIE	;Int.Eingabekanal einsch. auf Lesen
+ 339+ 414B              ;----0400
+ 340+ 414B 0C           	INC	C
+ 341+ 414C 0C           	INC	C
+ 342+ 414D 0C           	INC	C
+ 343+ 414E CD DC 45     	CALL	AEBEI	;A E B  auf Int.
+ 344+ 4151              ;----0410
+ 345+ 4151 0D           	DEC	C
+ 346+ 4152 0D           	DEC	C	;reL. Adr. 4
+ 347+ 4153 ED 78        	IN	A,(C)
+ 348+ 4155 CB E7        	SET	4,A
+ 349+ 4157 ED 79        	OUT	(C),A	;TRV=1
+ 350+ 4159              ;----0420
+ 351+ 4159 06 44        	LD	B,68
+ 352+ 415B CD C3 46     	CALL	INITC
+ 353+ 415E 3A 6D 0F     STT13:	LD	A,(KS.CONTR)
+ 354+ 4161 B7           	OR	A
+ 355+ 4162 C2 60 43     	JP	NZ,STF9A
+ 356+ 4165 DD CB 00 46  	BIT	0,(IX)
+ 357+ 4169 20 F3        	JR	NZ,STT13
+ 358+ 416B 3A 60 0E     	LD	A,(KS.FEHLZ)
+ 359+ 416E CB 6F        	BIT	5,A
+ 360+ 4170 20 07        	JR	NZ,$+9	; ----
+ 361+ 4172 B7           	OR	A	;    !
+ 362+ 4173 C2 04 47     	JP	NZ,FEHLB	;    !
+ 363+ 4176 C3 30 45     	JP	KOMED	;    !
+ 364+ 4179 2E 17        	LD	L,17H	; <---
+ 365+ 417B C3 4B 43     	JP	STF99
+ 366+ 417E
+ 367+ 417E              	; PAGE
+ 368+ 417E              ;****************************************************************
+ 369+ 417E              ;*               reservieren ein                                *
+ 370+ 417E              ;****************************************************************
+ 371+ 417E              STT30:
+ 372+ 417E ED 78        	IN	A,(C)	;TOR A,(C)
+ 373+ 4180 E6 03        	AND	3
+ 374+ 4182 DD CB 03 46  	BIT	0,(IX+3)
+ 375+ 4186 28 06        	JR	Z,STT31
+ 376+ 4188 CB 8F        	RES	1,A	;Geraet 1
+ 377+ 418A 16 10        	LD	D,10H
+ 378+ 418C 18 04        	JR	STT32
+ 379+ 418E CB 87        STT31:	RES	0,A	;Geraet 2
+ 380+ 4190 16 08        	LD	D,08H
+ 381+ 4192 ED 79        STT32:	OUT	(C),A	;Reservierung ein
+ 382+ 4194 0C           	INC	C	;rel. Adr. 5
+ 383+ 4195 1E 02        	LD	E,2
+ 384+ 4197              ;----0440
+ 385+ 4197 3E 96        STT33:	LD	A,150
+ 386+ 4199 CD F5 45     	CALL	WART
+ 387+ 419C 1D           	DEC	E
+ 388+ 419D 20 F8        	JR	NZ,STT33
+ 389+ 419F              ;----0450
+ 390+ 419F ED 78        	IN	A,(C)
+ 391+ 41A1 A2           	AND	D
+ 392+ 41A2 20 08        	JR	NZ,STT34
+ 393+ 41A4              ;----0460
+ 394+ 41A4 DD 36 00 80  STT37:	LD	(IX),80H	;Geraet nicht bereit
+ 395+ 41A8 DD 36 01 20  	LD	(IX+1),20H
+ 396+ 41AC C3 30 45     STT34:	JP	KOMED
+ 397+ 41AF              ;----0470
+ 398+ 41AF
+ 399+ 41AF              	; PAGE
+ 400+ 41AF              ;****************************************************************
+ 401+ 41AF              ;*               reservieren ruecksetzen                        *
+ 402+ 41AF              ;****************************************************************
+ 403+ 41AF              STT40:
+ 404+ 41AF ED 78        	IN	A,(C)
+ 405+ 41B1 DD CB 03 46  	BIT	0,(IX+3)	;Subadresse
+ 406+ 41B5 28 04        	JR	Z,STT35
+ 407+ 41B7 CB CF        	SET	1,A	;Anwahl Geraet 1
+ 408+ 41B9 18 02        	JR	$+4
+ 409+ 41BB CB C7        STT35:	SET	0,A	;Anwahl Geraet 2
+ 410+ 41BD E6 03        	AND	3
+ 411+ 41BF ED 79        	OUT	(C),A
+ 412+ 41C1 18 E9        	JR	STT34	;KOMED
+ 413+ 41C3              ;****************************************************************
+ 414+ 41C3              ;*               umspulen                                       *
+ 415+ 41C3              ;****************************************************************
+ 416+ 41C3 ED 50        STT50:	IN	D,(C)
+ 417+ 41C5 CB 7A        	BIT	7,D
+ 418+ 41C7 20 12        	JR	NZ,STT52
+ 419+ 41C9 CB EA        	SET	5,D
+ 420+ 41CB ED 51        	OUT	(C),D
+ 421+ 41CD 21 00 00     	LD	HL,0
+ 422+ 41D0 2B           STT51:	DEC	HL
+ 423+ 41D1 7C           	LD	A,H
+ 424+ 41D2 B5           	OR	L
+ 425+ 41D3 28 17        	JR	Z,STT54
+ 426+ 41D5 ED 50        	IN	D,(C)	;Eingabe von rel. Adr. 4,(C)
+ 427+ 41D7 CB 7A        	BIT	7,D
+ 428+ 41D9 28 F5        	JR	Z,STT51
+ 429+ 41DB              ;----0530
+ 430+ 41DB F3           STT52:	DI
+ 431+ 41DC 7A           	LD	A,D
+ 432+ 41DD F6 30        	OR	30H	;TRR=TRV=1
+ 433+ 41DF ED 79        	OUT	(C),A	;UMS=1
+ 434+ 41E1              ;----0540
+ 435+ 41E1 3E 14        	LD	A,20
+ 436+ 41E3 CD F5 45     	CALL	WART
+ 437+ 41E6 FB           	EI
+ 438+ 41E7 CD 3C 45     STT53:	CALL	BERT	;Bereitsignal abfragen
+ 439+ 41EA 30 FB        	JR	NC,STT53	;Sprung solange Geraet bereit
+ 440+ 41EC              ;----0550
+ 441+ 41EC              STT54:
+ 442+ 41EC ED 78        	IN	A,(C)
+ 443+ 41EE E6 03        	AND	3
+ 444+ 41F0 ED 79        	OUT	(C),A	;Transport und Anwahl aus
+ 445+ 41F2              ;----0560
+ 446+ 41F2 DD CB 00 8E  	RES	1,(IX)	;Datentraegerende ruecksetzen
+ 447+ 41F6              ;----0570
+ 448+ 41F6 C3 30 45     	JP	KOMED
+ 449+ 41F9              ;----0580
+ 450+ 41F9              ;****************************************************************
+ 451+ 41F9              ;*               vor-/ruecksetzen um einen Block                *
+ 452+ 41F9              ;****************************************************************
+ 453+ 41F9 06 10        STT60:	LD	B,10H	;vorwaerts
+ 454+ 41FB DD CB 04 56  	BIT	2,(IX+4)	;vorwaerts/rueckwaerts ?
+ 455+ 41FF 28 02        	JR	Z,$+4
+ 456+ 4201 06 20        	LD	B,20H	;rueckwaerts
+ 457+ 4203 CD 73 45     	CALL	BLVR
+ 458+ 4206              ;----0590
+ 459+ 4206 C3 30 45     	JP	KOMED
+ 460+ 4209              ;----0600
+ 461+ 4209
+ 462+ 4209              	; PAGE
+ 463+ 4209              ;****************************************************************
+ 464+ 4209              ;*               schreiben einer Bandmarke                      *
+ 465+ 4209              ;****************************************************************
+ 466+ 4209 DD CB 00 4E  STT70:	BIT	1,(IX)	;Datentraegerende ?
+ 467+ 420D 20 07        	JR	NZ,STT71
+ 468+ 420F              ;----0610
+ 469+ 420F ED 50        	IN	D,(C)
+ 470+ 4211 CB 7A        	BIT	7,D
+ 471+ 4213 CC 0E 46     	CALL	Z,MBAN	;MB einziehen beim Schreiben
+ 472+ 4216              ;----0620
+ 473+ 4216 CD 7B 43     STT71:	CALL	E322
+ 474+ 4219              ;----0630
+ 475+ 4219 CD 83 43     STT72:	CALL	E32A	;Einsprung
+ 476+ 421C 11 04 00     	LD	DE,4
+ 477+ 421F ED 53 5A 0E  	LD	(KS.ZEIN),DE	;Zaehler Eingabe
+ 478+ 4223 ED 53 58 0E  	LD	(KS.ZAUS),DE	;Zaehler Ausgabe
+ 479+ 4227              ;----0640
+ 480+ 4227 36 AA        	LD	(HL),0AAH	;laden Pufferspeicher
+ 481+ 4229 23           	INC	HL
+ 482+ 422A 36 00        	LD	(HL),0
+ 483+ 422C 23           	INC	HL
+ 484+ 422D 36 00        	LD	(HL),0
+ 485+ 422F 23           	INC	HL
+ 486+ 4230 36 AA        	LD	(HL),0AAH
+ 487+ 4232              ;----0650
+ 488+ 4232 C3 DB 40     	JP	STT16
+ 489+ 4235              ;----0660
+ 490+ 4235              ;****************************************************************
+ 491+ 4235              ;*               schreiben einer Schlussluecke ( > 400 mm )     *
+ 492+ 4235              ;****************************************************************
+ 493+ 4235 06 78        STT80:	LD	B,120
+ 494+ 4237 CD 63 46     	CALL	MBVZ	;MB 400 mm loeschen
+ 495+ 423A              ;----0670
+ 496+ 423A 0D           	DEC	C
+ 497+ 423B 0D           	DEC	C	;rel. Adr. 4
+ 498+ 423C ED 78        	IN	A,(C)
+ 499+ 423E E6 03        	AND	3
+ 500+ 4240 ED 79        	OUT	(C),A	;Anwahl aus
+ 501+ 4242              ;----0680
+ 502+ 4242 C3 30 45     	JP	KOMED
+ 503+ 4245              ;----0690
+ 504+ 4245
+ 505+ 4245              	; PAGE
+ 506+ 4245              ;****************************************************************
+ 507+ 4245              ;*               suche Bandmarke                                *
+ 508+ 4245              ;*               <C>  = rel. Adr. 4                             *
+ 509+ 4245              ;*               <IX> = Adresse E/A-Tabelle                     *
+ 510+ 4245              ;****************************************************************
+ 511+ 4245 DD 7E 0A     STT90:	LD	A,(IX+10)	;Anzahl Bandmarken , die zu ueberlesen sind
+ 512+ 4248 32 5C 0E     	LD	(KS.Z1),A
+ 513+ 424B DD CB 04 56  	BIT	2,(IX+4)
+ 514+ 424F 20 0D        	JR	NZ,STT98	;Sprung wenn suchen rueckwaerts
+ 515+ 4251              ;----0700
+ 516+ 4251 DD CB 00 4E  	BIT	1,(IX)	;Datentraegerende ?
+ 517+ 4255 20 07        	JR	NZ,STT98
+ 518+ 4257              ;----0710
+ 519+ 4257 ED 50        	IN	D,(C)
+ 520+ 4259 CB 7A        	BIT	7,D	;AEB ?
+ 521+ 425B CC 0E 46     	CALL	Z,MBAN	;MB einziehen
+ 522+ 425E              ;----0720
+ 523+ 425E F3           STT98:	DI
+ 524+ 425F 0C           	INC	C
+ 525+ 4260 0C           	INC	C	;rel. Adr. 6
+ 526+ 4261 CD DC 45     	CALL	AEBEI
+ 527+ 4264              ;----0730
+ 528+ 4264 FB           	EI
+ 529+ 4265 0D           	DEC	C
+ 530+ 4266 0D           	DEC	C	;rel. Adr. 4
+ 531+ 4267 CD 6C 43     	CALL	STT9E	;Transport einschalten
+ 532+ 426A CB F7        	SET	6,A
+ 533+ 426C ED 79        	OUT	(C),A	;HGE=1
+ 534+ 426E              ;----0740
+ 535+ 426E 3E 32        	LD	A,50
+ 536+ 4270 CD F5 45     	CALL	WART
+ 537+ 4273 0C           	INC	C	;rel. Adr. 5
+ 538+ 4274 18 33        	JR	STT9B
+ 539+ 4276              ;----0750
+ 540+ 4276 11 BC 1B     STT93:	LD	DE,7100
+ 541+ 4279              ;****************************************************************
+ 542+ 4279              ;*               in folgender Schleife wird BMS 170 ms auf 1    *
+ 543+ 4279              ;*               getestet                                       *
+ 544+ 4279              ;****************************************************************
+ 545+ 4279 FB           STT91:	EI
+ 546+ 427A 1B           	DEC	DE
+ 547+ 427B 7A           	LD	A,D
+ 548+ 427C B3           	OR	E
+ 549+ 427D CA 3A 43     	JP	Z,STT9F	;Sprung wenn Aufzeichnungsende
+ 550+ 4280 ED 40        	IN	B,(C)
+ 551+ 4282 CB 68        	BIT	5,B
+ 552+ 4284 28 F3        	JR	Z,STT91
+ 553+ 4286              ;----0760
+ 554+ 4286              ;****************************************************************
+ 555+ 4286              ;*               Eingang BMS=1                                  *
+ 556+ 4286              ;*               Integration des Signals BMS ueber ca. 1 ms     *
+ 557+ 4286              ;****************************************************************
+ 558+ 4286 F3           	DI
+ 559+ 4287 16 00        	LD	D,0
+ 560+ 4289 06 49        	LD	B,73	;Integration ueber ca. 1,6 ms
+ 561+ 428B              STT99:
+ 562+ 428B ED 78        	IN	A,(C)
+ 563+ 428D CB 6F        	BIT	5,A
+ 564+ 428F 28 03        	JR	Z,STT92
+ 565+ 4291 14           	INC	D
+ 566+ 4292 18 02        	JR	STT92+2
+ 567+ 4294              STT92:
+ 568+ 4294 ED 78        	IN	A,(C)
+ 569+ 4296 10 F3        	DJNZ	STT99
+ 570+ 4298              ;----0770
+ 571+ 4298              	; PAGE
+ 572+ 4298              ;****************************************************************
+ 573+ 4298              ;*               pruefen ob nach Bandmarke eine Blockluecke     *
+ 574+ 4298              ;*               (mindestens 2 mm)                              *
+ 575+ 4298              ;****************************************************************
+ 576+ 4298 06 FF        	LD	B,255	;pruefen ca. 10 mm
+ 577+ 429A              STT9W:
+ 578+ 429A ED 78        	IN	A,(C)
+ 579+ 429C CB 6F        	BIT	5,A
+ 580+ 429E              ;----0771
+ 581+ 429E 20 09        	JR	NZ,STT9B
+ 582+ 42A0 10 F8        	DJNZ	STT9W
+ 583+ 42A2              ;----0780
+ 584+ 42A2 7A           	LD	A,D
+ 585+ 42A3 FE 0F        	CP	15
+ 586+ 42A5 30 0E        	JR	NC,STT94	;Sprung wenn A >=15
+ 587+ 42A7 18 CD        	JR	STT93
+ 588+ 42A9              ;----0790
+ 589+ 42A9              STT9B:
+ 590+ 42A9 06 FF        	LD	B,0FFH	;naechste Blockluecke suchen
+ 591+ 42AB ED 78        	IN	A,(C)
+ 592+ 42AD CB 6F        	BIT	5,A
+ 593+ 42AF 20 F8        	JR	NZ,STT9B
+ 594+ 42B1 10 F8        	DJNZ	STT9B+2
+ 595+ 42B3 18 C1        	JR	STT93
+ 596+ 42B5              ;----0800
+ 597+ 42B5              	; PAGE
+ 598+ 42B5              ;****************************************************************
+ 599+ 42B5              ;*               Bandmarke erkannt                              *
+ 600+ 42B5              ;****************************************************************
+ 601+ 42B5 21 5C 0E     STT94:	LD	HL,KS.Z1
+ 602+ 42B8 35           	DEC	(HL)	;Zaehler fuer Bandmarken
+ 603+ 42B9              ;----0801
+ 604+ 42B9 20 BB        	JR	NZ,STT93
+ 605+ 42BB              ;----0810
+ 606+ 42BB 0D           	DEC	C	;rel. Adr. 4
+ 607+ 42BC ED 78        	IN	A,(C)
+ 608+ 42BE E6 4F        	AND	4FH
+ 609+ 42C0 ED 79        	OUT	(C),A	;Transport aus
+ 610+ 42C2              ;----0820
+ 611+ 42C2 FB           	EI
+ 612+ 42C3 3E FA        	LD	A,0FAH
+ 613+ 42C5 CD F5 45     	CALL	WART
+ 614+ 42C8 3E FA        	LD	A,0FAH
+ 615+ 42CA CD F5 45     	CALL	WART
+ 616+ 42CD              ;----0830
+ 617+ 42CD 06 64        	LD	B,100
+ 618+ 42CF CD C3 46     	CALL	INITC	;time out wenn Bandmarke nicht gefunden
+ 619+ 42D2              ;----0840
+ 620+ 42D2 DD 7E 02     	LD	A,(IX+2)
+ 621+ 42D5 C6 04        	ADD	A,4
+ 622+ 42D7 4F           	LD	C,A	;rel. Adr. 4
+ 623+ 42D8 ED 78        	IN	A,(C)
+ 624+ 42DA CB F7        	SET	6,A	;HGE=1
+ 625+ 42DC ED 79        	OUT	(C),A
+ 626+ 42DE              ;----0850
+ 627+ 42DE CB B7        	RES	6,A	;HGE=0
+ 628+ 42E0 DD CB 04 56  	BIT	2,(IX+4)	;vorw./rueckw. ?
+ 629+ 42E4 28 04        	JR	Z,$+6
+ 630+ 42E6 CB E7        	SET	4,A
+ 631+ 42E8 18 02        	JR	$+4
+ 632+ 42EA CB EF        	SET	5,A
+ 633+ 42EC ED 79        	OUT	(C),A	;Transport ein
+ 634+ 42EE              ;----0860
+ 635+ 42EE 3E 14        	LD	A,20
+ 636+ 42F0 CD F5 45     	CALL	WART
+ 637+ 42F3 0C           	INC	C	;rel. Adr. 5
+ 638+ 42F4              STT95:
+ 639+ 42F4 FB           	EI
+ 640+ 42F5 ED 78        	IN	A,(C)
+ 641+ 42F7 CB 6F        	BIT	5,A
+ 642+ 42F9 20 F9        	JR	NZ,STT95
+ 643+ 42FB FB           STT96:	EI
+ 644+ 42FC 3A 6D 0F     	LD	A,(KS.CONTR)
+ 645+ 42FF B7           	OR	A
+ 646+ 4300 20 47        	JR	NZ,STF01
+ 647+ 4302 ED 78        	IN	A,(C)
+ 648+ 4304 CB 6F        	BIT	5,A
+ 649+ 4306 28 F3        	JR	Z,STT96
+ 650+ 4308              ;----0880
+ 651+ 4308              	; PAGE
+ 652+ 4308              ;****************************************************************
+ 653+ 4308              ;*               BMS = 1 fuer ca. 2200 Mikrosek. ?              *
+ 654+ 4308              ;****************************************************************
+ 655+ 4308 F3           	DI
+ 656+ 4309 06 80        	LD	B,128
+ 657+ 430B              STT9X:
+ 658+ 430B ED 78        	IN	A,(C)
+ 659+ 430D CB 6F        	BIT	5,A
+ 660+ 430F 28 EA        	JR	Z,STT96	;Sprung wenn Stoerung
+ 661+ 4311 10 F8        	DJNZ	STT9X
+ 662+ 4313
+ 663+ 4313              ;****************************************************************
+ 664+ 4313              ;*               wird BMS=0 in den naechsten 610 Mikrosek. ?    *
+ 665+ 4313              ;****************************************************************
+ 666+ 4313 06 32        	LD	B,50
+ 667+ 4315              STT9Y:
+ 668+ 4315 ED 78        	IN	A,(C)
+ 669+ 4317 CB 6F        	BIT	5,A
+ 670+ 4319 28 04        	JR	Z,STT9A	;Bandmarke
+ 671+ 431B 10 F8        	DJNZ	STT9Y
+ 672+ 431D 18 D5        	JR	STT95	;Datenblock
+ 673+ 431F              ;----0900
+ 674+ 431F FB           STT9A:	EI
+ 675+ 4320 3E 03        	LD	A,3
+ 676+ 4322 D3 82        	OUT	(CTCBA+CTCKA),A	;CTC stoppen
+ 677+ 4324              ;----0910
+ 678+ 4324 CD 90 45     	CALL	BLVR1-1	;in Blockluecke fahren
+ 679+ 4327 3E 32        	LD	A,50
+ 680+ 4329 CD F5 45     	CALL	WART
+ 681+ 432C              ;----0920
+ 682+ 432C DD CB 04 56  	BIT	2,(IX+4)
+ 683+ 4330 28 05        	JR	Z,$+7	;Sprung wenn suchen vorwaerts
+ 684+ 4332              ;----0930
+ 685+ 4332 06 20        	LD	B,20H
+ 686+ 4334 CD 73 45     	CALL	BLVR	;einen Block ruecksetzen
+ 687+ 4337              ;----0940
+ 688+ 4337 C3 24 41     	JP	STT20	;Lesen
+ 689+ 433A              ;----0950
+ 690+ 433A              ;****************************************************************
+ 691+ 433A              ;*               Fehler: Ende der Aufzeichnungen                *
+ 692+ 433A              ;****************************************************************
+ 693+ 433A              STT9F:
+ 694+ 433A 0D           	DEC	C	;rel. Adr. 4
+ 695+ 433B ED 78        	IN	A,(C)
+ 696+ 433D E6 0F        	AND	00FH
+ 697+ 433F ED 79        	OUT	(C),A	;HGE=0
+ 698+ 4341 AF           	XOR	A	;A=0
+ 699+ 4342 CD F5 45     	CALL	WART	;256 ms warten
+ 700+ 4345 2E 16        	LD	L,16H
+ 701+ 4347 18 02        	JR	STF99
+ 702+ 4349
+ 703+ 4349              	; PAGE
+ 704+ 4349              ;****************************************************************
+ 705+ 4349              ;*               Fehler                                         *
+ 706+ 4349              ;****************************************************************
+ 707+ 4349 2E 18        STF01:	LD	L,18H	;Subadresse 1,2
+ 708+ 434B
+ 709+ 434B DD 75 01     STF99:	LD	(IX+1),L	;Fehlerschluessel laden
+ 710+ 434E DD CB 00 FE  	SET	7,(IX)	;Fehlerbit setzen
+ 711+ 4352 CD 99 46     	CALL	AUS	;Anwahl und sonst. Signale aus
+ 712+ 4355 C3 30 45     STFRS:	JP	KOMED	;Kommandoende
+ 713+ 4358
+ 714+ 4358 2E 11        STF02:	LD	L,11H	;Geraet nicht reserviert
+ 715+ 435A 18 EF        	JR	STF99
+ 716+ 435C
+ 717+ 435C 2E 20        STF03:	LD	L,20H	;Geraet nicht bereit ??????
+ 718+ 435E 18 EB        	JR	STF99
+ 719+ 4360
+ 720+ 4360 2E 14        STF9A:	LD	L,14H	;Fehlerschluessel
+ 721+ 4362 18 E7        	JR	STF99
+ 722+ 4364
+ 723+ 4364 2E 10        STF07:	LD	L,10H	;falsches Kommando
+ 724+ 4366 18 E3        	JR	STF99
+ 725+ 4368
+ 726+ 4368 2E 19        STF0B:	LD	L,19H	;Aufzeichnen verboten
+ 727+ 436A 18 DF        	JR	STF99
+ 728+ 436C              ;----0960
+ 729+ 436C              STT9E:
+ 730+ 436C ED 78        	IN	A,(C)	;Transportsignal setzen,(C)
+ 731+ 436E DD CB 04 56  	BIT	2,(IX+4)
+ 732+ 4372 20 03        	JR	NZ,STT9H
+ 733+ 4374 CB E7        	SET	4,A
+ 734+ 4376 C9           STT9G:	RET
+ 735+ 4377 CB EF        STT9H:	SET	5,A
+ 736+ 4379 18 FB        	JR	STT9G
+ 737+ 437B
+ 738+ 437B AF           E322:	XOR	A
+ 739+ 437C 21 5C 0E     	LD	HL,KS.Z1
+ 740+ 437F 77           	LD	(HL),A
+ 741+ 4380 23           	INC	HL
+ 742+ 4381 77           	LD	(HL),A
+ 743+ 4382 C9           	RET
+ 744+ 4383
+ 745+ 4383 3E 03        E32A:	LD	A,3
+ 746+ 4385 32 60 0E     	LD	(KS.FEHLZ),A
+ 747+ 4388 21 65 0E     	LD	HL,KS.PUFFS
+ 748+ 438B 22 54 0E     	LD	(KS.PZAUS),HL
+ 749+ 438E 22 56 0E     	LD	(KS.PZEIN),HL
+ 750+ 4391 C9           	RET
+ 751+ 4392
+ 752+ 4392              	; TITLE	'Interruptserviceroutinen KMBG'
+ 753+ 4392              	; PAGE
+ 754+ 4392              ;****************************************************************
+ 755+ 4392              ;*               Interruptserviceroutinen KMBG                  *
+ 756+ 4392              ;****************************************************************
+ 757+ 4392              ;----0010        Interruptbehandlung Ausgabekanal
+ 758+ 4392              KR.IAUS:
+ 759+ 4392 DD E5        	PUSH	IX
+ 760+ 4394 CD 5A 45     	CALL	RRET
+ 761+ 4397 DD 2A 52 0E  	LD	IX,(KS.AEATB)
+ 762+ 439B              ;----0020
+ 763+ 439B DD 4E 02     	LD	C,(IX+2)	;Basisadresse AKB
+ 764+ 439E 2A 54 0E     	LD	HL,(KS.PZAUS)
+ 765+ 43A1 ED 5B 58 0E  	LD	DE,(KS.ZAUS)
+ 766+ 43A5 1B           	DEC	DE
+ 767+ 43A6 7A           	LD	A,D
+ 768+ 43A7              ;----0021
+ 769+ 43A7 B3           	OR	E
+ 770+ 43A8 28 0E        	JR	Z,IAUSE	;Sprung wenn Ausgabe beendet
+ 771+ 43AA              ;----0030
+ 772+ 43AA 23           	INC	HL
+ 773+ 43AB 7E           	LD	A,(HL)
+ 774+ 43AC ED 79        	OUT	(C),A	;Ausgabe Zeichen
+ 775+ 43AE              ;----0040
+ 776+ 43AE 22 54 0E     	LD	(KS.PZAUS),HL
+ 777+ 43B1 ED 53 58 0E  	LD	(KS.ZAUS),DE
+ 778+ 43B5 C3 28 45     	JP	ENDI
+ 779+ 43B8              ;----0050
+ 780+ 43B8 06 03        IAUSE:	LD	B,3
+ 781+ 43BA 0C           	INC	C
+ 782+ 43BB 0C           	INC	C	;rel. Adr. 2
+ 783+ 43BC ED 41        	OUT	(C),B	;Int. Ausgabekanal sperren
+ 784+ 43BE              ;----0060
+ 785+ 43BE 79           	LD	A,C
+ 786+ 43BF C6 05        	ADD	A,5
+ 787+ 43C1 4F           	LD	C,A	;rel. Adr. 7
+ 788+ 43C2 ED 41        	OUT	(C),B	;Int. Status sperren
+ 789+ 43C4 FB           	EI
+ 790+ 43C5 CD 2E 45     	CALL	ENDI1	;Int. Freigabe DASY-CHAIN
+ 791+ 43C8              ;----0070
+ 792+ 43C8 3E 1E        	LD	A,1EH
+ 793+ 43CA CD F5 45     	CALL	WART
+ 794+ 43CD 0D           	DEC	C
+ 795+ 43CE 0D           	DEC	C
+ 796+ 43CF 0D           	DEC	C
+ 797+ 43D0 ED 78        	IN	A,(C)
+ 798+ 43D2 E6 0F        	AND	00FH
+ 799+ 43D4 ED 79        	OUT	(C),A
+ 800+ 43D6 FB           	EI
+ 801+ 43D7 3E 28        	LD	A,28H
+ 802+ 43D9 CD F5 45     	CALL	WART
+ 803+ 43DC 0C           	INC	C
+ 804+ 43DD AF           	XOR	A
+ 805+ 43DE ED 79        	OUT	(C),A
+ 806+ 43E0 0C           	INC	C
+ 807+ 43E1 3E 03        	LD	A,3
+ 808+ 43E3 ED 79        	OUT	(C),A
+ 809+ 43E5 0D           	DEC	C
+ 810+ 43E6 0D           	DEC	C
+ 811+ 43E7 0D           	DEC	C
+ 812+ 43E8 ED 79        	OUT	(C),A
+ 813+ 43EA 0C           	INC	C
+ 814+ 43EB 3E 51        	LD	A,51H
+ 815+ 43ED DD BE 04     	CP	(IX+4)
+ 816+ 43F0 20 07        	JR	NZ,$+9
+ 817+ 43F2 06 20        	LD	B,20H
+ 818+ 43F4 CD 63 46     	CALL	MBVZ
+ 819+ 43F7 0D           	DEC	C
+ 820+ 43F8 0D           	DEC	C
+ 821+ 43F9 ED 78        	IN	A,(C)
+ 822+ 43FB E6 03        	AND	3
+ 823+ 43FD ED 79        	OUT	(C),A
+ 824+ 43FF DD CB 00 86  	RES	0,(IX+0)
+ 825+ 4403 CD 5F 45     	CALL	RLAD
+ 826+ 4406 DD E1        	POP	IX
+ 827+ 4408 C9           	RET
+ 828+ 4409
+ 829+ 4409              	; PAGE
+ 830+ 4409              ;****************************************************************
+ 831+ 4409              ;*               Interruptbehandlung Eingabekanal RAW           *
+ 832+ 4409              ;****************************************************************
+ 833+ 4409              KR.IER:
+ 834+ 4409 DD E5        	PUSH	IX
+ 835+ 440B CD 5A 45     	CALL	RRET
+ 836+ 440E DD 2A 52 0E  	LD	IX,(KS.AEATB)	;Adresse E/A-Tabelle
+ 837+ 4412              ;----0150
+ 838+ 4412 DD 4E 02     	LD	C,(IX+2)
+ 839+ 4415 0C           	INC	C	;rel. Adr. 1
+ 840+ 4416 ED 78        	IN	A,(C)	;Eingabe Zeichen,(C)
+ 841+ 4418              ;----0160
+ 842+ 4418 21 60 0E     	LD	HL,KS.FEHLZ
+ 843+ 441B 56           	LD	D,(HL)	;<D>=FEHLZ
+ 844+ 441C CB 82        	RES	0,D	;Eingabekanal angesprochen
+ 845+ 441E 2A 56 0E     	LD	HL,(KS.PZEIN)
+ 846+ 4421 BE           	CP	(HL)
+ 847+ 4422 28 02        	JR	Z,IER0
+ 848+ 4424              ;----0170
+ 849+ 4424 CB E2        	SET	4,D
+ 850+ 4426              ;----0180
+ 851+ 4426 23           IER0:	INC	HL
+ 852+ 4427 22 56 0E     	LD	(KS.PZEIN),HL
+ 853+ 442A 2A 5A 0E     	LD	HL,(KS.ZEIN)	;Pufferzeiger erhoeht
+ 854+ 442D 2B           	DEC	HL
+ 855+ 442E              ;----0190
+ 856+ 442E 22 5A 0E     	LD	(KS.ZEIN),HL	;Zaehler erniedrigt
+ 857+ 4431 7C           	LD	A,H
+ 858+ 4432 B5           	OR	L
+ 859+ 4433 28 07        	JR	Z,IERE	;Sprung zur Endebeh.
+ 860+ 4435              ;----0200
+ 861+ 4435 7A           IER1:	LD	A,D
+ 862+ 4436 32 60 0E     	LD	(KS.FEHLZ),A
+ 863+ 4439 C3 28 45     	JP	ENDI
+ 864+ 443C              ;----0210
+ 865+ 443C CB 8A        IERE:	RES	1,D
+ 866+ 443E 18 F5        	JR	IER1
+ 867+ 4440              ;----0230        Interruptbehandlung Eingabekanal
+ 868+ 4440              KR.IEL:
+ 869+ 4440 DD E5        	PUSH	IX
+ 870+ 4442 CD 5A 45     	CALL	RRET
+ 871+ 4445 DD 2A 52 0E  	LD	IX,(KS.AEATB)
+ 872+ 4449              ;----0240
+ 873+ 4449 CD FB 46     	CALL	LDADR
+ 874+ 444C 3E 03        	LD	A,3
+ 875+ 444E ED 79        	OUT	(C),A	;CTC sperren
+ 876+ 4450              ;----0250
+ 877+ 4450 DD 4E 02     	LD	C,(IX+2)
+ 878+ 4453 0C           	INC	C	;rel. Adr. 1
+ 879+ 4454 ED 78        	IN	A,(C)	;Eingabe Zeichen,(C)
+ 880+ 4456              ;----0260
+ 881+ 4456 5F           	LD	E,A
+ 882+ 4457 E6 FE        	AND	0FEH
+ 883+ 4459 FE AA        	CP	0AAH
+ 884+ 445B 20 0E        	JR	NZ,IEL01
+ 885+ 445D              ;----0270
+ 886+ 445D 06 48        	LD	B,72
+ 887+ 445F 10 FE        IEL00:	DJNZ	IEL00	;warten 370 Mikros.
+ 888+ 4461              ;----0280
+ 889+ 4461 0C           	INC	C
+ 890+ 4462 0C           	INC	C
+ 891+ 4463 0C           	INC	C
+ 892+ 4464 0C           	INC	C	;rel. Adr. 5
+ 893+ 4465 ED 50        	IN	D,(C)
+ 894+ 4467 CB 6A        	BIT	5,D	;BMS=1 ?
+ 895+ 4469 28 1B        	JR	Z,IEL02	;Sprung zur Endebeh.
+ 896+ 446B              ;----0290
+ 897+ 446B 2A 56 0E     IEL01:	LD	HL,(KS.PZEIN)
+ 898+ 446E 73           	LD	(HL),E	;abspeichern Zeichen
+ 899+ 446F              ;----0300
+ 900+ 446F 23           	INC	HL
+ 901+ 4470 22 56 0E     	LD	(KS.PZEIN),HL	;Pufferzeiger erhoeht
+ 902+ 4473              ;----0310
+ 903+ 4473 11 69 0F     	LD	DE,KS.KOMDO
+ 904+ 4476 AF           	XOR	A
+ 905+ 4477 ED 52        	SBC	HL,DE
+ 906+ 4479 CA E3 44     	JP	Z,IELFF	;Sprung wenn Puffersp. ueberschr.
+ 907+ 447C              ;----0320
+ 908+ 447C 2A 5A 0E     	LD	HL,(KS.ZEIN)
+ 909+ 447F 23           	INC	HL
+ 910+ 4480 22 5A 0E     	LD	(KS.ZEIN),HL
+ 911+ 4483              ;----0330
+ 912+ 4483 C3 28 45     	JP	ENDI
+ 913+ 4486              ;----0340
+ 914+ 4486 0D           IEL02:	DEC	C
+ 915+ 4487 0D           	DEC	C	;rel. Adr. 3
+ 916+ 4488 3E 03        	LD	A,3
+ 917+ 448A ED 79        	OUT	(C),A	;Int. Eingabekanal gesp.
+ 918+ 448C 3E 14        	LD	A,14H
+ 919+ 448E CD F5 45     	CALL	WART
+ 920+ 4491 0C           	INC	C
+ 921+ 4492 ED 78        	IN	A,(C)
+ 922+ 4494 E6 0F        	AND	00FH
+ 923+ 4496 ED 79        	OUT	(C),A
+ 924+ 4498 FB           	EI
+ 925+ 4499 3E 28        	LD	A,28H
+ 926+ 449B CD F5 45     	CALL	WART
+ 927+ 449E              ;----0400
+ 928+ 449E 2A 5A 0E     IEL07:	LD	HL,(KS.ZEIN)	;Blocklaenge-1
+ 929+ 44A1 11 03 00     	LD	DE,3
+ 930+ 44A4 AF           	XOR	A
+ 931+ 44A5 ED 52        	SBC	HL,DE
+ 932+ 44A7 28 2B        	JR	Z,IEL05	;Sprung wenn Steuerblock
+ 933+ 44A9              ;----0410
+ 934+ 44A9 E5           	PUSH	HL
+ 935+ 44AA C1           	POP	BC
+ 936+ 44AB DD 70 09     	LD	(IX+9),B
+ 937+ 44AE DD 71 0A     	LD	(IX+10),C
+ 938+ 44B1 21 66 0E     	LD	HL,KS.PUFFS+1	;Adresse Daten
+ 939+ 44B4 DD 75 07     	LD	(IX+7),L
+ 940+ 44B7 DD 74 08     	LD	(IX+8),H
+ 941+ 44BA              ;----0420
+ 942+ 44BA 03           	INC	BC
+ 943+ 44BB 03           	INC	BC
+ 944+ 44BC CD B6 45     	CALL	CRC
+ 945+ 44BF 7A           	LD	A,D
+ 946+ 44C0 B3           	OR	E
+ 947+ 44C1              ;----0430
+ 948+ 44C1 C4 EA 44     	CALL	NZ,IELF	;Fehler
+ 949+ 44C4              ;----0431
+ 950+ 44C4 DD 7E 02     IEL04:	LD	A,(IX+2)
+ 951+ 44C7 C6 04        	ADD	A,4
+ 952+ 44C9 4F           	LD	C,A	;rel. Adr. 4
+ 953+ 44CA CD 99 46     	CALL	AUS
+ 954+ 44CD DD CB 00 86  	RES	0,(IX+0)
+ 955+ 44D1 C3 28 45     	JP	ENDI
+ 956+ 44D4              ;----0450
+ 957+ 44D4 AF           IEL05:	XOR	A	;Bandmarke gelesen
+ 958+ 44D5 DD 77 07     	LD	(IX+7),A
+ 959+ 44D8 DD 77 08     	LD	(IX+8),A
+ 960+ 44DB DD 77 09     	LD	(IX+9),A
+ 961+ 44DE DD 77 0A     	LD	(IX+10),A
+ 962+ 44E1 18 E1        	JR	IEL04
+ 963+ 44E3              ;----0460
+ 964+ 44E3 21 60 0E     IELFF:	LD	HL,KS.FEHLZ
+ 965+ 44E6 CB EE        	SET	5,(HL)
+ 966+ 44E8 18 E0        	JR	$-30
+ 967+ 44EA 21 60 0E     IELF:	LD	HL,KS.FEHLZ
+ 968+ 44ED CB DE        	SET	3,(HL)
+ 969+ 44EF C9           	RET
+ 970+ 44F0
+ 971+ 44F0              	; PAGE
+ 972+ 44F0              ;****************************************************************
+ 973+ 44F0              ;*               Interruptbehandlung Status                     *
+ 974+ 44F0              ;****************************************************************
+ 975+ 44F0              KR.IST:
+ 976+ 44F0 DD E5        	PUSH	IX
+ 977+ 44F2 CD 5A 45     	CALL	RRET
+ 978+ 44F5 DD 2A 52 0E  	LD	IX,(KS.AEATB)
+ 979+ 44F9 DD 7E 02     	LD	A,(IX+2)
+ 980+ 44FC C6 07        	ADD	A,7
+ 981+ 44FE 4F           	LD	C,A	;rel. Adr. 7
+ 982+ 44FF 21 60 0E     	LD	HL,KS.FEHLZ	;interner Fehlerzeiger
+ 983+ 4502 CB D6        	SET	2,(HL)	;Statusfehler
+ 984+ 4504 3E 03        	LD	A,3
+ 985+ 4506 ED 79        	OUT	(C),A	;Int. Status sperren
+ 986+ 4508 C3 28 45     	JP	ENDI
+ 987+ 450B              ;****************************************************************
+ 988+ 450B              ;*               Interruptbehandlung AEB                        *
+ 989+ 450B              ;****************************************************************
+ 990+ 450B              KR.IBE:
+ 991+ 450B F5           	PUSH	AF
+ 992+ 450C C5           	PUSH	BC
+ 993+ 450D DD E5        	PUSH	IX
+ 994+ 450F DD 2A 52 0E  	LD	IX,(KS.AEATB)
+ 995+ 4513 DD 7E 02     	LD	A,(IX+2)
+ 996+ 4516 C6 06        	ADD	A,6
+ 997+ 4518 4F           	LD	C,A
+ 998+ 4519 3E 03        	LD	A,03H
+ 999+ 451B ED 79        	OUT	(C),A
+1000+ 451D DD CB 00 CE  	SET	1,(IX)
+1001+ 4521 DD E1        	POP	IX
+1002+ 4523 C1           	POP	BC
+1003+ 4524 F1           	POP	AF
+1004+ 4525 FB           	EI
+1005+ 4526              KR.IBE0:
+1006+ 4526 ED 4D        	RETI
+1007+ 4528
+1008+ 4528              	; TITLE	'KMBG-Unterprogramme'
+1009+ 4528              	; PAGE
+1010+ 4528              ;****************************************************************
+1011+ 4528              ;*               Unterprogramme zur Bedienroutine KMBG          *
+1012+ 4528              ;*               -----------------------------------------------*
+1013+ 4528              ;*               Endebehandlung fuer normalen Interrupt         *
+1014+ 4528              ;****************************************************************
+1015+ 4528 CD 5F 45     ENDI:	CALL	RLAD
+1016+ 452B DD E1        	POP	IX
+1017+ 452D FB           	EI
+1018+ 452E ED 4D        ENDI1:	RETI
+1019+ 4530
+1020+ 4530              ;****************************************************************
+1021+ 4530              ;*               Verzweigung aus Steuerteil zum Eintrittspunkt  *
+1022+ 4530              ;*               des Steuerprogrammes                           *
+1023+ 4530              ;****************************************************************
+1024+ 4530 F3           KOMED:	DI
+1025+ 4531 DD CB 00 86  	RES	0,(IX)
+1026+ 4535 CD 5F 45     	CALL	RLAD
+1027+ 4538 DD E1        	POP	IX
+1028+ 453A FB           	EI
+1029+ 453B C9           	RET
+1030+ 453C
+1031+ 453C              ;****************************************************************
+1032+ 453C              ;*               UP zur Abfrage des Bereitsignals an dem PIO    *
+1033+ 453C              ;*               UP stellt Carry-Flag , C = 0 Geraet     bereit *
+1034+ 453C              ;*                                      C = 1 Geraet nicht  "   *
+1035+ 453C              ;*               <IX> = Anfangsadresse E/A-Tabelle              *
+1036+ 453C              ;*               UP zerstoert Register AF                       *
+1037+ 453C              ;****************************************************************
+1038+ 453C C5           BERT:	PUSH	BC
+1039+ 453D DD 7E 02     	LD	A,(IX+2)
+1040+ 4540 C6 05        	ADD	A,5
+1041+ 4542 4F           	LD	C,A
+1042+ 4543 ED 78        	IN	A,(C)
+1043+ 4545 37           	SCF
+1044+ 4546 DD CB 03 46  	BIT	0,(IX+3)
+1045+ 454A 28 07        	JR	Z,BERT2
+1046+ 454C CB 67        	BIT	4,A
+1047+ 454E 28 08        	JR	Z,BERTE
+1048+ 4550 3F           	CCF
+1049+ 4551 18 05        	JR	BERTE
+1050+ 4553 CB 5F        BERT2:	BIT	3,A
+1051+ 4555 28 01        	JR	Z,BERTE
+1052+ 4557 3F           	CCF
+1053+ 4558 C1           BERTE:	POP	BC
+1054+ 4559 C9           	RET
+1055+ 455A
+1056+ 455A              	; PAGE
+1057+ 455A              ;****************************************************************
+1058+ 455A              ;*               Register AF , BC , DE , HL retten in SP        *
+1059+ 455A              ;****************************************************************
+1060+ 455A E3           RRET:	EX	(SP),HL
+1061+ 455B D5           	PUSH	DE
+1062+ 455C C5           	PUSH	BC
+1063+ 455D F5           	PUSH	AF
+1064+ 455E E9           	JP	(HL)
+1065+ 455F              ;****************************************************************
+1066+ 455F              ;*               Register AF , BC , DE , HL laden aus SP        *
+1067+ 455F              ;****************************************************************
+1068+ 455F E3           RLAD:	EX	(SP),HL
+1069+ 4560 33           	INC	SP
+1070+ 4561 33           	INC	SP
+1071+ 4562 F1           	POP	AF
+1072+ 4563 C1           	POP	BC
+1073+ 4564 D1           	POP	DE
+1074+ 4565 E3           	EX	(SP),HL
+1075+ 4566 C9           	RET
+1076+ 4567              ;****************************************************************
+1077+ 4567              ;*               UP zum Testen BMS auf Stoerung                 *
+1078+ 4567              ;*               <C> = rel. Adr. 5      BMS=1 bei Aufruf des UP *
+1079+ 4567              ;*               Register  A , B , F werden zerstoert           *
+1080+ 4567              ;*               Ausgang: CY = 1 Stoerung                       *
+1081+ 4567              ;*                        CY = 0 BMS=1 groesser 0,2 mm Band     *
+1082+ 4567              ;****************************************************************
+1083+ 4567 06 2B        BMST:	LD	B,43
+1084+ 4569 37           BMST0:	SCF
+1085+ 456A ED 78        	IN	A,(C)
+1086+ 456C CB 6F        	BIT	5,A
+1087+ 456E C8           	RET	Z
+1088+ 456F 10 F8        	DJNZ	BMST0
+1089+ 4571 3F           	CCF
+1090+ 4572 C9           	RET
+1091+ 4573              ;****************************************************************
+1092+ 4573              ;*               Vor-/Ruecksetzen um einen Block                *
+1093+ 4573              ;*               <C> = rel. Adr. 4                              *
+1094+ 4573              ;*               <B> = 10H  Vorwaerts                           *
+1095+ 4573              ;*               <B> = 20H  Rueckwaerts                         *
+1096+ 4573              ;*               Register  A , B  werden zerstoert              *
+1097+ 4573              ;****************************************************************
+1098+ 4573              BLVR:
+1099+ 4573 F3           	DI
+1100+ 4574 ED 78        	IN	A,(C)
+1101+ 4576 CB F7        	SET	6,A	;HGE=1
+1102+ 4578 ED 79        	OUT	(C),A
+1103+ 457A CB B7        	RES	6,A	;HGE=0
+1104+ 457C B0           	OR	B
+1105+ 457D ED 79        	OUT	(C),A	;Transport einschalten
+1106+ 457F 0C           	INC	C	;rel. Adr. 5
+1107+ 4580 3E 12        	LD	A,18
+1108+ 4582 CD F5 45     	CALL	WART	;warten bis Nenngeschw.
+1109+ 4585              BLVR0:
+1110+ 4585 ED 78        	IN	A,(C)	;BMS ?,(C)
+1111+ 4587 CB 6F        	BIT	5,A
+1112+ 4589 28 FA        	JR	Z,BLVR0
+1113+ 458B CD 67 45     	CALL	BMST	;Test BMS auf Stoerung
+1114+ 458E 38 F5        	JR	C,BLVR0	;Sprung wenn Stoerung
+1115+ 4590 D5           	PUSH	DE
+1116+ 4591              BLVR1:
+1117+ 4591 ED 78        	IN	A,(C)
+1118+ 4593 CB 6F        	BIT	5,A
+1119+ 4595 20 FA        	JR	NZ,BLVR1	;Sprung solange BMS=1
+1120+ 4597              	; PAGE
+1121+ 4597              ;****************************************************************
+1122+ 4597              ;*               Test auf weitere Einbrueche des Signals BMS    *
+1123+ 4597              ;****************************************************************
+1124+ 4597 11 DB 04     	LD	DE,1243
+1125+ 459A              BLVR2:
+1126+ 459A ED 78        	IN	A,(C)
+1127+ 459C CB 6F        	BIT	5,A
+1128+ 459E 20 0F        	JR	NZ,BLVR3
+1129+ 45A0 1B           	DEC	DE
+1130+ 45A1 7A           	LD	A,D
+1131+ 45A2 B3           	OR	E
+1132+ 45A3 20 F5        	JR	NZ,BLVR2
+1133+ 45A5 0D           	DEC	C
+1134+ 45A6 ED 78        	IN	A,(C)
+1135+ 45A8 E6 0F        	AND	0FH
+1136+ 45AA ED 79        	OUT	(C),A	;TRV=TRR=0
+1137+ 45AC D1           	POP	DE
+1138+ 45AD FB           	EI
+1139+ 45AE C9           	RET
+1140+ 45AF CD 67 45     BLVR3:	CALL	BMST
+1141+ 45B2 30 DD        	JR	NC,BLVR1	;keine Stoerung
+1142+ 45B4 18 E4        	JR	BLVR2	;Stoerung
+1143+ 45B6              ;****************************************************************
+1144+ 45B6              ;*               CRC-Zeichen berechnen                          *
+1145+ 45B6              ;*               <B>  = Blocklaenge , 0 = 256                   *
+1146+ 45B6              ;*               <HL> = Pufferadresse                           *
+1147+ 45B6              ;*               in  DE  nach Aufruf CRC-Zeichen                *
+1148+ 45B6              ;*                <D> = 1.Byte , wird zuerst gesendet           *
+1149+ 45B6              ;*                <E> = 2.Byte , wird danach gesendet           *
+1150+ 45B6              ;****************************************************************
+1151+ 45B6 11 00 00     CRC:	LD	DE,0
+1152+ 45B9 C5           CRC0:	PUSH	BC	;Bytelaenge
+1153+ 45BA 06 08        	LD	B,8
+1154+ 45BC 4E           	LD	C,(HL)
+1155+ 45BD 79           CRC1:	LD	A,C
+1156+ 45BE AA           	XOR	D
+1157+ 45BF 0F           	RRCA		;Ergebnis Antivalenz Wort-Byte/CRC-Byte,Bit 0
+1158+ 45C0 F5           	PUSH	AF
+1159+ 45C1 CB 1B        	RR	E	;Verschiebung von DE um 1 Bit nach rechts
+1160+ 45C3 CB 1A        	RR	D
+1161+ 45C5 F1           	POP	AF	;Rueckretten F
+1162+ 45C6 30 08        	JR	NC,CRC2	;Sprung wenn Antivalenz 0 + 0 = 0
+1163+ 45C8 7A           	LD	A,D	;Korrektur = Umkehr Bit 13/Bit 0
+1164+ 45C9 EE 01        	XOR	1	;Maske fuer D
+1165+ 45CB 57           	LD	D,A	;Korrektur  D
+1166+ 45CC 7B           	LD	A,E
+1167+ 45CD EE 20        	XOR	20H	;Maske fuer E
+1168+ 45CF 5F           	LD	E,A	;Korrektur  E
+1169+ 45D0 CB 09        CRC2:	RRC	C	;Schieben Datenbyte
+1170+ 45D2 10 E9        	DJNZ	CRC1
+1171+ 45D4 C1           	POP	BC	;Byte abgearbeitet
+1172+ 45D5 0B           	DEC	BC
+1173+ 45D6 79           	LD	A,C
+1174+ 45D7 B0           	OR	B
+1175+ 45D8 C8           	RET	Z
+1176+ 45D9 23           	INC	HL
+1177+ 45DA 18 DD        	JR	CRC0
+1178+ 45DC
+1179+ 45DC              	; PAGE
+1180+ 45DC              ;****************************************************************
+1181+ 45DC              ;*               UP zum Einschalten des AEB-Int.                *
+1182+ 45DC              ;*               <C> = rel. Adr. 6                              *
+1183+ 45DC              ;*               <A> = wird zerstoert                           *
+1184+ 45DC              ;****************************************************************
+1185+ 45DC 3E 97        AEBEI:	LD	A,97H
+1186+ 45DE ED 79        	OUT	(C),A
+1187+ 45E0 3E 7F        	LD	A,7FH
+1188+ 45E2 ED 79        	OUT	(C),A
+1189+ 45E4 C9           	RET
+1190+ 45E5
+1191+ 45E5              ;****************************************************************
+1192+ 45E5              ;*               UP zum Einschalten des Statusinterrupts        *
+1193+ 45E5              ;*               <IX> = Anfangsadresse E/A-Tabelle              *
+1194+ 45E5              ;****************************************************************
+1195+ 45E5 F3           STAE:	DI
+1196+ 45E6 DD 7E 02     	LD	A,(IX+2)
+1197+ 45E9 C6 07        	ADD	A,7
+1198+ 45EB 4F           	LD	C,A	;rel. Adr. 7
+1199+ 45EC 3E B7        	LD	A,0B7H
+1200+ 45EE ED 79        	OUT	(C),A
+1201+ 45F0 3E BF        	LD	A,0BFH
+1202+ 45F2 ED 79        	OUT	(C),A	;Freigabe Blindinterrupt
+1203+ 45F4 C9           	RET
+1204+ 45F5
+1205+ 45F5              ;****************************************************************
+1206+ 45F5              ;*               Warten , <A> = Anzahl Millisekunden > 0        *
+1207+ 45F5              ;*               Register  A , B  werden zerstoert              *
+1208+ 45F5              ;****************************************************************
+1209+ 45F5 06 BC        WART:	LD	B,188
+1210+ 45F7 10 FE        	DJNZ	$-0
+1211+ 45F9 3D           	DEC	A
+1212+ 45FA 20 F9        	JR	NZ,WART
+1213+ 45FC C9           	RET
+1214+ 45FD
+1215+ 45FD              ;****************************************************************
+1216+ 45FD              ;*               UP zum Einschalten Interrupt Eingabekanal      *
+1217+ 45FD              ;*               Eingang: <L> = L-Teil Int.-Adresse             *
+1218+ 45FD              ;*                        <C> = rel. Adr. 3                     *
+1219+ 45FD              ;*               Register  B  wird zerstoert                    *
+1220+ 45FD              ;****************************************************************
+1221+ 45FD ED 69        EINIE:	OUT	(C),L
+1222+ 45FF 3E 97        	LD	A,97H	;Int. Freigabe
+1223+ 4601 ED 79        	OUT	(C),A
+1224+ 4603 3E FF        	LD	A,0FFH
+1225+ 4605 ED 79        	OUT	(C),A	;Int.-Vektor RAW
+1226+ 4607 CB 89        	RES	1,C	;rel. Adr. 1
+1227+ 4609 ED 40        	IN	B,(C)
+1228+ 460B CB C9        	SET	1,C	;rel. Adr. 3
+1229+ 460D C9           	RET		;READY einschalten
+1230+ 460E
+1231+ 460E              	; PAGE
+1232+ 460E              ;****************************************************************
+1233+ 460E              ;*               Magnetband aus Anfangsstellung einziehen       *
+1234+ 460E              ;*               <IX> = Anfangsadresse E/A-Tabelle              *
+1235+ 460E              ;*               <C>  = rel. Adr. 4                             *
+1236+ 460E              ;****************************************************************
+1237+ 460E 0C           MBAN:	INC	C	;rel. Adr. 5
+1238+ 460F DD 7E 04     	LD	A,(IX+4)
+1239+ 4612 FE 02        	CP	2	;Lesen ?
+1240+ 4614 28 08        	JR	Z,MBAN0	;AUF=0
+1241+ 4616 FE 71        	CP	71H	;BM suchen Vorwaerts ?
+1242+ 4618 28 04        	JR	Z,MBAN0	;AUF=0
+1243+ 461A 06 02        	LD	B,2
+1244+ 461C ED 41        	OUT	(C),B	;AUF=1
+1245+ 461E 0D           MBAN0:	DEC	C	;rel. Adr. 4
+1246+ 461F ED 40        	IN	B,(C)
+1247+ 4621 CB E0        	SET	4,B
+1248+ 4623 ED 41        	OUT	(C),B	;TRV=1
+1249+ 4625 ED 40        MBAN1:	IN	B,(C)
+1250+ 4627 CB 78        	BIT	7,B	;AEB ?
+1251+ 4629 28 FA        	JR	Z,MBAN1
+1252+ 462B 06 FF        	LD	B,255
+1253+ 462D 10 FE        	DJNZ	$-0	;warten 1,3 ms
+1254+ 462F ED 40        	IN	B,(C)
+1255+ 4631 CB 78        	BIT	7,B
+1256+ 4633 28 F0        	JR	Z,MBAN1	;Sprung wenn Stoerung
+1257+ 4635 ED 40        MBAN2:	IN	B,(C)
+1258+ 4637 CB 78        	BIT	7,B
+1259+ 4639 20 FA        	JR	NZ,MBAN2	;Sprung solange AEB=1
+1260+ 463B CB 4F        	BIT	1,A
+1261+ 463D 20 0E        	JR	NZ,MBAN5
+1262+ 463F FE 71        	CP	71H
+1263+ 4641 28 0A        	JR	Z,MBAN5
+1264+ 4643 3E FA        	LD	A,0FAH
+1265+ 4645 CD F5 45     	CALL	WART
+1266+ 4648 3E 8C        	LD	A,8CH
+1267+ 464A CD F5 45     	CALL	WART
+1268+ 464D              MBAN5:
+1269+ 464D 3E 0A        	LD	A,00AH
+1270+ 464F CD F5 45     	CALL	WART
+1271+ 4652              MBAN6:
+1272+ 4652 ED 78        	IN	A,(C)
+1273+ 4654 CB A7        	RES	4,A
+1274+ 4656 ED 79        	OUT	(C),A	;TRV=0
+1275+ 4658 3E 28        	LD	A,28H
+1276+ 465A CD F5 45     	CALL	WART
+1277+ 465D              MBAN7:
+1278+ 465D 0C           	INC	C	;rel. Adr. 5
+1279+ 465E AF           	XOR	A
+1280+ 465F ED 79        	OUT	(C),A	;AUF=0
+1281+ 4661 0D           	DEC	C	;rel. Adr. 4
+1282+ 4662 C9           	RET
+1283+ 4663
+1284+ 4663              	; PAGE
+1285+ 4663              ;****************************************************************
+1286+ 4663              ;*               loesche Band von 6 oder 40 cm Laenge           *
+1287+ 4663              ;*               <IX> = Anfangsadresse E/A-Tabelle              *
+1288+ 4663              ;*               <B>  = Zeitkonstante fuer 38 cm*s**-1          *
+1289+ 4663              ;*               <C>  = rel. Adr. 6  beim Ausgang               *
+1290+ 4663              ;****************************************************************
+1291+ 4663 DD 7E 02     MBVZ:	LD	A,(IX+2)	;Basisadresse
+1292+ 4666 C6 05        	ADD	A,5
+1293+ 4668 4F           	LD	C,A	;rel. Adr. 5
+1294+ 4669 3E 02        	LD	A,2
+1295+ 466B ED 79        	OUT	(C),A	;AUF=1
+1296+ 466D 0C           	INC	C	;rel. Adr. 6
+1297+ 466E CD DC 45     	CALL	AEBEI	;AEB  auf Interrupt
+1298+ 4671 0D           	DEC	C
+1299+ 4672 0D           	DEC	C	;rel. Adr. 4
+1300+ 4673 ED 78        	IN	A,(C)
+1301+ 4675 CB E7        	SET	4,A
+1302+ 4677 ED 79        	OUT	(C),A	;TRV=1
+1303+ 4679 C5           	PUSH	BC
+1304+ 467A CD C3 46     	CALL	INITC
+1305+ 467D 3A 6D 0F     	LD	A,(KS.CONTR)
+1306+ 4680 B7           	OR	A
+1307+ 4681 28 FA        	JR	Z,$-4
+1308+ 4683 C1           MBVZ3:	POP	BC	;rel. Adr. 4
+1309+ 4684 ED 78        	IN	A,(C)
+1310+ 4686 CB A7        	RES	4,A
+1311+ 4688 ED 79        	OUT	(C),A	;TRV=0
+1312+ 468A 3E 28        	LD	A,28H
+1313+ 468C CD F5 45     	CALL	WART
+1314+ 468F 0C           	INC	C	;rel. Adr. 5
+1315+ 4690 AF           	XOR	A
+1316+ 4691 ED 79        	OUT	(C),A	;AUF=0
+1317+ 4693 0C           	INC	C	;rel. Adr. 6
+1318+ 4694 3E 03        	LD	A,3
+1319+ 4696 ED 79        	OUT	(C),A	;AEB  fuer Int. gesperrt
+1320+ 4698 C9           	RET
+1321+ 4699
+1322+ 4699              	; PAGE
+1323+ 4699              ;****************************************************************
+1324+ 4699              ;*               UP zum Ausschalten Transport                   *
+1325+ 4699              ;*               Anwahl, AEB - Int., Stat.-Int., Int. E/A-Kanal *
+1326+ 4699              ;*               <IX>=Anfangsadresse E/A-Tabelle                *
+1327+ 4699              ;*               Register  AF , BC , DE  werden zerstoert       *
+1328+ 4699              ;****************************************************************
+1329+ 4699 DD 4E 02     AUS:	LD	C,(IX+2)	;Basisadresse
+1330+ 469C 0C           	INC	C
+1331+ 469D 0C           	INC	C	;rel. Adr. 2
+1332+ 469E 16 03        	LD	D,3
+1333+ 46A0 ED 51        	OUT	(C),D	;Ausgabekanal gesperrt
+1334+ 46A2 0C           	INC	C	;rel. Adr. 3
+1335+ 46A3 ED 51        	OUT	(C),D	;Eingabekanal gesperrt
+1336+ 46A5 0C           	INC	C	;rel. Adr. 4
+1337+ 46A6 ED 78        	IN	A,(C)
+1338+ 46A8 E6 0F        	AND	0FH
+1339+ 46AA ED 79        	OUT	(C),A	;Transport aus
+1340+ 46AC 3E 28        	LD	A,40
+1341+ 46AE CD F5 45     	CALL	WART	;40 ms warten
+1342+ 46B1 ED 78        	IN	A,(C)
+1343+ 46B3 E6 03        	AND	3
+1344+ 46B5 ED 79        	OUT	(C),A	;Anwahl aus
+1345+ 46B7 0C           	INC	C	;rel. Adr. 5
+1346+ 46B8 1E 00        	LD	E,0
+1347+ 46BA ED 59        	OUT	(C),E	;AUF=0
+1348+ 46BC 0C           	INC	C	;rel. Adr. 6
+1349+ 46BD ED 51        	OUT	(C),D	;AEB-Int. gesperrt
+1350+ 46BF 0C           	INC	C	;rel. Adr. 7
+1351+ 46C0 ED 51        	OUT	(C),D	;Status-Int. gesperrt
+1352+ 46C2 C9           	RET
+1353+ 46C3
+1354+ 46C3              	; TITLE	'KMBG-CTC Routine'
+1355+ 46C3              	; PAGE
+1356+ 46C3              ;****************************************************************
+1357+ 46C3              ;*               Routine zur CTC Bedienung                      *
+1358+ 46C3              ;*               -----------------------------------------------*
+1359+ 46C3              ;*               Zeitkontrollroutine fuer Kassettenmagnetband   *
+1360+ 46C3              ;*               beim Aufruf des Initialisierungsteils:         *
+1361+ 46C3              ;*               (C)  = 0 Sprung zur Adresse Kommando           *
+1362+ 46C3              ;*               (C)  = 1 Kontrolle Ereignis                    *
+1363+ 46C3              ;*               (B)  = Zeitkonstante                           *
+1364+ 46C3              ;*               (HL) = Adresse                                 *
+1365+ 46C3              ;****************************************************************
+1366+ 46C3 F3           INITC:	DI
+1367+ 46C4 ED 43 69 0F  	LD	(KS.KOMDO),BC	;Arbeitsbereich laden
+1368+ 46C8 AF           	XOR	A
+1369+ 46C9 32 6D 0F     	LD	(KS.CONTR),A
+1370+ 46CC              ;      LD   HL,0F7E2H
+1371+ 46CC              ;      LD   (HL),L(KR.ICTC)
+1372+ 46CC              ;      INC  HL
+1373+ 46CC              ;      LD   (HL),H(KR.ICTC)
+1374+ 46CC 21 01 47     	LD	HL,INITK	;Kanal 2 auf 10 ms Interruptfrequenz progr.
+1375+ 46CF 0E 80        	LD	C,LOW(CTCBA)
+1376+ 46D1 06 01        	LD	B,1
+1377+ 46D3 ED B3        	OTIR
+1378+ 46D5 CD FB 46     	CALL	LDADR
+1379+ 46D8 06 02        	LD	B,2
+1380+ 46DA ED B3        	OTIR
+1381+ 46DC FB           	EI
+1382+ 46DD C9           	RET
+1383+ 46DE              ;****************************************************************
+1384+ 46DE              ;*               Interruptserviceroutine CTC Kanal 2            *
+1385+ 46DE              ;****************************************************************
+1386+ 46DE              KR.ICTC:
+1387+ 46DE F5           	PUSH	AF
+1388+ 46DF E5           	PUSH	HL
+1389+ 46E0 21 6A 0F     	LD	HL,KS.ZEITK
+1390+ 46E3 35           	DEC	(HL)
+1391+ 46E4 E1           	POP	HL
+1392+ 46E5 28 04        	JR	Z,ICTCE
+1393+ 46E7 F1           ICTCR:	POP	AF
+1394+ 46E8 FB           	EI
+1395+ 46E9 ED 4D        	RETI
+1396+ 46EB C5           ICTCE:	PUSH	BC
+1397+ 46EC CD FB 46     	CALL	LDADR
+1398+ 46EF 3E 03        	LD	A,3	;CTC Int. sperren
+1399+ 46F1 ED 79        	OUT	(C),A
+1400+ 46F3 C1           	POP	BC
+1401+ 46F4 3E 01        	LD	A,1
+1402+ 46F6 32 6D 0F     	LD	(KS.CONTR),A
+1403+ 46F9 18 EC        	JR	ICTCR
+1404+ 46FB              ;****************************************************************
+1405+ 46FB              ;*               UP zum Laden von Reg. C mit Adresse CTC-Kanal  *
+1406+ 46FB              ;****************************************************************
+1407+ 46FB 3E 80        LDADR:	LD	A,LOW(CTCBA)	;Basisadr. CTC
+1408+ 46FD C6 02        	ADD	A,LOW(CTCKA)	;CTC-KANAL
+1409+ 46FF 4F           	LD	C,A
+1410+ 4700 C9           	RET
+1411+ 4701              ;****************************************************************
+1412+ 4701              ;*               Konstanten zum Initialisieren CTC              *
+1413+ 4701              ;****************************************************************
+1414+ 4701 70           INITK:	DB	LOW(KT.ICTC0)	;Adresse
+1415+ 4702 A5           	DB	0A5H	;Kanalsteuerwort
+1416+ 4703 60           	DB	96	;Zeitkonstante
+1417+ 4704
+1418+ 4704              	; TITLE	'KMBG-Fehlerbehandlung'
+1419+ 4704              	; PAGE
+1420+ 4704              ;****************************************************************
+1421+ 4704              ;*               Fehlerbehandlung zur Bedienroutine KMBG        *
+1422+ 4704              ;****************************************************************
+1423+ 4704              ;----0010
+1424+ 4704 DD CB 00 C6  FEHLB:	SET	0,(IX)
+1425+ 4708 DD 7E 02     	LD	A,(IX+2)
+1426+ 470B C6 04        	ADD	A,4
+1427+ 470D 4F           	LD	C,A
+1428+ 470E ED 78        	IN	A,(C)
+1429+ 4710 E6 03        	AND	3
+1430+ 4712 CB DF        	SET	3,A
+1431+ 4714 DD CB 03 46  	BIT	0,(IX+3)
+1432+ 4718 20 04        	JR	NZ,$+6
+1433+ 471A CB 9F        	RES	3,A
+1434+ 471C CB D7        	SET	2,A
+1435+ 471E ED 79        	OUT	(C),A
+1436+ 4720 3A 5C 0E     	LD	A,(KS.Z1)	;Eingabe/Ausgabe ?
+1437+ 4723              ;----0011
+1438+ 4723 06 20        	LD	B,20H
+1439+ 4725 DD CB 04 4E  	BIT	1,(IX+4)	;Sprung wenn Ausgabe
+1440+ 4729 28 1E        	JR	Z,FEHL2
+1441+ 472B              ;----0020
+1442+ 472B FE 07        	CP	7
+1443+ 472D 28 0F        	JR	Z,FEHL1	;Sprung wenn 7 x gelesen
+1444+ 472F              ;----0030
+1445+ 472F 3C           	INC	A
+1446+ 4730 32 5C 0E     	LD	(KS.Z1),A	;Zaehler erhoehen
+1447+ 4733 CD 73 45     	CALL	BLVR	;einen Block ruecksetzen
+1448+ 4736              ;----0050
+1449+ 4736 3E 32        	LD	A,50
+1450+ 4738 CD F5 45     	CALL	WART
+1451+ 473B C3 34 41     	JP	STT22	;Lesen wiederholen
+1452+ 473E              ;----0060
+1453+ 473E DD 36 01 21  FEHL1:	LD	(IX+1),21H	;Fehler nach 7 x Lesen
+1454+ 4742              ;----0070
+1455+ 4742 DD CB 00 FE  FEHLE:	SET	7,(IX)	;Fehlerbit setzen
+1456+ 4746 C3 30 45     	JP	KOMED
+1457+ 4749              ;----0080
+1458+ 4749 21 60 0E     FEHL2:	LD	HL,KS.FEHLZ	;Fehleranzeiger
+1459+ 474C CB 46        	BIT	0,(HL)	;kein Echosignal vom Eingabekanal ?
+1460+ 474E 20 4A        	JR	NZ,FEHL6
+1461+ 4750              ;----0090
+1462+ 4750 FE 07        	CP	7
+1463+ 4752 28 17        	JR	Z,FEHL3	;Sprung wenn 7 x geschrieben
+1464+ 4754              ;----0100
+1465+ 4754 3C           	INC	A
+1466+ 4755 32 5C 0E     	LD	(KS.Z1),A	;Zaehler
+1467+ 4758 CD 73 45     	CALL	BLVR	;einen Block ruecksetzen
+1468+ 475B              ;----0120
+1469+ 475B 3E 46        	LD	A,70
+1470+ 475D CD F5 45     	CALL	WART
+1471+ 4760              ;----0130
+1472+ 4760 DD 7E 04     FEHL5:	LD	A,(IX+4)
+1473+ 4763 FE 51        	CP	51H
+1474+ 4765 CA 19 42     	JP	Z,STT72
+1475+ 4768              ;----0140
+1476+ 4768 C3 C8 40     	JP	STTEP	;Schreibwiederholung
+1477+ 476B              ;----0150
+1478+ 476B DD CB 04 7E  FEHL3:	BIT	7,(IX+4)
+1479+ 476F 20 23        	JR	NZ,FEHL4
+1480+ 4771 3A 5D 0E     	LD	A,(KS.Z2)
+1481+ 4774 FE 02        	CP	2	;Blockluecke 2 x verlaengert ?
+1482+ 4776 28 1C        	JR	Z,FEHL4
+1483+ 4778              ;----0160
+1484+ 4778 3C           	INC	A
+1485+ 4779 32 5D 0E     	LD	(KS.Z2),A
+1486+ 477C              ;----0170
+1487+ 477C CD 73 45     	CALL	BLVR	;einen Block ruecksetzen
+1488+ 477F              ;----0180
+1489+ 477F 3E 46        	LD	A,70
+1490+ 4781 CD F5 45     	CALL	WART
+1491+ 4784              ;----0190
+1492+ 4784 06 10        	LD	B,16
+1493+ 4786 CD 63 46     	CALL	MBVZ	;60 mm MB loeschen
+1494+ 4789              ;----0200
+1495+ 4789 3E 46        	LD	A,70
+1496+ 478B CD F5 45     	CALL	WART
+1497+ 478E              ;----0210
+1498+ 478E AF           	XOR	A
+1499+ 478F 32 5C 0E     	LD	(KS.Z1),A	;Z1=0
+1500+ 4792 18 CC        	JR	FEHL5
+1501+ 4794              ;----0220
+1502+ 4794 DD 36 01 22  FEHL4:	LD	(IX+1),22H	;RAW-Fehler nach 3 x 7 Aufzeichnungsversuchen
+1503+ 4798 18 A8        	JR	FEHLE
+1504+ 479A              ;----0230
+1505+ 479A DD 36 01 23  FEHL6:	LD	(IX+1),23H	;kein Echosignal vom Eingabekanal bei RAW
+1506+ 479E 18 A2        	JR	FEHLE
+1507+ 47A0
+1508+ 47A0              	; TITLE	'programmieren U855 auf AKB'
+1509+ 47A0              	; PAGE
+1510+ 47A0              ;****************************************************************
+1511+ 47A0              ;*               programmieren der PIO's auf der AKB            *
+1512+ 47A0              ;*               -----------------------------------------------*
+1513+ 47A0              ;*               Anschlussbedingungen:                          *
+1514+ 47A0              ;*                - Anfangsadresse E/A-Tabelle in IX            *
+1515+ 47A0              ;*                - Basisadresse AKB wird aus E/A-Tab. uebern.  *
+1516+ 47A0              ;*                - Register AF , BC , HL werden zerstoert      *
+1517+ 47A0              ;*                - nach dem Initialisieren sind beide U 855    *
+1518+ 47A0              ;*                  fuer Interrupt gesperrt                     *
+1519+ 47A0              ;****************************************************************
+1520+ 47A0              INIT:
+1521+ 47A0 DD 4E 02     	LD	C,(IX+2)	;Basisadresse
+1522+ 47A3 0C           	INC	C
+1523+ 47A4 0C           	INC	C	;Adresse Kommando TOR A
+1524+ 47A5 06 03        	LD	B,3
+1525+ 47A7 21 CB 47     	LD	HL,INI1A
+1526+ 47AA F3           	DI
+1527+ 47AB ED B3        	OTIR
+1528+ 47AD 0C           	INC	C	;Adresse Kommando TOR B
+1529+ 47AE 06 03        	LD	B,3
+1530+ 47B0 ED B3        	OTIR
+1531+ 47B2 0C           	INC	C
+1532+ 47B3 0C           	INC	C
+1533+ 47B4 0C           	INC	C
+1534+ 47B5 06 05        	LD	B,5
+1535+ 47B7 ED B3        	OTIR
+1536+ 47B9 0C           	INC	C
+1537+ 47BA 06 05        	LD	B,5
+1538+ 47BC ED B3        	OTIR
+1539+ 47BE FB           	EI
+1540+ 47BF 0D           	DEC	C
+1541+ 47C0 0D           	DEC	C
+1542+ 47C1 0D           	DEC	C
+1543+ 47C2 3E 03        	LD	A,3	;Grundzustand Steuerleitungen
+1544+ 47C4 ED 79        	OUT	(C),A
+1545+ 47C6 0C           	INC	C
+1546+ 47C7 AF           	XOR	A
+1547+ 47C8 ED 79        	OUT	(C),A
+1548+ 47CA C9           	RET
+1549+ 47CB              ;****************************************************************
+1550+ 47CB              ;*               Steuerworte zur Initialisierung AKB            *
+1551+ 47CB              ;****************************************************************
+1552+ 47CB              ;                Steuerworte Baustein 1 TOR A - Ausgabekanal
+1553+ 47CB              INI1A:
+1554+ 47CB 78           	DB	LOW(KT.IAUS)	;Interruptvektor Ausgabekanal
+1555+ 47CC 0F           	DB	0FH	;Betriebsart: Ausgabe
+1556+ 47CD 03           	DB	03H	;Interrupt verboten
+1557+ 47CE              ;                Steuerworte Baustein 1 TOR B - Eingabekanal
+1558+ 47CE              INI1B:
+1559+ 47CE 7C           	DB	LOW(KT.IEL)	;Interruptvektor Eingabekanal
+1560+ 47CF 4F           	DB	4FH	;Betriebsart: Eingabe
+1561+ 47D0 03           	DB	03H	;Interrupt verboten
+1562+ 47D1              ;                Steuerworte Baustein 2 TOR A
+1563+ 47D1              INI2A:
+1564+ 47D1 80           	DB	LOW(KT.IBE)	;Interruptvektor Signal AEB
+1565+ 47D2 CF           	DB	0CFH	;Betriebsart: Bit Ein/Ausg.
+1566+ 47D3 80           	DB	80H	;I/O-Maske
+1567+ 47D4 17           	DB	17H	;Unterbrechungssteuerung
+1568+ 47D5 7F           	DB	7FH	;Maske
+1569+ 47D6              ;                Steuerworte Baustein 2 TOR B
+1570+ 47D6              INI2B:
+1571+ 47D6 7E           	DB	LOW(KT.IST)	;Interruptvektor Status
+1572+ 47D7 CF           	DB	0CFH	;Betriebsart: Bit Ein/Ausg.
+1573+ 47D8 FD           	DB	0FDH	;I/O-Maske
+1574+ 47D9 37           	DB	37H	;Unterbrechungssteuerung
+1575+ 47DA BF           	DB	0BFH	;Maske , nur Status auf Int.
+1576+ 47DB              ;
+1577+ 47DB              ;	END
+1578+ 47DB
+# file closed: KR05.MAC
+   4  47DB              	; PAGE
+   5  47DB              	ORG	00070H
+   6  0070              	INCLUDE KT01.MAC
+# file opened: KT01.MAC
+   1+ 0070              ;	PN	KT
+   2+ 0070              ;****************************************************************
+   3+ 0070              ;*               Tabelle der Adressen der ISR CTC               *
+   4+ 0070              ;*               -----------------------------------------------*
+   5+ 0070              ;*               fuer den CTC auf der ZRE-Platte sind hier die  *
+   6+ 0070              ;*               Adressen der Interruptserviceroutinen fuer die *
+   7+ 0070              ;*               einzelnen Kanaele (0,1,2,3) einzutragen        *
+   8+ 0070              ;*               L-Teil von ICTC0: XXXXX000                     *
+   9+ 0070              ;****************************************************************
+  10+ 0070 00 00        KT.ICTC0:  DW   0        ;Int. beh. CTC Kanal 0
+  11+ 0072 00 00        KT.ICTC1:  DW   0        ;Int. beh. CTC Kanal 1
+  12+ 0074 DE 46        KT.ICTC2:  DW   KR.ICTC  ;Int. beh. CTC Kanal 2
+  13+ 0076 00 00        KT.ICTC3:  DW   0        ;Int. beh. CTC Kanal 3
+  14+ 0078              ;****************************************************************
+  15+ 0078              ;*               Adressenverbindungstabelle zur ISR             *
+  16+ 0078              ;****************************************************************
+  17+ 0078 92 43        KT.IAUS:   DW   KR.IAUS  ;Int. beh. Ausgabekanal
+  18+ 007A 09 44        KT.IER:    DW   KR.IER   ;Int. beh. Eingabekanal RAW
+  19+ 007C 40 44        KT.IEL:    DW   KR.IEL   ;Int. beh. Eingabekanal Lesen
+  20+ 007E F0 44        KT.IST:    DW   KR.IST   ;Int. beh. Status
+  21+ 0080 0B 45        KT.IBE:    DW   KR.IBE   ;Int. beh. Bandende
+  22+ 0082 26 45        KT.IBE0:   DW   KR.IBE0  ;Behandlung Blindinterrupt
+  23+ 0084              ;	END
+  24+ 0084
+# file closed: KT01.MAC
+   7  0084              	ORG	00E52H
+   8  0E52              	INCLUDE KS02.MAC
+# file opened: KS02.MAC
+   1+ 0E52              ;	PN	KS02
+   2+ 0E52              ;****************************************************************
+   3+ 0E52              ;*               Arbeitsbereich zur Geraetebedienroutine KMBG   *
+   4+ 0E52              ;****************************************************************
+   5+ 0E52 00 00        KS.AEATB:  DW   0	;Adresse E/A-Tabelle
+   6+ 0E54 00 00        KS.PZAUS:  DW   0	;Pufferzeiger Ausgabe
+   7+ 0E56 00 00        KS.PZEIN:  DW   0	;Pufferzeiger Eingabe
+   8+ 0E58 00 00        KS.ZAUS:   DW   0	;Zaehler Ausgabe
+   9+ 0E5A 00 00        KS.ZEIN:   DW   0	;Zaehler Eingabe
+  10+ 0E5C 00           KS.Z1:     DB   0	;Zaehler Schreib-/Lese wdhg.
+  11+ 0E5D 00           KS.Z2:     DB   0	;Zaehler Blocklueckenverl.
+  12+ 0E5E 00 00        KS.CRCZ:   DW   0	;CRC-Zeichen
+  13+ 0E60 00           KS.FEHLZ:  DB   0	;Interner Fehleranzeiger
+  14+ 0E61              ;****************************************************************
+  15+ 0E61              ;*               Bedeutung des internen Fehleranzeigers         *
+  16+ 0E61              ;*               Bit     Fehler                                 *
+  17+ 0E61              ;*               -----------------------------------------------*
+  18+ 0E61              ;*               0     kein Echosignal vom Eingabekanal bei RAW *
+  19+ 0E61              ;*               1     letzter Interrupt nicht gekommen bei RAW *
+  20+ 0E61              ;*               2     Status waehrend der Datenuebertragung    *
+  21+ 0E61              ;*               3     CRC-Zeichen fehlerhaft beim Lesen        *
+  22+ 0E61              ;*               4     RAW-Fehler                               *
+  23+ 0E61              ;****************************************************************
+  24+ 0E61 00 00        KS.POS:    DW   0	;Position des Fehlers im Datensatz
+  25+ 0E63 00           KS.SDAT:   DB   0	;Solldaten
+  26+ 0E64 00           KS.IDAT:   DB   0	;Istdaten
+  27+ 0E65 00 00 00...  KS.PUFFS:  DS   260	;Pufferspeicher
+  28+ 0F69              ;****************************************************************
+  29+ 0F69              ;*               Arbeitszellen fuer CRC-Routine                 *
+  30+ 0F69              ;****************************************************************
+  31+ 0F69 00           KS.KOMDO:  DB   0	;Kommando
+  32+ 0F6A 00           KS.ZEITK:  DB   0	;Zeitkonstante
+  33+ 0F6B 00 00        KS.ADR:    DW   0	;Adresse
+  34+ 0F6D 00           KS.CONTR:  DB   0	;Ereigniskontrolle
+  35+ 0F6E              ;
+  36+ 0F6E              ;	END
+  37+ 0F6E
+# file closed: KS02.MAC
+   9  0F6E
+  10  0F6E              	; TITLE ''
+  11  0F6E              	END
+# file closed: KMBG.MAC

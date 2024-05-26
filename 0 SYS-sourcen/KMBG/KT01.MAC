@@ -1,0 +1,24 @@
+;	PN	KT
+;****************************************************************
+;*               Tabelle der Adressen der ISR CTC               *
+;*               -----------------------------------------------*
+;*               fuer den CTC auf der ZRE-Platte sind hier die  *
+;*               Adressen der Interruptserviceroutinen fuer die *
+;*               einzelnen Kanaele (0,1,2,3) einzutragen        *
+;*               L-Teil von ICTC0: XXXXX000                     *
+;****************************************************************
+KT.ICTC0:  DW   0        ;Int. beh. CTC Kanal 0
+KT.ICTC1:  DW   0        ;Int. beh. CTC Kanal 1
+KT.ICTC2:  DW   KR.ICTC  ;Int. beh. CTC Kanal 2
+KT.ICTC3:  DW   0        ;Int. beh. CTC Kanal 3
+;****************************************************************
+;*               Adressenverbindungstabelle zur ISR             *
+;****************************************************************
+KT.IAUS:   DW   KR.IAUS  ;Int. beh. Ausgabekanal
+KT.IER:    DW   KR.IER   ;Int. beh. Eingabekanal RAW
+KT.IEL:    DW   KR.IEL   ;Int. beh. Eingabekanal Lesen
+KT.IST:    DW   KR.IST   ;Int. beh. Status
+KT.IBE:    DW   KR.IBE   ;Int. beh. Bandende
+KT.IBE0:   DW   KR.IBE0  ;Behandlung Blindinterrupt
+;	END
+

@@ -1,0 +1,5093 @@
+'D  E  G  2  0  0  0   Version 4.4'	MACRO-80 3.44	09-Dec-81	PAGE	1
+
+
+                                	title	'D  E  G  2  0  0  0   Version 4.4'
+                                	page
+'D  E  G  2  0  0  0   Version 4.4'	MACRO-80 3.44	09-Dec-81	PAGE	1-1
+
+
+                                
+                                ;**********************************************************************
+                                ;  B e t r i e b s s y s t e m     D  E  G  2  0  0  0   Version 4.4
+                                ;                                  ---------------------------------
+                                ;
+                                ;  Systemteil:                     DEG2000 - BIOS
+                                ;**********************************************************************
+                                ;
+                                ;----------------------------------------------------------------------
+                                ;  Bearbeiter:   Marcus Herbote     K SOB  /  NILES wtz
+                                ;  Stand     :   08. Mai 1986
+                                ;----------------------------------------------------------------------
+                                ;  Hinweis zur Implementierung auf  Standard - TAP2/TAP3:
+                                ;
+                                ;     Folgende Routinen aus dem DEG2000-Betriebssystem Version 1.2
+                                ;  werden benutzt
+                                ;
+                                ;  physischer Teil  Kassettenroutine --- EPROM 40, 44, 48
+                                ;  physischer Teil  Tastatur routine --- EPROM 6C
+                                ;  physischer Teil  Lochband routine --- EPROM 70
+                                ;  physischer Teil  Drucker  routine --- EPROM 7C
+                                ;----------------------------------------------------------------------
+                                ;  Inhalt
+                                ;
+                                ;  ..  - generierungsangaben
+                                ;  ..  - sprungtabelle
+                                ;  ..  - interruptadressen und - behandlungen
+                                ;  ..  - speicherumschaltungen
+                                ;  ..  - status konsole und drucker
+                                ;  ..  - konsoleingabe
+                                ;  ..  - konsolausgabe
+                                ;  ..  - druckerausgabe
+                                ;  ..  - lesereingabe
+                                ;  ..  - stanzerausgabe
+                                ;  ..  - read / write  hilfsroutinen
+                                ;  ..  - read / write
+                                ;  ..  - read / write  tpa-disk
+                                ;  ..  - read / write  kassetten geblockt
+                                ;  ..  - kassettenroutinen laden/entladen/positionieren
+                                ;  ..  - boot / wboot
+                                ;  ..  - kassettenbedienung laden/entladen
+                                ;  ..  - hardwarebeschreibungen
+                                ;  ..  - e/a tabellen
+                                ;  ..  - arbeitszellen
+                                ;
+                                ;----------------------------------------------------------------------
+                                ;
+                                	page	86
+'D  E  G  2  0  0  0   Version 4.4'	MACRO-80 3.44	09-Dec-81	PAGE	1-2
+
+
+                                
+                                ;	Laufwerksaufteilung   DEG2000 ---  S Y S 4
+                                ;	==============================================
+                                ;
+                                ;	 A	-	TPA - Disk
+                                ;	----------------------------------------------
+                                ;	 B	-	Kassettenlaufwerk 1
+                                ;	 C	-	Kassettenlaufwerk 2
+                                ;
+                                ;	*D	-	Kassettenlaufwerk 3
+                                ;	*E	-	Kassettenlaufwerk 4
+                                ;
+                                ;	*F	-	Kassettenlaufwerk 5
+                                ;	*G	-	Kassettenlaufwerk 6
+                                ;	----------------------------------------------
+                                ;	*H	-	Mini     Diskette 1
+                                ;	*I	-	Mini     Diskette 2
+                                ;	*J	-	Mini     Diskette 3
+                                ;	*K	-	Mini     Diskette 4
+                                ;	----------------------------------------------
+                                ;	*L	-	Standard Diskette 1
+                                ;	*M	-	Standard Diskette 2
+                                ;	----------------------------------------------
+                                ;	*N	-	Zentralstation
+                                ;	*O	-	T R A M   - Pseudodisk
+                                ;	*P	-	16k - PFS - Pseudodisk
+                                ;
+                                ;	*	Besagt, dass entsprechendes Laufwerk
+                                ;		bei der Systemgenerierung ein- bzw. ausgeschlossen
+                                ;		werden kann.
+                                	.z80
+                                
+                                	page	
+'D  E  G  2  0  0  0   Version 4.4'	MACRO-80 3.44	09-Dec-81	PAGE	1-3
+
+
+                                
+                         C      	include	EQ.ASM
+                         C      ;	title	08.Mai 86     DEG2000-BIOS    Version 4.4
+                         C      ;
+  0000                   C      false	equ	0
+  FFFF                   C      true	equ	not false
+                         C      ;
+                         C      ;
+  0000                   C      talt	equ	false		; false  ...	Tastatur 763x
+                         C      						; true   ...	Tastatur 760x
+  0000                   C      dr54	equ	false		; system mit drucker <> 1154
+                         C      ;
+                         C      ;
+  0000                   C      orig	equ	00000h
+  F400                   C      abios	equ	0f400h
+  9600                   C      sbios	equ	09600h
+  0C00                   C      abiosl	equ	00c00h		;  3   k
+  6A00                   C      sbiosl	equ	06a00h		; 26,5 k
+  8000                   C      gosys0	equ	08000h
+                         C      ;
+  3000                   C      bsanf	equ	03000h		; bildschirmadresse
+  0018                   C      maxz	equ	24			; zeilenanzahl
+  0050                   C      maxs	equ	80			; spaltenanzahl
+                         C      ;
+  00C0                   C      sbst	equ	0c0h		; adresse der speicherblocksteuerung
+  0000                   C      str		equ	000h		; System    -TRAM
+  0008                   C      atr		equ	008h		; Anwender  -TRAM
+  0028                   C      pdtr	equ	028h		; PseudoDisk-TRAM
+  0004                   C      pdta	equ	4			; PseudoDisk-TRAM - Anzahl
+                         C      ;
+                         C      ;	tastaturroutine
+                         C      ;
+  00A0                   C      ptast	equ	0a0h		; basisadresse der ansteuerung
+  4000                   C      ttinit	equ	04000h		; basisadresse der grundroutinen
+                         C      ;
+                         C      ;	druckerroutine
+                         C      ;
+  4026                   C      dinit	equ	04026h		; initialisierungsroutine
+  4029                   C      dout	equ	04029h		; zeichenausgaberoutine
+  0F70                   C      eadr	equ	00f70h		; e/a-tabelle
+                         C      ;
+                         C      ;	lochbandleser
+                         C      ;
+  4030                   C      lbl		equ	04030h		; zeicheneingaberoutine
+  0FA0                   C      ealbl	equ	00fa0h		; e/a-tabelle
+                         C      ;
+                         C      ;	lochbandstanzer
+                         C      ;
+  4033                   C      lbs		equ	04033h		; zeichenausgaberoutine
+  0F80                   C      ealbs	equ	00f80h		; e/a-tabelle
+                         C      ;
+                         C      ; robotron kassettenroutine
+                         C      ;
+  000C                   C      kmbvers	equ	12			; kmb bamos version 1.2
+  0003                   C      anzakb	equ	3			; drei doppellaufwerke k 5221
+  0030                   C      pkmb	equ	30h			; basisadresse akb
+                         C       if anzakb gt 1
+  0038                   C      pkmb2	equ	38h
+                         C       endif
+                         C       if anzakb gt 2
+  0058                   C      pkmb3	equ	58h
+                         C       endif
+  4040                   C      kmbrob	equ	04040h		; eintrittsadresse in bamos kmb
+  4043                   C      kmbruc	equ	04043H
+  4046                   C      kmbini	equ	04046H
+                         C      ;kmbruc	equ	kmbrob+6adh	; eintrittsadresse bereitroutine	;???
+                         C      ;kmbini	equ	kmbrob+965h	; eintrittsadresse initialisierung	;???
+                         C      ;
+                         C      ; puffer fuer kassettenpufferung
+                         C      ;
+  D000                   C      dir1	equ	0d000h		; puffer fuer directory
+  D800                   C      dir2	equ	dir1+800h
+                         C       if anzakb gt 1
+  E000                   C      dir3	equ	dir2+800h
+  E800                   C      dir4	equ	dir3+800h
+                         C       endif
+                         C       if anzakb gt 2
+  F000                   C      dir5	equ	dir4+800h
+  F800                   C      dir6	equ	dir5+800h
+                         C       endif
+  2800                   C      kasbu1	equ	02800h		; puffer fuer hostblock
+'D  E  G  2  0  0  0   Version 4.4'	MACRO-80 3.44	09-Dec-81	PAGE	1-4
+
+
+  2900                   C      kasbu2	equ	kasbu1+100h
+                         C       if anzakb gt 1
+  2A00                   C      kasbu3	equ	kasbu2+100h
+  2B00                   C      kasbu4	equ	kasbu3+100h
+                         C       endif
+                         C       if anzakb gt 2
+  2C00                   C      kasbu5	equ	kasbu4+100h
+  2D00                   C      kasbu6	equ	kasbu5+100h
+                         C       endif
+                         C      ;
+                         C      ;	speicherverteilung aBIOS
+                         C      ;
+                         C      ;  F400  :  abios        abios             3,0 k
+                         C      ;  E600  :  abios-0e00   bdos              3,5 k
+                         C      ;  DE00  :  abios-1600   ccp               2,0 k
+                         C      ;   ...  :                tpa_bereich
+                         C      ;   100  :                tpa
+                         C      ;
+                         C      mbootm	macro
+                         C      	defb	1ah,'  59k       S Y S 4 . 4   release 1   T A P 2 / T A P 3'
+                         C      	defb	cr,lf,'(128k)      D E G  2000   vom 8.Mai 86 ',lf,lf
+                         C      	endm
+                         C      ;
+                         C      ;
+  FFFF                   C      s1eq	equ	true		; generierung der datei "S1.COM"
+  FFFF                   C      pipeq	equ	true		; generierung der datei "A:PIP.SUB"
+                         C      ;
+                         C       if s1eq
+                         C       s1g	macro
+                         C       ;					;	.phase 0000H
+                         C      	ld	hl,0116H	; LD	HL,MEM1
+                         C      	ld	bc,005C0H	; LD	BC,005C0H
+                         C      	otir			; OTIR
+                         C      	ld	hl,011BH	; LD	HL,COPS
+                         C      	ld	de,08000H	; LD	DE,08000H
+                         C      	ld	bc,0000FH	; LD	BC,MEM3-B1
+                         C      	jp	08000H		; JP	08000H
+                         C      ;					;MEM1:
+                         C      	 defb	0F0H
+                         C      	 defb	001H	; einen Bereich umschalten
+                         C      	 defb	008H	; HS Bereich 
+                         C      	 defb	001H	; Standardbereich
+                         C      	 defb	0FFH
+                         C      ;					;COPS:	.phase 08000H
+                         C      ;					;B1 EQU $
+                         C      	ld	hl,0800BH	; LD	HL,MEM2
+                         C      	ld	bc,004C0H	; LD	BC,004C0H
+                         C      	otir			; OTIR
+                         C      	jp	0000H		; Sprung zur Version 1.2
+                         C      ;					;B2 EQU $
+                         C      ;					;MEM2:
+                         C      	defb	0F0H
+                         C      	defb	003H	; Bereichsumschaltung
+                         C      	defb	4		; Sys_12
+                         C      	defb	0FFH
+                         C      	endm
+                         C       endif
+                         C      ; 
+                         C       if pipeq
+                         C      dirg	macro
+                         C      	defb	'$1:pip p:=$1:xsub.com',cr,lf
+                         C      	defb	'go p:s.com=$1:submit.com',cr,lf
+                         C      	defb	'go p:=$1:kini.com',cr,lf
+                         C      	defb	'go p:=$1:power.com',cr,lf
+                         C      	defb	'go o:=$1:m80.com',cr,lf
+                         C      	defb	'go o:=$1:l80.com',cr,lf
+                         C      	defb	'era pip.sub',cr,lf
+                         C      	defb	01ah
+                         C      	endm
+                         C       endif
+                         C      ;
+                         C      ;
+  0000                   C      mindk	equ	false
+  0000                   C      stadk	equ	false
+  0000                   C      zst		equ	false
+  0000                   C      tramdk	equ	false
+  0000                   C      opsdk	equ	false
+                         C      ;
+                         C       if opsdk
+                         C      zsm	macro
+                         C      zsm:	defb	043h,047h,000h,000h,053h,057h,05bh,000h
+                         C      	endm
+'D  E  G  2  0  0  0   Version 4.4'	MACRO-80 3.44	09-Dec-81	PAGE	1-5
+
+
+                         C       endif
+                         C      ;
+                         C      ;
+  00CD                   C      eq.sys	equ	0cdh		; ruecksprung in DEG2000 Version 1.2
+  00CE                   C      eq.bsd	equ	0ceh		; hardcopy
+  00FF                   C      eq.cap	equ	0ffh		; PTAS / STAS
+  00FE                   C      eq.hex	equ	0feh		; hexadezimale eingabe eines zeichens
+  00FD                   C      eq.lr0	equ	0fdh		; druckerreset
+  00FC                   C      eq.lw	equ	0fch		; A := neue laufwerksnummer
+  0080                   C      eq.gra	equ	080h		; groesse des geraetes A festlegen
+  0081                   C      eq.le1	equ	081h		; laden/entladen kassettenlw 1
+  0082                   C      eq.le2	equ	082h		; laden/entladen kassettenlw 2
+                         C       if anzakb gt 1
+  008C                   C      eq.le3	equ	08ch		; laden/entladen kassettenlw 3
+  008C                   C      eq.le4	equ	08ch		; laden/entladen kassettenlw 4
+                         C       endif
+                         C       if anzakb gt 2
+  008C                   C      eq.le5	equ	08ch		; laden/entladen kassettenlw 5
+  008C                   C      eq.le6	equ	08ch		; laden/entladen kassettenlw 6
+                         C       endif
+  0087                   C      eq.sio	equ	087h		; initialisieren ATS-SIO-Kanal A bzw. B
+  0088                   C      eq.ini	equ	088h		; initialisieren laufwerk O , P
+  0089                   C      eq.scp	equ	089h		; monitor SCP
+  008A                   C      eq.bcu	equ	08ah		; monitor BCU
+  008B                   C      eq.deg	equ	08bh		; monitor DEG-SYS4
+                                	page	
+'D  E  G  2  0  0  0   Version 4.4'	MACRO-80 3.44	09-Dec-81	PAGE	1-6
+
+
+                                
+                                ;	generierungsangaben
+                                ;	===================
+                                ;
+  000D                          cr	equ	0dh
+  000A                          lf	equ	0ah
+  000C                          ff	equ	0ch
+  0009                          tab	equ	09h
+  001B                          esc	equ	1bh
+                                ;
+  0040                          zeil	equ	orig+40h	; adresse der zeilennummer
+  0041                          spalt	equ	orig+41h	; adresse der spaltennummer
+                                
+                                ;	parameter fuer blockung (stehen in den e/a-tabellen)
+                                ;	====================================================
+                                ;
+                                ;blklog	equ	8		; anzahl der recorde in einem logischen block
+                                ;cpmspt	equ	16		; sector per track
+                                ;blksiz	equ	2		; anzahl der recorde in einem hostblock
+                                ;				;   (potenz von 2!!!)
+                                ;secshf	equ	1		; 2**secshf = blksiz
+                                ;secmsk	equ	1		; schneidet secshf bits hinten heraus
+                                ;
+  0004                          erranz	equ	4		; anzahl der fehlerwiederholungen
+                                ;
+  0043                          lwa	equ	orig+43h	; laufwerksnummer laufwerk A
+                                ;
+  0044                          datum	equ	orig+44h	; aktuelles Datum tag/monat/jahr
+                                ;
+  DE00                          CCP	equ	0DE00h
+                                
+                                	title	'Start: 0000H nach LOAD'
+                                	page
+'Start: 0000H nach LOAD'	MACRO-80 3.44	09-Dec-81	PAGE	1-7
+
+
+                                
+                                ; ===  Start: 0000H nach LOAD =====================================================================
+                                ;
+                                ; /---  Start: Verschieben der verschiedenen Bereiche --------------------------------------------\
+                                ;  wird von SYS 1.2 mit dem Befehl "S4  " angesprungen
+  0000'                         start:	
+                                ;	hl 	;abios -Adresse in SYS1.2 fuer 'S4  ' eintragen
+  0000'   11 F400               	ld	de,abios
+  0003'   73                    	ld	(hl),e
+  0004'   23                    	inc	hl
+  0005'   72                    	ld	(hl),d
+                                
+  0006'   01 04C0               	ld	bc,004C0h	;HS-bereich auf "System" unschalten
+  0009'   21 0066'              	ld	hl,start1
+  000C'   ED B3                 	otir
+                                	
+  000E'   21 7F00               	ld	hl,sbios-01700h	; SYS4- Speicherbereich loeschen
+  0011'   11 7F01               	ld	de,sbios-01700h+1
+  0014'   01 80FF               	ld	bc,01700h+sbiosl-1
+  0017'   36 00                 	ld	(hl),0
+  0019'   ED B0                 	ldir
+                                
+  001B'   21 1E00               	ld	hl,1E00h	;CCP und BDOS nach oben kopieren
+  001E'   11 DE00               	ld	de,CCP
+  0021'   01 1600               	ld	bc,0800H+0E00H
+  0024'   ED B0                 	ldir
+  0026'   21 1E00               	ld	hl,1E00h	;CCP und BDOS unten loeschen
+  0029'   36 00                 	ld	(hl),00h
+  002B'   11 1E01               	ld	de,1E01h
+  002E'   01 15FF               	ld	bc,0800H+0E00H-1
+  0031'   ED B0                 	ldir
+                                
+  0033'   21 006A'              	ld	hl,sbios1	; BIOS - Teil laden
+  0036'   11 9600               	ld	de,sbios
+  0039'   01 18C4               	ld	bc,abios2-sbios1
+  003C'   ED B0                 	ldir
+  003E'   21 006A'              	ld	hl,sbios1	; BIOS - Teil loeschen
+  0041'   36 00                 	ld	(hl),00h
+  0043'   11 006B'              	ld	de,sbios1+1
+  0046'   01 18C3               	ld	bc,abios2-sbios1-1
+  0049'   ED B0                 	ldir
+                                
+  004B'   21 192E'              	ld	hl,gosys2	; Sprung zur Version 1.2
+  004E'   11 8000               	ld	de,gosys0
+  0051'   01 0013               	ld	bc,gosys3-gosys2
+  0054'   ED B0                 	ldir
+  0056'   21 192E'              	ld	hl,gosys2	; Sprung zur Version 1.2 loeschen
+  0059'   36 00                 	ld	(hl),00h
+  005B'   11 192F'              	ld	de,gosys2+1
+  005E'   01 0012               	ld	bc,gosys3-gosys2-1
+  0061'   ED B0                 	ldir
+  0063'   C3 9741               	jp	boot00
+                                
+  0066'                         start1:	
+  0066'   F0                    	DB	0F0H	;Startbyte
+  0067'   03                    	DB	003H	;wahl
+  0068'   07                    	DB	007H	;RDIR
+  0069'   FF                    	DB	0FFH	;Endbyte
+                                ; \---  Ende : Verschieben der verschiedenen Bereiche --------------------------------------------/
+                                
+                                	title	's  B I O S'
+                                	page
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-8
+
+
+                                
+                                ; /---  Start: sBIOS -----------------------------------------------------------------------------\
+                                ;	org	start+100h-3
+  006A'                         sbios1::
+                                	.phase	sbios		; 9600H
+                                
+                                ;	stackrettung
+                                ;	============
+                                ;
+  9600                          reta::
+  9600    E3                    	ex	(sp),hl
+  9601    D5                    	push	de
+  9602    C5                    	push	bc
+  9603    DD E5                 	push	ix
+  9605    FD E5                 	push	iy
+  9607    E9                    	jp	(hl)
+                                ;
+  9608                          retu::
+  9608    E1                    	pop	hl
+  9609    FD E1                 	pop	iy
+  960B    DD E1                 	pop	ix
+  960D    C1                    	pop	bc
+  960E    D1                    	pop	de
+  960F    E3                    	ex	(sp),hl
+  9610                          return::
+  9610    C9                        ret
+                                ;
+  9611                          um2ee::
+  9611    CD 9608               	call	retu
+  9614    C3 F639               	jp	um2e
+                                
+                                ;	Sprungverteiler-Routine             '???
+                                ;	=======================
+                                ;
+  9617                          iodisp::
+  9617    E1                    	pop	hl
+  9618    C5                    	push	bc
+  9619    D5                    	push	de
+  961A    7E                    	ld	a,(hl)
+  961B    23                    	inc	hl
+  961C    47                    	ld	b,a
+  961D    B7                    	or	a
+  961E    CD 96C3               	call	setp0
+  9621    3A 0003               	ld	a,(orig+3)
+  9624    CD 96D7               	call	resp0
+  9627    28 03                 	jr	z,iodis2
+  9629                          iodis1:
+  9629    1F                    	rra
+  962A    10 FD                 	djnz	iodis1
+  962C                          iodis2:
+  962C    E6 03                 	and	3
+  962E    17                    	rla
+  962F    4F                    	ld	c,a
+  9630    09                    	add	hl,bc
+  9631    5E                    	ld	e,(hl)
+  9632    23                    	inc	hl
+  9633    56                    	ld	d,(hl)
+  9634    EB                    	ex	de,hl
+  9635    D1                    	pop	de
+  9636    C1                    	pop	bc
+  9637    E9                    	jp	(hl)
+                                
+                                ;	dph-adresse laden
+                                ;	=================
+                                ;
+  9638                          ldhldp:
+  9638    21 F7F8               	ld	hl,dpha
+  963B    CD 96C3               	call	setp0
+  963E    3A 0043               	ld	a,(lwa)
+  9641    CD 96D7               	call	resp0
+  9644    BB                    	cp	e
+  9645    C8                    	ret	z
+  9646    7B                    	ld	a,e
+  9647    87                    	add	a,a
+  9648    16 00                 	ld	d,0
+  964A    5F                    	ld	e,a
+  964B    19                    	add	hl,de
+  964C    C9                    	ret
+                                
+                         C      	include	UM.ASM
+                         C      ;	speicherumschaltungen fuer DEG2000-BIOS     08.05.86
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-9
+
+
+                         C      ;	====================================================
+                         C      ;
+                         C      um	macro
+                         C      ;
+                         C      um1::
+                         C      	ld	(hlret),hl	; HL retten
+                         C      	pop	hl		; RET-Adresse ==> HL
+                         C      um1r1:
+                         C      	ld	(s1ret),sp	; SP retten                (s3ret),sp
+                         C      um1r2:
+                         C      	ld	sp,s1neu	; SP neu laden             sp,s3neu
+                         C      	push	hl		; HL ==> Stack
+                         C      	ld	hl,(hlret)	; HL wieder herstellen
+                         C      um1r3:
+                         C      	nop			;                          jp resp0
+                         C      	nop
+                         C      	nop
+                         C      	push	bc
+                         C      	push	hl
+                         C      	ld	bc,004C0h
+                         C      	ld	hl,um1r4
+                         C      	otir
+                         C      	pop	hl
+                         C      	pop	bc
+                         C      	ret
+                         C      um1r4:
+                         C      	DB	0F0H	;Startbyte
+                         C      	DB	003H	;wahl   0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
+                         C      	DB	001H	;um1   {0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0}
+                         C      	DB	0FFH	;Endbyte
+                         C      ;
+                         C      ;
+                         C      um2::
+                         C      	nop			;                          jp setp0
+                         C      	nop
+                         C      	nop
+                         C      	push	af
+                         C      	push	bc
+                         C      	push	de
+                         C      	push	hl
+                         C      	ld	bc,004C0h
+                         C      	ld	hl,um21
+                         C      	otir
+                         C      	pop	hl
+                         C      	pop	de
+                         C      	pop	bc
+                         C      	pop	af
+                         C      	ret
+                         C      um21:
+                         C      	DB	0F0H	;Startbyte
+                         C      	DB	003H	;wahl   0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
+                         C      	DB	002H	;um2   {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0}
+                         C      	DB	0FFH	;Endbyte
+                         C      ;
+                         C      ;
+                         C      um2e:	call	um2
+                         C      um2er:	ld	sp,(s1ret)
+                         C      	ret
+                         C      	endm
+                         C      ;
+                         C      ;
+                         C      ;
+                         C      	page
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-10
+
+
+                         C      
+                         C      ;
+                         C      ;
+                         C      ;
+  964D                   C      skmb::
+  964D    F5             C      	push	af
+  964E    AF             C      	xor	a
+  964F    ED 47          C      	ld	i,a
+  9651    F1             C      	pop	af
+  9652    C9             C      	ret
+                         C      ;
+  9653                   C      rkmb::
+  9653    F5             C      	push	af
+  9654    3E F4          C      	ld	a,high abios
+  9656    ED 47          C      	ld	i,a
+  9658    F1             C      	pop	af
+  9659    C9             C      	ret
+                         C      ;
+                         C      ;
+  965A                   C      sdir::
+  965A    22 F936        C      	ld	(hlret),hl	; HL retten
+  965D    E1             C      	pop	hl		; RET-Adresse ==> HL
+  965E    ED 73 0C90     C      	ld	(s2ret),sp	; SP retten
+  9662    31 0C90        C      	ld	sp,s2neu	; SP neu laden
+  9665    E5             C      	push	hl		; HL ==> Stack
+  9666    2A F936        C      	ld	hl,(hlret)	; HL wieder herstellen
+  9669    C5             C      	push	bc
+  966A    E5             C      	push	hl
+  966B    01 06C0        C      	ld	bc,006C0h
+  966E    21 9676        C      	ld	hl,sdir1
+  9671    ED B3          C      	otir
+  9673    E1             C      	pop	hl
+  9674    C1             C      	pop	bc
+  9675    C9             C      	ret
+  9676                   C      sdir1:
+  9676    F0             C      	DB	0F0H	;Startbyte
+  9677    04             C      	DB	004H	;wahl 
+  9678    0D             C      	DB	00DH	;D000-FFFF
+  9679    0F             C      	DB	00FH
+  967A    04             C      	DB	004H	;sdir  4
+  967B    FF             C      	DB	0FFH	;Endbyte
+                         C      ;
+  967C                   C      rdir::
+  967C    C5             C      	push	bc
+  967D    E5             C      	push	hl
+  967E    01 06C0        C      	ld	bc,006C0h
+  9681    21 9695        C      	ld	hl,rdir1
+  9684    ED B3          C      	otir
+  9686    E1             C      	pop	hl
+  9687    C1             C      	pop	bc
+  9688    22 F936        C      	ld	(hlret),hl	; HL retten
+  968B    E1             C      	pop	hl		; RET-Adresse ==> HL
+  968C    ED 7B 0C90     C      	ld	sp,(s2ret)	; SP alt laden
+  9690    E5             C      	push	hl		; HL ==> Stack
+  9691    2A F936        C      	ld	hl,(hlret)	; HL wieder herstellen
+  9694    C9             C      	ret
+  9695                   C      rdir1:
+  9695    F0             C      	DB	0F0H	;Startbyte
+  9696    04             C      	DB	004H	;wahl
+  9697    0D             C      	DB	00DH	;D000-FFFF
+  9698    0F             C      	DB	00FH
+  9699    00             C      	DB	000H	;rdir  0
+  969A    FF             C      	DB	0FFH	;Endbyte
+                         C      ;
+                         C      ;
+  969B                   C      setla::			; Laufwerk A zuschalten System 0-8
+  969B    C5             C      	push	bc
+  969C    E5             C      	push	hl
+  969D    01 06C0        C      	ld	bc,006C0h
+  96A0    21 96A8        C      	ld	hl,setla1
+  96A3    ED B3          C      	otir
+  96A5    E1             C      	pop	hl
+  96A6    C1             C      	pop	bc
+  96A7    C9             C      	ret
+  96A8                   C      setla1:
+  96A8    F0             C      	DB	0F0H	;Startbyte
+  96A9    04             C      	DB	004H	;wahl
+  96AA    00             C      	DB	000H	;bereich von
+  96AB    07             C      	DB	007H	;bereich bis
+  96AC    00             C      	DB	000H	;"System" Laufwerk A
+  96AD    FF             C      	DB	0FFH	;Endbyte
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-11
+
+
+                         C      ;
+  96AE                   C      resla::			; Laufwerk A wegschalten System 0-8
+  96AE    C5             C      	push	bc
+  96AF    E5             C      	push	hl
+  96B0    01 06C0        C      	ld	bc,006C0h
+  96B3    21 96BB        C      	ld	hl,resla1
+  96B6    ED B3          C      	otir
+  96B8    E1             C      	pop	hl
+  96B9    C1             C      	pop	bc
+  96BA    C9             C      	ret
+  96BB                   C      resla1:	
+  96BB    F0             C      	DB	0F0H	;Startbyte
+  96BC    04             C      	DB	004H	;wahl
+  96BD    00             C      	DB	000H	;bereich von
+  96BE    07             C      	DB	007H	;bereich bis
+  96BF    01             C      	DB	001H	;"System"
+  96C0    FF             C      	DB	0FFH	;Endbyte
+                         C      ;
+                         C      ;
+                         C      ;setlp::	
+                         C      	; ld	(hlret),hl	; HL retten
+                         C      	; pop	hl		; RET-Adresse ==> HL
+                         C      	; ld	(s2ret),sp	; SP retten
+                         C      	; ld	sp,s2neu	; SP neu laden
+                         C      	; push	hl		; HL ==> Stack
+                         C      	; ld	hl,(hlret)	; HL wieder herstellen
+                         C      	; push	bc
+                         C      	; push	de
+                         C      	; push	af
+                         C      	; ld	bc,0c000h+str	; System  -TRAM (C000H-FFFFH) wegschalten
+                         C      	; ld	e,4
+                         C      	; call	up31
+                         C      	; out	(sbst+4),a	; RESET-Sperre aus
+                         C      	; pop	af		; zusatz-PFS                   zuschalten
+                         C      	; out	(sbst+2),a
+                         C      	; out	(sbst+3),a	; RESET-Sperre ein
+                         C      	; pop	de
+                         C      	; pop	bc
+  96C1    C9             C      	ret
+                         C      ;
+                         C      ;reslp::
+                         C      	; push	af
+                         C      	; push	bc
+                         C      	; push	de
+                         C      	; out	(sbst+4),a	; RESET-Sperre aus
+                         C      	; xor	a		; zusatz-PFS                  wegschalten
+                         C      	; out	(sbst+2),a
+                         C      	; out	(sbst+3),a	; RESET-Sperre ein
+                         C      	; ld	bc,0c000h+str	; System  -TRAM (C000H-FFFFH)  zuschalten
+                         C      	; ld	e,4
+                         C      	; call	up21
+                         C      	; pop	de
+                         C      	; pop	bc
+                         C      	; pop	af
+                         C      	; ld	(hlret),hl	; HL retten
+                         C      	; pop	hl		; RET-Adresse ==> HL
+                         C      	; ld	sp,(s2ret)	; SP alt laden
+                         C      	; push	hl		; HL ==> Stack
+                         C      	; ld	hl,(hlret)	; HL wieder herstellen
+  96C2    C9             C      	ret
+                         C      ;
+                         C      ;
+  96C3                   C      setp0::
+                         C       if orig eq 0
+  96C3    C5             C      	push	bc
+  96C4    E5             C      	push	hl
+  96C5    01 05C0        C      	ld	bc,005C0h
+  96C8    21 96CF        C      	ld	hl,setp1
+  96CB    ED B3          C      	otir
+  96CD    18 05          C      	jr	setp2
+  96CF                   C      setp1:
+  96CF    F0             C      	DB	0F0H	;Startbyte
+  96D0    01             C      	DB	001H	;wahl
+  96D1    00             C      	DB	000H	;Bereich
+  96D2    04             C      	DB	004H	;BereichNr		"Anwender"
+  96D3    FF             C      	DB	0FFH	;Endbyte
+  96D4                   C      setp2:
+  96D4    E1             C      	pop	hl
+  96D5    C1             C      	pop	bc
+                         C       endif
+  96D6    C9             C      	ret
+                         C      ;
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-12
+
+
+  96D7                   C      resp0::
+                         C       if orig eq 0
+  96D7    C5             C      	push	bc
+  96D8    E5             C      	push	hl
+  96D9    01 05C0        C      	ld	bc,005C0h
+  96DC    21 96E3        C      	ld	hl,resp1
+  96DF    ED B3          C      	otir
+  96E1    18 05          C      	jr	resp2
+  96E3                   C      resp1:
+  96E3    F0             C      	DB	0F0H	;Startbyte
+  96E4    01             C      	DB	001H	;wahl
+  96E5    00             C      	DB	000H	;Bereich
+  96E6    00             C      	DB	000H	;BereichNr		"System"	001H?
+  96E7    FF             C      	DB	0FFH	;Endbyte
+  96E8                   C      resp2:
+  96E8    E1             C      	pop	hl
+  96E9    C1             C      	pop	bc
+                         C       endif
+  96EA    C9             C      	ret
+                         C      ;
+                         C      ;
+                         C      ;
+                         C      	page
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-13
+
+
+                         C      
+  96EB    3E C3          C      um11:	ld	a,0c3h
+  96ED    32 F60D        C      	ld	(um1r3),a
+  96F0    21 96D7        C      	ld	hl,resp0
+  96F3    22 F60E        C      	ld	(um1r3+1),hl
+  96F6    32 F621        C      	ld	(um2),a
+  96F9    21 96C3        C      	ld	hl,setp0
+  96FC    22 F622        C      	ld	(um2+1),hl
+  96FF    21 FCC3        C      	ld	hl,s3ret
+  9702    22 F604        C      	ld	(um1r1+2),hl
+  9705    22 F63E        C      	ld	(um2er+2),hl
+  9708    22 F5AE        C      	ld	(br271+2),hl
+  970B    22 F5FB        C      	ld	(getpf2+2),hl
+  970E    21 FCC1        C      	ld	hl,s3neu
+  9711    22 F607        C      	ld	(um1r2+1),hl
+  9714    C9             C      	ret
+                         C      ;
+  9715    AF             C      um12:	xor	a
+  9716    32 F60D        C      	ld	(um1r3+0),a
+  9719    32 F60E        C      	ld	(um1r3+1),a
+  971C    32 F60F        C      	ld	(um1r3+2),a
+  971F    32 F621        C      	ld	(um2+0),a
+  9722    32 F622        C      	ld	(um2+1),a
+  9725    32 F623        C      	ld	(um2+2),a
+  9728    21 FCC1        C      	ld	hl,s1ret
+  972B    22 F604        C      	ld	(um1r1+2),hl
+  972E    22 F63E        C      	ld	(um2er+2),hl
+  9731    22 F5AE        C      	ld	(br271+2),hl
+  9734    22 F5FB        C      	ld	(getpf2+2),hl
+  9737    21 FC41        C      	ld	hl,s1neu
+  973A    22 F607        C      	ld	(um1r2+1),hl
+  973D    C9             C      	ret
+                         C      ;
+                         C      ;
+                         C      ;
+                         C       if not opsdk
+                         C      opsmac	macro
+                         C      gdma	equ	$
+                         C      s2neu	equ	gdma+128+10h
+                         C      s2ret	equ	s2neu
+                         C      	endm
+                         C       endif
+                         C       if not tramdk
+  973E    00             C      ttanz::	defb	0
+  973F    00             C      tram::	defb	0
+  9740    00             C      ttrk::	defb	0
+                         C       endif
+                         C      ;
+                         C      ;
+                         C      gosys	macro
+                         C      	jp	0
+                         C      	endm
+                         C      ;
+                         C      gosys1	macro
+                         C      	push	bc
+                         C      	push	hl
+                         C      	ld	bc,004C0h
+                         C      	ld	hl,gosy2
+                         C      	otir
+                         C      	pop	hl
+                         C      	pop	bc
+                         C      	jp	0
+                         C      gosy2:
+                         C      	DB	0F0H	;Startbyte
+                         C      	DB	003H	;wahl
+                         C      	DB	003H	;GoSys1
+                         C      	DB	0FFH	;Endbyte
+                         C      	endm
+                         C      ;
+                         C      ;
+                         C      ;
+                                	page	
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-14
+
+
+                                
+                                ;	kaltstart
+                                ;	=========
+                                ;
+  9741                          boot00::
+  9741    21 0000'              	ld	hl,start	; unterste Bytes loeschen
+  9744    36 00                 	ld	(hl),00h
+  9746    11 0001'              	ld	de,start+1
+  9749    01 0069               	ld	bc,sbios1-start-1
+  974C    ED B0                 	ldir
+                                
+  974E    21 A983               	ld	hl,biosxx+(op12-op11)	;aBIOS - Teil laden	===> F400h
+  9751    11 F400               	ld	de,abios
+  9754    01 0541               	ld	bc,abios2-abios1
+  9757    ED B0                 	ldir
+  9759    21 A983               	ld	hl,biosxx+(op12-op11)	;aBIOS - Teil loeschen
+  975C    36 00                 	ld	(hl),00h
+  975E    11 A984               	ld	de,biosxx+(op12-op11)+1
+  9761    01 0540               	ld	bc,abios2-abios1-1
+  9764    ED B0                 	ldir
+                                
+  9766                          boot::	
+  9766    31 FBC1               	ld	sp,spber
+  9769    ED 73 FCC1            	ld	(s1ret),sp
+  976D    F3                    	di
+  976E    CD F5FE               	call	um1		; speicherumschaltungen initialisieren
+  9771    CD 96C3               	call	setp0
+  9774    21 0003               	ld	hl,orig+3
+  9777    36 95                 	ld	(hl),95h	; iobyte
+  9779    23                    	inc	hl
+  977A    36 00                 	ld	(hl),0		; default dev.
+  977C    CD 96D7               	call	resp0
+  977F    AF                    	xor	a		; bildschirm initialisieren
+  9780    32 F930               	ld	(qrmode),a
+  9783    32 F931               	ld	(qroll),a
+  9786    32 F932               	ld	(qesc),a
+  9789    21 3000               	ld	hl,bsanf
+  978C    22 F92E               	ld	(bsaddr),hl
+  978F    21 99CF               	ld	hl,bootms
+  9792    06 63                 	ld	b,bootme-bootms
+  9794    C5                    boot03:	push	bc
+  9795    7E                    	ld	a,(hl)
+  9796    23                    	inc	hl
+  9797    4F                    	ld	c,a
+  9798    E5                    	push	hl
+  9799    CD A045               	call	co.ch
+  979C    E1                    	pop	hl
+  979D    C1                    	pop	bc
+  979E    10 F4                 	djnz	boot03
+                                				; geraetezustand initialisieren
+                                				; =============================
+  97A0    21 F7F8               	ld	hl,dpha		; geraete a bis p entladen
+  97A3    06 20                 	ld	b,32
+  97A5    36 00                 boot05:	ld	(hl),0
+  97A7    23                    	inc	hl
+  97A8    10 FB                 	djnz	boot05
+  97AA    21 F788               	ld	hl,dphad	; a ist tpa-disk
+  97AD    22 F7F8               	ld	(dpha),hl
+  97B0    21 F768               	ld	hl,ixtab1
+  97B3    11 F748               	ld	de,ixtab
+  97B6    01 0020               	ld	bc,32
+  97B9    ED B0                 	ldir
+  97BB    AF                    	xor	a		; a ist a
+  97BC    CD 96C3               	call	setp0
+  97BF    32 0043               	ld	(lwa),a
+  97C2    CD 96D7               	call	resp0
+                                				; kassetten initialisieren
+                                ;	call	skmb		; ========================
+                                ; 	ld	ix,eatab1		; physische KMBG-Routinen
+                                ; 	call	kmbini
+                                ;  if anzakb gt 1
+                                ; 	ld	ix,eatab3
+                                ; 	call	kmbini
+                                ;  endif
+                                ;  if anzakb gt 2
+                                ; 	ld	ix,eatab5
+                                ; 	call	kmbini
+                                ;  endif
+                                ;	call	rkmb
+  97C5    3E 10                 	ld	a,10h		; status nicht bereit setzen
+  97C7    32 F64B               	ld	(eatab1),a
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-15
+
+
+  97CA    32 F676               	ld	(eatab2),a
+                                 if anzakb gt 1
+  97CD    32 F6A1               	ld	(eatab3),a
+  97D0    32 F6CC               	ld	(eatab4),a
+                                 endif
+                                 if anzakb gt 2
+  97D3    32 F6F7               	ld	(eatab5),a
+  97D6    32 F722               	ld	(eatab6),a
+                                 endif
+                                				; gereate kaltinitialisierung
+                                				; ===========================
+  97D9    CD 9FDE               	call	ci.kalt		; Tastatur
+                                 if mindk or stadk
+                                	call	fl.kalt		; Floppy initialisieren
+                                 endif
+                                 if zst or tramdk or opsdk
+                                	call	md.kalt		; simulierten disk initialisieren
+                                 endif
+  97DC    AF                    	xor	a
+  97DD    32 F938               	ld	(sverz),a
+  97E0    32 F939               	ld	(sschr),a
+  97E3    32 F668               	ld	(eatab1+gelade),a
+  97E6    32 F693               	ld	(eatab2+gelade),a
+                                 if anzakb gt 1
+  97E9    32 F6BE               	ld	(eatab3+gelade),a
+  97EC    32 F6E9               	ld	(eatab4+gelade),a
+                                 endif
+                                 if anzakb gt 2
+  97EF    32 F714               	ld	(eatab5+gelade),a
+  97F2    32 F73F               	ld	(eatab6+gelade),a
+                                 endif
+  97F5    21 DE00               	ld	hl,abios-1600h	; CCP und BDOS -Kopie erstellen
+  97F8    11 8000               	ld	de,08000h
+  97FB    01 1600               	ld	bc,01600h
+  97FE    ED B0                 	ldir
+                                ;
+                                ;
+                                ;
+                                	page
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-16
+
+
+                                
+                                ;	warmstart
+                                ;	=========
+                                ;
+  9800    F3                    wboot::	di
+  9801    31 FBC1               	ld	sp,spber
+  9804    CD 9715               	call	um12
+  9807    21 DE00               	ld	hl,abios-1600h
+  980A    E5                    	push	hl
+  980B    ED 73 FCC1            	ld	(s1ret),sp
+  980F    01 0080               	ld	bc,80h
+  9812    CD F58C               	call	setdma
+                                				; geraete warminitialisierung
+  9815    CD 9FDE               	call	ci.warm		; ===========================
+                                 if mindk or stadk
+                                	call	fl.warm		; zum motor ausschalten
+                                 endif
+                                 if zst or tramdk or opsdk
+                                	call	md.warm
+                                 endif
+  9818    AF                    	xor	a
+  9819    32 F930               	ld	(qrmode),a
+  981C    3E 01                 	ld	a,1		; kassettenladen/-entladen erlauben
+  981E    32 F935               	ld	(syste),a
+  9821    21 8000               	ld	hl,08000h	; CCP und BDOS restaurieren
+  9824    11 DE00               	ld	de,abios-1600h
+  9827    01 0800               	ld	bc,00800h
+  982A    ED B0                 	ldir
+  982C    D5                    	push	de
+  982D    01 0E00               	ld	bc,00e00h
+  9830    ED B0                 	ldir
+  9832    21 9A32               	ld	hl,serial
+  9835    D1                    	pop	de
+  9836    01 0006               	ld	bc,6
+  9839    ED B0                 	ldir
+  983B    CD 96C3               	call	setp0
+  983E    3A 0003               	ld	a,(orig+3)
+  9841    32 9A3B               	ld	(iobyt),a
+  9844    3A 0004               	ld	a,(orig+4)	; pruefen, ob current dev. gueltig ist
+  9847    57                    	ld	d,a
+  9848    4F                    	ld	c,a
+  9849    06 00                 	ld	b,0
+  984B    21 F7F8               	ld	hl,dpha
+  984E    09                    	add	hl,bc
+  984F    09                    	add	hl,bc
+  9850    7E                    	ld	a,(hl)
+  9851    23                    	inc	hl
+  9852    B6                    	or	(hl)
+  9853    28 01                 	jr	z,m104		; -> nicht gueltige current dev.
+  9855    7A                    	ld	a,d
+  9856    32 9A3C               m104:	ld	(cudev),a	; aktuelles geraet
+  9859    21 9A38               	ld	hl,syspa
+  985C    11 0000               	ld	de,orig+0
+  985F    01 0023               	ld	bc,const-syspa
+  9862    ED B0                 	ldir
+  9864    CD 96D7               	call	resp0
+  9867    4F                    	ld	c,a
+  9868    3E F4                 	ld	a,high abios	; interruptsystem setzen
+  986A    ED 47                 	ld	i,a
+  986C    ED 5E                 	im 2
+  986E    FB                    	ei
+  986F    79                    	ld	a,c
+  9870    C3 F639               	jp	um2e		; ===> CCP
+                                ;
+                                ;
+                                ;
+                                	page
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-17
+
+
+                                
+                                				; verzeichnis geraet A loeschen
+  9873    3E 00                 dirdel:	ld	a,str		; =============================
+  9875    32 973F               	ld	(tram),a
+  9878    AF                    	xor	a
+  9879    32 9740               	ld	(ttrk),a
+  987C    CD 969B               	call	setla
+  987F    21 3000               	ld	hl,3000h
+  9882    11 3001               	ld	de,3001h
+  9885    01 07FF               	ld	bc,7ffh
+  9888    36 E5                 	ld	(hl),0e5h
+  988A    E5                    	push	hl
+  988B    E5                    	push	hl
+  988C    ED B0                 	ldir	
+  988E    E1                    	pop	hl		; verzeichnis fuer GO.COM (PIP.SUB)
+  988F    E5                    	push	hl
+  9890    E5                    	push	hl
+  9891    D1                    	pop	de
+  9892    13                    	inc	de
+                                
+                                 if s1eq and pipeq
+  9893    01 005F               	ld	bc,5fh 
+                                 endif
+                                 if (s1eq and not pipeq) or (pipeq and not s1eq)
+                                	ld	bc,3fh
+                                 endif
+                                 if not s1eq and not pipeq
+                                	ld	bc,1fh
+                                 endif
+  9896    36 00                 	ld	(hl),0
+  9898    ED B0                 	ldir
+                                ; ===	
+  989A    D1                    	pop	de
+  989B    D5                    	push	de
+  989C    21 98EF               	ld	hl,dirgo	;Verzeichniseintrag fC<r 'GO.COM'
+  989F    01 000C               	ld	bc,12
+  98A2    ED B0                 	ldir
+  98A4    E1                    	pop	hl
+                                
+                                 if s1eq	;Verzeichniseintrag fC<r 'S1.COM'
+  98A5    11 0020               	ld	de,32
+  98A8    19                    	add	hl,de
+  98A9    E5                    	push	hl
+  98AA    EB                    	ex	de,hl
+  98AB    21 98FB               	ld	hl,dirs1
+  98AE    01 0011               	ld	bc,17
+  98B1    ED B0                 	ldir
+  98B3    E1                    	pop	hl
+                                 endif	
+                                
+                                 if pipeq	;Verzeichniseintrag fC<r 'PIP.SUB'
+  98B4    11 0020               	ld	de,32
+  98B7    19                    	add	hl,de
+  98B8    E5                    	push	hl
+  98B9    EB                    	ex	de,hl
+  98BA    21 9934               	ld	hl,dirgo1
+  98BD    01 0011               	ld	bc,17
+  98C0    ED B0                 	ldir
+  98C2    E1                    	pop	hl
+                                 endif
+                                ; ===
+  98C3    11 0800               	ld	de,800h
+                                 if s1eq	;Daten fC<r 'S1.COM'
+  98C6    E1                     	pop	hl
+  98C7    19                    	add	hl,de
+  98C8    E5                    	push	hl
+  98C9    EB                    	ex	de,hl
+  98CA    21 990C               	ld	hl,dirs11
+  98CD    01 0028               	ld	bc,dirs12-dirs11
+  98D0    ED B0                 	ldir
+  98D2    3A 990B               	ld	a,(dirs1+16)
+  98D5    47                    	ld	b,a
+  98D6    21 0000               	ld	hl,0
+  98D9    11 0080               	ld	de,80H
+  98DC                          s1a:
+  98DC    19                    	add	hl,de
+  98DD    10 FD                 	djnz	s1a
+  98DF    EB                    	ex	de,hl
+                                 endif
+                                
+                                 if pipeq	;Daten fC<r 'PIP.SUB'
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-18
+
+
+  98E0    E1                    	pop	hl
+  98E1    19                    	add	hl,de
+  98E2    EB                    	ex	de,hl
+  98E3    21 9945               	ld	hl,dirg11
+  98E6    01 008A               	ld	bc,dirg12-dirg11
+  98E9    ED B0                 	ldir
+                                 endif
+  98EB    CD 96AE               	call	resla
+  98EE    C9                    	ret
+                                ;
+  98EF    00 47 4F 20           dirgo:	defb	0,'GO      ',0c3h,'OM'
+  98F3    20 20 20 20           
+  98F7    20 C3 4F 4D           
+                                ;
+                                 if s1eq 
+  98FB    00 53 31 20           dirs1:	defb	0,'S1      COM',0,0,0,2,2
+  98FF    20 20 20 20           
+  9903    20 43 4F 4D           
+  9907    00 00 00 02           
+  990B    02                    
+  990C                          dirs11: s1g
+  990C    21 0116         +     	ld	hl,0116H	; LD	HL,MEM1
+  990F    01 05C0         +     	ld	bc,005C0H	; LD	BC,005C0H
+  9912    ED B3           +     	otir			; OTIR
+  9914    21 011B         +     	ld	hl,011BH	; LD	HL,COPS
+  9917    11 8000         +     	ld	de,08000H	; LD	DE,08000H
+  991A    01 000F         +     	ld	bc,0000FH	; LD	BC,MEM3-B1
+  991D    C3 8000         +     	jp	08000H		; JP	08000H
+  9920    F0              +     	 defb	0F0H
+  9921    01              +     	 defb	001H	; einen Bereich umschalten
+  9922    08              +     	 defb	008H	; HS Bereich 
+  9923    01              +     	 defb	001H	; Standardbereich
+  9924    FF              +     	 defb	0FFH
+  9925    21 800B         +     	ld	hl,0800BH	; LD	HL,MEM2
+  9928    01 04C0         +     	ld	bc,004C0H	; LD	BC,004C0H
+  992B    ED B3           +     	otir			; OTIR
+  992D    C3 0000         +     	jp	0000H		; Sprung zur Version 1.2
+  9930    F0              +     	defb	0F0H
+  9931    03              +     	defb	003H	; Bereichsumschaltung
+  9932    04              +     	defb	4		; Sys_12
+  9933    FF              +     	defb	0FFH
+  9934                          dirs12:
+                                 endif
+                                ;
+                                 if pipeq
+  9934    00 50 49 50           dirgo1:	defb	0,'PIP     SUB',0,0,0,2,2
+  9938    20 20 20 20           
+  993C    20 53 55 42           
+  9940    00 00 00 02           
+  9944    02                    
+  9945                          dirg11:	dirg
+  9945    24 31 3A 70     +     	defb	'$1:pip p:=$1:xsub.com',cr,lf
+  9949    69 70 20 70     +     
+  994D    3A 3D 24 31     +     
+  9951    3A 78 73 75     +     
+  9955    62 2E 63 6F     +     
+  9959    6D 0D 0A        +     
+  995C    67 6F 20 70     +     	defb	'go p:s.com=$1:submit.com',cr,lf
+  9960    3A 73 2E 63     +     
+  9964    6F 6D 3D 24     +     
+  9968    31 3A 73 75     +     
+  996C    62 6D 69 74     +     
+  9970    2E 63 6F 6D     +     
+  9974    0D 0A           +     
+  9976    67 6F 20 70     +     	defb	'go p:=$1:kini.com',cr,lf
+  997A    3A 3D 24 31     +     
+  997E    3A 6B 69 6E     +     
+  9982    69 2E 63 6F     +     
+  9986    6D 0D 0A        +     
+  9989    67 6F 20 70     +     	defb	'go p:=$1:power.com',cr,lf
+  998D    3A 3D 24 31     +     
+  9991    3A 70 6F 77     +     
+  9995    65 72 2E 63     +     
+  9999    6F 6D 0D 0A     +     
+  999D    67 6F 20 6F     +     	defb	'go o:=$1:m80.com',cr,lf
+  99A1    3A 3D 24 31     +     
+  99A5    3A 6D 38 30     +     
+  99A9    2E 63 6F 6D     +     
+  99AD    0D 0A           +     
+  99AF    67 6F 20 6F     +     	defb	'go o:=$1:l80.com',cr,lf
+  99B3    3A 3D 24 31     +     
+  99B7    3A 6C 38 30     +     
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-19
+
+
+  99BB    2E 63 6F 6D     +     
+  99BF    0D 0A           +     
+  99C1    65 72 61 20     +     	defb	'era pip.sub',cr,lf
+  99C5    70 69 70 2E     +     
+  99C9    73 75 62 0D     +     
+  99CD    0A              +     
+  99CE    1A              +     	defb	01ah
+  99CF                          dirg12:
+                                 endif
+                                ;
+  99CF                          bootms:	mbootm
+  99CF    1A 20 20 35     +     	defb	1ah,'  59k       S Y S 4 . 4   release 1   T A P 2 / T A P 3'
+  99D3    39 6B 20 20     +     
+  99D7    20 20 20 20     +     
+  99DB    20 53 20 59     +     
+  99DF    20 53 20 34     +     
+  99E3    20 2E 20 34     +     
+  99E7    20 20 20 72     +     
+  99EB    65 6C 65 61     +     
+  99EF    73 65 20 31     +     
+  99F3    20 20 20 54     +     
+  99F7    20 41 20 50     +     
+  99FB    20 32 20 2F     +     
+  99FF    20 54 20 41     +     
+  9A03    20 50 20 33     +     
+  9A07    0D 0A 28 31     +     	defb	cr,lf,'(128k)      D E G  2000   vom 8.Mai 86 ',lf,lf
+  9A0B    32 38 6B 29     +     
+  9A0F    20 20 20 20     +     
+  9A13    20 20 44 20     +     
+  9A17    45 20 47 20     +     
+  9A1B    20 32 30 30     +     
+  9A1F    30 20 20 20     +     
+  9A23    76 6F 6D 20     +     
+  9A27    38 2E 4D 61     +     
+  9A2B    69 20 38 36     +     
+  9A2F    20 0A 0A        +     
+  9A32                          bootme:
+  9A32    00 16 00 00           serial:	defb	0,16h,0,0,0,0a5h
+  9A36    00 A5                 
+                                				; Werte stehen nach Init ab Adresse 0000   
+                                				; ======================================
+  9A38    C3 F403               syspa:	jp	abios+3		; -> wboot
+  9A3B    95                    iobyt:	defb	095h		; list=lpt:/punch=ptp:/reader=ptr:/console=crt:
+  9A3C    00                    cudev:	defb	0		; current device
+  9A3D    C3                    	defb	0c3h		; jp .
+  9A3E    E606                  cubdos:	defw	abios-0e00h+6	;  . BDOS
+                                ;
+  9A40    C3 F5DC               	jp	ukmb		; 0008h eintritt bamos kmb
+  9A43    C3 F5E2               	jp	uend		; 000bh	warten auf kmb-bereitschaft
+  9A46    C3 F5E8               	jp	ugetp		; 000eh aus kmb-puffer in ram laden
+  9A49    FA41                  	defw	kmbpuf		; 0011h adresse eines hilfspuffers
+  9A4B    F64B                  	defw	eatab1		; 0013h	adresse e/a-tabelle 1
+  9A4D    F676                  	defw	eatab2		; 0015h adresse e/a-tabelle 2
+  9A4F    C3 F5FE               	jp	um1		; 0017h zuschalten  Version 1.2/Stackumsch.
+  9A52    C3 F639               	jp	um2e		; 001ah wegschalten Version 1.2/Stackumsch.
+  9A55    C3 F60D               	jp	um1r3		; 001dh zuschalten  Version 1.2
+  9A58    C3 F621               	jp	um2		; 0020h wegschalten Version 1.2
+                                ;
+                                ;
+                                ;
+                                	page	
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-20
+
+
+                                
+                                ;	consol-status
+                                ;	=============
+                                ;
+  9A5B                          const::
+  9A5B    CD 9600               	call	reta		; iobyte  00 00 00 xx
+  9A5E    CD 9617               	call	iodisp		;    0, 1, 3  crt:
+  9A61    00                    	defb	0		;    2        bat:
+  9A62    9A6A                  	defw	const0
+  9A64    9A6A                  	defw	const1
+  9A66    9F37                  	defw	reads1
+  9A68    9A6A                  	defw	const3
+  9A6A                          const0:
+  9A6A                          const1:
+  9A6A                          const3:
+  9A6A    CD 9A70               	call	ciber
+  9A6D    C3 9611               	jp	um2ee
+                                ;
+  9A70                          ciber::				; liefert a = ff wenn taste gedrueckt ist
+  9A70    CD 9FE2               	call	ci.sta		; liefert zero cond. wenn taste gedrueckt ist
+  9A73    20 0F                 	jr	nz,m002
+  9A75    3A F938               	ld	a,(sverz)	; es ist eine taste gedruckt, jedoch
+  9A78    B7                    	or	a		; beim schnellschreiben verzoegern
+  9A79    28 06                 	jr	z,m001		;   -> kein schnellschreiben
+  9A7B    3D                    	dec	a
+  9A7C    32 F938               	ld	(sverz),a
+  9A7F    AF                    	xor	a		; keine taste gedrueckt
+  9A80    C9                    	ret
+                                ;
+  9A81    AF                    m001:	xor	a		; es ist eine taste gedrueckt
+  9A82    3D                    	dec	a
+  9A83    C9                    	ret
+                                ;
+  9A84    AF                    m002:	xor	a		; es ist keine taste gedrueckt
+  9A85    32 F938               	ld	(sverz),a	; kein weiteres verzoegern
+  9A88    32 F939               	ld	(sschr),a	; kein weiteres schnellschreiben
+  9A8B    C9                    m003:	ret
+                                ;	consol eingabe
+                                ;	==============
+                                ;
+                                 if talt
+                                zklein:	defw	100h
+                                zgros:	defw	800h
+                                 else
+  9A8C    0200                  zklein:	defw	200h		; wartezeit fuer schnellschreiben
+  9A8E    2000                  zgros:	defw	2000h
+                                 endif
+                                ;
+                                systa	macro	mark
+                                	jp	nz,mark
+                                	ld	a,(syste)
+                                	dec	a
+                                	ld	a,' '
+                                	jp	nz,c18		; --> nicht erlaubt
+                                	endm
+                                ;
+  9A90                          conin::				; iobyte:  00 00 00 xx
+  9A90    CD 9600               	call	reta		;   0, 1, 3  crt:
+  9A93    CD 9617               	call	iodisp		;   2        bat:
+  9A96    00                    	defb	0
+  9A97    9A9F                  	defw	conin0
+  9A99    9A9F                  	defw	conin1
+  9A9B    9F4B                  	defw	reade1
+  9A9D    9A9F                  	defw	conin3
+  9A9F                          conin0:
+  9A9F                          conin1:
+  9A9F    CD 9AA5               conin3:	call	ci
+  9AA2    C3 9611               	jp	um2ee
+                                ;
+  9AA5                          ci::
+  9AA5    AF                    	xor	a
+  9AA6    32 F938               	ld	(sverz),a	; damit ciber nicht verzoegert
+  9AA9    CD 9A70               	call	ciber
+  9AAC    28 0C                 	jr	z,m012		; -> taste nicht gedrueckt
+  9AAE    3A F939               	ld	a,(sschr)
+  9AB1    B7                    	or	a
+  9AB2    28 06                 	jr	z,m012
+  9AB4    ED 5B 9A8C            	ld	de,(zklein)
+  9AB8    18 04                 	jr	m013
+  9ABA    ED 5B 9A8E            m012:	ld	de,(zgros)
+  9ABE    CD 9A70               m013:	call	ciber		; warten bis taste gedrueckt ist
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-21
+
+
+  9AC1    28 FB                 	jr	z,m013
+  9AC3    CD 9FE8               	call	ci.ch		; zeichen uebernehmen
+                                ;
+  9AC6    CD 9A70               m014:	call	ciber
+  9AC9    28 0A                 	jr	z,m015		; -> taste wurde losgelassen
+  9ACB    1D                    	dec	e
+  9ACC    20 F8                 	jr	nz,m014
+  9ACE    15                    	dec	d
+  9ACF    20 F5                 	jr	nz,m014
+                                ;
+  9AD1    3E FF                 	ld	a,0ffh		; es beginnt schnellschreiben
+  9AD3    18 01                 	jr	m016
+  9AD5    AF                    m015:	xor	a		; kein schnellschreiben
+  9AD6    32 F939               m016:	ld	(sschr),a
+  9AD9    32 F938               	ld	(sverz),a
+                                	page
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-22
+
+
+                                
+                                ;	bearbeitung der sondertasten
+                                ;	============================
+                                ;
+                                ;   1. eq.sys   zurueck ins urbetriebssystem (falls vorhanden)
+                                ;   2. eq.hex   hexadezimale eingabe eines zeichens
+                                ;   3. eq.lr0   druckerreset
+                                ;   4. eq.lw    laufwerk A auf anderes phys. definieren
+                                ;   5. eq.cap   buchstaben gross/kleinschaltung aendern
+                                ;   6. eq.gra   geraet A initialisieren
+                                ;   7. eq.le1   laden/entladen geraet 1
+                                ;   8. eq.le2           "             2
+                                ;   9. eq.le3           "             3
+                                ;      ...
+                                ;  14. eq.sio	leser-/stanzer-Kanal auf ATS-Kanal A bzw. B schalten
+                                ;  15. eq.ini	init. laufwerk O , P
+                                ;  16. eq.scp	monitorsteuerung SCP
+                                ;  17. eq.bcu	monitorsteuerung BCU
+                                ;  18. eq.deg	monitorsteuerung DEG
+                                ;  19. eq.bsd   bildschirm drucken
+                                ;
+  9ADC    78                    	ld	a,b
+                                ;
+                                 if eq.sys ne 0
+  9ADD    FE CD                 	cp	eq.sys		; S Y S ?
+  9ADF    C2 9AEE               	jp	nz,c03		; -------
+  9AE2    3A F935               	ld	a,(syste)
+  9AE5    3D                    	dec	a
+  9AE6    3E 1B                 	ld	a,1bh
+  9AE8    C2 9EA4               	jp	nz,c18		; --> Taste entspricht der ESC-Taste
+                                	gosys			; zurueck ins urbetriebssystem
+  9AEB    C3 0000         +     	jp	0
+                                 endif
+                                ;
+  9AEE                          c03:
+                                 if eq.cap ne 0
+  9AEE    FE FF                 	cp	eq.cap		; E 0 ?
+  9AF0    20 0B                 	jr	nz,c08		; -----
+  9AF2    3A F933               	ld	a,(umsch)	; standard shiftposition aendern
+  9AF5    EE 20                 	xor	20h
+  9AF7    32 F933               	ld	(umsch),a
+  9AFA    C3 9AA5               	jp	ci
+                                 endif
+                                ;
+  9AFD                          c08:
+                                 if eq.hex ne 0
+  9AFD    FE FE                 	cp	eq.hex		; E 1 ?
+  9AFF    20 10                 	jr	nz,c04		; -----
+  9B01    CD 9EAD               	call	cbit4		; hexaeingabe eines zeichens
+  9B04    B7                    	or	a
+  9B05    17                    	rla
+  9B06    17                    	rla
+  9B07    17                    	rla
+  9B08    17                    	rla
+  9B09    4F                    	ld	c,a
+  9B0A    CD 9EAD               	call	cbit4
+  9B0D    81                    	add	a,c
+  9B0E    C3 9EA4               	jp	c18
+                                 endif
+                                ;
+  9B11                          c04:
+                                 if eq.lr0 ne 0
+  9B11    FE FD                 	cp	eq.lr0		; E 2 ?
+                                	systa	c06		; -----
+  9B13    C2 9BA8         +     	jp	nz,c06
+  9B16    3A F935         +     	ld	a,(syste)
+  9B19    3D              +     	dec	a
+  9B1A    3E 20           +     	ld	a,' '
+  9B1C    C2 9EA4         +     	jp	nz,c18		; --> nicht erlaubt
+  9B1F    31 FBC1               	ld	sp,spber	; druckerinitialisierung
+  9B22    CD 96EB               	call	um11
+  9B25    CD 96C3               	call	setp0
+  9B28    11 9B81               lr011:	ld	de,lrtxt
+  9B2B    0E 09                 	ld	c,9
+  9B2D    CD 0005               	call	5
+  9B30    11 F93A               	ld	de,ccppuf
+  9B33    0E 0A                 	ld	c,10
+  9B35    CD 0005               	call	5
+  9B38    3A F93B               	ld	a,(ccppuf+1)	; laenge der eingabe
+  9B3B    FE 03                 	cp	3
+  9B3D    20 E9                 	jr	nz,lr011
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-23
+
+
+  9B3F    3A F93C               	ld	a,(ccppuf+2)
+  9B42    DD 21 0F73            	ld	ix,eadr+3
+  9B46    06 00                 	ld	b,0
+  9B48    FE 30                 	cp	'0'
+  9B4A    28 06                 	jr	z,lr012
+  9B4C    FE 32                 	cp	'2'
+  9B4E    20 02                 	jr	nz,lr012
+  9B50    CB C0                 	set	0,b
+  9B52    3A F93D               lr012:	ld	a,(ccppuf+3)
+  9B55    FE 36                 	cp	'6'
+  9B57    28 06                 	jr	z,lr014
+  9B59    FE 38                 	cp	'8'
+  9B5B    20 02                 	jr	nz,lr014
+  9B5D    CB C8                 	set	1,b
+  9B5F    3A F93E               lr014:	ld	a,(ccppuf+4)
+  9B62    FE 4F                 	cp	'O'
+  9B64    28 08                 	jr	z,lr016
+  9B66    FE 4D                 	cp	'M'
+  9B68    20 04                 	jr	nz,lr016
+  9B6A    3E FF                 	ld	a,-1
+  9B6C    18 01                 	jr	lr017
+  9B6E    AF                    lr016:	xor	a
+  9B6F    CD 96D7               lr017:	call	resp0
+  9B72    DD 70 04              	ld	(ix+4),b
+  9B75    DD 77 0C              	ld	(ix+12),a
+  9B78    CD A342               	call	lo.reset	; druckerreset
+  9B7B    CD 96D7               p0::	call	resp0
+  9B7E    C3 9800               	jp	wboot
+  9B81    0D 0A 44 72           lrtxt:	defb	cr,lf,'Drucker - Parameter { 0|2 6|8 O|M } $'
+  9B85    75 63 6B 65           
+  9B89    72 20 2D 20           
+  9B8D    50 61 72 61           
+  9B91    6D 65 74 65           
+  9B95    72 20 7B 20           
+  9B99    30 7C 32 20           
+  9B9D    36 7C 38 20           
+  9BA1    4F 7C 4D 20           
+  9BA5    7D 20 24              
+                                 endif
+                                ;
+  9BA8                          c06:
+                                 if eq.lw ne 0
+  9BA8    FE FC                 	cp	eq.lw		; E 3 ?
+                                	systa	c07		; -----
+  9BAA    C2 9C5C         +     	jp	nz,c07
+  9BAD    3A F935         +     	ld	a,(syste)
+  9BB0    3D              +     	dec	a
+  9BB1    3E 20           +     	ld	a,' '
+  9BB3    C2 9EA4         +     	jp	nz,c18		; --> nicht erlaubt
+  9BB6    31 FBC1               	ld	sp,spber	; laufwerk A austauschen
+  9BB9    CD 96EB               	call	um11
+  9BBC    CD 96C3               	call	setp0
+  9BBF    11 9C37               	ld	de,defa
+  9BC2    0E 09                 	ld	c,9
+  9BC4    CD 0005               	call	5		; eingabe anfordern
+  9BC7    11 F93A               	ld	de,ccppuf
+  9BCA    0E 0A                 	ld	c,10
+  9BCC    CD 0005               	call	5		; eingabe
+  9BCF    3A F93B               	ld	a,(ccppuf+1)	; laenge der eingabe
+  9BD2    B7                    	or	a
+  9BD3    28 24                 	jr	z,c069
+  9BD5    3A F93C               	ld	a,(ccppuf+2)	; laufwerksangabe
+  9BD8    FE 71                 	cp	'q'
+  9BDA    30 1D                 	jr	nc,c069
+  9BDC    FE 61                 	cp	'a'
+  9BDE    38 04                 	jr	c,c062
+  9BE0    D6 20                 	sub	20h
+  9BE2    18 08                 	jr	c061
+  9BE4    FE 51                 c062:	cp	'Q'
+  9BE6    30 11                 	jr	nc,c069
+  9BE8    FE 41                 	cp	'A'
+  9BEA    38 0D                 	jr	c,c069
+  9BEC    D6 41                 c061:	sub	41h
+  9BEE    F5                    	push	af
+  9BEF    CD 9C21               	call	exch2
+  9BF2    F1                    	pop	af
+  9BF3    32 0043               	ld	(lwa),a
+  9BF6    CD 9C21               	call	exch2
+  9BF9    3A 0043               c069:	ld	a,(lwa)
+  9BFC    C6 41                 	add	a,41h
+  9BFE    32 9C54               	ld	(defa2+12),a
+  9C01    11 9C48               	ld	de,defa2
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-24
+
+
+  9C04    0E 09                 	ld	c,9
+  9C06    CD 0005               	call	5
+  9C09    C3 9B7B               	jp	p0
+                                ;
+  9C0C    7E                    exch:	ld	a,(hl)
+  9C0D    EB                    	ex	de,hl
+  9C0E    46                    	ld	b,(hl)
+  9C0F    77                    	ld	(hl),a
+  9C10    EB                    	ex	de,hl
+  9C11    70                    	ld	(hl),b
+  9C12    C9                    	ret
+  9C13    E5                    exch1:	push	hl
+  9C14    D1                    	pop	de
+  9C15    09                    	add	hl,bc
+  9C16    CD 9C0C               	call	exch
+  9C19    23                    	inc	hl
+  9C1A    13                    	inc	de
+  9C1B    CD 9C0C               	call	exch
+  9C1E    06 00                 	ld	b,0
+  9C20    C9                    	ret
+  9C21    3A 0043               exch2:	ld	a,(lwa)
+  9C24    B7                    	or	a
+  9C25    C8                    	ret	z
+  9C26    87                    	add	a,a
+  9C27    06 00                 	ld	b,0
+  9C29    4F                    	ld	c,a
+  9C2A    21 F748               	ld	hl,ixtab
+  9C2D    CD 9C13               	call	exch1
+  9C30    21 F7F8               	ld	hl,dpha
+  9C33    CD 9C13               	call	exch1
+  9C36    C9                    	ret
+  9C37    0D 0A 4C 61           defa:	defb	cr,lf,'Laufwerk A := $'
+  9C3B    75 66 77 65           
+  9C3F    72 6B 20 41           
+  9C43    20 3A 3D 20           
+  9C47    24                    
+  9C48    0D 0A 0A 4C           defa2:	defb	cr,lf,lf,'Laufwerk . <=> A$'
+  9C4C    61 75 66 77           
+  9C50    65 72 6B 20           
+  9C54    2E 20 3C 3D           
+  9C58    3E 20 41 24           
+                                 endif
+                                ;
+  9C5C                          c07:
+                                 if eq.gra ne 0
+  9C5C    FE 80                 	cp	eq.gra		; pf1?
+                                	systa	c09		; ----
+  9C5E    C2 9CC2         +     	jp	nz,c09
+  9C61    3A F935         +     	ld	a,(syste)
+  9C64    3D              +     	dec	a
+  9C65    3E 20           +     	ld	a,' '
+  9C67    C2 9EA4         +     	jp	nz,c18		; --> nicht erlaubt
+  9C6A    31 FBC1               	ld	sp,spber	; geraet A initialisieren
+  9C6D    CD 96EB               	call	um11
+  9C70    CD 96C3               	call	setp0
+  9C73    11 9C9D               	ld	de,setams
+  9C76    0E 09                 	ld	c,9
+  9C78    CD 0005               	call	5
+  9C7B    11 F93A               	ld	de,ccppuf
+  9C7E    0E 0A                 	ld	c,10
+  9C80    CD 0005               	call	5
+  9C83    3A F93B               	ld	a,(ccppuf+1)	; laenge der eingabe
+  9C86    B7                    	or	a
+  9C87    28 11                 	jr	z,c082		; keine eingabe ---> laufwerk A nicht init.
+  9C89    3A F93C               	ld	a,(ccppuf+2)	; eingabe = "j" bzw. "J"
+  9C8C    FE 6A                 	cp	'j'
+  9C8E    28 04                 	jr	z,c081		; JA
+  9C90    FE 4A                 	cp	'J'
+  9C92    20 06                 	jr	nz,c082		; NEIN
+  9C94    CD 96D7               c081:	call	resp0
+  9C97    CD 9873               	call	dirdel
+  9C9A    C3 9B7B               c082:	jp	p0
+  9C9D    0D 0A 4C 61           setams:	defb	cr,lf,'Laufwerk A initialisieren {J|N} ? $'
+  9CA1    75 66 77 65           
+  9CA5    72 6B 20 41           
+  9CA9    20 69 6E 69           
+  9CAD    74 69 61 6C           
+  9CB1    69 73 69 65           
+  9CB5    72 65 6E 20           
+  9CB9    7B 4A 7C 4E           
+  9CBD    7D 20 3F 20           
+  9CC1    24                    
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-25
+
+
+                                 endif
+                                ;
+  9CC2    FE 81                 c09:	cp	eq.le1		; pf2?
+  9CC4    20 2D                 	jr	nz,c10		; ----
+  9CC6    DD 21 F64B            	ld	ix,eatab1	; kassettenlaufwerk 1
+  9CCA    1E 01                 	ld	e,1
+  9CCC    CD 9638               	call	ldhldp
+  9CCF    11 F798               	ld	de,dphc1
+                                ;
+  9CD2    E5                    km.le:	push	hl		; kassette laden/entladen
+  9CD3    D5                    	push	de
+  9CD4    DD 7E 1D              	ld	a,(ix+gelade)
+  9CD7    B7                    	or	a
+  9CD8    20 0C                 	jr	nz,km.le1	; -> entladen
+  9CDA    CD A5A5               	call	clad		; laden
+  9CDD    D1                    	pop	de
+  9CDE    E1                    	pop	hl
+  9CDF    20 0F                 	jr	nz,km.le2	; -> fehler beim laden
+  9CE1    73                    	ld	(hl),e		; geraet als geladen in dph-tabelle eintragen
+  9CE2    23                    	inc	hl
+  9CE3    72                    	ld	(hl),d
+  9CE4    18 0A                 	jr	km.le2
+                                ;
+  9CE6    CD A5F7               km.le1:	call	centl		; b entladen
+  9CE9    D1                    	pop	de
+  9CEA    E1                    	pop	hl
+  9CEB    36 00                 	ld	(hl),0		; geraet aus dph-tabelle streichen
+  9CED    23                    	inc	hl
+  9CEE    36 00                 	ld	(hl),0
+  9CF0    C3 9AA5               km.le2:	jp	ci
+                                ;
+  9CF3    FE 82                 c10:	cp	eq.le2		; pf3?
+  9CF5    20 0E                 	jr	nz,c11		; ----
+  9CF7    DD 21 F676            	ld	ix,eatab2	; kassettenlaufwerk 2
+  9CFB    1E 02                 	ld	e,2
+  9CFD    CD 9638               	call	ldhldp
+  9D00    11 F7A8               	ld	de,dphc2
+  9D03    18 CD                 	jr	km.le
+                                ;
+  9D05                          c11:
+                                 if anzakb gt 1
+  9D05    FE 8C                 	cp	eq.le3		; pf4?
+  9D07    20 0E                 	jr	nz,c12		; ----
+  9D09    DD 21 F6A1            	ld	ix,eatab3	; kassettenlaufwerk 3
+  9D0D    1E 03                 	ld	e,3
+  9D0F    CD 9638               	call	ldhldp
+  9D12    11 F7B8               	ld	de,dphc3
+  9D15    18 BB                 	jr	km.le
+                                ;
+  9D17    FE 8C                 c12:	cp	eq.le4		; pf5?
+  9D19    20 0E                 	jr	nz,c13		; ----
+  9D1B    DD 21 F6CC            	ld	ix,eatab4	; kassettenlaufwerk 4
+  9D1F    1E 04                 	ld	e,4
+  9D21    CD 9638               	call	ldhldp
+  9D24    11 F7C8               	ld	de,dphc4
+  9D27    18 A9                 	jr	km.le
+                                 endif
+                                ;
+  9D29                          c13:
+                                 if anzakb gt 2
+  9D29    FE 8C                 	cp	eq.le5		; pf6?
+  9D2B    20 0E                 	jr	nz,c14		; ----
+  9D2D    DD 21 F6F7            	ld	ix,eatab5	; kassettenlaufwerk 5
+  9D31    1E 05                 	ld	e,5
+  9D33    CD 9638               	call	ldhldp
+  9D36    11 F7D8               	ld	de,dphc5
+  9D39    18 97                 	jr	km.le
+                                ;
+  9D3B    FE 8C                 c14:	cp	eq.le6		; pf7?
+  9D3D    20 0E                 	jr	nz,c17		; ----
+  9D3F    DD 21 F722            	ld	ix,eatab6	; kassettenlaufwerk 6
+  9D43    1E 06                 	ld	e,6
+  9D45    CD 9638               	call	ldhldp
+  9D48    11 F7E8               	ld	de,dphc6
+  9D4B    18 85                 	jr	km.le
+                                 endif
+                                ;
+  9D4D                          c17:
+                                 if eq.sio ne 0
+  9D4D    FE 87                 	cp	eq.sio		; pf8?
+                                	systa	c189		; ----
+  9D4F    C2 9DC8         +     	jp	nz,c189
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-26
+
+
+  9D52    3A F935         +     	ld	a,(syste)
+  9D55    3D              +     	dec	a
+  9D56    3E 20           +     	ld	a,' '
+  9D58    C2 9EA4         +     	jp	nz,c18		; --> nicht erlaubt
+  9D5B    31 FBC1               	ld	sp,spber	; init. ATS-Kanal A bzw. B
+  9D5E    CD 96EB               	call	um11
+  9D61    CD 96C3               	call	setp0
+  9D64    11 9DB1               	ld	de,siot1
+  9D67    0E 09                 	ld	c,9
+  9D69    CD 0005               	call	5
+  9D6C    11 F93A               	ld	de,ccppuf
+  9D6F    0E 0A                 	ld	c,10
+  9D71    CD 0005               	call	5
+  9D74    3A F93B               	ld	a,(ccppuf+1)
+  9D77    B7                    	or	a
+  9D78    CA 0000               	jp	z,0
+  9D7B    3A F93C               	ld	a,(ccppuf+2)
+  9D7E    FE 61                 	cp	'a'
+  9D80    28 0F                 	jr	z,sioa
+  9D82    FE 41                 	cp	'A'
+  9D84    28 0B                 	jr	z,sioa
+  9D86    FE 62                 	cp	'b'
+  9D88    28 17                 	jr	z,siob
+  9D8A    FE 42                 	cp	'B'
+  9D8C    28 13                 	jr	z,siob
+  9D8E    C3 9B7B               	jp	p0
+                                ;
+  9D91    CD A3B4               sioa:	call	ri.ata
+  9D94    3A 0003               	ld	a,(3)
+  9D97    E6 C3                 	and	11000011b
+  9D99    F6 28                 	or	00101000b
+  9D9B    32 0003               	ld	(3),a
+  9D9E    C3 9B7B               	jp	p0
+  9DA1    CD A3D5               siob:	call	ri.atb
+  9DA4    3A 0003               	ld	a,(3)
+  9DA7    E6 C3                 	and	11000011b
+  9DA9    F6 3C                 	or	00111100b
+  9DAB    32 0003               	ld	(3),a
+  9DAE    C3 9B7B               	jp	p0
+  9DB1    0D 0A 41 54           siot1:	defb	cr,lf,'ATS-Kanal { A|B } : $'
+  9DB5    53 2D 4B 61           
+  9DB9    6E 61 6C 20           
+  9DBD    7B 20 41 7C           
+  9DC1    42 20 7D 20           
+  9DC5    3A 20 24              
+                                 endif
+                                ;
+  9DC8                          c189:
+                                 if eq.ini ne 0   and   ( tramdk or opsdk )
+                                	cp	eq.ini		; pf9?
+                                	systa	c175		; ----
+                                	ld	sp,spber	; init. laufwerk O , P
+                                	call	um11
+                                	call	setp0
+                                	ld	de,int1
+                                	ld	c,9
+                                	call	5
+                                	ld	de,ccppuf
+                                	ld	c,10
+                                	call	5		; eingabe des laufwerkes
+                                	ld	a,(ccppuf+1)
+                                	or	a
+                                	jp	z,0
+                                	ld	a,(ccppuf+2)	; laufwerksangabe
+                                	cp	'o'
+                                	jr	z,ino1
+                                	cp	'O'
+                                	jr	z,ino1
+                                	cp	'p'
+                                	jr	z,inp3
+                                	cp	'P'
+                                	jr	z,inp3
+                                	jp	p0
+                                ino1:
+                                 if tramdk
+                                	call	md.ino
+                                 endif
+                                	jp	p0
+                                inp3:
+                                 if opsdk
+                                	call	md.inp
+                                 endif
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-27
+
+
+                                	jp	p0
+                                int1:	db	cr,lf,'Init Laufwerk { O|P } : $'
+                                 endif
+                                ;
+  9DC8                          c175:
+                                 if eq.scp ne 0
+  9DC8    FE 89                 	cp	eq.scp		; pf10
+                                	systa	c170		; -----
+  9DCA    C2 9DFE         +     	jp	nz,c170
+  9DCD    3A F935         +     	ld	a,(syste)
+  9DD0    3D              +     	dec	a
+  9DD1    3E 20           +     	ld	a,' '
+  9DD3    C2 9EA4         +     	jp	nz,c18		; --> nicht erlaubt
+  9DD6    31 FBC1               	ld	sp,spber	; monitor SCP
+  9DD9    CD 96EB               	call	um11
+  9DDC    CD 96C3               	call	setp0
+  9DDF    CD A2DB               	call	co.scp
+  9DE2    11 9DED               	ld	de,mon3
+  9DE5    0E 09                 	ld	c,9
+  9DE7    CD 0005               	call	5
+  9DEA    C3 9B7B               	jp	p0
+  9DED    0D 0A 6D 6F           mon3:	db	cr,lf,'monitor  S C P$'
+  9DF1    6E 69 74 6F           
+  9DF5    72 20 20 53           
+  9DF9    20 43 20 50           
+  9DFD    24                    
+                                 endif
+                                ;
+  9DFE                          c170:
+                                 if eq.bcu ne 0
+  9DFE    FE 8A                 	cp	eq.bcu		; pf11?
+                                	systa	c173		; -----
+  9E00    C2 9E34         +     	jp	nz,c173
+  9E03    3A F935         +     	ld	a,(syste)
+  9E06    3D              +     	dec	a
+  9E07    3E 20           +     	ld	a,' '
+  9E09    C2 9EA4         +     	jp	nz,c18		; --> nicht erlaubt
+  9E0C    31 FBC1               	ld	sp,spber	; monitor BCU
+  9E0F    CD 96EB               	call	um11
+  9E12    CD 96C3               	call	setp0
+  9E15    CD A2DC               	call	co.bcu
+  9E18    11 9E23               	ld	de,mon1
+  9E1B    0E 09                 	ld	c,9
+  9E1D    CD 0005               	call	5
+  9E20    C3 9B7B               	jp	p0
+  9E23    0D 0A 6D 6F           mon1:	db	cr,lf,'monitor  B C U$'
+  9E27    6E 69 74 6F           
+  9E2B    72 20 20 42           
+  9E2F    20 43 20 55           
+  9E33    24                    
+                                 endif
+                                ;
+  9E34                          c173:
+                                 if eq.deg ne 0
+  9E34    FE 8B                 	cp	eq.deg		; pf12?
+                                	systa	c174		; -----
+  9E36    C2 9E6A         +     	jp	nz,c174
+  9E39    3A F935         +     	ld	a,(syste)
+  9E3C    3D              +     	dec	a
+  9E3D    3E 20           +     	ld	a,' '
+  9E3F    C2 9EA4         +     	jp	nz,c18		; --> nicht erlaubt
+  9E42    31 FBC1               	ld	sp,spber	; monitor DEG
+  9E45    CD 96EB               	call	um11
+  9E48    CD 96C3               	call	setp0
+  9E4B    CD A30F               	call	co.deg
+  9E4E    11 9E59               	ld	de,mon2
+  9E51    0E 09                 	ld	c,9
+  9E53    CD 0005               	call	5
+  9E56    C3 9B7B               	jp	p0
+  9E59    0D 0A 6D 6F           mon2:	db	cr,lf,'monitor  D E G$'
+  9E5D    6E 69 74 6F           
+  9E61    72 20 20 44           
+  9E65    20 45 20 47           
+  9E69    24                    
+                                 endif
+                                ;
+  9E6A                          c174:
+                                 if eq.bsd ne 0
+  9E6A    FE CE                 	cp	eq.bsd		; H C P ?
+  9E6C    20 36                 	jr	nz,c18		; -------
+  9E6E    06 18                 	ld	b,maxz		; bildschirminhalt ausdrucken
+  9E70    21 3000               	ld	hl,bsanf
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-28
+
+
+  9E73    C5                    c171:	push	bc
+  9E74    E5                    	push	hl
+  9E75    3E 0A                 	ld	a,lf
+  9E77    4F                    	ld	c,a
+  9E78    CD A358               	call	lo.ch
+  9E7B    3E 0D                 	ld	a,cr
+  9E7D    4F                    	ld	c,a
+  9E7E    CD A358               	call	lo.ch
+  9E81    E1                    	pop	hl
+  9E82    06 50                 	ld	b,maxs
+  9E84    C5                    c172:	push	bc
+  9E85    7E                    	ld	a,(hl)
+  9E86    23                    	inc	hl
+  9E87    E5                    	push	hl
+  9E88    E6 7F                 	and	07fh
+  9E8A    4F                    	ld	c,a
+  9E8B    CD A358               	call	lo.ch
+  9E8E    E1                    	pop	hl
+  9E8F    C1                    	pop	bc
+  9E90    10 F2                 	djnz	c172
+  9E92    C1                    	pop	bc
+  9E93    10 DE                 	djnz	c171
+  9E95    3E 0A                 	ld	a,lf
+  9E97    4F                    	ld	c,a
+  9E98    CD A358               	call	lo.ch
+  9E9B    3E 0D                 	ld	a,cr
+  9E9D    4F                    	ld	c,a
+  9E9E    CD A358               	call	lo.ch
+  9EA1    C3 9AA5               	jp	ci
+                                 endif
+                                ;
+  9EA4    47                    c18:	ld	b,a
+  9EA5    AF                    	xor	a
+  9EA6    32 F935               	ld	(syste),a
+  9EA9    78                    	ld	a,b
+  9EAA    E6 7F                 	and	07fh		; paritaet loeschen
+  9EAC    C9                    	ret
+                                ;
+                                ;----------------------------------------------------------------------
+                                ;
+                                 if eq.hex ne 0
+  9EAD    C5                    cbit4:	push	bc
+  9EAE    AF                    	xor	a
+  9EAF    32 F938               	ld	(sverz),a
+  9EB2    CD 9A70               cbit41:	call	ciber		; warten bis taste losgelassen
+  9EB5    20 FB                 	jr	nz,cbit41
+  9EB7    CD 9A70               cbit42:	call	ciber		; warten bis taste gedrueckt
+  9EBA    28 FB                 	jr	z,cbit42
+                                ;
+  9EBC    CD 9FE8               	call	ci.ch		; zeichen uebernehmen
+  9EBF    47                    	ld	b,a
+  9EC0    CD 9A70               cbit43:	call	ciber		; warten bis taste losgelassen
+  9EC3    20 FB                 	jr	nz,cbit43
+  9EC5    78                    	ld	a,b
+  9EC6    E6 7F                 	and	7fh
+  9EC8    FE 41                 	cp	41h
+  9ECA    38 02                 	jr	c,cbit44
+  9ECC    D6 07                 	sub	7
+  9ECE    D6 30                 cbit44:	sub	30h
+  9ED0    E6 0F                 	and	0fh
+  9ED2    C1                    	pop	bc
+  9ED3    C9                    	ret
+                                 endif
+                                ;
+                                ;
+                                ;
+                                	page	
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-29
+
+
+                                
+                                ;	console ausgabe
+                                ;	===============
+                                ;
+  9ED4                          conou::				; iobyte:   00 00 00 xx
+  9ED4    CD 9600               	call	reta		;   0, 1  crt:
+  9ED7    F5                    	push	af		;   2     bat:
+  9ED8    CD 9617               	call	iodisp		;   3     crt: + lpt:
+  9EDB    00                    	defb	0
+  9EDC    9EE4                  	defw	conou0
+  9EDE    9EE4                  	defw	conou1
+  9EE0    9F0C                  	defw	listx
+  9EE2    9EEB                  	defw	conou3
+  9EE4                          conou0:
+  9EE4    CD A045               conou1:	call	co.ch
+  9EE7    F1                    	pop	af
+  9EE8    C3 9611               	jp	um2ee
+  9EEB    CD A045               conou3:	call	co.ch
+  9EEE    CD A358               	call	lo.ch
+  9EF1    F1                    	pop	af
+  9EF2    C3 9611               	jp	um2ee
+                                
+                                ;	drucker ausgabe
+                                ;	===============
+                                ;
+  9EF5    CD 9600               listst::call	reta
+  9EF8    CD 9617               	call	iodisp
+  9EFB    06                    	defb	6
+  9EFC    9F04                  	defw	lsst0
+  9EFE    9F04                  	defw	lsst1
+  9F00    9F04                  	defw	lsst2
+  9F02    9F04                  	defw	lsst3
+  9F04                          lsst0:
+  9F04                          lsst1:
+  9F04                          lsst2:
+  9F04    AF                    lsst3:	xor	a		; immer bereit
+  9F05    C3 9611               	jp	um2ee
+                                ;
+  9F08                          list::				; iobyte:  xx 00 00 00
+  9F08    CD 9600               	call	reta		;   0			ATS-Kanal A
+  9F0B    F5                    	push	af		;   1        crt:
+  9F0C    CD 9617               listx:	call	iodisp		;   2	     lpt:
+  9F0F    06                    	defb	6		;   3			ATS-Kanal B
+  9F10    9F18                  	defw	list0
+  9F12    9F1F                  	defw	list1
+  9F14    9F26                  	defw	list2
+  9F16    9F2D                  	defw	list3
+  9F18    CD A40A               list0:	call	pu1.ch
+  9F1B    F1                    	pop	af
+  9F1C    C3 9611               	jp	um2ee
+  9F1F    CD A045               list1:	call	co.ch
+  9F22    F1                    	pop	af
+  9F23    C3 9611               	jp	um2ee
+  9F26    CD A358               list2:	call	lo.ch
+  9F29    F1                    	pop	af
+  9F2A    C3 9611               	jp	um2ee
+  9F2D    CD A41F               list3:	call	pu2.ch
+  9F30    F1                    	pop	af
+  9F31    C3 9611               	jp	um2ee
+                                ;
+                                ;
+                                ;
+                                	page	
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-30
+
+
+                                
+                                ;	leser eingabe
+                                ;	=============
+                                ;
+  9F34    CD 9600               readst::call	reta
+  9F37    CD 9617               reads1:	call	iodisp
+  9F3A    02                    	defb	2
+  9F3B    9F43                  	defw	rdst0
+  9F3D    9F43                  	defw	rdst1
+  9F3F    9F43                  	defw	rdst2
+  9F41    9F43                  	defw	rdst3
+  9F43                          rdst0:
+  9F43                          rdst1:
+  9F43                          rdst2:
+  9F43    AF                    rdst3:	xor	a
+  9F44    3D                    	dec	a
+  9F45    C3 9611               	jp	um2ee
+                                ;
+  9F48                          reader::			; iobyte:   00 00 xx 00
+  9F48    CD 9600               	call	reta		;   0     crt:
+  9F4B    CD 9617               reade1:	call	iodisp		;   1     ptr:
+  9F4E    02                    	defb	2		;   2	  ur1:	ATS-Kanal A
+  9F4F    9F57                  	defw	read0		;   3	  ur2:	ATS-Kanal B
+  9F51    9F5D                  	defw	read1
+  9F53    9F65                  	defw	read2
+  9F55    9F6B                  	defw	read3
+  9F57    CD 9FE8               read0:	call	ci.ch
+  9F5A    C3 9611               	jp	um2ee
+  9F5D    CD A36A               read1:	call	ri.ch
+  9F60    E6 7F                 	and	7fh
+  9F62    C3 9611               	jp	um2ee
+  9F65    CD A37C               read2:	call	ri1.ch
+  9F68    C3 9611               	jp	um2ee
+  9F6B    CD A398               read3:	call	ri2.ch
+  9F6E    C3 9611               	jp	um2ee
+                                
+                                ;	stanzer ausgabe
+                                ;	===============
+                                ;
+  9F71                          punch::				; iobyte:   00 xx 00 00
+  9F71    CD 9600               	call	reta		;   0        crt:
+  9F74    F5                    	push	af		;   1        ptp:
+  9F75    CD 9617               	call	iodisp		;   2        up1:	ATS-Kanal A
+  9F78    04                    	defb	4		;   3	     up2:	ATS-Kanal B
+  9F79    9F81                  	defw	punch0
+  9F7B    9F88                  	defw	punch1
+  9F7D    9F8F                  	defw	punch2
+  9F7F    9F96                  	defw	punch3
+  9F81    CD A045               punch0:	call	co.ch
+  9F84    F1                    	pop	af
+  9F85    C3 9611               	jp	um2ee
+  9F88    CD A3F8               punch1:	call	pu.ch
+  9F8B    F1                    	pop	af
+  9F8C    C3 9611               	jp	um2ee
+  9F8F    CD A40A               punch2:	call	pu1.ch
+  9F92    F1                    	pop	af
+  9F93    C3 9611               	jp	um2ee
+  9F96    CD A41F               punch3:	call	pu2.ch
+  9F99    F1                    	pop	af
+  9F9A    C3 9611               	jp	um2ee
+                                ;
+                                ;
+                                ;
+                                	page
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-31
+
+
+                                
+                         C      	include	CI.ASM
+                         C      	page
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-32
+
+
+                         C      
+                         C      ;	tastaturbedienung ueber DEG2000 Version 1.2  ---  EPROM 6C
+                         C      ;	==========================================================
+                         C      ;
+  4003                   C      tta1	equ	ttinit+3
+  4006                   C      tta2	equ	ttinit+6
+  400C                   C      ttfe	equ	ttinit+12
+  4015                   C      ttbel	equ	ttinit+15h
+                         C      ;
+  9F9D    FF             C      umerk:	defb	0ffh
+                         C      ;
+                         C      ;
+                         C      ta	macro	up
+                         C      	ld	a,ptast
+                         C      	call	up
+                         C      	endm
+                         C      ;
+                         C      ;
+  9F9E                   C      tinit::	ta	ttinit
+  9F9E    3E A0          C+     	ld	a,ptast
+  9FA0    CD 4000        C+     	call	ttinit
+  9FA3    C9             C      	ret
+                         C      ;
+                         C      ;
+  9FA4                   C      ta1::	ta	tta1
+  9FA4    3E A0          C+     	ld	a,ptast
+  9FA6    CD 4003        C+     	call	tta1
+  9FA9    32 9F9D        C      	ld	(umerk),a
+  9FAC    C9             C      	ret
+                         C      ;
+                         C      ;
+  9FAD                   C      ta2::	ta	tta2
+  9FAD    3E A0          C+     	ld	a,ptast
+  9FAF    CD 4006        C+     	call	tta2
+  9FB2    C5             C      	push	bc
+  9FB3    47             C      	ld	b,a
+                         C       if not talt
+  9FB4    3A 9F9D        C      	ld	a,(umerk)
+  9FB7    CB 57          C      	bit	2,a
+  9FB9    20 14          C      	jr	nz,ta21
+                         C       endif
+  9FBB    78             C      	ld	a,b
+                         C       if talt
+                         C      	cp	0eeh		; Test auf CTRL- ^ (1EH)
+                         C      	jr	z,ta23
+                         C      	cp	0f0h		; Test auf CTRL- Zeichen
+                         C      	jr	nc,ta21
+                         C      	cp	0d0h
+                         C      	jr	c,ta21
+                         C      	sub	0d0h
+                         C       else
+  9FBC    FE 5E          C      	cp	05eh		; Test auf CTRL- ^ (1EH)
+  9FBE    28 0C          C      	jr	z,ta23
+  9FC0    FE 60          C      	cp	060h		; Test auf CTRL- Zeichen
+  9FC2    30 0B          C      	jr	nc,ta21
+  9FC4    FE 40          C      	cp	40h
+  9FC6    38 07          C      	jr	c,ta21
+  9FC8    D6 40          C      	sub	40h
+                         C       endif
+  9FCA    18 02          C      	jr	ta22
+                         C      ;
+  9FCC    3E EE          C      ta23:	ld	a,0eeh
+  9FCE    47             C      ta22:	ld	b,a
+  9FCF    78             C      ta21:	ld	a,b
+  9FD0    C1             C      	pop	bc
+  9FD1    C9             C      	ret
+                         C      ;
+                         C      ;
+  9FD2                   C      tfe::	ta	ttfe
+  9FD2    3E A0          C+     	ld	a,ptast
+  9FD4    CD 400C        C+     	call	ttfe
+  9FD7    C9             C      	ret
+                         C      ;
+                         C      ;
+  9FD8                   C      tbel::	ta	ttbel
+  9FD8    3E A0          C+     	ld	a,ptast
+  9FDA    CD 4015        C+     	call	ttbel
+  9FDD    C9             C      	ret
+                         C      ;
+                         C      ;
+  9FDE                   C      ci.kalt::
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-33
+
+
+  9FDE                   C      ci.warm::
+  9FDE    CD 9F9E        C      	call	tinit
+  9FE1    C9             C      	ret
+                         C      ;
+                         C      ;
+  9FE2                   C      ci.sta::
+  9FE2    C5             C      	push	bc
+  9FE3    CD 9FA4        C      	call	ta1		; taste       gedrueckt --> z=1
+  9FE6    C1             C      	pop	bc
+  9FE7    C9             C      	ret			; taste nicht gedrueckt --> z=0
+                         C      ;
+                         C      ;
+  9FE8                   C      ci.ch::
+  9FE8    CD 9FAD        C      	call	ta2
+  9FEB    21 A023        C      	ld	hl,degtab
+  9FEE    01 0011        C      	ld	bc,degend-degtab
+  9FF1    ED B1          C      	cpir
+  9FF3    20 07          C      	jr	nz,ci1
+  9FF5    01 0010        C      	ld	bc,cpmtab-degtab-1
+  9FF8    09             C      	add	hl,bc
+  9FF9    7E             C      	ld	a,(hl)
+  9FFA    18 1F          C      	jr	ci5
+  9FFC    F5             C      ci1:	push	af
+  9FFD    3A 9F9D        C      	ld	a,(umerk)
+  A000    CB 57          C      	bit	2,a
+  A002    C1             C      	pop	bc
+  A003    78             C      	ld	a,b
+  A004    28 15          C      	jr	z,ci5
+  A006    FE 41          C      ci2:	cp	41h		; gross- / kleinumwandlung
+  A008    38 04          C      	jr	c,ci3
+  A00A    FE 5B          C      	cp	5bh
+  A00C    38 08          C      	jr	c,ci4
+  A00E    FE 61          C      ci3:	cp	61h
+  A010    38 09          C      	jr	c,ci5
+  A012    FE 7B          C      	cp	7bh
+  A014    30 05          C      	jr	nc,ci5
+  A016    47             C      ci4:	ld	b,a
+  A017    3A F933        C      	ld	a,(umsch)	; maske fuer umwandlung
+  A01A    A8             C      	xor	b
+  A01B    47             C      ci5:	ld	b,a
+  A01C    C9             C      	ret
+                         C      ;
+                         C      ;
+  A01D                   C      ci.bell::
+  A01D    06 40          C      	ld	b,40h
+  A01F    CD 9FD8        C      	call	tbel
+  A022    C9             C      	ret
+                         C      ;	umschluesseltabelle
+                         C      ;	===================
+                         C      ;
+  A023    1E F0 F1 CF    C      degtab:	defb	01eh,0f0h,0f1h,0cfh,0f2h,0f3h
+  A027    F2 F3          C      
+  A029    F4 F5 F6 F7    C      	defb	0f4h,0f5h,0f6h,0f7h,0f8h,0f9h
+  A02D    F8 F9          C      
+  A02F    EE FA FB B0    C      	defb	0eeh,0fah,0fbh,0b0h,0cch
+  A033    CC             C      
+  A034                   C      degend:
+  A034    0D 16 7F 13    C      cpmtab:	defb	00dh,016h,07fh,013h,00eh,019h
+  A038    0E 19          C      
+  A03A    17 05 12 08    C      	defb	017h,005h,012h,008h,00ch,004h
+  A03E    0C 04          C      
+  A040    1E 1A 18 03    C      	defb	01eh,01ah,018h,003h,012h
+  A044    12             C      
+                         C      ;
+                         C      ;
+                                ;	
+                                
+                                
+                         C      	include	CO.ASM
+                         C      ;	direkte cursorbedienung bei monitor  DEG
+                         C      ;	========================================
+                         C      ;
+                         C      ;  1b 01,0d  CR    zum Zeilenanfang
+                         C      ;  1b 02,0a  LF    Kursor eine Zeile tiefer; evt. rollen
+                         C      ;  1b 1e     HOME  Kursor in Zeile 1, Spalte 1
+                         C      ;  08        BS    setzt Kursor eine Position zurueck; in homepos. wirkungslos
+                         C      ;  1b 10     EOS   loescht den Bildschirm ab Kursorpos. bis Bildschirmende
+                         C      ;  1b 0b     UP    setzt den Kursor zyklisch eine Zeile hoeher
+                         C      ;  1b 0c     RIGHT setzt den Kursor zyklische eine Position weiter
+                         C      ;  1b 1f     NL    setzt Kursor in die naechste Zeile auf den Anfang
+                         C      ;  09        TAB   setzt Kursor auf naechste durch 8 teilbare Position
+                         C      ;  1a        CLEAR loescht den gesamten Bildschirm und setzt Kursor home
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-34
+
+
+                         C      ;  1b ':'    EOS   loescht den Bildschirm und laesst Kursor unveraendert
+                         C      ;  1b 'R'    DELL  stellt Kursor auf Z.anf., loescht die Zeile und rollt Z. nach
+                         C      ;  1b 'E'    INSL  stellt Kursor auf Z.anf., rollt Zeilen eins tiefer und loescht die Zeile
+                         C      ;  1b 'T'    EOL   loescht die Zeile ab Kursorposition bis Zeilenende
+                         C      ;  1b '=' rc POS   positioniert den Kursor auf Zeile r-20h und Spalte c-20h
+                         C      ;  1b '1'    SRMOD setzt speziellen Rollmodus
+                         C      ;  1b '0'    RRMOD setzt normalen   Rollmodus
+                         C      ;
+  A045    CD 96C3        C      co.ch::	call	setp0
+  A048    CD A2CD        C      	call	rescur
+  A04B    C5             C      	push	bc		; zeichen in c muss erhalten bleiben
+  A04C    79             C      	ld	a,c
+  A04D    21 F932        C      	ld	hl,qesc
+  A050    CB 46          C      	bit	qesc0,(hl)	; lauft steuerfolge?
+  A052    20 0C          C      	jr	nz,co.c2	; -> ja
+  A054    FE 1B          C      	cp	esc		; beginnt steuerfolge?
+  A056    C2 A0D8        C      	jp	nz,co.c10		; -> nein
+  A059    CB C6          C      	set	qesc0,(hl)	; es beginnt steuerfolge
+  A05B    CB 8E          C      co.c1:	res	qesc1,(hl)	;                              "set       /BCU"
+  A05D    C3 A116        C      	jp	co.c16		;                              "   co.c3+3/BCU"
+                         C      ;
+  A060    CB 4E          C      co.c2:	bit	qesc1,(hl)	; ist steuerzeichen schon eingetroffen?
+  A062    C2 A0B3        C      co.c3:	jp	nz,co.c4	; -> ja, es folgt r oder c     "jp        /BCU"
+  A065    FE 3D          C      	cp	'='		; nein, es folgt steuerzeichen "res 2,(hl)/BCU"
+  A067    CA A0D1        C      	jp	z,co.c9		; -> 1b '=' rc                 "jp co.c16 /BCU"
+  A06A    CD A295        C      	call	evtrol		; evtl. verzoegertes rollen ausfuehren
+  A06D    CB 86          C      	res	qesc0,(hl)	; bearbeitung der steuerfolge beendet
+  A06F    FE 54          C      	cp	'T'
+  A071    CA A1AA        C      	jp	z,eol		; -> EOL
+  A074    FE 45          C      	cp	'E'
+  A076    CA A1BC        C      	jp	z,insl		; -> INS LINE
+  A079    FE 52          C      	cp	'R'
+  A07B    CA A1E2        C      	jp	z,dell		; -> DEL LINE
+  A07E    FE 3A          C      	cp	':'
+  A080    CA A215        C      	jp	z,eos		; -> EOS
+  A083    FE 1F          C      	cp	1fh		; nl
+  A085    CA A131        C      	jp	z,co.nl
+  A088    FE 01          C      	cp	1		; cr-ersatz
+  A08A    CA A12B        C      	jp	z,co.cr
+  A08D    FE 02          C      	cp	2		; lf-ersatz
+  A08F    CA A11E        C      	jp	z,co.lf
+  A092    FE 1E          C      	cp	1eh		; home
+  A094    CA A13D        C      	jp	z,co.hom
+  A097    FE 10          C      	cp	10h		; eos
+  A099    CA A102        C      	jp	z,co.c13
+  A09C    FE 0B          C      	cp	0bh		; up
+  A09E    CA A18E        C      	jp	z,co.up
+  A0A1    FE 0C          C      	cp	0ch		; right
+  A0A3    CA A19B        C      	jp	z,co.rg
+  A0A6    FE 31          C      	cp	'1'		; spezieller Rollmodus an
+  A0A8    CA A220        C      	jp	z,sroll
+  A0AB    FE 30          C      	cp	'0'		; normaler   Rollmodus an
+  A0AD    CA A228        C      	jp	z,nroll
+  A0B0    C3 A0F8        C      	jp	co.c12		; -> nicht auswertbares steuerzeichen
+                         C      ;
+  A0B3    CB 56          C      co.c4:	bit	qesc2,(hl)	; 1b '=' r c
+  A0B5    CB D6          C      	set	qesc2,(hl)
+  A0B7    20 09          C      	jr	nz,co.c6	; -> es ist c eingetroffen
+  A0B9    D6 20          C      co.c5:	sub	20h		;                              "nop       /BCU"
+  A0BB    38 0C          C      	jr	c,co.c7		; -> zeile war <= 1fh
+  A0BD    32 0040        C      	ld	(zeil),a
+  A0C0    18 09          C      	jr	co.c8
+  A0C2    D6 20          C      co.c6:	sub	20h		;                              "nop       /BCU"
+  A0C4    38 03          C      	jr	c,co.c7		; -> spalte war <= 1fh
+  A0C6    32 0041        C      	ld	(spalt),a
+  A0C9    CB 86          C      co.c7:	res	qesc0,(hl)	; bearbeitung ist beendet
+  A0CB    CD A23C        C      co.c8:	call	bsadr
+  A0CE    C3 A112        C      	jp	co.c15
+                         C      ;
+  A0D1    CB CE          C      co.c9:	set	qesc1,(hl)
+  A0D3    CB 96          C      	res	qesc2,(hl)	; es wird r erwartet
+  A0D5    C3 A112        C      	jp	co.c15
+                         C      ;
+                         C      ;
+  A0D8    CD A295        C      co.c10:	call	evtrol		; evtl. verzoegertes rollen ausfuehren
+  A0DB    FE 07          C      	cp	7		; bell
+  A0DD    CA A137        C      	jp	z,co.bel
+  A0E0    FE 08          C      	cp	8		; backspace
+  A0E2    CA A15B        C      	jp	z,co.bs
+  A0E5    FE 0A          C      	cp	lf		; lf
+  A0E7    CA A11E        C      	jp	z,co.lf
+  A0EA    FE 0D          C      	cp	cr		; cr
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-35
+
+
+  A0EC    CA A12B        C      	jp	z,co.cr
+  A0EF    FE 09          C      	cp	tab
+  A0F1    28 53          C      	jr	z,co.tb
+  A0F3    FE 1A          C      co.c11:	cp	1ah		; clear                        "   0ch    /BCU"
+  A0F5    CA A181        C      	jp	z,co.cle
+  A0F8    2A F92E        C      co.c12:	ld	hl,(bsaddr)
+  A0FB    77             C      	ld	(hl),a		; zeichen auf bildschirm schreiben
+  A0FC    CD A22B        C      	call	incad		; schreiben in letzte pos. rollt nicht!!
+  A0FF    C3 A116        C      	jp	co.c16
+                         C      ;
+  A102    2A F92E        C      co.c13:	ld	hl,(bsaddr)	; eos ab cursorposition
+  A105    36 20          C      co.c14:	ld	(hl),20h
+  A107    23             C      	inc	hl
+  A108    7C             C      	ld	a,h
+  A109    FE 37          C      	cp	high (bsanf+maxz*maxs)
+  A10B    20 F8          C      	jr	nz,co.c14
+  A10D    7D             C      	ld	a,l
+  A10E    FE 80          C      	cp	low (bsanf+maxz*maxs)
+  A110    20 F3          C      	jr	nz,co.c14
+  A112    AF             C      co.c15:	xor	a
+  A113    32 F931        C      	ld	(qroll),a
+  A116    C1             C      co.c16:	pop	bc
+  A117    CD A2AB        C      	call	setcur
+  A11A    CD 96D7        C      	call	resp0
+  A11D    C9             C      	ret
+                         C      ;
+                         C      ;
+                         C      ;
+                         C      	page
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-36
+
+
+                         C      
+  A11E    21 0040        C      co.lf:	ld	hl,zeil		; lf
+  A121    34             C      	inc	(hl)
+  A122    CD A23C        C      colf1:	call	bsadr		; evtl. rollen ausfuehren
+  A125    CD A295        C      	call	evtrol
+  A128    C3 A116        C      	jp	co.c16
+                         C      ;
+                         C      ;
+  A12B    AF             C      co.cr:	xor	a		; cr
+  A12C    32 0041        C      	ld	(spalt),a
+  A12F    18 F1          C      	jr	colf1
+                         C      ;
+                         C      ;
+  A131    21 0040        C      co.nl:	ld	hl,zeil		; nl
+  A134    34             C      	inc	(hl)
+  A135    18 F4          C      	jr	co.cr
+                         C      ;
+                         C      ;
+  A137    CD A01D        C      co.bel:	call	ci.bell
+  A13A    C3 A116        C      	jp	co.c16
+                         C      ;
+                         C      ;
+  A13D    AF             C      co.hom:	xor	a		; home
+  A13E    32 0040        C      	ld	(zeil),a
+  A141    32 0041        C      	ld	(spalt),a
+  A144    18 DC          C      	jr	colf1
+                         C      ;
+                         C      ;
+  A146    2A F92E        C      co.tb:	ld	hl,(bsaddr)	; tab
+  A149    36 20          C      	ld	(hl),20h
+  A14B    CD A22B        C      	call	incad
+  A14E    3A 0041        C      	ld	a,(spalt)
+  A151    E6 07          C      	and	7
+  A153    CA A116        C      	jp	z,co.c16
+  A156    CD A295        C      	call	evtrol		; evtl. verzoegertes rollen ausfuehren
+  A159    18 EB          C      	jr	co.tb
+                         C      ;
+                         C      ;
+  A15B    3A 0041        C      co.bs:	ld	a,(spalt)	; backspace
+  A15E    B7             C      	or	a
+  A15F    28 0E          C      	jr	z,cobs2
+  A161    3D             C      	dec	a
+  A162    32 0041        C      	ld	(spalt),a
+  A165    2A F92E        C      cobs1:	ld	hl,(bsaddr)
+  A168    2B             C      	dec	hl
+  A169    22 F92E        C      	ld	(bsaddr),hl
+  A16C    C3 A112        C      	jp	co.c15
+                         C      ;
+  A16F    3A 0040        C      cobs2:	ld	a,(zeil)
+  A172    B7             C      	or	a
+  A173    CA A112        C      	jp	z,co.c15	; -> bs nicht ausfuehrbar, da homeposition
+  A176    3D             C      	dec	a
+  A177    32 0040        C      	ld	(zeil),a
+  A17A    3E 4F          C      	ld	a,maxs-1
+  A17C    32 0041        C      	ld	(spalt),a
+  A17F    18 E4          C      	jr	cobs1
+                         C      ;
+                         C      ;
+  A181    AF             C      co.cle:	xor	a		; clear
+  A182    32 0040        C      	ld	(zeil),a
+  A185    32 0041        C      	ld	(spalt),a
+  A188    CD A23C        C      	call	bsadr
+  A18B    C3 A102        C      	jp	co.c13
+                         C      ;
+                         C      ;
+  A18E    21 0040        C      co.up:	ld	hl,zeil		; up
+  A191    7E             C      	ld	a,(hl)
+  A192    B7             C      	or	a
+  A193    20 02          C      	jr	nz,coup1	; -> cursor stand nicht in 1. zeile
+  A195    36 18          C      	ld	(hl),maxz
+  A197    35             C      coup1:	dec	(hl)
+  A198    C3 A122        C      	jp	colf1
+                         C      ;
+                         C      ;
+  A19B    3A 0041        C      co.rg:	ld	a,(spalt)	; right zyklisch in zeile
+  A19E    3C             C      	inc	a
+  A19F    FE 50          C      	cp	maxs
+  A1A1    20 01          C      	jr	nz,corg1
+  A1A3    AF             C      	xor	a
+  A1A4    32 0041        C      corg1:	ld	(spalt),a
+  A1A7    C3 A122        C      	jp	colf1
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-37
+
+
+                         C      ;
+                         C      ;
+  A1AA    21 0041        C      eol:	ld	hl,spalt	; EOL
+  A1AD    3E 50          C      	ld	a,maxs
+  A1AF    96             C      	sub	(hl)
+  A1B0    47             C      	ld	b,a
+  A1B1    2A F92E        C      	ld	hl,(bsaddr)
+  A1B4    36 20          C      eol1:	ld	(hl),20h
+  A1B6    23             C      	inc	hl
+  A1B7    10 FB          C      	djnz	eol1
+  A1B9    C3 A112        C      	jp	co.c15
+                         C      ;
+                         C      ;
+  A1BC    AF             C      insl:	xor	a		; INS LINE
+  A1BD    32 0041        C      	ld	(spalt),a
+  A1C0    CD A23C        C      	call	bsadr
+  A1C3    21 0040        C      	ld	hl,zeil
+  A1C6    3E 18          C      	ld	a,maxz
+  A1C8    96             C      	sub	(hl)
+  A1C9    3D             C      	dec	a
+  A1CA    28 DE          C      	jr	z,eol		; -> kursor stand in letzter zeile; diese loeschen
+  A1CC    47             C      	ld	b,a
+  A1CD    21 0000        C      	ld	hl,0
+  A1D0    11 0050        C      	ld	de,maxs
+  A1D3    19             C      insl1:	add	hl,de		; anzahl der zeilen bestimmen, die nach
+  A1D4    10 FD          C      	djnz	insl1		; unten gerollt werden muessen
+  A1D6    44             C      	ld	b,h
+  A1D7    4D             C      	ld	c,l
+  A1D8    21 372F        C      	ld	hl,bsanf+maxz*maxs-1-maxs
+  A1DB    11 377F        C      	ld	de,bsanf+maxz*maxs-1
+  A1DE    ED B8          C      	lddr
+  A1E0    18 C8          C      	jr	eol		; -> zeile loeschen, in der cursor steht
+                         C      ;
+                         C      ;
+  A1E2    AF             C      dell:	xor	a		; DEL LINE
+  A1E3    32 0041        C      	ld	(spalt),a
+  A1E6    CD A23C        C      	call	bsadr
+  A1E9    21 0040        C      	ld	hl,zeil
+  A1EC    3E 18          C      	ld	a,maxz
+  A1EE    96             C      	sub	(hl)
+  A1EF    3D             C      	dec	a
+  A1F0    28 13          C      	jr	z,dell2		; -> kursor stand in letzter zeile
+  A1F2    47             C      	ld	b,a
+  A1F3    21 0000        C      	ld	hl,0
+  A1F6    11 0050        C      	ld	de,maxs
+  A1F9    19             C      dell1:	add	hl,de		; anzahl der zeilen bestimmen, die nach
+  A1FA    10 FD          C      	djnz	dell1		; oben gerollt werden muessen
+  A1FC    44             C      	ld	b,h
+  A1FD    4D             C      	ld	c,l
+  A1FE    2A F92E        C      	ld	hl,(bsaddr)
+  A201    EB             C      	ex	de,hl
+  A202    19             C      	add	hl,de
+  A203    ED B0          C      	ldir
+  A205    21 3730        C      dell2:	ld	hl,bsanf+maxz*maxs-maxs ; letzte zeile loeschen
+  A208    11 3731        C      	ld	de,bsanf+maxz*maxs-maxs+1
+  A20B    01 004F        C      	ld	bc,maxs-1
+  A20E    36 20          C      dell3:	ld	(hl),20h
+  A210    ED B0          C      	ldir
+  A212    C3 A112        C      	jp	co.c15
+                         C      ;
+                         C      ;
+  A215    21 3000        C      eos:	ld	hl,bsanf	; eos, cursor bleibt unveraendert
+  A218    11 3001        C      	ld	de,bsanf+1
+  A21B    01 077F        C      	ld	bc,maxz*maxs-1
+  A21E    18 EE          C      	jr	dell3
+                         C      ;
+                         C      ;
+  A220    3E 01          C      sroll:	ld	a,1		; spezieller rollmodus an
+  A222    32 F930        C      sroll1:	ld	(qrmode),a
+  A225    C3 A116        C      	jp	co.c16
+                         C      ;
+  A228    AF             C      nroll:	xor	a		; normaler   rollmodus an
+  A229    18 F7          C      	jr	sroll1
+                         C      ;
+                         C      ;
+                         C      ;
+                         C      	page
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-38
+
+
+                         C      
+  A22B    21 0041        C      incad:	ld	hl,spalt
+  A22E    34             C      	inc	(hl)
+  A22F    7E             C      	ld	a,(hl)
+  A230    FE 50          C      	cp	maxs
+  A232    20 08          C      	jr	nz,bsadr
+  A234    AF             C      	xor	a
+  A235    77             C      	ld	(hl),a
+  A236    21 0040        C      	ld	hl,zeil
+  A239    34             C      	inc	(hl)
+  A23A    18 00          C      	jr	bsadr
+                         C      
+                         C      ; die position zeil/spalt durch evtl. rollen in den bildschirmbereich
+                         C      ; bringen und physische adresse der position berechnen; dabei rollen
+                         C      ; in letzter position verzoegern, statt dessen qroll stellen, damit vor
+                         C      ; der naechsten ausgabe oder setcur gerollt werden kann
+                         C      ;
+  A23C    F5             C      bsadr:	push	af
+  A23D    C5             C      	push	bc
+  A23E    D5             C      	push	de
+  A23F    3A 0040        C      	ld	a,(zeil)
+  A242    FE 18          C      bsad1:	cp	maxz
+  A244    38 15          C      	jr	c,bsad4
+  A246    28 05          C      	jr	z,bsad3		; -> es koennte letzte position gewesen sein
+  A248    CD A27A        C      bsad2:	call	bsrol
+  A24B    18 F5          C      	jr	bsad1
+  A24D    3A 0041        C      bsad3:	ld	a,(spalt)	; ist spalte = 0?
+  A250    B7             C      	or	a
+  A251    3E 18          C      	ld	a,maxz
+  A253    20 F3          C      	jr	nz,bsad2	; -> nein, rollen
+  A255    3D             C      	dec	a
+  A256    21 F931        C      	ld	hl,qroll	; rollmerker setzen
+  A259    36 01          C      	ld	(hl),1
+  A25B    47             C      bsad4:	ld	b,a		; physische adresse berechnen
+  A25C    21 0000        C      	ld	hl,0
+  A25F    11 0050        C      	ld	de,maxs
+  A262    B7             C      	or	a
+  A263    28 03          C      	jr	z,bsad6
+  A265    19             C      bsad5:	add	hl,de
+  A266    10 FD          C      	djnz	bsad5
+  A268    3A 0041        C      bsad6:	ld	a,(spalt)
+  A26B    4F             C      	ld	c,a
+  A26C    06 00          C      	ld	b,0
+  A26E    09             C      	add	hl,bc
+  A26F    01 3000        C      	ld	bc,bsanf
+  A272    09             C      	add	hl,bc
+  A273    D1             C      	pop	de
+  A274    C1             C      	pop	bc
+  A275    F1             C      	pop	af
+  A276    22 F92E        C      	ld	(bsaddr),hl
+  A279    C9             C      	ret
+                         C      ;
+                         C      ;
+  A27A    11 3000        C      bsrol:	ld	de,bsanf	; bild hochschieben
+  A27D    21 3050        C      	ld	hl,bsanf+maxs
+  A280    01 0730        C      	ld	bc,maxs*(maxz-1)
+  A283    ED B0          C      	ldir
+  A285    62             C      	ld	h,d
+  A286    6B             C      	ld	l,e
+  A287    13             C      	inc	de		; letzte zeile loeschen
+  A288    01 004F        C      	ld	bc,maxs-1
+  A28B    36 20          C      	ld	(hl),20h
+  A28D    ED B0          C      	ldir
+  A28F    21 0040        C      	ld	hl,zeil
+  A292    35             C      	dec	(hl)
+  A293    7E             C      	ld	a,(hl)
+  A294    C9             C      	ret
+                         C      ;
+                         C      ;
+  A295    E5             C      evtrol:	push	hl
+  A296    21 F931        C      	ld	hl,qroll
+  A299    CB 46          C      	bit	0,(hl)
+  A29B    CB 86          C      	res	0,(hl)
+  A29D    E1             C      	pop	hl
+  A29E    C8             C      	ret	z
+  A29F    F5             C      	push	af
+  A2A0    C5             C      	push	bc
+  A2A1    D5             C      	push	de
+  A2A2    E5             C      	push	hl
+  A2A3    CD A27A        C      	call	bsrol
+  A2A6    E1             C      	pop	hl
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-39
+
+
+  A2A7    D1             C      	pop	de
+  A2A8    C1             C      	pop	bc
+  A2A9    F1             C      	pop	af
+  A2AA    C9             C      	ret
+                         C      ;
+                         C      ;
+  A2AB    E5             C      setcur:	push	hl
+  A2AC    21 F930        C      	ld	hl,qrmode
+  A2AF    CB 46          C      	bit	0,(hl)
+  A2B1    CC A295        C      	call	z,evtrol	; evtl. verzoegertes rollen ausfuehren
+  A2B4    2A F92E        C      	ld	hl,(bsaddr)
+                         C      	; set	7,(hl)
+  A2B7    C5             C      	push	bc
+  A2B8    22 A2CA        C      	ld	(setcur2),hl
+  A2BB    21 A2C6        C      	ld	hl,setcur1
+  A2BE    01 0740        C      	ld	bc,0740H
+  A2C1    ED B3          C      	otir
+  A2C3    C1             C      	pop	bc
+  A2C4    E1             C      	pop	hl
+  A2C5    C9             C      	ret
+                         C      ;
+  A2C6                   C      setcur1:
+  A2C6    F0             C      	DB	0F0H
+  A2C7    04             C      	DB	004H	;Cursor Ein mit HL
+  A2C8    3000           C      	DW	bsanf
+  A2CA                   C      setcur2:
+  A2CA    0000           C      	DW	0
+  A2CC    FF             C      	DB	0FFH
+                         C      ;
+                         C      ;
+  A2CD                   C      rescur:
+  A2CD    E5             C      	push	hl
+  A2CE    C5             C      	push	bc
+                         C      	;ld	hl,(bsaddr)
+                         C      	; res	7,(hl)
+  A2CF    21 A2D8        C      	ld	hl,rescur1
+  A2D2    01 0340        C      	ld	bc,0340H
+  A2D5    C1             C      	pop	bc
+  A2D6    E1             C      	pop	hl
+  A2D7    C9             C      	ret
+                         C      ;
+  A2D8                   C      rescur1:
+  A2D8    F0             C      	DB	0F0H
+  A2D9    02             C      	DB	002H	;Cursor Aus
+  A2DA    FF             C      	DB	0FFH
+                         C      ;
+                         C      ;
+                         C      	page
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-40
+
+
+                         C      
+  A2DB                   C      co.scp:	
+  A2DB    C9             C      	ret
+                         C      ;
+                         C      ;
+                         C      ;
+  A2DC    3E CE          C      co.bcu:	ld	a,0ceh		;set 1,(hl)
+  A2DE    32 A05C        C      	ld	(co.c1+1),a
+  A2E1    21 A065        C      	ld	hl,co.c3+3
+  A2E4    22 A05E        C      	ld	(co.c1+3),hl
+  A2E7    3E C3          C      	ld	a,0c3h		;jp
+  A2E9    32 A062        C      	ld	(co.c3),a
+  A2EC    21 96CB        C      	ld	hl,096cbh	;res 2,(hl)
+  A2EF    22 A065        C      	ld	(co.c3+3),hl
+  A2F2    3E C3          C      	ld	a,0c3h		;jp
+  A2F4    32 A067        C      	ld	(co.c3+5),a
+  A2F7    21 A116        C      	ld	hl,co.c16
+  A2FA    22 A068        C      	ld	(co.c3+6),hl
+  A2FD    21 0000        C      	ld	hl,0
+  A300    22 A0B9        C      	ld	(co.c5),hl
+  A303    22 A0C2        C      	ld	(co.c6),hl
+  A306    3E 0C          C      	ld	a,00ch
+  A308    32 A0F4        C      	ld	(co.c11+1),a
+  A30B    32 99CF        C      	ld	(bootms),a
+  A30E    C9             C      	ret
+                         C      ;
+                         C      ;
+                         C      ;
+  A30F    3E 8E          C      co.deg:	ld	a,08eh		;res 1,(hl)
+  A311    32 A05C        C      	ld	(co.c1+1),a
+  A314    21 A116        C      	ld	hl,co.c16
+  A317    22 A05E        C      	ld	(co.c1+3),hl
+  A31A    3E C2          C      	ld	a,0c2h		;jp nz,
+  A31C    32 A062        C      	ld	(co.c3),a
+  A31F    21 3DFE        C      	ld	hl,03dfeh	;cp '='
+  A322    22 A065        C      	ld	(co.c3+3),hl
+  A325    3E CA          C      	ld	a,0cah		;jp z,
+  A327    32 A067        C      	ld	(co.c3+5),a
+  A32A    21 A0D1        C      	ld	hl,co.c9
+  A32D    22 A068        C      	ld	(co.c3+6),hl
+  A330    21 20D6        C      	ld	hl,020d6h	;sub 20h
+  A333    22 A0B9        C      	ld	(co.c5),hl
+  A336    22 A0C2        C      	ld	(co.c6),hl
+  A339    3E 1A          C      	ld	a,01ah
+  A33B    32 A0F4        C      	ld	(co.c11+1),a
+  A33E    32 99CF        C      	ld	(bootms),a
+  A341    C9             C      	ret
+                         C      ;
+                         C      ;
+                                
+                                
+                                
+                         C      	include	LO.ASM
+                         C      ; druckerausgabe ueber   DEG2000 Version 1.2 ---  EPROM 7C
+                         C      ; --------------------------------------------------------
+                         C      ;
+  A342                   C      lo.reset::
+  A342    DD E5          C      	push	ix
+  A344    CD 964D        C      	call	skmb
+  A347    DD 21 0F73     C      	ld	ix,eadr+3
+  A34B    DD 36 03 58    C      	ld	(ix+3),058h		;l(ir)
+  A34F    CD 4026        C      	call	dinit
+  A352    CD 9653        C      	call	rkmb
+  A355    DD E1          C      	pop	ix
+  A357    C9             C      	ret
+                         C      ;
+  A358                   C      lo.ch:
+  A358    DD E5          C      	push	ix
+  A35A    CD 964D        C      	call	skmb
+  A35D    DD 21 0F73     C      	ld	ix,eadr+3
+                         C       if dr54
+                         C      	push	af
+                         C      	ld	a,c
+                         C      	cp	00dh
+                         C      	jr	z,loch1
+                         C      	cp	00ah
+                         C      	jr	nz,loch2
+                         C      	ld	c,01eh
+                         C      loch2:
+                         C       endif
+  A361    CD 4029        C      	call	dout
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-41
+
+
+                         C       if dr54
+                         C      loch1:	pop	af
+                         C       endif
+  A364    CD 9653        C      	call	rkmb
+  A367    DD E1          C      	pop	ix
+  A369    C9             C      	ret
+                         C      ;
+                                
+                                
+                                
+                         C      	include	RI.ASM
+                         C      ; lochbandleserbedienung ueber  DEG2000 Version 1.2  --- EPROM 70
+                         C      ; ---------------------------------------------------------------
+                         C      ;
+  A36A    DD E5          C      ri.ch::	push	ix
+  A36C    CD 964D        C      	call	skmb
+  A36F    DD 21 0FA3     C      	ld	ix,ealbl+3
+  A373    CD 4030        C      	call	lbl
+  A376    CD 9653        C      	call	rkmb
+  A379    DD E1          C      	pop	ix
+  A37B    C9             C      	ret
+                         C      ;
+                         C      ; S I O -  uebertragung ueber die ATS
+                         C      ; -----------------------------------
+                         C      ;
+                         C       if eq.sio ne 0
+  A37C                   C      ri1.ch::			;ATS-Kanal A (Passiv)
+  A37C    C5             C      	push	bc
+  A37D    E5             C      	push	hl
+                         C      	rept	4		;SIO-Empfangspuffer leeren
+                         C      	in	a,(ptast+10h)
+                         C      	endm
+  A37E    DB B0          C+     	in	a,(ptast+10h)
+  A380    DB B0          C+     	in	a,(ptast+10h)
+  A382    DB B0          C+     	in	a,(ptast+10h)
+  A384    DB B0          C+     	in	a,(ptast+10h)
+  A386    3E 10          C      	ld	a,010h		;Bereitschaftszeichen ausgeben
+  A388    D3 B0          C      	out	(ptast+10h),a
+  A38A    AF             C      ri.ch1:	xor	a		;warten auf Eingabezeichen
+  A38B    D3 B1          C      	out	(ptast+11h),a
+  A38D    DB B1          C      	in	a,(ptast+11h)
+  A38F    CB 47          C      	bit	0,a
+  A391    28 F7          C      	jr	z,ri.ch1
+  A393    DB B0          C      	in	a,(ptast+10h)	;Eingabezeichen einlesen
+  A395    E1             C      	pop	hl
+  A396    C1             C      	pop	bc
+  A397    C9             C      	ret
+                         C      ;
+                         C      ;
+                         C      ;
+  A398                   C      ri2.ch::			;ATS-Kanal B (Aktiv)
+  A398    C5             C      	push	bc
+  A399    E5             C      	push	hl
+                         C      	rept	4		;SIO-Empfangspuffer leeren
+                         C      	in	a,(ptast+12h)
+                         C      	endm
+  A39A    DB B2          C+     	in	a,(ptast+12h)
+  A39C    DB B2          C+     	in	a,(ptast+12h)
+  A39E    DB B2          C+     	in	a,(ptast+12h)
+  A3A0    DB B2          C+     	in	a,(ptast+12h)
+  A3A2    3E 10          C      	ld	a,010h		;Bereitschaftszeichen ausgeben
+  A3A4    D3 B2          C      	out	(ptast+12h),a
+  A3A6    AF             C      ri.ch2:	xor	a		;warten auf Eingabezeichen
+  A3A7    D3 B3          C      	out	(ptast+13h),a
+  A3A9    DB B3          C      	in	a,(ptast+13h)
+  A3AB    CB 47          C      	bit	0,a
+  A3AD    28 F7          C      	jr	z,ri.ch2
+  A3AF    DB B2          C      	in	a,(ptast+12h)	;Eingabezeichen einlesen
+  A3B1    E1             C      	pop	hl
+  A3B2    C1             C      	pop	bc
+  A3B3    C9             C      	ret
+                         C      ;
+                         C      ;
+                         C      ;
+  A3B4                   C      ri.ata::
+  A3B4    21 A3ED        C      	ld	hl,ri.siot	;SIO initialisieren
+  A3B7    06 09          C      	ld	b,9
+  A3B9    0E B1          C      	ld	c,ptast+11h
+  A3BB    ED B3          C      	otir
+  A3BD    06 02          C      	ld	b,2		;CTC initialisieren
+  A3BF    0E B8          C      	ld	c,ptast+18h
+  A3C1    ED B3          C      	otir
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-42
+
+
+  A3C3    21 A3F6        C      	ld	hl,ri.ctct
+  A3C6    06 02          C      	ld	b,2
+  A3C8    0E B9          C      	ld	c,ptast+19h
+  A3CA    ED B3          C      	otir
+                         C      	rept	4		;SIO-Empfangspuffer leeren
+                         C      	in	a,(ptast+10h)
+                         C      	endm
+  A3CC    DB B0          C+     	in	a,(ptast+10h)
+  A3CE    DB B0          C+     	in	a,(ptast+10h)
+  A3D0    DB B0          C+     	in	a,(ptast+10h)
+  A3D2    DB B0          C+     	in	a,(ptast+10h)
+  A3D4    C9             C      	ret
+                         C      ;
+  A3D5                   C      ri.atb::
+  A3D5    21 A3ED        C      	ld	hl,ri.siot	;SIO initialisieren
+  A3D8    06 09          C      	ld	b,9
+  A3DA    0E 13          C      	ld	c,13h
+  A3DC    ED B3          C      	otir
+  A3DE    06 02          C      	ld	b,2		;CTC initialisieren
+  A3E0    0E BA          C      	ld	c,ptast+1ah
+  A3E2    ED B3          C      	otir
+                         C      	rept	4		;SIO-Empfangspuffer leeren
+                         C      	in	a,(ptast+12h)
+                         C      	endm
+  A3E4    DB B2          C+     	in	a,(ptast+12h)
+  A3E6    DB B2          C+     	in	a,(ptast+12h)
+  A3E8    DB B2          C+     	in	a,(ptast+12h)
+  A3EA    DB B2          C+     	in	a,(ptast+12h)
+  A3EC    C9             C      	ret
+                         C      ;
+  A3ED    D0 04 44 01    C      ri.siot:db	0d0h,4,44h,1,0,3,0c1h,35h,68h
+  A3F1    00 03 C1 35    C      
+  A3F5    68             C      
+  A3F6    07 01          C      ri.ctct:db	7,1
+                         C      ;
+                         C      ;
+                         C       else
+                         C      ri1.ch::
+                         C      ri2.ch::
+                         C      	ld	a,01ah
+                         C      	ret
+                         C       endif
+                         C      ;
+                                
+                                
+                                
+                         C      	include	PU.ASM
+                         C      ; lochbandstanzerbedienung ueber  DEG2000 Version 1.2  ---  EPROM 70
+                         C      ; ------------------------------------------------------------------
+                         C      ;
+  A3F8    DD E5          C      pu.ch::	push	ix
+  A3FA    CD 964D        C      	call	skmb
+  A3FD    DD 21 0F83     C      	ld	ix,ealbs+3
+  A401    CD 4033        C      	call	lbs
+  A404    CD 9653        C      	call	rkmb
+  A407    DD E1          C      	pop	ix
+  A409    C9             C      	ret
+                         C      ;
+                         C      ; S I O -  uebertragung ueber ATS
+                         C      ; -------------------------------
+                         C      ;
+                         C       if eq.sio ne 0
+  A40A                   C      pu1.ch::			;ATS-Kanal A (Passiv)
+  A40A    F5             C      	push	af
+  A40B    AF             C      pu.ch1:	xor	a		;warten auf Bereitschaftszeichen
+  A40C    D3 B1          C      	out	(ptast+11h),a
+  A40E    DB B1          C      	in	a,(ptast+11h)
+  A410    CB 47          C      	bit	0,a
+  A412    28 F7          C      	jr	z,pu.ch1
+  A414    DB B0          C      	in	a,(ptast+10h)
+  A416    FE 10          C      	cp	010h
+  A418    20 F1          C      	jr	nz,pu.ch1
+  A41A    79             C      	ld	a,c		;Ausgabezeichen ausgeben
+  A41B    D3 B0          C      	out	(ptast+10h),a
+  A41D    F1             C      	pop	af
+  A41E    C9             C      	ret
+                         C      ;
+                         C      ;
+                         C      ;
+  A41F                   C      pu2.ch::			;ATS-Kanal B (Aktiv)
+  A41F    F5             C      	push	af
+  A420    AF             C      pu.ch2:	xor	a		;warten auf Bereitschaftszeichen
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-43
+
+
+  A421    D3 B3          C      	out	(ptast+13h),a
+  A423    DB B3          C      	in	a,(ptast+13h)
+  A425    CB 47          C      	bit	0,a
+  A427    28 F7          C      	jr	z,pu.ch2
+  A429    DB B2          C      	in	a,(ptast+12h)
+  A42B    FE 10          C      	cp	10h
+  A42D    20 F1          C      	jr	nz,pu.ch2
+  A42F    79             C      	ld	a,c		;Ausgabezeichen ausgeben
+  A430    D3 B2          C      	out	(ptast+12h),a
+  A432    F1             C      	pop	af
+  A433    C9             C      	ret
+                         C      ;
+                         C      ;
+                         C       else
+                         C      pu1.ch::
+                         C      pu2.ch::
+                         C      	ret
+                         C       endif
+                         C      ;
+                                ;
+                                ;
+                                ;
+                                	page	
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-44
+
+
+                                
+                                ;	massespeicher lesen/schreiben
+                                ;	=============================
+                                ;
+                                ;	aufteilung auf die physischen geraete
+                                ;
+  A434    CD 9600               write::	call	reta
+  A437    CD F55A               	call	setix
+  A43A    28 0B                 	jr	z,wr15
+  A43C    DD 6E FE              	ld	l,(ix-ixwr)
+  A43F    DD 66 FF              	ld	h,(ix-ixwr+1)
+  A442    CD A467               	call	callhl		; writeroutine aufrufen
+  A445    18 02                 	jr	wr16
+  A447    3E 01                 wr15:	ld	a,1		; fehler: falsches geraet
+  A449    C3 9611               wr16:	jp	um2ee
+                                ;
+                                ;
+  A44C    CD 9600               read::	call	reta
+  A44F    CD F55A               	call	setix
+  A452    28 0E                 	jr	z,read15	; -> geraet nicht vorhanden
+  A454    DD 6E FC              	ld	l,(ix-ixrd)
+  A457    DD 66 FD              	ld	h,(ix-ixrd+1)
+  A45A    CD A467               	call	callhl		; readroutine aufrufen
+  A45D    CD 9608               	call	retu
+  A460    18 02                 	jr	read16
+  A462    3E 01                 read15:	ld	a,1
+  A464    C3 F597               read16:	jp	br270		; ===> aBIOS
+                                ;
+  A467    E9                    callhl::jp	(hl)
+                                ;
+                                ;
+                                ;
+                                	page	
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-45
+
+
+                                
+                                ;	lesen / schreiben geraet A
+                                ;	==========================
+                                ;
+  A468    3E 01                 wrmem0::ld	a,1
+  A46A    C9                    	ret			; schreibfehler
+  A46B    CD A49A               wrmem::	call	hsadr		; hs-adresse des simulierten floppy-sektors
+  A46E    38 F8                 	jr	c,wrmem0
+  A470    EB                    	ex	de,hl
+  A471    21 F9C1               	ld	hl,dmma
+  A474    01 0080               m04:	ld	bc,128		; vom sim.disk in den hs uebertragen
+  A477    CD 969B               	call	setla
+  A47A    ED B0                 	ldir
+  A47C    CD 96AE               	call	resla
+  A47F    AF                    m041:	xor	a
+  A480    C9                    	ret
+                                ;
+  A481    CD A49A               rdmem::	call	hsadr
+  A484    38 E2                 	jr	c,wrmem0
+  A486    11 F9C1               	ld	de,dmma
+  A489    18 E9                 	jr	m04
+  A48B    21 F9C1               rdmem0::ld	hl,dmma
+  A48E    5D                    	ld	e,l
+  A48F    54                    	ld	d,h
+  A490    13                    	inc	de
+  A491    36 E5                 	ld	(hl),0e5h
+  A493    01 007F               	ld	bc,127
+  A496    ED B0                 	ldir
+  A498    18 E5                 	jr	m041
+                                ;
+  A49A    ED 5B F923            hsadr::	ld	de,(trk)
+  A49E    7B                    	ld	a,e
+  A49F    FE 08                 	cp	8
+  A4A1    3F                    	ccf
+  A4A2    D8                    	ret	c
+  A4A3    32 9740               	ld	(ttrk),a
+  A4A6    3E 00                 	ld	a,str
+  A4A8    32 973F               	ld	(tram),a
+  A4AB    2A F925               	ld	hl,(sec)
+                                	rept	7
+                                	add	hl,hl
+                                	endm
+  A4AE    29              +     	add	hl,hl
+  A4AF    29              +     	add	hl,hl
+  A4B0    29              +     	add	hl,hl
+  A4B1    29              +     	add	hl,hl
+  A4B2    29              +     	add	hl,hl
+  A4B3    29              +     	add	hl,hl
+  A4B4    29              +     	add	hl,hl
+  A4B5    11 2F80               	ld	de,02f80h
+  A4B8    19                    	add	hl,de
+  A4B9    37                    	scf
+  A4BA    3F                    	ccf
+  A4BB    C9                    	ret
+                                ;
+                                ;
+                                ;
+                         C      	include	KR.ASM
+                         C      ;	lesen / schreiben kassetten geblockt
+                         C      ;	====================================
+                         C      ;	schreiben
+                         C      ;	---------
+                         C      ;
+  A4BC    DD 7E 1D       C      wrkmb::	ld	a,(ix+gelade)	; test, ob kassette noch geladen ist
+  A4BF    B7             C      	or	a
+  A4C0    28 2A          C      	jr	z,wrk02		; -> nein
+  A4C2    3A F923        C      	ld	a,(trk)
+  A4C5    B7             C      	or	a
+  A4C6    C2 A83B        C      	jp	nz,block	; -> nicht nach dir im hs schreiben
+  A4C9    21 F9C1        C      	ld	hl,dmma
+  A4CC    11 0C00        C      	ld	de,gdma
+  A4CF    01 0080        C      	ld	bc,128
+  A4D2    ED B0          C      	ldir
+  A4D4    CD A586        C      	call	diradr
+  A4D7    EB             C      	ex	de,hl		; in dpuf schreiben
+  A4D8    21 0C00        C      	ld	hl,gdma
+  A4DB    DD 36 0F 01    C      	ld	(ix+eadzei),1	; es wurde in directory geschrieben
+  A4DF    01 0080        C      	ld	bc,128
+  A4E2    CD 965A        C      wrk01:	call	sdir		;ld	a,(hl)
+  A4E5    ED B0          C      	ldir		;set12
+  A4E7    CD 967C        C      	call	rdir	;ld	(de),a
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-46
+
+
+                         C      			;res12
+                         C      			;inc 	hl
+                         C      			;inc	de
+                         C      			;djnz	wrk01
+  A4EA    AF             C      	xor	a
+  A4EB    C9             C      	ret
+                         C      ;
+  A4EC    AF             C      wrk02:	xor	a
+  A4ED    3C             C      	inc	a
+  A4EE    C9             C      	ret
+                         C      ;
+  A4EF    CD A579        C      hwrkmb:	call	cposx
+  A4F2    20 F8          C      	jr	nz,wrk02	; -> fehler melden
+  A4F4    DD 36 09 01    C      	ld	(ix+ealen),1
+  A4F8    DD 36 0A 00    C      	ld	(ix+ealen+1),0
+  A4FC    DD 7E 12       C      	ld	a,(ix+hstbuf)
+  A4FF    DD 77 07       C      	ld	(ix+eaadr),a
+  A502    DD 7E 13       C      	ld	a,(ix+hstbuf+1)
+  A505    DD 77 08       C      	ld	(ix+eaadr+1),a
+                         C       if kmbvers eq 13
+                         C      	ld	a,80h		; schreiben ohne fehlerwiederholung
+                         C       else
+  A508    3E 00          C      	ld	a,0		; schreiben mit fehlerwiederholung
+                         C       endif
+  A50A    CD A7FF        C      	call	kmb
+  A50D    C8             C      	ret	z		; -> alles ok
+  A50E    3A F92C        C      	ld	a,(rderr)	; weiterer versuch?
+  A511    3D             C      	dec	a
+  A512    32 F92C        C      	ld	(rderr),a
+  A515    20 D8          C      	jr	nz,hwrkmb
+  A517    18 D3          C      	jr	wrk02		; -> nein
+                         C      ;
+                         C      ;
+                         C      ;
+                         C      	page
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-47
+
+
+                         C      
+                         C      ;	lesen
+                         C      ;	-----
+                         C      ;
+  A519    DD 7E 1D       C      rdkmb::	ld	a,(ix+gelade)	; test, ob kassette noch geladen ist
+  A51C    B7             C      	or	a
+  A51D    28 CD          C      	jr	z,wrk02
+  A51F    3A F923        C      	ld	a,(trk)
+  A522    B7             C      	or	a
+  A523    C2 A82F        C      	jp	nz,deblck	; -> nicht aus hs lesen
+  A526    11 0C00        C      	ld	de,gdma		; aus dpuf lesen
+  A529    CD A586        C      	call	diradr
+  A52C    01 0080        C      	ld	bc,128
+  A52F    CD 965A        C      rdk01:	call	sdir	;set12
+  A532    ED B0          C      	ldir		;ld	a,(hl)
+  A534    CD 967C        C      	call	rdir	;res12
+  A537    21 0C00        C      	ld	hl,gdma	;ld	(de),a
+  A53A    11 F9C1        C      	ld	de,dmma	;inc	hl
+  A53D    01 0080        C      	ld	bc,128	;inc	de
+  A540    ED B0          C      	ldir		;djnz	rdk01
+  A542    AF             C      	xor	a
+  A543    C9             C      	ret
+                         C      ;
+  A544    CD A579        C      hrdkmb:	call	cposx
+  A547    20 0E          C      	jr	nz,rdk03	; -> fehler melden
+  A549    CD A68D        C      	call	lesen
+  A54C    28 0C          C      	jr	z,rdk04
+  A54E    3A F92C        C      rdk02:	ld	a,(rderr)	; weitere versuch?
+  A551    3D             C      	dec	a
+  A552    32 F92C        C      	ld	(rderr),a
+  A555    20 ED          C      	jr	nz,hrdkmb	; -> ja
+  A557    AF             C      rdk03:	xor	a		; fehler melden
+  A558    3C             C      	inc	a
+  A559    C9             C      	ret
+  A55A    DD 7E 09       C      rdk04:	ld	a,(ix+ealen)
+  A55D    FE 01          C      	cp	1
+  A55F    20 ED          C      	jr	nz,rdk02
+  A561    47             C      	ld	b,a
+  A562    DD 7E 0A       C      	ld	a,(ix+ealen+1)
+  A565    B7             C      	or	a
+  A566    20 E6          C      	jr	nz,rdk02
+  A568    4F             C      	ld	c,a
+  A569    DD 6E 07       C      	ld	l,(ix+eaadr)
+  A56C    DD 66 08       C      	ld	h,(ix+eaadr+1)
+  A56F    DD 5E 12       C      	ld	e,(ix+hstbuf)
+  A572    DD 56 13       C      	ld	d,(ix+hstbuf+1)
+  A575    ED B0          C      	ldir
+  A577    AF             C      	xor	a
+  A578    C9             C      	ret
+                         C      ;
+                         C      ;
+                         C      ;
+                         C      	page	
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-48
+
+
+                         C      
+                         C      ;	unterprogramme lesen/schreiben
+                         C      ;	------------------------------
+                         C      ;
+  A579    DD 6E 16       C      cposx:	ld	l,(ix+hstsec)
+  A57C    DD 66 14       C      	ld	h,(ix+hsttrk)
+  A57F    22 A829        C      	ld	(was),hl
+  A582    CD A6DA        C      	call	cpos
+  A585    C9             C      	ret
+                         C      ;
+  A586    3A F923        C      diradr:	ld	a,(trk)		; in hl diradr bilden
+  A589    6F             C      	ld	l,a
+  A58A    26 00          C      	ld	h,0
+                         C      	rept	4		; 16 * trk
+                         C      	add	hl,hl
+                         C      	endm
+  A58C    29             C+     	add	hl,hl
+  A58D    29             C+     	add	hl,hl
+  A58E    29             C+     	add	hl,hl
+  A58F    29             C+     	add	hl,hl
+  A590    ED 4B F925     C      	ld	bc,(sec)
+  A594    0B             C      	dec	bc
+  A595    09             C      	add	hl,bc		; 16 * trk + sec - 1
+                         C      	rept	7
+                         C      	add	hl,hl
+                         C      	endm
+  A596    29             C+     	add	hl,hl
+  A597    29             C+     	add	hl,hl
+  A598    29             C+     	add	hl,hl
+  A599    29             C+     	add	hl,hl
+  A59A    29             C+     	add	hl,hl
+  A59B    29             C+     	add	hl,hl
+  A59C    29             C+     	add	hl,hl
+  A59D    DD 4E 0D       C      	ld	c,(ix+eadpuf)	; bc = dpuf
+  A5A0    DD 46 0E       C      	ld	b,(ix+eadpuf+1)
+  A5A3    09             C      	add	hl,bc
+  A5A4    C9             C      	ret
+                         C      ;
+                         C      ;
+                         C      ;
+                         C      	page
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-49
+
+
+                         C      
+                         C      ;	kassettenroutinen   laden / entladen / positionieren
+                         C      ;	====================================================
+                         C      ;	kassette laden geblockt
+                         C      ;	-----------------------
+                         C      ;
+  A5A5    3E 31          C      clad:	ld	a,31h		; reservieren ein
+  A5A7    CD A7FF        C      	call	kmb
+  A5AA    DD CB 00 66    C      	bit	4,(ix+eastat)
+  A5AE    20 3C          C      	jr	nz,sp26
+                         C      ;
+  A5B0    CD A679        C      	call	rucksp		; rueckspulen
+  A5B3    CD A681        C      	call	endruc		; auf ende warten
+                         C      ;
+  A5B6    CD A6C3        C      	call	filpar
+  A5B9    D5             C      sp21:	push	de		; dirpufferadresse
+  A5BA    CD A94A        C      	call	readhst		; 8 mal 256 byte lesen
+  A5BD    D1             C      	pop	de
+  A5BE    20 29          C      	jr	nz,sp25		; -> fehler
+  A5C0    DD 6E 12       C      	ld	l,(ix+hstbuf)
+  A5C3    DD 66 13       C      	ld	h,(ix+hstbuf+1)
+  A5C6    01 0100        C      	ld	bc,256
+  A5C9    CD 965A        C      	call	sdir
+  A5CC    ED B0          C      	ldir			; von hostbuf auf cpu in dirbuf uebertr.
+  A5CE    CD 967C        C      	call	rdir
+  A5D1    DD 34 16       C      	inc	(ix+hstsec)
+  A5D4    DD CB 16 5E    C      	bit	3,(ix+hstsec)	; 0/8 schon erreicht?
+  A5D8    28 DF          C      	jr	z,sp21		; -> nein
+                         C      ;
+  A5DA    AF             C      	xor	a		; laden ok
+  A5DB    DD 77 0F       C      	ld	(ix+eadzei),a	; in directory wurde noch nicht geschrieben
+  A5DE    DD 77 17       C      	ld	(ix+hstact),a	; host buffer inactive
+  A5E1    DD 77 19       C      	ld	(ix+unacnt),a	; no unallocated recs
+  A5E4    DD 36 1D 01    C      	ld	(ix+gelade),1	; kassette ist geladen
+  A5E8    C9             C      	ret
+                         C      ;
+                         C      ;--------------------------------
+                         C      ;
+  A5E9    CD A679        C      sp25:	call	rucksp		; fehler beim laden
+  A5EC    3E 41          C      sp26:	ld	a,41h		; reservieren aus
+  A5EE    CD A7FF        C      	call	kmb
+  A5F1    AF             C      	xor	a
+  A5F2    DD 77 1D       C      	ld	(ix+gelade),a	; kassette ist nicht geladen
+  A5F5    3C             C      	inc	a
+  A5F6    C9             C      	ret
+                         C      
+                         C      ;	kassette entladen geblockt
+                         C      ;	--------------------------
+                         C      ;
+  A5F7    DD 7E 17       C      centl:	ld	a,(ix+hstact)	; ist puffer aktiv?
+  A5FA    B7             C      	or	a
+  A5FB    28 1B          C      	jr	z,sp301		; -> nein
+  A5FD    DD 7E 18       C      	ld	a,(ix+hstwrt)	; wurde in puffer geschrieben?
+  A600    B7             C      	or	a
+  A601    28 15          C      	jr	z,sp301
+  A603    CD A93D        C      	call	writehst	; ja, puffer entleeren
+  A606    28 10          C      	jr	z,sp301
+  A608    21 A656        C      	ld	hl,ceerro
+  A60B    06 23          C      	ld	b,ceerre-ceerro
+  A60D    C5             C      centle:	push	bc
+  A60E    4E             C      	ld	c,(hl)
+  A60F    23             C      	inc	hl
+  A610    E5             C      	push	hl
+  A611    CD A045        C      	call	co.ch
+  A614    E1             C      	pop	hl
+  A615    C1             C      	pop	bc
+  A616    10 F5          C      	djnz	centle
+  A618    DD 7E 0F       C      sp301:	ld	a,(ix+eadzei)	; wurde directory veraendert?
+  A61B    B7             C      	or	a
+  A61C    28 2B          C      	jr	z,sp32		; -> nein
+  A61E    CD A679        C      	call	rucksp		; rueckspulen
+  A621    CD A681        C      	call	endruc		; auf ende warten
+  A624    CD A6C3        C      	call	filpar
+  A627    EB             C      	ex	de,hl		; dirpufferadresse
+  A628    DD 5E 12       C      sp31:	ld	e,(ix+hstbuf)	; aus dirpuffer in host buffer uebertragen
+  A62B    DD 56 13       C      	ld	d,(ix+hstbuf+1)
+  A62E    01 0100        C      	ld	bc,256
+  A631    CD 965A        C      	call	sdir
+  A634    ED B0          C      	ldir			; aus dirbuf in hostbuf auf cpu uebertragen
+  A636    CD 967C        C      	call	rdir
+  A639    E5             C      	push	hl
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-50
+
+
+  A63A    CD A93D        C      	call	writehst
+  A63D    E1             C      	pop	hl
+  A63E    20 A9          C      	jr	nz,sp25		; -> fehler
+  A640    DD 34 16       C      	inc	(ix+hstsec)
+  A643    DD CB 16 5E    C      	bit	3,(ix+hstsec)	; 0/8 erreicht?
+  A647    28 DF          C      	jr	z,sp31		; -> nein
+                         C      ;
+  A649    CD A679        C      sp32:	call	rucksp		; rueckspulen
+  A64C    3E 41          C      	ld	a,41h		; reservieren aus
+  A64E    CD A7FF        C      	call	kmb
+  A651    DD 36 1D 00    C      	ld	(ix+gelade),0	; kassette ist nicht geladen
+  A655    C9             C      	ret
+                         C      ;
+  A656    0A 46 65 68    C      ceerro:	defb	lf,'Fehler beim Entladen des Puffers',cr,lf
+  A65A    6C 65 72 20    C      
+  A65E    62 65 69 6D    C      
+  A662    20 45 6E 74    C      
+  A666    6C 61 64 65    C      
+  A66A    6E 20 64 65    C      
+  A66E    73 20 50 75    C      
+  A672    66 66 65 72    C      
+  A676    73 0D 0A       C      
+  A679                   C      ceerre:
+                         C      ;
+                         C      ;
+                         C      ;
+                         C      	page	
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-51
+
+
+                         C      
+                         C      ;	up's
+                         C      ;	----
+                         C      ;
+  A679    3E 21          C      rucksp:	ld	a,21h
+  A67B    CD A7FF        C      	call	kmb
+  A67E    20 F9          C      	jr	nz,rucksp
+  A680    C9             C      	ret
+  A681    CD 964D        C      endruc:	call	skmb 
+  A684    CD 4043        C      edruc:	call	kmbruc		; kmb-bereitroutine
+  A687    38 FB          C      	jr	c,edruc		; -> nicht bereit
+  A689    CD 9653        C      	call	rkmb
+  A68C    C9             C      	ret
+                         C      ;
+  A68D    AF             C      lesen:	xor	a
+  A68E    32 A82E        C      	ld	(richtu),a
+                         C       if kmbvers eq 13
+                         C      	ld	a,82h		; lesen ohne fehlerwiederholung
+                         C       else
+  A691    3E 02          C      	ld	a,2
+                         C       endif
+  A693    CD A7FF        C      	call	kmb
+  A696    C9             C      	ret
+  A697    DD 7E 09       C      konlen:	ld	a,(ix+ealen)
+  A69A    B8             C      	cp	b
+  A69B    C0             C      	ret	nz
+  A69C    DD 7E 0A       C      	ld	a,(ix+ealen+1)
+  A69F    B9             C      	cp	c
+  A6A0    C9             C      	ret
+                         C      ;
+  A6A1    C5             C      konsent:push	bc
+  A6A2    01 000C        C      	ld	bc,12
+  A6A5    CD A697        C      	call	konlen
+  A6A8    C1             C      	pop	bc
+  A6A9    C0             C      	ret	nz
+  A6AA    E5             C      	push	hl
+  A6AB    DD 6E 07       C      	ld	l,(ix+eaadr)	; iy := (adr)
+  A6AE    DD 66 08       C      	ld	h,(ix+eaadr+1)
+  A6B1    22 A82C        C      	ld	(arb),hl
+  A6B4    FD 2A A82C     C      	ld	iy,(arb)
+  A6B8    E1             C      	pop	hl
+  A6B9    FD 7E 01       C      	ld	a,(iy+1)
+  A6BC    BA             C      	cp	d
+  A6BD    C0             C      	ret	nz
+  A6BE    FD 7E 02       C      	ld	a,(iy+2)
+  A6C1    BB             C      	cp	e
+  A6C2    C9             C      	ret
+                         C      ;
+  A6C3    DD 36 16 00    C      filpar:	ld	(ix+hstsec),0
+  A6C7    DD 36 14 00    C      	ld	(ix+hsttrk),0
+  A6CB    DD 36 10 00    C      	ld	(ix+eawovo),0
+  A6CF    DD 36 11 00    C      	ld	(ix+eawovo+1),0
+  A6D3    DD 5E 0D       C      	ld	e,(ix+eadpuf)
+  A6D6    DD 56 0E       C      	ld	d,(ix+eadpuf+1)
+  A6D9    C9             C      	ret
+                         C      
+                         C      ;	kassette positionieren
+                         C      ;	----------------------
+                         C      ;
+  A6DA    3E 04          C      cpos:	ld	a,erranz	; nach erranz fehlversuchen abbruch
+  A6DC    32 A82B        C      	ld	(errcou),a
+  A6DF    ED 4B A829     C      sp40:	ld	bc,(was)
+  A6E3    DD 5E 10       C      	ld	e,(ix+eawovo)
+  A6E6    DD 56 11       C      	ld	d,(ix+eawovo+1)
+  A6E9    7B             C      	ld	a,e		; steht mb vor bandmarke?
+  A6EA    FE 08          C      	cp	8
+  A6EC    38 06          C      	jr	c,sp41
+  A6EE    CD A68D        C      	call	lesen		; ja
+  A6F1    14             C      	inc	d
+  A6F2    1E 00          C      	ld	e,0
+  A6F4    78             C      sp41:	ld	a,b
+  A6F5    BA             C      	cp	d
+  A6F6    20 4F          C      	jr	nz,sp45
+  A6F8    79             C      	ld	a,c
+  A6F9    BB             C      	cp	e
+  A6FA    20 1F          C      	jr	nz,sp43
+                         C      			; === was = wovor
+  A6FC    CD A68D        C      	call	lesen
+  A6FF    20 0E          C      	jr	nz,sp42		; -> fehler: beim lesen
+  A701    CD A6A1        C      	call	konsent
+  A704    20 09          C      	jr	nz,sp42		; -> fehler: mb stand an falscher stelle
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-52
+
+
+  A706    1C             C      	inc	e
+  A707    DD 73 10       C      	ld	(ix+eawovo),e
+  A70A    DD 72 11       C      	ld	(ix+eawovo+1),d
+  A70D    AF             C      	xor	a
+  A70E    C9             C      	ret
+                         C      ;
+  A70F    CD A7A4        C      sp42:	call	fehler		; fehlerbehandlung
+  A712    21 A82B        C      	ld	hl,errcou	; nochmaliger versuch?
+  A715    35             C      	dec	(hl)
+  A716    20 C7          C      	jr	nz,sp40		; -> ja
+  A718    AF             C      	xor	a		; fehler zurueckmelden
+  A719    3C             C      	inc	a
+  A71A    C9             C      	ret
+                         C      ;
+  A71B    79             C      sp43:	ld	a,c
+  A71C    BB             C      	cp	e
+  A71D    30 16          C      	jr	nc,sp44
+                         C      			; === was.blk = wovor.blk  and  was.rec < wovor.rec
+  A71F    3E 01          C      	ld	a,1
+  A721    32 A82E        C      	ld	(richtu),a
+  A724    3E 15          C      	ld	a,15h		; 2 bloecke ruecksetzen
+  A726    CD A7FF        C      	call	kmb
+  A729    20 E4          C      	jr	nz,sp42		; -> fehler: beim record ruecksetzen
+  A72B    3E 15          C      	ld	a,15h
+  A72D    CD A7FF        C      	call	kmb
+  A730    20 DD          C      	jr	nz,sp42		; -> fehler: beim record ruecksetzen
+  A732    1D             C      	dec	e		; wovor.rec := wovor.rec - 1
+  A733    18 BF          C      	jr	sp41
+                         C      			; === was.blk = wovor.blk  and  was.rec > wovor.rec
+  A735    CD A68D        C      sp44:	call	lesen
+  A738    20 D5          C      	jr	nz,sp42		; -> fehler: beim lesen
+  A73A    CD A6A1        C      	call	konsent
+  A73D    20 D0          C      	jr	nz,sp42		; -> fehler: mb stand an falscher stelle
+  A73F    CD A68D        C      	call	lesen
+  A742    20 CB          C      	jr	nz,sp42		; -> fehler: beim lesen
+  A744    1C             C      	inc	e		; wovor.rec := wovor.rec + 1
+  A745    18 AD          C      	jr	sp41
+                         C      ;
+  A747    30 23          C      sp45:	jr	nc,sp46
+                         C      			; === was.blk < wovor.blk
+  A749    7A             C      	ld	a,d
+  A74A    90             C      	sub	b
+  A74B    F5             C      	push	af
+  A74C    3A A82B        C      	ld	a,(errcou)	; falls nur noch erranz/2 Versuche ausstehen
+  A74F    FE 02          C      	cp	erranz/2	; um eine bandmarke mehr zuruecksetzen
+  A751    38 03          C      	jr	c,sp451
+  A753    F1             C      	pop	af
+  A754    3C             C      	inc	a
+  A755    F5             C      	push	af
+  A756    F1             C      sp451:	pop	af		; evtl. bei bedarf inc a
+  A757    3C             C      	inc	a
+  A758    DD 77 0A       C      	ld	(ix+eabm),a	; (anzbm) := wovor - was + 1
+  A75B    3E 01          C      	ld	a,1
+  A75D    32 A82E        C      	ld	(richtu),a
+  A760    3E 75          C      	ld	a,75h		; um wovor-was+1 bm ruecksetzen
+  A762    CD A7FF        C      	call	kmb
+  A765    20 A8          C      	jr	nz,sp42		; -> fehler: beim bm-ruecksetzen
+  A767    50             C      	ld	d,b
+  A768    AF             C      	xor	a
+  A769    5F             C      	ld	e,a		; wovor := was.blk / 0
+  A76A    18 88          C      	jr	sp41
+                         C      ;
+  A76C    7A             C      sp46:	ld	a,d
+  A76D    3C             C      	inc	a
+  A76E    B8             C      	cp	b
+  A76F    20 15          C      	jr	nz,sp48
+                         C      			; === was.blk = wovor.blk+1
+  A771    CD A68D        C      sp47:	call	lesen
+  A774    20 99          C      	jr	nz,sp42		; -> fehler: beim lesen
+  A776    C5             C      	push	bc
+  A777    01 0000        C      	ld	bc,0
+  A77A    CD A697        C      	call	konlen
+  A77D    C1             C      	pop	bc
+  A77E    20 F1          C      	jr	nz,sp47		; -> keine bandmarke, weitermachen
+  A780    14             C      	inc	d
+  A781    AF             C      	xor	a
+  A782    5F             C      	ld	e,a		; wovor := wovor.blk+1 / 0
+  A783    C3 A6F4        C      	jp	sp41
+                         C      			; === was.blk > wovor.blk+1
+  A786    3A A82B        C      sp48:	ld	a,(errcou)	; falls nur noch erranz/2 fehlversuche
+  A789    FE 02          C      	cp	erranz/2	; langsam vorpositionieren
+  A78B    38 E4          C      	jr	c,sp47
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-53
+
+
+  A78D    78             C      	ld	a,b
+  A78E    92             C      	sub	d
+  A78F    DD 77 0A       C      	ld	(ix+eabm),a	; (anzbm) := was - wovor
+  A792    AF             C      	xor	a
+  A793    32 A82E        C      	ld	(richtu),a
+  A796    3E 71          C      	ld	a,71h		; um was-wovor bm vorsetzen
+  A798    CD A7FF        C      	call	kmb
+  A79B    C2 A70F        C      	jp	nz,sp42		; -> fehler: beim bm-vorsetzen
+  A79E    50             C      	ld	d,b
+  A79F    AF             C      	xor	a
+  A7A0    5F             C      	ld	e,a		; wovor := was.blk / 0
+  A7A1    C3 A6F4        C      	jp	sp41
+                         C      ;
+  A7A4    3E 16          C      fehler:	ld	a,16h		; fehlerbehandlung
+  A7A6    DD BE 01       C      	cp	(ix+eafehl)	; ----------------
+  A7A9    20 21          C      	jr	nz,fehl01	; ende der aufzeichnungen auf dieser seite
+  A7AB    3A A82E        C      	ld	a,(richtu)
+  A7AE    B7             C      	or	a
+  A7AF    28 12          C      	jr	z,fehl00
+  A7B1    CD A679        C      	call	rucksp		; am anfang zur sicherheit ruckspulen
+  A7B4    CD A681        C      	call	endruc
+  A7B7    3E 41          C      	ld	a,41h		; reservieren aus
+  A7B9    CD A7FF        C      	call	kmb
+  A7BC    3E 31          C      	ld	a,31h		; reservieren ein
+  A7BE    CD A7FF        C      	call	kmb
+  A7C1    18 09          C      	jr	fehl01
+  A7C3    06 10          C      fehl00:	ld	b,10h		; um 16 saetze zuruecksetzen
+  A7C5    3E 0F          C      fehl0a:	ld	a,15
+  A7C7    CD A7FF        C      	call	kmb
+  A7CA    10 F9          C      	djnz	fehl0a
+  A7CC    CD A68D        C      fehl01:	call	lesen
+  A7CF    20 D3          C      	jr	nz,fehler
+  A7D1    01 000C        C      	ld	bc,12
+  A7D4    CD A697        C      	call	konlen		;   solange lesen bis sent gefunden
+  A7D7    20 CB          C      	jr	nz,fehler	;   dann vor sent setzen und wovor
+  A7D9    DD 6E 07       C      	ld	l,(ix+eaadr)	; iy := (adr)
+  A7DC    DD 66 08       C      	ld	h,(ix+eaadr+1)
+  A7DF    22 A82C        C      	ld	(arb),hl
+  A7E2    FD 2A A82C     C      	ld	iy,(arb)
+  A7E6    FD 56 01       C      	ld	d,(iy+1)
+  A7E9    FD 5E 02       C      	ld	e,(iy+2)
+  A7EC    DD 73 10       C      	ld	(ix+eawovo),e
+  A7EF    DD 72 11       C      	ld	(ix+eawovo+1),d
+  A7F2    3E 01          C      	ld	a,1
+  A7F4    32 A82E        C      	ld	(richtu),a
+  A7F7    3E 15          C      	ld	a,15h
+  A7F9    CD A7FF        C      	call	kmb		; einen record ruecksetzen
+  A7FC    20 A6          C      	jr	nz,fehler	; -> fehler: beim record ruecksetzen
+  A7FE    C9             C      	ret
+                         C      ;
+  A7FF    DD 77 04       C      kmb::	ld	(ix+eakom),a	; (kom) := a
+  A802    C5             C      	push	bc
+  A803    D5             C      	push	de
+  A804    E5             C      	push	hl
+  A805    AF             C      	xor	a
+  A806    32 A828        C      	ld	(kmwart),a
+  A809    CD 964D        C      	call	skmb
+  A80C    CD 4040        C      	call	kmbrob
+  A80F    3A A828        C      kmb01:	ld	a,(kmwart)
+  A812    B7             C      	or	a
+  A813    28 FA          C      	jr	z,kmb01
+  A815    CD 9653        C      	call	rkmb
+                         C      ;
+  A818    E1             C      kmb02:	pop	hl
+  A819    D1             C      	pop	de
+  A81A    C1             C      	pop	bc
+  A81B    DD CB 00 7E    C      	bit	7,(ix+eastat)
+  A81F    C9             C      	ret
+                         C      ;
+  A820    F5             C      kmbep:	push	af
+  A821    3E 01          C      	ld	a,1
+  A823    32 A828        C      	ld	(kmwart),a
+  A826    F1             C      	pop	af
+  A827    C9             C      	ret
+                         C      ;
+                         C      ;
+                         C      ;
+  A828    00             C      kmwart::defb	0		; 0 - kmb arbeitet noch; 1 - kmb fertig
+  A829    0000           C      was::	defw	0
+  A82B    00             C      errcou::defb	0		; zaehler fuer fehlversuche
+  A82C    0000           C      arb::	defw	0
+  A82E    00             C      richtu::defb	0		; 0 - es wurde vorwaerts   gelesen
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-54
+
+
+                         C      				; 1 - es wurde rueckwaerts gelesen
+                         C      ;
+                         C      ;
+                         C      ;
+                                
+                                 if mindk or stadk
+                                ;	include	FL.ASM
+                                 ; floppytreiber fuer mini- und standarddisketten
+                                ; ----------------------------------------------
+                                ;
+                                fl.kalt:
+                                fl.warm:
+                                	ret
+                                ;
+                                endif
+                                
+                                 if zst or tramdk or opsdk
+                                	include	MD.ASM
+                                 endif
+                                
+                         C      	include	BK.ASM
+  0001                   C      wrdir	equ	1		; write to directory
+  0002                   C      wrual	equ	2		; write to unallocated
+                         C      ;********************************
+                         C      ;
+                         C      ;   eintritt deblocking
+                         C      ;      ix zeigt auf parametertab.
+                         C      ;
+                         C      ;********************************
+  A82F    3E 01          C      deblck:	ld	a,1
+  A831    32 F928        C      	ld	(readop),a	; read operation
+  A834    3E 02          C      	ld	a,wrual
+  A836    32 F92A        C      	ld	(wrtype),a	; treat as unalloc
+  A839    18 5F          C      	jr	alloc
+                         C      ;********************************
+                         C      ;
+                         C      ;   eintritt blocking
+                         C      ;      ix zeigt auf parametertab.
+                         C      ;
+                         C      ;********************************
+  A83B    AF             C      block:	xor	a
+  A83C    32 F928        C      	ld	(readop),a	; write operation
+  A83F    79             C      	ld	a,c
+  A840    32 F92A        C      	ld	(wrtype),a	; writetype
+  A843    FE 02          C      	cp	wrual
+  A845    20 18          C      	jr	nz,chkuna
+                         C      ;;;;	ld	a,(sec)		; write to unallocated
+                         C      ;;;;	dec	a
+                         C      ;;;;	ld	c,a
+  A847    DD 7E 22       C      	ld	a,(ix+blklog)
+                         C      ;;;;	push	af
+                         C      ;;;;	dec	a
+                         C      ;;;;	and	c
+                         C      ;;;;	ld	c,a
+                         C      ;;;;	pop	af
+                         C      ;;;;	sub	c
+  A84A    DD 77 19       C      	ld	(ix+unacnt),a
+  A84D    3A F923        C      	ld	a,(trk)
+  A850    DD 77 1A       C      	ld	(ix+unatrk),a
+  A853    3A F924        C      	ld	a,(trk+1)
+  A856    DD 77 1B       C      	ld	(ix+unatrk+1),a
+  A859    3A F925        C      	ld	a,(sec)
+  A85C    DD 77 1C       C      	ld	(ix+unasec),a
+  A85F    DD 7E 19       C      chkuna:	ld	a,(ix+unacnt)	; any unallocated remain?
+  A862    B7             C      	or	a
+  A863    28 35          C      	jr	z,alloc		; -> no
+  A865    DD 35 19       C      	dec	(ix+unacnt)	; unallocated records remain
+  A868    3A F923        C      	ld	a,(trk)
+  A86B    DD BE 1A       C      	cp	(ix+unatrk)
+  A86E    20 2A          C      	jr	nz,alloc	; -> not the same track
+  A870    3A F924        C      	ld	a,(trk+1)
+  A873    DD BE 1B       C      	cp	(ix+unatrk+1)
+  A876    20 22          C      	jr	nz,alloc	; -> not the same track
+  A878    3A F925        C      	ld	a,(sec)
+  A87B    DD BE 1C       C      	cp	(ix+unasec)
+  A87E    20 1A          C      	jr	nz,alloc	; -> not the same sector
+  A880    DD 34 1C       C      	inc	(ix+unasec)	; match, incr. for future
+  A883    DD BE 23       C      	cp	(ix+cpmspt)	; in SYS4 sind sek. von 1 bis cpmspt nummeriert
+  A886    38 0C          C      	jr	c,noovf
+  A888    DD 36 1C 01    C      	ld	(ix+unasec),1	; track overflow
+  A88C    DD 34 1A       C      	inc	(ix+unatrk)
+  A88F    20 03          C      	jr	nz,noovf
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-55
+
+
+  A891    DD 34 1B       C      	inc	(ix+unatrk+1)
+  A894    AF             C      noovf:	xor	a		; match found, mark as unnecessary read
+  A895    32 F929        C      	ld	(rsflag),a
+  A898    18 09          C      	jr	rwoper
+                         C      ;
+  A89A    DD 36 19 00    C      alloc:	ld	(ix+unacnt),0
+  A89E    3E 01          C      	ld	a,1
+  A8A0    32 F929        C      	ld	(rsflag),a	; mark as must preread
+  A8A3    AF             C      rwoper:	xor	a
+  A8A4    32 F92B        C      	ld	(erflag),a	; no errors (yet)
+  A8A7    DD 7E 24       C      	ld	a,(ix+secshf)
+  A8AA    47             C      	ld	b,a
+  A8AB    3A F925        C      	ld	a,(sec)
+  A8AE    3D             C      	dec	a
+  A8AF    CB 3F          C      rwop01:	srl	a
+  A8B1    10 FC          C      	djnz	rwop01
+  A8B3    32 F92D        C      	ld	(sechst),a
+  A8B6    DD 7E 17       C      	ld	a,(ix+hstact)	; host buffer active?
+  A8B9    DD 36 17 01    C      	ld	(ix+hstact),1
+  A8BD    B7             C      	or	a
+  A8BE    28 1F          C      	jr	z,filhst	; -> no
+  A8C0    3A F923        C      	ld	a,(trk)		; propper sector in buffer?
+  A8C3    DD BE 14       C      	cp	(ix+hsttrk)
+  A8C6    20 10          C      	jr	nz,nomatch
+  A8C8    3A F924        C      	ld	a,(trk+1)
+  A8CB    DD BE 15       C      	cp	(ix+hsttrk+1)
+  A8CE    20 08          C      	jr	nz,nomatch
+  A8D0    3A F92D        C      	ld	a,(sechst)
+  A8D3    DD BE 16       C      	cp	(ix+hstsec)
+  A8D6    28 24          C      	jr	z,match
+  A8D8    DD 7E 18       C      nomatch:ld	a,(ix+hstwrt)	; host written?
+  A8DB    B7             C      	or	a
+  A8DC    C4 A93D        C      	call	nz,writehst	; yes, write host buffer
+  A8DF    3A F92D        C      filhst:	ld	a,(sechst)
+  A8E2    DD 77 16       C      	ld	(ix+hstsec),a
+  A8E5    3A F923        C      	ld	a,(trk)
+  A8E8    DD 77 14       C      	ld	(ix+hsttrk),a
+  A8EB    3A F924        C      	ld	a,(trk+1)
+  A8EE    DD 77 15       C      	ld	(ix+hsttrk+1),a
+  A8F1    DD 36 18 00    C      	ld	(ix+hstwrt),0	; no pending write
+  A8F5    3A F929        C      	ld	a,(rsflag)
+  A8F8    B7             C      	or	a
+  A8F9    C4 A94A        C      	call	nz,readhst	; read host buffer
+  A8FC    3A F925        C      match:	ld	a,(sec)
+  A8FF    3D             C      	dec	a
+  A900    DD A6 25       C      	and	(ix+secmsk)
+  A903    6F             C      	ld	l,a
+  A904    26 00          C      	ld	h,0
+                         C      	rept	7
+                         C      	add	hl,hl
+                         C      	endm
+  A906    29             C+     	add	hl,hl
+  A907    29             C+     	add	hl,hl
+  A908    29             C+     	add	hl,hl
+  A909    29             C+     	add	hl,hl
+  A90A    29             C+     	add	hl,hl
+  A90B    29             C+     	add	hl,hl
+  A90C    29             C+     	add	hl,hl
+  A90D    DD 5E 12       C      	ld	e,(ix+hstbuf)
+  A910    DD 56 13       C      	ld	d,(ix+hstbuf+1)
+  A913    19             C      	add	hl,de
+  A914    11 F9C1        C      	ld	de,dmma
+  A917    01 0080        C      	ld	bc,128
+  A91A    3A F928        C      	ld	a,(readop)	; which way?
+  A91D    B7             C      	or	a
+  A91E    20 05          C      	jr	nz,wmove	; -> read
+  A920    DD 36 18 01    C      	ld	(ix+hstwrt),1	; host buffer written
+  A924    EB             C      	ex	de,hl
+  A925    ED B0          C      wmove:	ldir
+                         C      		;ld a,(hl) uebertragen nach hostbuffer auf cpu-karte
+                         C      		;ld	(de),a
+                         C      		;inc	hl
+                         C      		;inc	de
+                         C      		;djnz	wmove
+                         C      		;jr	retmov
+                         C      		;
+                         C      		;rmove:: set12 uebertragen vom hostbuffer auf cpu-karte
+                         C      		;ld	a,(hl)
+                         C      		;res12
+                         C      		;ld	(de),a
+                         C      		;inc	hl
+                         C      		;inc	de
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-56
+
+
+                         C      		;djnz	rmove
+  A927    3A F92A        C      retmov:	ld	a,(wrtype)	; write type to directory?
+  A92A    FE 01          C      	cp	wrdir
+  A92C    3A F92B        C      	ld	a,(erflag)
+  A92F    C0             C      	ret	nz		; -> no
+  A930    B7             C      	or	a		; errors?
+  A931    C0             C      	ret	nz		; -> yes
+  A932    CD A93D        C      	call	writehst
+  A935    DD 36 18 00    C      	ld	(ix+hstwrt),0
+  A939    3A F92B        C      	ld	a,(erflag)
+  A93C    C9             C      	ret
+                         C      
+                         C      ;	up's fuer host read/write
+                         C      ;	-------------------------
+                         C      ;
+  A93D                   C      writehst:
+  A93D    3E 04          C      	ld	a,erranz	; erranz fehlversuche
+  A93F    32 F92C        C      	ld	(rderr),a
+  A942    DD 6E 20       C      	ld	l,(ix+hwr)
+  A945    DD 66 21       C      	ld	h,(ix+hwr+1)
+  A948    18 0B          C      	jr	rdh01
+                         C      ;
+  A94A                   C      readhst:
+  A94A    3E 04          C      	ld	a,erranz	; erranz fehlversuche
+  A94C    32 F92C        C      	ld	(rderr),a
+  A94F    DD 6E 1E       C      	ld	l,(ix+hrd)
+  A952    DD 66 1F       C      	ld	h,(ix+hrd+1)
+  A955    CD A467        C      rdh01:	call	callhl
+  A958    3E 00          C      	ld	a,0
+  A95A    28 01          C      	jr	z,rdh02
+  A95C    3C             C      	inc	a
+  A95D    32 F92B        C      rdh02:	ld	(erflag),a
+  A960    C9             C      	ret
+                         C      ;
+                                ;
+                                ;
+                                ;
+                                	page
+'s  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-57
+
+
+                                
+                                ;	user-unterprogramme
+                                ;	===================
+                                ;
+                                ; erhaelt in IX die adresse der e/a-tabelle
+                                ;         in A  das kmb-kommando
+                                ; fuehrt dann das kmb-kommando aus und wartet auf die beendigung
+                                ;
+  A961    CD A7FF               kmbuse::call	kmb
+  A964    C3 F639               	jp	um2e
+                                
+                                ; erhaelt in IX die adresse der e/a-tabelle
+                                ; wartet dann auf das ende des rueckspulens
+                                ;
+  A967    CD A681               enduse::call	endruc
+  A96A    C3 F639               	jp	um2e
+                                
+                                ; erhaelt in IX die adresse der e/a-tabelle
+                                ;         in DE die adresse des zielbereiches, in den aus dem kassetten-
+                                ;               puffer der e/a-tabelle uebertragen werden soll
+                                ; uebertraegt dann aus dem kmb-puffer in den nutzerpuffer
+                                ;
+  A96D    D5                    getpuf:	push	de
+  A96E    DD 6E 07              	ld	l,(ix+eaadr)
+  A971    DD 66 08              	ld	h,(ix+eaadr+1)
+  A974    DD 46 09              	ld	b,(ix+ealen)
+  A977    DD 4E 0A              	ld	c,(ix+ealen+1)
+  A97A    11 FA41               	ld	de,kmbpuf
+  A97D    ED B0                 	ldir
+  A97F    D1                    	pop	de
+  A980    C3 F5EE               	jp	getpf1
+                                ;
+                                ;
+                                ;
+                                ;	defw	$
+                                ;	defb	'S44L'
+                                ;	ld	hl,abios-1700h		; aBIOS - Speicherbereich loeschen
+                                ;	ld	de,abios-1700h+1
+                                ;	ld	bc,1700h+abiosl-1
+                                ;	ld	(hl),0
+                                ;	ldir
+                                ;	ld	hl,biosxx+(op12-op11)	; aBIOS - Teil laden
+                                ;	ld	de,abios
+                                ;	ld	bc,abios2-abios1
+                                ;	ldir
+                                ;	jp	0000bh
+                                ;
+                                ;	defw	$
+                                ;	defb	'SYS4'
+                                ;	jp	abios
+  A983                          biosxx::
+                                	.dephase
+  13ED'                         sbios2::
+                                ; \---  Ende : sBIOS -----------------------------------------------------------------------------/
+                                	title	'opsmac'
+                                	page
+'opsmac'	MACRO-80 3.44	09-Dec-81	PAGE	1-58
+
+
+                                
+                                ; /---  Start: opsmac ----------------------------------------------------------------------------\
+                                ;
+                                ;
+  13ED'                         op11::
+                                	.phase	00c00h
+                                	opsmac
+                                	.dephase
+  13ED'                         op12::
+                                ;
+                                ;
+                                ;
+                                ; \---  Ende : opsmac ----------------------------------------------------------------------------/
+                                	title	'a  B I O S'
+                                	page
+'a  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-59
+
+
+                                
+                                ; /---  Start: aBIOS -----------------------------------------------------------------------------\
+                                ;	B I O S   -   Sprungverteiler
+                                ;	=============================
+                                ;
+  13ED'                         abios1::
+                                	.phase	abios		;F400H
+                                ;
+  F400    C3 F500               	jp	br00		;boot
+  F403    C3 F506               	jp	br03		;wboot
+  F406    C3 F50C               	jp	br06		;const
+  F409    C3 F512               	jp	br09		;conin
+  F40C    C3 F518               	jp	br0c		;conout
+  F40F    C3 F51E               	jp	br0f		;list
+  F412    C3 F524               	jp	br12		;punch
+  F415    C3 F52A               	jp	br15		;reader
+  F418    C3 F530               	jp	br18		;home
+  F41B    C3 F56F               	jp	br1b		;seldsk
+  F41E    C3 F582               	jp	br1e		;settrk
+  F421    C3 F587               	jp	br21		;setsec
+  F424    C3 F58C               	jp	br24		;setdma
+  F427    C3 F591               	jp	br27		;read
+  F42A    C3 F5B1               	jp	br2a		;write
+  F42D    C3 F5C8               	jp	br2d		;listst
+  F430    C3 F5CE               	jp	br30		;sectrn
+                                ;
+  F433    C3 F586               	jp	rtn		;xx33
+  F436    C3 F586               	jp	rtn		;xx36
+  F439    C3 F586               	jp	rtn		;xx39
+  F43C    C3 F586               	jp	rtn		;xx3c
+  F43F    C3 F586               	jp	rtn		;xx3f
+  F442    C3 F586               	jp	rtn		;xx42
+  F445    C3 F586               	jp	rtn		;xx45
+                                ;
+                                ;	interrupt sprungtabelle (beginnt auf xx48h)
+                                ;	=======================
+                                ;
+                                ;	include	IT.ASM
+  F448                          	defs	0b8h
+                                ;
+                                	page
+'a  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-60
+
+
+                                
+                                ;	Verbindungsroutinen zu den eigentlichen BIOS-Routinen
+                                ;	=====================================================
+                                ;
+  F500    CD F5FE               br00::	call	um1
+  F503    C3 9766               	jp	boot
+                                ;
+  F506    CD F5FE               br03::	call	um1
+  F509    C3 9800               	jp	wboot
+                                ;
+  F50C    CD F5FE               br06::	call	um1
+  F50F    C3 9A5B               	jp	const
+                                ;
+  F512    CD F5FE               br09::	call	um1
+  F515    C3 9A90               	jp	conin
+                                ;
+  F518    CD F5FE               br0c::	call	um1
+  F51B    C3 9ED4               	jp	conou
+                                ;
+  F51E    CD F5FE               br0f::	call	um1
+  F521    C3 9F08               	jp	list
+                                ;
+  F524    CD F5FE               br12::	call	um1
+  F527    C3 9F71               	jp	punch
+                                ;
+  F52A    CD F5FE               br15::	call	um1
+  F52D    C3 9F48               	jp	reader
+                                ;
+  F530    CD F5FE               br18::	call	um1
+  F533    CD 9600               home::	call	reta		; head home
+  F536    01 0000               	ld	bc,0
+  F539    CD F582               	call	settrk
+  F53C    CD F55A               	call	setix
+  F53F    28 16                 	jr	z,home1		; -> geraet nicht vorhanden
+  F541    DD 7E FB              	ld	a,(ix-isblk)	; arbeitet geraet mit blockung?
+  F544    B7                    	or	a
+  F545    28 10                 	jr	z,home1		; -> nein
+  F547    DD 7E 17              	ld	a,(ix+hstact)	; ist hostbuffer aktiv?
+  F54A    B7                    	or	a
+  F54B    28 0A                 	jr	z,home1		; -> nein
+  F54D    DD 7E 18              	ld	a,(ix+hstwrt)	; wurde in hostbuffer geschrieben?
+  F550    B7                    	or	a
+  F551    20 04                 	jr	nz,home1	; -> ja
+  F553    DD 36 17 00           	ld	(ix+hstact),0	; flush hostbuffer
+  F557    C3 9611               home1:	jp	um2ee
+                                ;
+  F55A    3A F927               setix:	ld	a,(dev)		; e/a-tabellenadresse nach ix laden
+  F55D    5F                    	ld	e,a
+  F55E    16 00                 	ld	d,0
+  F560    21 F748               	ld	hl,ixtab
+  F563    19                    	add	hl,de
+  F564    19                    	add	hl,de
+  F565    5E                    	ld	e,(hl)
+  F566    23                    	inc	hl
+  F567    56                    	ld	d,(hl)
+  F568    7B                    	ld	a,e
+  F569    B2                    	or	d
+  F56A    C8                    	ret	z		; -> geraet nicht vorhanden
+  F56B    D5                    	push	de
+  F56C    DD E1                 	pop	ix
+  F56E    C9                    	ret
+                                ;
+  F56F                          br1b::
+  F56F    79                    seldsk::ld	a,c		; select disk
+  F570    C5                    	push	bc
+  F571    32 F927               	ld	(dev),a
+  F574    87                    	add	a,a
+  F575    4F                    	ld	c,a
+  F576    06 00                 	ld	b,0
+  F578    21 F7F8               	ld	hl,dpha
+  F57B    09                    	add	hl,bc
+  F57C    7E                    	ld	a,(hl)
+  F57D    23                    	inc	hl
+  F57E    66                    	ld	h,(hl)
+  F57F    6F                    	ld	l,a
+  F580    C1                    	pop	bc
+  F581    C9                    	ret
+                                ;
+  F582                          br1e::	
+  F582    ED 43 F923            settrk::ld	(trk),bc	; set track
+  F586    C9                    rtn::	ret
+'a  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-61
+
+
+                                ;
+  F587                          br21::
+  F587    ED 43 F925            setsec::ld	(sec),bc	; set sector
+  F58B    C9                    	ret
+                                ;
+  F58C                          br24::
+  F58C    ED 43 F921            setdma::ld	(dma),bc	; set memory address
+  F590    C9                    	ret
+                                ;
+  F591    CD F5FE               br27::	call	um1
+  F594    C3 A44C               	jp	read
+  F597    CD F621               br270:	call	um2
+  F59A    C5                    	push	bc
+  F59B    D5                    	push	de
+  F59C    E5                    	push	hl
+  F59D    21 F9C1               	ld	hl,dmma
+  F5A0    ED 5B F921            	ld	de,(dma)
+  F5A4    01 0080               	ld	bc,128
+  F5A7    ED B0                 	ldir
+  F5A9    E1                    	pop	hl
+  F5AA    D1                    	pop	de
+  F5AB    C1                    	pop	bc
+  F5AC    ED 7B FCC1            br271:	ld	sp,(s1ret)
+  F5B0    C9                    	ret
+                                ;
+  F5B1    C5                    br2a::	push	bc
+  F5B2    D5                    	push	de
+  F5B3    E5                    	push	hl
+  F5B4    2A F921               	ld	hl,(dma)
+  F5B7    11 F9C1               	ld	de,dmma
+  F5BA    01 0080               	ld	bc,128
+  F5BD    ED B0                 	ldir
+  F5BF    E1                    	pop	hl
+  F5C0    D1                    	pop	de
+  F5C1    C1                    	pop	bc
+  F5C2    CD F5FE               	call	um1
+  F5C5    C3 A434               	jp	write
+                                ;
+  F5C8    CD F5FE               br2d::	call	um1
+  F5CB    C3 9EF5               	jp	listst
+                                ;
+  F5CE                          br30::
+  F5CE    7A                    sectrn::ld	a,d		; translate sector
+  F5CF    B3                    	or	e		; wenn de=0, dann keine transformation
+  F5D0    28 06                 	jr	z,sectr1
+  F5D2    EB                    	ex	de,hl
+  F5D3    09                    	add	hl,bc
+  F5D4    6E                    	ld	l,(hl)
+  F5D5    26 00                 	ld	h,0
+  F5D7    C9                    	ret
+  F5D8    60                    sectr1:	ld	h,b
+  F5D9    69                    	ld	l,c
+  F5DA    23                    	inc	hl
+  F5DB    C9                    	ret
+                                ;
+  F5DC    CD F5FE               ukmb::	call	um1
+  F5DF    C3 A961               	jp	kmbuse
+                                ;
+  F5E2    CD F5FE               uend::	call	um1
+  F5E5    C3 A967               	jp	enduse
+                                ;
+  F5E8    CD F5FE               ugetp::	call	um1
+  F5EB    C3 A96D               	jp	getpuf
+  F5EE    CD F621               getpf1:	call	um2
+  F5F1    21 FA41               	ld	hl,kmbpuf
+  F5F4    01 0100               	ld	bc,256
+  F5F7    ED B0                 	ldir
+  F5F9    ED 7B FCC1            getpf2:	ld	sp,(s1ret)
+  F5FD    C9                    	ret
+                                ;
+                                ;
+                                ;
+                                	page
+'a  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-62
+
+
+                                
+                                ; Umschaltroutinen zwischen System- und AnwenderSpeicherbereich
+                                ; =============================================================
+                                ;
+                                	um
+  F5FE                    +     um1::
+  F5FE    22 F936         +     	ld	(hlret),hl	; HL retten
+  F601    E1              +     	pop	hl		; RET-Adresse ==> HL
+  F602                    +     um1r1:
+  F602    ED 73 FCC1      +     	ld	(s1ret),sp	; SP retten                (s3ret),sp
+  F606                    +     um1r2:
+  F606    31 FC41         +     	ld	sp,s1neu	; SP neu laden             sp,s3neu
+  F609    E5              +     	push	hl		; HL ==> Stack
+  F60A    2A F936         +     	ld	hl,(hlret)	; HL wieder herstellen
+  F60D                    +     um1r3:
+  F60D    00              +     	nop			;                          jp resp0
+  F60E    00              +     	nop
+  F60F    00              +     	nop
+  F610    C5              +     	push	bc
+  F611    E5              +     	push	hl
+  F612    01 04C0         +     	ld	bc,004C0h
+  F615    21 F61D         +     	ld	hl,um1r4
+  F618    ED B3           +     	otir
+  F61A    E1              +     	pop	hl
+  F61B    C1              +     	pop	bc
+  F61C    C9              +     	ret
+  F61D                    +     um1r4:
+  F61D    F0              +     	DB	0F0H	;Startbyte
+  F61E    03              +     	DB	003H	;wahl   0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
+  F61F    01              +     	DB	001H	;um1   {0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0}
+  F620    FF              +     	DB	0FFH	;Endbyte
+  F621                    +     um2::
+  F621    00              +     	nop			;                          jp setp0
+  F622    00              +     	nop
+  F623    00              +     	nop
+  F624    F5              +     	push	af
+  F625    C5              +     	push	bc
+  F626    D5              +     	push	de
+  F627    E5              +     	push	hl
+  F628    01 04C0         +     	ld	bc,004C0h
+  F62B    21 F635         +     	ld	hl,um21
+  F62E    ED B3           +     	otir
+  F630    E1              +     	pop	hl
+  F631    D1              +     	pop	de
+  F632    C1              +     	pop	bc
+  F633    F1              +     	pop	af
+  F634    C9              +     	ret
+  F635                    +     um21:
+  F635    F0              +     	DB	0F0H	;Startbyte
+  F636    03              +     	DB	003H	;wahl   0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
+  F637    02              +     	DB	002H	;um2   {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0}
+  F638    FF              +     	DB	0FFH	;Endbyte
+  F639    CD F621         +     um2e:	call	um2
+  F63C    ED 7B FCC1      +     um2er:	ld	sp,(s1ret)
+  F640    C9              +     	ret
+                                	page
+'a  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-63
+
+
+                                
+                                ; hardware beschreibungstabellen
+                                ; ==============================
+                                ;
+                         C      	include	IX.ASM
+                         C      ; e/a tabellen-aufbau
+                         C      ; -------------------
+                         C      ;
+  0005                   C      isblk	equ	5		; 0 - geraet arbeitet ungeblockt
+  0004                   C      ixrd	equ	4		; read/write-anspruenge
+  0002                   C      ixwr	equ	2
+                         C      
+  0000                   C      eastat	equ	0		; bamos-arbeitszellen kmb
+  0001                   C      eafehl	equ	1
+  0004                   C      eakom	equ	4
+  0005                   C      eaep	equ	5
+  0007                   C      eaadr	equ	7
+  0009                   C      ealen	equ	9
+  000A                   C      eabm	equ	10
+  000B                   C      eawied	equ	11
+  000C                   C      eaverl	equ	12
+                         C      
+  000D                   C      eadpuf	equ	13		; directorypufferung kassetten
+  000F                   C      eadzei	equ	15
+                         C      
+  0010                   C      eawovo	equ	16		; positionierung kassetten
+                         C      
+  0012                   C      hstbuf	equ	18		; blockung/entblockung arbeitszellen
+  0014                   C      hsttrk	equ	20
+  0016                   C      hstsec	equ	22
+  0017                   C      hstact	equ	23
+  0018                   C      hstwrt	equ	24
+  0019                   C      unacnt	equ	25
+  001A                   C      unatrk	equ	26
+  001C                   C      unasec	equ	28
+                         C      
+  001D                   C      gelade	equ	29
+                         C      
+  001E                   C      hrd	equ	30		; blockung/entblockung parameter
+  0020                   C      hwr	equ	32
+  0022                   C      blklog	equ	34
+  0023                   C      cpmspt	equ	35
+  0024                   C      secshf	equ	36
+  0025                   C      secmsk	equ	37
+                         C      ;
+                         C      	page	
+'a  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-64
+
+
+                         C      
+                         C      ; e/a-tabelle tpa-disk
+                         C      ;
+  F641    00             C      	defb	0		; ungeblocktes geraet
+  F642    A481           C      	defw	rdmem
+  F644    A46B           C      	defw	wrmem
+  F646                   C      eataba::
+                         C      ;
+                         C      ; e/a-tabellen kassetten
+                         C      ;
+  F646    01             C      	defb	1		; geraet arbeitet geblockt
+  F647    A519           C      	defw	rdkmb
+  F649    A4BC           C      	defw	wrkmb
+  F64B    00 00 30 01    C      eatab1::defb	0,0,pkmb,1	; laufwerk 1
+  F64F    00             C      	defb	0		; ==========
+  F650    A820           C      	defw	kmbep		;    ep
+  F652    0000           C      	defw	0		;    adr
+  F654    0000           C      	defw	0		;    len , anzbm
+  F656    0000           C      	defw	0		;    anz.versuche , anz. ext.gap
+  F658    D000           C      	defw	dir1
+  F65A    00             C      	defb	0		; anzeiger, ob in directory geschrieben
+                         C      ;				; wurde ( =1 es wurde )
+  F65B    0000           C      	defw	0		; wovor blk/rec
+  F65D    2800           C      	defw	kasbu1		; adresse des hostbuffer
+  F65F    0000           C      	defw	0		; nr. des pufferinhaltes als hostwert
+  F661    00             C      	defb	0		;               - " -
+  F662    00             C      	defb	0		; puffer gefuellt (=0 nein)
+  F663    00             C      	defb	0		; puffer beschrieben (=1 es wurde)
+  F664    00             C      	defb	0		; anzahl der noch unalloc. recs
+  F665    0000           C      	defw	0		; spurnr. des naechsten unalloc. recs
+  F667    00             C      	defb	0		; sektornr.     - " -
+  F668    00             C      	defb	0		; 0 laufwerk entladen; 1 laufwerk geladen
+  F669    A544           C      	defw	hrdkmb		; leseroutine vom kmb in hostbuffer
+  F66B    A4EF           C      	defw	hwrkmb		; writeroutine vom hostbuffer auf kmb
+  F66D    08 10 01 01    C      	defb	8,16,1,1	; parameter blockung/entblockung
+                         C      ;
+  F671    01             C      	defb	1
+  F672    A519           C      	defw	rdkmb
+  F674    A4BC           C      	defw	wrkmb
+  F676    00 00 30 02    C      eatab2::defb	0,0,pkmb,2	; laufwerk 2
+  F67A    00             C      	defb	0		; ==========
+  F67B    A820 0000      C      	defw	kmbep,0
+  F67F    0000 0000      C      	defw	0,0
+  F683    D800           C      	defw	dir2
+  F685    00             C      	defb	0
+  F686    0000           C      	defw	0
+  F688    2900           C      	defw	kasbu2
+  F68A    0000           C      	defw	0
+  F68C    00 00 00 00    C      	defb	0,0,0,0
+  F690    0000           C      	defw	0
+  F692    00             C      	defb	0
+  F693    00             C      	defb	0
+  F694    A544           C      	defw	hrdkmb
+  F696    A4EF           C      	defw	hwrkmb
+  F698    08 10 01 01    C      	defb	8,16,1,1
+                         C      ;
+                         C       if anzakb gt 1
+  F69C    01             C      	defb	1
+  F69D    A519           C      	defw	rdkmb
+  F69F    A4BC           C      	defw	wrkmb
+  F6A1    00 00 38 01    C      eatab3::defb	0,0,pkmb2,1	; laufwerk 3
+  F6A5    00             C      	defb	0		; ==========
+  F6A6    A820 0000      C      	defw	kmbep,0
+  F6AA    0000 0000      C      	defw	0,0
+  F6AE    E000           C      	defw	dir3
+  F6B0    00             C      	defb	0
+  F6B1    0000           C      	defw	0
+  F6B3    2A00           C      	defw	kasbu3
+  F6B5    0000           C      	defw	0
+  F6B7    00 00 00 00    C      	defb	0,0,0,0
+  F6BB    0000           C      	defw	0
+  F6BD    00             C      	defb	0
+  F6BE    00             C      	defb	0
+  F6BF    A544           C      	defw	hrdkmb
+  F6C1    A4EF           C      	defw	hwrkmb
+  F6C3    08 10 01 01    C      	defb	8,16,1,1
+                         C      ;
+  F6C7    01             C      	defb	1
+  F6C8    A519           C      	defw	rdkmb
+  F6CA    A4BC           C      	defw	wrkmb
+  F6CC    00 00 38 02    C      eatab4::defb	0,0,pkmb2,2	; laufwerk 4
+'a  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-65
+
+
+  F6D0    00             C      	defb	0		; ==========
+  F6D1    A820 0000      C      	defw	kmbep,0
+  F6D5    0000 0000      C      	defw	0,0
+  F6D9    E800           C      	defw	dir4
+  F6DB    00             C      	defb	0
+  F6DC    0000           C      	defw	0
+  F6DE    2B00           C      	defw	kasbu4
+  F6E0    0000           C      	defw	0
+  F6E2    00 00 00 00    C      	defb	0,0,0,0
+  F6E6    0000           C      	defw	0
+  F6E8    00             C      	defb	0
+  F6E9    00             C      	defb	0
+  F6EA    A544           C      	defw	hrdkmb
+  F6EC    A4EF           C      	defw	hwrkmb
+  F6EE    08 10 01 01    C      	defb	8,16,1,1
+                         C       endif
+                         C      ;
+                         C       if anzakb gt 2
+  F6F2    01             C      	defb	1
+  F6F3    A519           C      	defw	rdkmb
+  F6F5    A4BC           C      	defw	wrkmb
+  F6F7    00 00 58 01    C      eatab5::defb	0,0,pkmb3,1	; laufwerk 5
+  F6FB    00             C      	defb	0		; ==========
+  F6FC    A820 0000      C      	defw	kmbep,0
+  F700    0000 0000      C      	defw	0,0
+  F704    F000           C      	defw	dir5
+  F706    00             C      	defb	0
+  F707    0000           C      	defw	0
+  F709    2C00           C      	defw	kasbu5
+  F70B    0000           C      	defw	0
+  F70D    00 00 00 00    C      	defb	0,0,0,0
+  F711    0000           C      	defw	0
+  F713    00             C      	defb	0
+  F714    00             C      	defb	0
+  F715    A544           C      	defw	hrdkmb
+  F717    A4EF           C      	defw	hwrkmb
+  F719    08 10 01 01    C      	defb	8,16,1,1
+                         C      ;
+  F71D    01             C      	defb	1
+  F71E    A519           C      	defw	rdkmb
+  F720    A4BC           C      	defw	wrkmb
+  F722    00 00 58 02    C      eatab6::defb	0,0,pkmb3,2	; laufwerk 6
+  F726    00             C      	defb	0		; ==========
+  F727    A820 0000      C      	defw	kmbep,0
+  F72B    0000 0000      C      	defw	0,0
+  F72F    F800           C      	defw	dir6
+  F731    00             C      	defb	0
+  F732    0000           C      	defw	0
+  F734    2D00           C      	defw	kasbu6
+  F736    0000           C      	defw	0
+  F738    00 00 00 00    C      	defb	0,0,0,0
+  F73C    0000           C      	defw	0
+  F73E    00             C      	defb	0
+  F73F    00             C      	defb	0
+  F740    A544           C      	defw	hrdkmb
+  F742    A4EF           C      	defw	hwrkmb
+  F744    08 10 01 01    C      	defb	8,16,1,1
+                         C       endif
+                         C      
+                         C       if mindk
+                         C      ;
+                         C      ; e/a-tabellen minidisk
+                         C      ;
+                         C      	defb	0
+                         C      	defw	rdmd
+                         C      	defw	wrmd
+                         C      eamd1::	
+                         C      
+                         C      	defb	0
+                         C      	defw	rdmd
+                         C      	defw	wrmd
+                         C      eamd2::
+                         C      
+                         C      	defb	0
+                         C      	defw	rdmd
+                         C      	defw	wrmd
+                         C      eamd3::
+                         C      
+                         C      	defb	0
+                         C      	defw	rdmd
+                         C      	defw	wrmd
+                         C      eamd4::
+'a  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-66
+
+
+                         C       endif
+                         C      
+                         C       if stadk
+                         C      ;
+                         C      ; e/a-tabellen standarddisk
+                         C      ;
+                         C      	defb	0
+                         C      	defw	rdsd
+                         C      	defw	wrsd
+                         C      easd1::
+                         C      
+                         C      	defb	0
+                         C      	defw	rdsd
+                         C      	defw	wrsd
+                         C      easd2::
+                         C       endif
+                         C      
+                         C       if zst
+                         C      ;
+                         C      ; e/a-tabelle zentralstation
+                         C      ;
+                         C      	defb	0
+                         C      	defw	rdzst
+                         C      	defw	wrzst
+                         C      eazst::
+                         C       endif
+                         C      
+                         C       if tramdk
+                         C      ;
+                         C      ; e/a-tabelle TRAM-Disk
+                         C      ;
+                         C      	defb	0
+                         C      	defw	rdtram
+                         C      	defw	wrtram
+                         C      eatram::
+                         C       endif
+                         C      
+                         C       if opsdk
+                         C      ;
+                         C      ; e/a-tabelle 16k-OPS-Disk
+                         C      ;
+                         C      	defb	0
+                         C      	defw	rdops
+                         C      	defw	wrops
+                         C      eaops::
+                         C       endif
+                         C      ;
+                         C      	page	
+'a  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-67
+
+
+                         C      
+  F748                   C      ixtab::	defs	32
+                         C      ;
+  F768    F646           C      ixtab1::defw	eataba		; tabelle der ix-adresse
+                         C      
+  F76A    F64B F676      C      	defw	eatab1,eatab2
+                         C      
+                         C       if anzakb gt 1
+  F76E    F6A1 F6CC      C      	defw	eatab3,eatab4
+                         C       else
+                         C      	defw	0,0
+                         C       endif
+                         C      
+                         C       if anzakb gt 2
+  F772    F6F7 F722      C      	defw	eatab5,eatab6
+                         C       else
+                         C      	defw	0,0
+                         C       endif
+                         C      
+                         C       if mindk
+                         C      	defw	eamd1,eamd2,eamd3,eamd4
+                         C       else
+  F776    0000 0000      C      	defw	0,0,0,0
+  F77A    0000 0000      C      
+                         C       endif
+                         C      
+                         C       if stadk
+                         C      	defw	easd1,easd2
+                         C       else
+  F77E    0000 0000      C      	defw	0,0
+                         C       endif
+                         C      
+                         C       if zst
+                         C      	defw	eazst
+                         C       else
+  F782    0000           C      	defw	0
+                         C       endif
+                         C      
+                         C       if tramdk
+                         C      	defw	eatram
+                         C       else
+  F784    0000           C      	defw	0
+                         C       endif
+                         C      
+                         C       if opsdk
+                         C      	defw	eaops
+                         C       else
+  F786    0000           C      	defw	0
+                         C       endif
+                         C      ;
+                                ;
+                         C      	include	DH.ASM
+                         C      ;
+                         C      ; T P A   -   Disk		Laufwerk A:
+                         C      ; ++++++++++++++++		+++++++++++
+                         C      ;
+  F788    0000 0000      C      dphad::	defw	0,0		; keine sektorumrechnung
+  F78C    0000 0000      C      	defw	0,0
+  F790    F941           C      	defw	dirbf
+  F792    F818           C      	defw	dpblkm		; geraetebeschreibung
+  F794    F83D           C      	defw	chkm		; directory-kontrolle
+  F796    F836           C      	defw	allm
+                         C      
+                         C      ; kassette 1 + 2 geblockt	Laufwerk B: und C:
+                         C      ; +++++++++++++++++++++++	++++++++++++++++++
+                         C      ;
+  F798    0000 0000      C      dphc1::	defw	0,0		; keine sektorumrechnung
+  F79C    0000 0000      C      	defw	0,0
+  F7A0    F941           C      	defw	dirbf
+  F7A2    F827           C      	defw	dpblkc
+  F7A4    F853           C      	defw	chkc1
+  F7A6    F83D           C      	defw	allc1
+                         C      ;
+  F7A8    0000 0000      C      dphc2::	defw	0,0		; keine sektorumrechnung
+  F7AC    0000 0000      C      	defw	0,0
+  F7B0    F941           C      	defw	dirbf
+  F7B2    F827           C      	defw	dpblkc
+  F7B4    F879           C      	defw	chkc2
+  F7B6    F863           C      	defw	allc2
+                         C      
+                         C      ; kassette 3 + 4 geblockt     Laufwerk D: und E:
+'a  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-68
+
+
+                         C      ; +++++++++++++++++++++++     ++++++++++++++++++
+                         C      ;
+                         C       if anzakb gt 1
+  F7B8    0000 0000      C      dphc3::	defw	0,0		; keine sektorumrechnung
+  F7BC    0000 0000      C      	defw	0,0
+  F7C0    F941           C      	defw	dirbf
+  F7C2    F827           C      	defw	dpblkc
+  F7C4    F89F           C      	defw	chkc3
+  F7C6    F889           C      	defw	allc3
+                         C      ;
+  F7C8    0000 0000      C      dphc4::	defw	0,0		; keine sektorumrechnung
+  F7CC    0000 0000      C      	defw	0,0
+  F7D0    F941           C      	defw	dirbf
+  F7D2    F827           C      	defw	dpblkc
+  F7D4    F8C5           C      	defw	chkc4
+  F7D6    F8AF           C      	defw	allc4
+                         C       endif
+                         C      
+                         C      ; kassette 5 + 6 geblockt     Laufwerk F: und G:
+                         C      ; +++++++++++++++++++++++     ++++++++++++++++++
+                         C      ;
+                         C       if anzakb gt 2
+  F7D8    0000 0000      C      dphc5::	defw	0,0		; keine sektorumrechnung
+  F7DC    0000 0000      C      	defw	0,0
+  F7E0    F941           C      	defw	dirbf
+  F7E2    F827           C      	defw	dpblkc
+  F7E4    F8EB           C      	defw	chkc5
+  F7E6    F8D5           C      	defw	allc5
+                         C      ;
+  F7E8    0000 0000      C      dphc6::	defw	0,0		; keine sektorumrechnung
+  F7EC    0000 0000      C      	defw	0,0
+  F7F0    F941           C      	defw	dirbf
+  F7F2    F827           C      	defw	dpblkc
+  F7F4    F911           C      	defw	chkc6
+  F7F6    F8FB           C      	defw	allc6
+                         C       endif
+                         C      
+                         C      ; mini - disk 1 bis 4     Laufwerk H: , I: , J: und K:
+                         C      ; +++++++++++++++++++     ++++++++++++++++++++++++++++
+                         C      ;
+                         C       if mindk
+                         C      dphh1::	defw	0,0		;
+                         C      	defw	0,0
+                         C      	defw	dirbf
+                         C      	defw	dpblkh
+                         C      	defw	chkm1
+                         C      	defw	allm1
+                         C      ;
+                         C      dphi1::	defw	0,0
+                         C      	defw	0,0
+                         C      	defw	dirbf
+                         C      	defw	dpblkh
+                         C      	defw	chkm2
+                         C      	defw	allm2
+                         C      ;
+                         C      dphj1::	defw	0,0
+                         C      	defw	0,0
+                         C      	defw	dirbf
+                         C      	defw	dpblkh
+                         C      	defw	chkm3
+                         C      	defw	allm3
+                         C      ;
+                         C      dphk1::	defw	0,0
+                         C      	defw	0,0
+                         C      	defw	dirbf
+                         C      	defw	dpblkh
+                         C      	defw	chkm4
+                         C      	defw	allm4
+                         C       endif
+                         C      
+                         C      ; standard - disk 1 + 2     Laufwerk L: und M:
+                         C      ; +++++++++++++++++++++     ++++++++++++++++++
+                         C      ;
+                         C       if stadk
+                         C      dphl1::	defw	0,0
+                         C      	defw	0,0
+                         C      	defw	dirbf
+                         C      	defw	dpblkl
+                         C      	defw	chks1
+                         C      	defw	alls1
+                         C      ;
+                         C      dphm1::	defw	0,0
+'a  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-69
+
+
+                         C      	defw	0,0
+                         C      	defw	dirbf
+                         C      	defw	dpblkl
+                         C      	defw	chks2
+                         C      	defw	alls2
+                         C       endif
+                         C      
+                         C      ; zentralstation             Laufwerk N:
+                         C      ; ++++++++++++++             +++++++++++
+                         C      ;
+                         C       if zst
+                         C      dphn1::	defw	0,0
+                         C      	defw	0,0
+                         C      	defw	dirbf
+                         C      	defw	dpblkn
+                         C      	defw	chkn
+                         C      	defw	alln
+                         C       endif
+                         C      
+                         C      ; TRAM - Disk                Laufwerk O:
+                         C      ; +++++++++++                +++++++++++
+                         C      ;
+                         C       if tramdk
+                         C      dpho1::	defw	0,0
+                         C      	defw	0,0
+                         C      	defw	dirbf
+                         C      	defw	dpblko
+                         C      	defw	chko
+                         C      	defw	allo
+                         C       endif
+                         C      
+                         C      ; 16k - OPS - Disk           Laufwerk P:
+                         C      ; ++++++++++++++++           +++++++++++
+                         C      ;
+                         C       if opsdk
+                         C      dphp1::	defw	0,0
+                         C      	defw	0,0
+                         C      	defw	dirbf
+                         C      	defw	dpblkp
+                         C      	defw	chkp
+                         C      	defw	allp
+                         C       endif
+                         C      
+                         C      	page
+'a  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-70
+
+
+                         C      
+                         C      ;
+  F7F8    0000           C      dpha::	defw	0		; dph geraet a
+  F7FA    0000           C      dphb::	defw	0		;            b
+  F7FC    0000           C      dphc::	defw	0		;            c
+  F7FE    0000           C      dphd::	defw	0		;            d
+  F800    0000           C      dphe::	defw	0		;            e
+  F802    0000           C      dphf::	defw	0		;            f
+  F804    0000           C      dphg::	defw	0		;            g
+  F806    0000           C      dphh::	defw	0		;            h
+  F808    0000           C      dphi::	defw	0		;            i
+  F80A    0000           C      dphj::	defw	0		;            j
+  F80C    0000           C      dphk::	defw	0		;            k
+  F80E    0000           C      dphl::	defw	0		;            l
+  F810    0000           C      dphm::	defw	0		;            m
+  F812    0000           C      dphn::	defw	0		;            n
+  F814    0000           C      dpho::	defw	0		;            o
+  F816    0000           C      dphp::	defw	0		;            p
+                         C      ;
+                                ;
+                         C      	include	DB.ASM
+                         C      ;
+                         C      ;	Laufwerk A:
+                         C      ;	+++++++++++
+  F818    0020           C      dpblkm::defw	32		; sektoren pro spur
+  F81A    03 07 00       C      	defb	3,7,0		; 1k blockung
+  F81D    001F           C      sizem::	defw	31		; 32k kapazitaet
+  F81F    001F           C      	defw	31		; 32 dir. entries
+  F821    80 00          C      	defb	80h,0		; 1 belegter block durch dir.
+  F823    0000           C      	defw	0		; 0 dir.entries pruefen
+  F825    0000           C      	defw	0		; 0 spuren durch system belegt
+                         C      
+                         C      ;	Laufwerk B: , C: , D: , E: , F: , G:
+                         C      ;	++++++++++++++++++++++++++++++++++++
+  F827    0010           C      dpblkc::defw	16		; sektoren pro spur
+  F829    03 07 00       C      	defb	3,7,0		; 1k blockung
+  F82C    00AF           C      	defw	175		; 176k kapazitaet
+  F82E    003F           C      	defw	63		; 64 dir. entries
+  F830    C0 00          C      	defb	0c0h,0		; 2 belegte bloecke durch dir.
+  F832    0010           C      	defw	16		; 16 dir.entries pruefen
+  F834    0000           C      	defw	0		; 0 spuren durch system belegt
+                         C      
+                         C       if mindk
+                         C      ;	Laufwerk H: , I: , J: , K:
+                         C      ;	++++++++++++++++++++++++++
+                         C      dpblkh::defw	30		; sektoren pro spur
+                         C      	defb	3,7,0		; 1k blockung
+                         C      	defw	137		; 138k kapazitaet
+                         C      	defw	63		; 64 dir. entries
+                         C      	defb	0c0h,0		; 
+                         C      	defw	16		; 16 dir.entries pruefen
+                         C      	defw	3		; 3 spuren durch system belegt
+                         C       endif
+                         C      
+                         C       if stadk
+                         C      ;	Laufwerk L: , M:
+                         C      ;	++++++++++++++++
+                         C      dpblkl::defw	0
+                         C      	defb	3,7,0
+                         C      	defw	0
+                         C      	defw	63
+                         C      	defb	0c0h,0
+                         C      	defw	16
+                         C      	defw	0
+                         C       endif
+                         C      
+                         C       if zst
+                         C      ;	Laufwerk N:
+                         C      ;	+++++++++++
+                         C      dpblkn::defw	0
+                         C      	defb	3,7,0
+                         C      	defw	0
+                         C      	defw	63
+                         C      	defb	0c0h,0
+                         C      	defw	16
+                         C      	defw	0
+                         C       endif
+                         C      
+                         C       if tramdk
+                         C      ;	Laufwerk O:
+                         C      ;	+++++++++++
+'a  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-71
+
+
+                         C      dpblko::defw	32
+                         C      	defb	3,7,0
+                         C      	defw	0
+                         C      	defw	31
+                         C      	defb	80h,0
+                         C      	defw	0
+                         C      	defw	0
+                         C       endif
+                         C      
+                         C       if opsdk
+                         C      ;	Laufwerk P:
+                         C      ;	+++++++++++
+                         C      dpblkp::defw	128
+                         C      	defb	3,7,0
+                         C      	defw	0
+                         C      	defw	31
+                         C      	defb	80h,0
+                         C      	defw	0
+                         C      	defw	0
+                         C       endif
+                         C      ;
+                         C      	page
+'a  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-72
+
+
+                         C      
+                         C      ;
+                         C      ;
+                         C      ;
+  F836                   C      allm::	defs	7		; reicht fuer  56k
+  F83D                   C      chkm::	defs	0
+                         C      
+                         C      
+  F83D                   C      allc1::	defs	22		; reicht fuer 176k
+  F853                   C      chkc1::	defs	16
+                         C      
+  F863                   C      allc2::	defs	22		; reicht fuer 176k
+  F879                   C      chkc2::	defs	16
+                         C      
+                         C      
+                         C       if anzakb gt 1
+  F889                   C      allc3::	defs	22		; reicht fuer 176k
+  F89F                   C      chkc3::	defs	16
+                         C      
+  F8AF                   C      allc4::	defs	22		; reicht fuer 176k
+  F8C5                   C      chkc4::	defs	16
+                         C       endif
+                         C      
+                         C      
+                         C       if anzakb gt 2
+  F8D5                   C      allc5::	defs	22		; reicht fuer 176k
+  F8EB                   C      chkc5::	defs	16
+                         C      
+  F8FB                   C      allc6::	defs	22		; reicht fuer 176k
+  F911                   C      chkc6::	defs	16
+                         C       endif
+                         C      
+                         C      
+                         C       if mindk
+                         C      allm1::	defs	22
+                         C      chkm1::	defs	16
+                         C      
+                         C      allm2::	defs	22
+                         C      chkm2::	defs	16
+                         C      
+                         C      allm3::	defs	22
+                         C      chkm3::	defs	16
+                         C      
+                         C      allm4::	defs	22
+                         C      chkm4::	defs	16
+                         C       endif
+                         C      
+                         C      
+                         C       if stadk
+                         C      alls1::	defs	22
+                         C      chks1::	defs	16
+                         C      
+                         C      alls2::	defs	22
+                         C      chks2::	defs	16
+                         C       endif
+                         C      
+                         C      
+                         C       if zst
+                         C      alln::	defs	129		; reicht fuer 1M
+                         C      chkn::	defs	32		; reicht fuer 128 dir_entries
+                         C       endif
+                         C      
+                         C      
+                         C       if tramdk
+                         C      allo::	defs	32		; reicht fuer 256k
+                         C      chko::	defs	0
+                         C       endif
+                         C      
+                         C      
+                         C       if opsdk
+                         C      allp::	defs	32		; reicht fuer 256k
+                         C      chkp::	defs	0
+                         C       endif
+                         C      
+                         C      
+                                ;
+                                ;
+                                ;
+                                	page
+'a  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-73
+
+
+                                
+                                ;  arbeitszellen
+                                ;  =============
+                                ;
+  F921    0000                  dma::	defw	0
+  F923    0000                  trk::	defw	0
+  F925    0000                  sec::	defw	0
+  F927    00                    dev::	defb	0
+                                ;
+  F928    00                    readop::defb	0		; workspace for blocking/deblocking
+  F929    00                    rsflag::defb	0
+  F92A    00                    wrtype::defb	0
+  F92B    00                    erflag::defb	0
+  F92C    00                    rderr::	defb	0
+  F92D    00                    sechst::defb	0
+                                ;
+  F92E    0000                  bsaddr::defw	0		; aktuelle bs-adresse
+  F930    00                    qrmode::defb	0		; 1 spezieller rollmodus
+  F931    00                    qroll::	defb	0		; 1 es wurde rollen verzoegert
+  F932    00                    qesc::	defb	0		; anzeiger fuer steuerfolgen
+  0000                          qesc0	equ	0
+  0001                          qesc1	equ	1
+  0002                          qesc2	equ	2
+  F933    20                    umsch::	defb	20h		; aktuelle shiftmaske
+  F934    00                    cont::	defb	0		; merkzelle fuer control-taste
+  F935    00                    syste::	defb	0		; 1 - kassettenladen/-entladen erlaubt
+  F936    0000                  hlret::	defw	0		; zwischenspeicher fuer register HL
+                                ;
+  F938    00                    sverz::	defb	0		; zum verzoegern von const
+  F939    00                    sschr::	defb	0		; 00 - kein schnellschreiben
+                                ;
+                                ;
+  F93A    05 00 00 00           ccppuf::defb	5,0,0,0,0,0,0	; puffer zur eingabe des lade/entladekommandos
+  F93E    00 00 00              
+                                ;
+  F941                          dirbf	equ	$		; 128 Byte lang
+                                ;
+  F9C1                          dmma	equ	dirbf+128	; 128 Byte lang
+                                ;
+  FA41                          kmbpuf	equ	dmma+128	; 100h hilfspuffer zum direkten kmbschreiben
+                                ;
+                                ;
+  FBC1                          spber	equ	kmbpuf+180h
+                                ;
+  FC41                          s1neu	equ	spber+80h
+  FCC1                          s3neu	equ	s1neu+80h
+                                ;
+  FCC1                          s1ret	equ	s3neu
+  FCC3                          s3ret	equ	s1ret+2
+                                ;
+                                ;
+                                ;
+                                	.dephase
+  192E'                         abios2::
+                                ; \---  Ende : aBIOS -----------------------------------------------------------------------------/
+                                	page
+'a  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-74
+
+
+                                
+                                ;
+                                ;
+                                ; /---  Ende : aBIOS -----------------------------------------------------------------------------\
+  192E'                         gosys2::
+                                	.phase	gosys0
+                                	gosys1
+  8000    C5              +     	push	bc
+  8001    E5              +     	push	hl
+  8002    01 04C0         +     	ld	bc,004C0h
+  8005    21 800F         +     	ld	hl,gosy2
+  8008    ED B3           +     	otir
+  800A    E1              +     	pop	hl
+  800B    C1              +     	pop	bc
+  800C    C3 0000         +     	jp	0
+  800F                    +     gosy2:
+  800F    F0              +     	DB	0F0H	;Startbyte
+  8010    03              +     	DB	003H	;wahl
+  8011    03              +     	DB	003H	;GoSys1
+  8012    FF              +     	DB	0FFH	;Endbyte
+                                	.dephase
+  1941'                         gosys3::
+                                ; \---  Ende : aBIOS -----------------------------------------------------------------------------/
+                                
+                                ; ===  Ende : 0000H nach LOAD =====================================================================
+                                ;
+                                	title	''
+                                				;(c) by Marcus Herbote,   N I L E S   wtz
+                                
+                                	end	start
+''	MACRO-80 3.44	09-Dec-81	PAGE	S
+
+
+Macros:
+DIRG            GOSYS           GOSYS1          MBOOTM          OPSMAC          
+S1G             SYSTA           TA              UM              
+
+Symbols:
+F400 	ABIOS           13EDI'	ABIOS1          192EI'	ABIOS2          
+0C00 	ABIOSL          F83DI 	ALLC1           F863I 	ALLC2           
+F889I 	ALLC3           F8AFI 	ALLC4           F8D5I 	ALLC5           
+F8FBI 	ALLC6           F836I 	ALLM            A89A 	ALLOC           
+0003 	ANZAKB          A82CI 	ARB             0008 	ATR             
+A983I 	BIOSXX          0022 	BLKLOG          A83B 	BLOCK           
+9766I 	BOOT            9741I 	BOOT00          9794 	BOOT03          
+97A5 	BOOT05          9A32 	BOOTME          99CF 	BOOTMS          
+F500I 	BR00            F506I 	BR03            F50CI 	BR06            
+F512I 	BR09            F518I 	BR0C            F51EI 	BR0F            
+F524I 	BR12            F52AI 	BR15            F530I 	BR18            
+F56FI 	BR1B            F582I 	BR1E            F587I 	BR21            
+F58CI 	BR24            F591I 	BR27            F597 	BR270           
+F5AC 	BR271           F5B1I 	BR2A            F5C8I 	BR2D            
+F5CEI 	BR30            A242 	BSAD1           A248 	BSAD2           
+A24D 	BSAD3           A25B 	BSAD4           A265 	BSAD5           
+A268 	BSAD6           F92EI 	BSADDR          A23C 	BSADR           
+3000 	BSANF           A27A 	BSROL           9AEE 	C03             
+9B11 	C04             9BA8 	C06             9BEC 	C061            
+9BE4 	C062            9BF9 	C069            9C5C 	C07             
+9AFD 	C08             9C94 	C081            9C9A 	C082            
+9CC2 	C09             9CF3 	C10             9D05 	C11             
+9D17 	C12             9D29 	C13             9D3B 	C14             
+9D4D 	C17             9DFE 	C170            9E73 	C171            
+9E84 	C172            9E34 	C173            9E6A 	C174            
+9DC8 	C175            9EA4 	C18             9DC8 	C189            
+A467I 	CALLHL          9EAD 	CBIT4           9EB2 	CBIT41          
+9EB7 	CBIT42          9EC0 	CBIT43          9ECE 	CBIT44          
+DE00 	CCP             F93AI 	CCPPUF          A679 	CEERRE          
+A656 	CEERRO          A5F7 	CENTL           A60D 	CENTLE          
+F853I 	CHKC1           F879I 	CHKC2           F89FI 	CHKC3           
+F8C5I 	CHKC4           F8EBI 	CHKC5           F911I 	CHKC6           
+F83DI 	CHKM            A85F 	CHKUNA          9AA5I 	CI              
+A01DI 	CI.BELL         9FE8I 	CI.CH           9FDEI 	CI.KALT         
+9FE2I 	CI.STA          9FDEI 	CI.WARM         9FFC 	CI1             
+A006 	CI2             A00E 	CI3             A016 	CI4             
+A01B 	CI5             9A70I 	CIBER           A5A5 	CLAD            
+A2DC 	CO.BCU          A137 	CO.BEL          A15B 	CO.BS           
+A05B 	CO.C1           A0D8 	CO.C10          A0F3 	CO.C11          
+A0F8 	CO.C12          A102 	CO.C13          A105 	CO.C14          
+A112 	CO.C15          A116 	CO.C16          A060 	CO.C2           
+A062 	CO.C3           A0B3 	CO.C4           A0B9 	CO.C5           
+A0C2 	CO.C6           A0C9 	CO.C7           A0CB 	CO.C8           
+A0D1 	CO.C9           A045I 	CO.CH           A181 	CO.CLE          
+A12B 	CO.CR           A30F 	CO.DEG          A13D 	CO.HOM          
+A11E 	CO.LF           A131 	CO.NL           A19B 	CO.RG           
+A2DB 	CO.SCP          A146 	CO.TB           A18E 	CO.UP           
+A165 	COBS1           A16F 	COBS2           A122 	COLF1           
+9A90I 	CONIN           9A9F 	CONIN0          9A9F 	CONIN1          
+9A9F 	CONIN3          9ED4I 	CONOU           9EE4 	CONOU0          
+9EE4 	CONOU1          9EEB 	CONOU3          9A5BI 	CONST           
+9A6A 	CONST0          9A6A 	CONST1          9A6A 	CONST3          
+F934I 	CONT            A1A4 	CORG1           A197 	COUP1           
+0023 	CPMSPT          A034 	CPMTAB          A6DA 	CPOS            
+A579 	CPOSX           000D 	CR              9A3E 	CUBDOS          
+9A3C 	CUDEV           0044 	DATUM           A82F 	DEBLCK          
+9C37 	DEFA            9C48 	DEFA2           A034 	DEGEND          
+A023 	DEGTAB          A1E2 	DELL            A1F9 	DELL1           
+A205 	DELL2           A20E 	DELL3           F927I 	DEV             
+4026 	DINIT           D000 	DIR1            D800 	DIR2            
+E000 	DIR3            E800 	DIR4            F000 	DIR5            
+F800 	DIR6            A586 	DIRADR          F941 	DIRBF           
+9873 	DIRDEL          9945 	DIRG11          99CF 	DIRG12          
+98EF 	DIRGO           9934 	DIRGO1          98FB 	DIRS1           
+990C 	DIRS11          9934 	DIRS12          F921I 	DMA             
+F9C1 	DMMA            4029 	DOUT            F827I 	DPBLKC          
+F818I 	DPBLKM          F7F8I 	DPHA            F788I 	DPHAD           
+F7FAI 	DPHB            F7FCI 	DPHC            F798I 	DPHC1           
+F7A8I 	DPHC2           F7B8I 	DPHC3           F7C8I 	DPHC4           
+F7D8I 	DPHC5           F7E8I 	DPHC6           F7FEI 	DPHD            
+F800I 	DPHE            F802I 	DPHF            F804I 	DPHG            
+F806I 	DPHH            F808I 	DPHI            F80AI 	DPHJ            
+F80CI 	DPHK            F80EI 	DPHL            F810I 	DPHM            
+F812I 	DPHN            F814I 	DPHO            F816I 	DPHP            
+0000 	DR54            0007 	EAADR           000A 	EABM            
+000D 	EADPUF          0F70 	EADR            000F 	EADZEI          
+0005 	EAEP            0001 	EAFEHL          0004 	EAKOM           
+''	MACRO-80 3.44	09-Dec-81	PAGE	S-1
+
+
+0FA0 	EALBL           0F80 	EALBS           0009 	EALEN           
+0000 	EASTAT          F64BI 	EATAB1          F676I 	EATAB2          
+F6A1I 	EATAB3          F6CCI 	EATAB4          F6F7I 	EATAB5          
+F722I 	EATAB6          F646I 	EATABA          000C 	EAVERL          
+000B 	EAWIED          0010 	EAWOVO          A684 	EDRUC           
+A681 	ENDRUC          A967I 	ENDUSE          A1AA 	EOL             
+A1B4 	EOL1            A215 	EOS             008A 	EQ.BCU          
+00CE 	EQ.BSD          00FF 	EQ.CAP          008B 	EQ.DEG          
+0080 	EQ.GRA          00FE 	EQ.HEX          0088 	EQ.INI          
+0081 	EQ.LE1          0082 	EQ.LE2          008C 	EQ.LE3          
+008C 	EQ.LE4          008C 	EQ.LE5          008C 	EQ.LE6          
+00FD 	EQ.LR0          00FC 	EQ.LW           0089 	EQ.SCP          
+0087 	EQ.SIO          00CD 	EQ.SYS          F92BI 	ERFLAG          
+0004 	ERRANZ          A82BI 	ERRCOU          001B 	ESC             
+A295 	EVTROL          9C0C 	EXCH            9C13 	EXCH1           
+9C21 	EXCH2           0000 	FALSE           A7C3 	FEHL00          
+A7CC 	FEHL01          A7C5 	FEHL0A          A7A4 	FEHLER          
+000C 	FF              A8DF 	FILHST          A6C3 	FILPAR          
+0C00 	GDMA            001D 	GELADE          F5EE 	GETPF1          
+F5F9 	GETPF2          A96D 	GETPUF          800F 	GOSY2           
+8000 	GOSYS0          192EI'	GOSYS2          1941I'	GOSYS3          
+F936I 	HLRET           F533I 	HOME            F557 	HOME1           
+001E 	HRD             A544 	HRDKMB          A49AI 	HSADR           
+0017 	HSTACT          0012 	HSTBUF          0016 	HSTSEC          
+0014 	HSTTRK          0018 	HSTWRT          0020 	HWR             
+A4EF 	HWRKMB          A22B 	INCAD           A1BC 	INSL            
+A1D3 	INSL1           9A3B 	IOBYT           9629 	IODIS1          
+962C 	IODIS2          9617I 	IODISP          0005 	ISBLK           
+0004 	IXRD            F748I 	IXTAB           F768I 	IXTAB1          
+0002 	IXWR            2800 	KASBU1          2900 	KASBU2          
+2A00 	KASBU3          2B00 	KASBU4          2C00 	KASBU5          
+2D00 	KASBU6          9CD2 	KM.LE           9CE6 	KM.LE1          
+9CF0 	KM.LE2          A7FFI 	KMB             A80F 	KMB01           
+A818 	KMB02           A820 	KMBEP           4046 	KMBINI          
+FA41 	KMBPUF          4040 	KMBROB          4043 	KMBRUC          
+A961I 	KMBUSE          000C 	KMBVERS         A828I 	KMWART          
+A697 	KONLEN          A6A1 	KONSENT         4030 	LBL             
+4033 	LBS             9638 	LDHLDP          A68D 	LESEN           
+000A 	LF              9F08I 	LIST            9F18 	LIST0           
+9F1F 	LIST1           9F26 	LIST2           9F2D 	LIST3           
+9EF5I 	LISTST          9F0C 	LISTX           A358 	LO.CH           
+A342I 	LO.RESET        9B28 	LR011           9B52 	LR012           
+9B5F 	LR014           9B6E 	LR016           9B6F 	LR017           
+9B81 	LRTXT           9F04 	LSST0           9F04 	LSST1           
+9F04 	LSST2           9F04 	LSST3           0043 	LWA             
+9A81 	M001            9A84 	M002            9A8B 	M003            
+9ABA 	M012            9ABE 	M013            9AC6 	M014            
+9AD5 	M015            9AD6 	M016            A474 	M04             
+A47F 	M041            9856 	M104            A8FC 	MATCH           
+0050 	MAXS            0018 	MAXZ            0000 	MINDK           
+9E23 	MON1            9E59 	MON2            9DED 	MON3            
+A8D8 	NOMATCH         A894 	NOOVF           A228 	NROLL           
+13EDI'	OP11            13EDI'	OP12            0000 	OPSDK           
+0000 	ORIG            9B7BI 	P0              0004 	PDTA            
+0028 	PDTR            FFFF 	PIPEQ           0030 	PKMB            
+0038 	PKMB2           0058 	PKMB3           00A0 	PTAST           
+A3F8I 	PU.CH           A40B 	PU.CH1          A420 	PU.CH2          
+A40AI 	PU1.CH          A41FI 	PU2.CH          9F71I 	PUNCH           
+9F81 	PUNCH0          9F88 	PUNCH1          9F8F 	PUNCH2          
+9F96 	PUNCH3          F932I 	QESC            0000 	QESC0           
+0001 	QESC1           0002 	QESC2           F930I 	QRMODE          
+F931I 	QROLL           F92CI 	RDERR           A955 	RDH01           
+A95D 	RDH02           967CI 	RDIR            9695 	RDIR1           
+A52F 	RDK01           A54E 	RDK02           A557 	RDK03           
+A55A 	RDK04           A519I 	RDKMB           A481I 	RDMEM           
+A48BI 	RDMEM0          9F43 	RDST0           9F43 	RDST1           
+9F43 	RDST2           9F43 	RDST3           A44CI 	READ            
+9F57 	READ0           9F5D 	READ1           A462 	READ15          
+A464 	READ16          9F65 	READ2           9F6B 	READ3           
+9F4B 	READE1          9F48I 	READER          A94A 	READHST         
+F928I 	READOP          9F37 	READS1          9F34I 	READST          
+A2CD 	RESCUR          A2D8 	RESCUR1         96AEI 	RESLA           
+96BB 	RESLA1          96D7I 	RESP0           96E3 	RESP1           
+96E8 	RESP2           9600I 	RETA            A927 	RETMOV          
+9608I 	RETU            9610I 	RETURN          A3B4I 	RI.ATA          
+A3D5I 	RI.ATB          A36AI 	RI.CH           A38A 	RI.CH1          
+A3A6 	RI.CH2          A3F6 	RI.CTCT         A3ED 	RI.SIOT         
+A37CI 	RI1.CH          A398I 	RI2.CH          A82EI 	RICHTU          
+9653I 	RKMB            F929I 	RSFLAG          F586I 	RTN             
+A679 	RUCKSP          A8AF 	RWOP01          A8A3 	RWOPER          
+98DC 	S1A             FFFF 	S1EQ            FC41 	S1NEU           
+FCC1 	S1RET           0C90 	S2NEU           0C90 	S2RET           
+''	MACRO-80 3.44	09-Dec-81	PAGE	S-2
+
+
+FCC1 	S3NEU           FCC3 	S3RET           9600 	SBIOS           
+006AI'	SBIOS1          13EDI'	SBIOS2          6A00 	SBIOSL          
+00C0 	SBST            965AI 	SDIR            9676 	SDIR1           
+F925I 	SEC             F92DI 	SECHST          0025 	SECMSK          
+0024 	SECSHF          F5D8 	SECTR1          F5CEI 	SECTRN          
+F56FI 	SELDSK          9A32 	SERIAL          9C9D 	SETAMS          
+A2AB 	SETCUR          A2C6 	SETCUR1         A2CA 	SETCUR2         
+F58CI 	SETDMA          F55A 	SETIX           969BI 	SETLA           
+96A8 	SETLA1          96C3I 	SETP0           96CF 	SETP1           
+96D4 	SETP2           F587I 	SETSEC          F582I 	SETTRK          
+9D91 	SIOA            9DA1 	SIOB            9DB1 	SIOT1           
+F81DI 	SIZEM           964DI 	SKMB            A5B9 	SP21            
+A5E9 	SP25            A5EC 	SP26            A618 	SP301           
+A628 	SP31            A649 	SP32            A6DF 	SP40            
+A6F4 	SP41            A70F 	SP42            A71B 	SP43            
+A735 	SP44            A747 	SP45            A756 	SP451           
+A76C 	SP46            A771 	SP47            A786 	SP48            
+0041 	SPALT           FBC1 	SPBER           A220 	SROLL           
+A222 	SROLL1          F939I 	SSCHR           0000 	STADK           
+0000'	START           0066'	START1          0000 	STR             
+F938I 	SVERZ           9A38 	SYSPA           F935I 	SYSTE           
+9FA4I 	TA1             9FADI 	TA2             9FCF 	TA21            
+9FCE 	TA22            9FCC 	TA23            0009 	TAB             
+0000 	TALT            9FD8I 	TBEL            9FD2I 	TFE             
+9F9EI 	TINIT           973FI 	TRAM            0000 	TRAMDK          
+F923I 	TRK             FFFF 	TRUE            4003 	TTA1            
+4006 	TTA2            973EI 	TTANZ           4015 	TTBEL           
+400C 	TTFE            4000 	TTINIT          9740I 	TTRK            
+F5E2I 	UEND            F5E8I 	UGETP           F5DCI 	UKMB            
+F5FEI 	UM1             96EB 	UM11            9715 	UM12            
+F602 	UM1R1           F606 	UM1R2           F60D 	UM1R3           
+F61D 	UM1R4           F621I 	UM2             F635 	UM21            
+F639 	UM2E            9611I 	UM2EE           F63C 	UM2ER           
+9F9D 	UMERK           F933I 	UMSCH           0019 	UNACNT          
+001C 	UNASEC          001A 	UNATRK          A829I 	WAS             
+9800I 	WBOOT           A925 	WMOVE           A447 	WR15            
+A449 	WR16            0001 	WRDIR           A434I 	WRITE           
+A93D 	WRITEHST        A4E2 	WRK01           A4EC 	WRK02           
+A4BCI 	WRKMB           A46BI 	WRMEM           A468I 	WRMEM0          
+F92AI 	WRTYPE          0002 	WRUAL           0040 	ZEIL            
+9A8E 	ZGROS           9A8C 	ZKLEIN          0000 	ZST             
+
+
+
+No Fatal error(s)
+
+
+01C 	UNASEC          001A 	UNATRK          A829I 	WAS             
+9800I 	WBOOT           A925 	WMOVE         

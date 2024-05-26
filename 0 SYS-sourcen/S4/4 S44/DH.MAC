@@ -1,0 +1,174 @@
+;
+; T P A   -   Disk		Laufwerk A:
+; ++++++++++++++++		+++++++++++
+;
+dphad::	defw	0,0		; keine sektorumrechnung
+	defw	0,0
+	defw	dirbf
+	defw	dpblkm		; geraetebeschreibung
+	defw	chkm		; directory-kontrolle
+	defw	allm
+
+; kassette 1 + 2 geblockt	Laufwerk B: und C:
+; +++++++++++++++++++++++	++++++++++++++++++
+;
+dphc1::	defw	0,0		; keine sektorumrechnung
+	defw	0,0
+	defw	dirbf
+	defw	dpblkc
+	defw	chkc1
+	defw	allc1
+;
+dphc2::	defw	0,0		; keine sektorumrechnung
+	defw	0,0
+	defw	dirbf
+	defw	dpblkc
+	defw	chkc2
+	defw	allc2
+
+; kassette 3 + 4 geblockt     Laufwerk D: und E:
+; +++++++++++++++++++++++     ++++++++++++++++++
+;
+ if anzakb gt 1
+dphc3::	defw	0,0		; keine sektorumrechnung
+	defw	0,0
+	defw	dirbf
+	defw	dpblkc
+	defw	chkc3
+	defw	allc3
+;
+dphc4::	defw	0,0		; keine sektorumrechnung
+	defw	0,0
+	defw	dirbf
+	defw	dpblkc
+	defw	chkc4
+	defw	allc4
+ endif
+
+; kassette 5 + 6 geblockt     Laufwerk F: und G:
+; +++++++++++++++++++++++     ++++++++++++++++++
+;
+ if anzakb gt 2
+dphc5::	defw	0,0		; keine sektorumrechnung
+	defw	0,0
+	defw	dirbf
+	defw	dpblkc
+	defw	chkc5
+	defw	allc5
+;
+dphc6::	defw	0,0		; keine sektorumrechnung
+	defw	0,0
+	defw	dirbf
+	defw	dpblkc
+	defw	chkc6
+	defw	allc6
+ endif
+
+; mini - disk 1 bis 4     Laufwerk H: , I: , J: und K:
+; +++++++++++++++++++     ++++++++++++++++++++++++++++
+;
+ if mindk
+dphh1::	defw	0,0		;
+	defw	0,0
+	defw	dirbf
+	defw	dpblkh
+	defw	chkm1
+	defw	allm1
+;
+dphi1::	defw	0,0
+	defw	0,0
+	defw	dirbf
+	defw	dpblkh
+	defw	chkm2
+	defw	allm2
+;
+dphj1::	defw	0,0
+	defw	0,0
+	defw	dirbf
+	defw	dpblkh
+	defw	chkm3
+	defw	allm3
+;
+dphk1::	defw	0,0
+	defw	0,0
+	defw	dirbf
+	defw	dpblkh
+	defw	chkm4
+	defw	allm4
+ endif
+
+; standard - disk 1 + 2     Laufwerk L: und M:
+; +++++++++++++++++++++     ++++++++++++++++++
+;
+ if stadk
+dphl1::	defw	0,0
+	defw	0,0
+	defw	dirbf
+	defw	dpblkl
+	defw	chks1
+	defw	alls1
+;
+dphm1::	defw	0,0
+	defw	0,0
+	defw	dirbf
+	defw	dpblkl
+	defw	chks2
+	defw	alls2
+ endif
+
+; zentralstation             Laufwerk N:
+; ++++++++++++++             +++++++++++
+;
+ if zst
+dphn1::	defw	0,0
+	defw	0,0
+	defw	dirbf
+	defw	dpblkn
+	defw	chkn
+	defw	alln
+ endif
+
+; TRAM - Disk                Laufwerk O:
+; +++++++++++                +++++++++++
+;
+ if tramdk
+dpho1::	defw	0,0
+	defw	0,0
+	defw	dirbf
+	defw	dpblko
+	defw	chko
+	defw	allo
+ endif
+
+; 16k - OPS - Disk           Laufwerk P:
+; ++++++++++++++++           +++++++++++
+;
+ if opsdk
+dphp1::	defw	0,0
+	defw	0,0
+	defw	dirbf
+	defw	dpblkp
+	defw	chkp
+	defw	allp
+ endif
+
+	page
+;
+dpha::	defw	0		; dph geraet a
+dphb::	defw	0		;            b
+dphc::	defw	0		;            c
+dphd::	defw	0		;            d
+dphe::	defw	0		;            e
+dphf::	defw	0		;            f
+dphg::	defw	0		;            g
+dphh::	defw	0		;            h
+dphi::	defw	0		;            i
+dphj::	defw	0		;            j
+dphk::	defw	0		;            k
+dphl::	defw	0		;            l
+dphm::	defw	0		;            m
+dphn::	defw	0		;            n
+dpho::	defw	0		;            o
+dphp::	defw	0		;            p
+;
+

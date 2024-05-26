@@ -1,0 +1,859 @@
+	IF gene2 AND 2
+	page
+	ENDIF
+;
+;	Befehlstabelle
+;	enthaelt alle Monitorbefehle
+;
+tbl:
+	defw	assign  ;a
+	defw	bye     ;b
+	defw	comp    ;c
+	defw	disp    ;d
+	defw	eof     ;e
+	defw	fill    ;f
+	defw	goto    ;g
+	defw	hexn    ;h
+	defw	boot1   ;i
+	defw	test    ;j
+	defw	kexec   ;k
+	defw	load    ;l
+	defw	move    ;m
+	defw	null    ;n
+	defw	oexec   ;o
+	defw	puta    ;p
+	defw	query   ;q
+	defw	read    ;r
+	defw	subs    ;s
+	defw	type    ;t
+	defw	unlo    ;u
+	defw	verify  ;v
+	defw	write   ;w
+	defw	xam     ;x
+	defw	where   ;y
+	defw	size    ;z
+;
+;   assign Command
+;   ------
+;	IOBYTE  assigne
+;
+;	000000xx	console
+;	0000xx00	reader
+;	00xx0000	punch
+;	xx000000	lister
+;
+;	00 =		teletype cons
+;
+assign:						;zuweisung
+	call	ti
+	ld	hl,ltbl
+	ld	bc,400h
+	ld	de,5
+arep0:
+	cp	(hl)
+	jr	z,arep1
+	add	hl,de
+	inc	c
+	djnz	arep0
+	jr	lxerr
+arep1:
+	ld	e,c
+arep22:
+	call	ti
+	cp	'='
+	jr	nz,arep22
+	call	ti
+	ld	bc,400h
+arep33:
+	inc	hl
+	cp	(hl)
+	jr	z,lxa4
+	inc	c
+	djnz	arep33
+lxerr:
+	jp	error
+lxa4:
+	ld	a,3
+	inc	e
+lxa5:
+	dec	e
+	jr	z,lxa6
+	sla	c
+	sla	c
+	rla
+	rla
+	jr	lxa5
+lxa6:
+	cpl
+	ld	d,a
+lxa7:
+	call	pchk
+	jr	nc,lxa7
+	ld	a,(iobyt)
+	and	d
+	or	c
+	ld	c,a
+	jp	ioset
+;
+;	bye	Command
+;   ---
+bye:
+	IF gene2 AND 2
+	ld	a,24	;Fehleranzeige ein
+	out (atss2),a
+	ENDIF
+
+	call	crlf
+lxby:
+	call	ki	;In HEX Dump 1E 
+	cp	01eh	;CRTL N ist 0eh
+	jr	nz,lxby	;gaendert gegen MC-Vers
+	pop	de
+	jp	begin
+;
+;	compare bin
+;   -------
+;	Vergleich eines Speicherbereichs mit dem Reader
+comp:
+	call	exlf
+lxc:
+	call	riff
+	cp	(hl)
+	call	nz,cerr
+	call	hilox
+	jr	lxc
+;
+;	m Ausgabe
+;
+cerr:
+	ld	b,a
+	call	hlsp
+	ld	a,(hl)
+	call	lbyte
+	call	blk
+	ld	a,b
+	call	lbyte
+	jp	crlf
+;
+;	display Command
+;   -------
+;	Ausgabe eines Speicherbereichs
+disp:
+	call	exlf
+lxd0:
+	call	lfadr
+lxd1:
+	call	blk
+	ld	a,(hl)
+	call	lbyte
+	call	hilox
+	ld	a,l
+	and	00fh
+	jr	nz,lxd1
+	jr	lxd0
+;
+;	eof ausgabe
+;   ---
+;	fuer Punch , Intel-Hex Ende ausgeben
+eof:
+	call	expr1
+	call	peol
+	ld	c,':'
+	call	poo
+	xor	a
+	call	pbyte
+	pop	hl
+	call	padr
+	ld	hl,0
+	call	padr
+	jp	null
+;
+;	fill
+;   ----
+;	Einen Speicherbereich mit einem Wert fuellen
+fill:
+	call	expr3
+lxf:
+	ld	(hl),c
+	call	hilo
+	jr	nc,lxf
+	pop	de
+	jp	start
+;
+;	exec other prgs
+;   ----
+;	Start eines Anwenderprogramms mit Break-Points
+goto:
+	call	pchk
+	jr	c,lxg3
+	jr	z,lxg0
+	call	exf
+	pop	de
+	ld	hl,ploc
+	add	hl,sp
+	ld	(hl),d
+	dec	hl
+	ld	(hl),e
+	ld	a,b
+	cp	cr
+	jr	z,lxg3
+lxg0:
+	ld	d,2
+	ld	hl,tloc
+	add	hl,sp
+lxg1:
+	push	hl
+	call	expr1
+	ld	e,b
+	pop	bc
+	pop	hl
+	ld	a,b
+	or	c
+	jr	z,lxg2
+	ld	(hl),c
+	inc	hl
+	ld	(hl),b
+	inc	hl
+	ld	a,(bc)
+	ld	(hl),a
+	inc	hl
+	ld	a,0ffh
+	ld	(bc),a
+lxg2:
+	ld	a,e
+	cp	cr
+	jr	z,lxg2a
+	dec	d
+	jr	nz,lxg1
+lxg2a:
+	ld	a,0c3h	;Rueckkehr mit RST7 vorbereiten
+	ld	(rst7),a
+	ld	hl,trap
+	ld	(rst7+1),hl
+lxg3:
+	call	crlf
+	pop	de
+	ld	hl,22
+	add	hl,sp
+	jp	(hl)	;und Programm starten
+;
+;	test  (j)
+;   ----
+;	Schnelltest fuer den Speicher 
+;	FAST Complement Test
+test:
+	call	exlf
+lxt11:
+	ld	a,(hl)
+	ld	b,a
+	cpl
+	ld	(hl),a
+	xor	(hl)
+	jr	z,lxt2
+	push	de
+	ld	d,b
+	ld	e,a
+	call	hlsp
+	call	bits
+	call	crlf
+	ld	b,d
+	pop	de
+lxt2:
+	ld	(hl),b
+	call	hilox
+	jr	lxt11
+;
+;   laden von Binaerdaten 
+;   -----
+;   tartkennung ist eine Gruppe von 0FFh - Werten
+load:
+	call	expr1
+	pop	hl
+	call	crlf
+	ld	d,0ffh
+lxl0:
+	ld	b,4
+lxll1:
+	call	riff
+	jr	nz,lxl0
+	djnz	lxll1
+lxl2:
+	call	riff
+	jr	z,lxl2
+	ld	(hl),a
+	ld	a,7
+;	+++ out tty +++
+lxl3:
+	inc	hl
+	call	riff
+	jr	z,lxel
+	ld	(hl),a
+	jr	lxl3
+lxel:
+	ld	e,1
+lxel0:
+	call	riff
+	jr	nz,lxel1
+	inc	e
+	ld	a,7				;max +++
+	cp	e
+	jr	nz,lxel0
+	jp	ladr
+lxel1:
+	ld	(hl),d
+	inc	hl
+	dec	e
+	jr	nz,lxel1
+	ld	(hl),a
+	jr	lxl3
+;
+;	move
+;   ----
+;	Transport eines Speicherbereichs in einen anderen
+move:
+	call	expr3
+lxm:
+	ld	a,(hl)
+	ld	(bc),a
+	inc	bc
+	call	hilox
+	jr	lxm
+;
+;	goto null
+;	null punch
+;   ----
+null:
+	call	lead
+	ret
+;
+;	put ASCII into MEM
+;   ---
+;	Damit ist es moeglich Texte direkt in den Speicher einzugeben
+puta:
+	call	expr1
+	call	crlf
+	pop	hl
+arep11:
+	call	ki
+	cp	4		;beenden der Eingabe CTRL-D
+	jp	z,lfadr
+	cp	'_'		;rueckwaerts schreiten
+	jr	z,arep34
+	ld	(hl),a
+	ld	c,a
+	inc	hl
+arep23:
+	call	co
+	jr	arep11
+arep34:
+	dec	hl
+	ld	c,(hl)
+	jr	arep23
+;
+;   Ein-und Ausgabe auf Ports
+;   query
+;   -----
+query:
+	call	ti
+	cp	'O'
+	jr	z,quo
+	cp	'I'
+	jp	nz,error
+	call	expr1
+	pop	bc
+	in	e,(c)
+bits:
+	ld	b,8
+	call	blk
+lxq2:
+	sla	e
+	ld	a,'0' shr 1
+	adc	a,a
+	ld	c,a
+	call	co
+	djnz	lxq2
+	ret
+quo:
+	call	expr
+	pop	de
+	pop	bc
+	out	(c),e
+	ret
+;
+;	read routine
+;   ----
+;	einlesen von Intel-Hex oder TDL-Daten
+read:
+	call	expr1
+	ld	a,b
+	sub	cr
+	ld	b,a
+	ld	c,a
+	pop	de
+	jr	z,lxr00
+	call	expr1
+	pop	bc
+lxr00:
+	ex	de,hl
+	exx
+	call	crlf
+lod0:
+	call	rix
+	sub	':'
+	ld	b,a
+	and	0feh
+	jr	nz,lod0
+	ld	d,a
+	call	sbyte
+	ld	e,a
+	call	sbyte
+	push	af
+	call	sbyte
+	exx
+	pop	de
+	ld	e,a
+	push	bc
+	push	de
+	push	hl
+	add	hl,de
+	ex	(sp),hl
+	pop	ix
+	exx
+	pop	hl
+	call	sbyte
+	dec	a
+	ld	a,b
+	pop	bc
+	jr	nz,arepa
+	add	hl,bc
+	add	ix,bc
+arepa:
+	inc	e
+	dec	e
+	jr	z,done
+	dec	a
+	jr	z,lodr
+lxl11:
+	call	sbyte
+	call	store
+	jr	nz,lxl11
+lod4:
+	call	sbyte
+	jr	z,lod0
+err2:
+	push	ix
+	pop	hl
+	call	ladr
+	jp	error
+done:
+	ld	a,h
+	or	l
+	ret	z
+	ex	de,hl
+	ld	hl,ploc
+	add	hl,sp
+	ld	(hl),d
+	dec	hl
+	ld	(hl),e
+	ret
+lodr:
+	ld	l,1
+lxl12:
+	call	lod03
+	jr	c,lxl33
+lxl5:
+	call	store
+	jr	nz,lxl12
+	jr	lod4
+lxl33:
+	ld	c,a
+	call	lod03
+	ld	b,a
+	exx
+	push	bc
+	exx
+	ex	(sp),hl
+	add	hl,bc
+	ld	a,l
+	call	store
+	ld	a,h
+	pop	hl
+	jr	lxl5
+lod03:
+	dec	l
+	jr	nz,lxl01
+	call	sbyte
+	dec	e
+	ld	h,a
+	ld	l,8
+lxl01:
+	call	sbyte
+	sla	h
+	ret
+;
+sbyte:
+	push	bc
+	call	ribble
+	rlca
+	rlca
+	rlca
+	rlca
+	ld	c,a
+	call	ribble
+	or	c
+	ld	c,a
+	add	a,d
+	ld	d,a
+	ld	a,c
+	pop	bc
+	ret
+;
+store:
+	ld	(ix+0),a
+	cp	(ix+0)
+	jr	nz,err2
+	inc	ix
+	dec	e
+	ret
+;
+;	subst
+;   ----
+;	Interaktive Eingabe von Hex-Werten
+subs:
+	call	expr1
+	pop	hl
+lxs0:
+	ld	a,(hl)
+	call	lbyte
+	call	copck
+	ret	c
+	jr	z,lxs1
+	cp	'_'
+	jr	z,lxs2
+	push	hl
+	call	exf
+	pop	de
+	pop	hl
+	ld	(hl),e
+	ld	a,b
+	cp	cr
+	ret	z
+lxs1:
+	inc	hl
+lxs3:
+	ld	a,l
+	and	7
+	call	z,lfadr
+	jr	lxs0
+lxs2:
+	dec	hl
+	jr	lxs3
+;
+;	type
+;   ----
+;	Ausgabe von Speicherbereichen in lesbarer Form
+type:
+	call	exlf
+lxt0:
+	call	lfadr
+	ld	b,32+32
+lxt1:
+	ld	a,(hl)
+	and	7fh
+	cp	' '
+	jr	nc,lxt3
+lxt22:
+	ld	a,'.'
+lxt3:
+	cp	7ch
+	jr	nc,lxt22
+	ld	c,a
+	call	co
+	call	hilox
+	djnz	lxt1
+	jr	lxt0
+;
+;
+;   UNLOAD ROUTINE
+;   ----
+;   Ausgabe eines Speicherbereichs binaer
+unlo:
+	call	exlf
+	call	lead
+	call	mark
+lxo:
+	ld	c,(hl)
+	call	poo
+	call	hilo
+	jr	nc,lxo
+	call	mark
+	jp null
+;
+conv:
+	and	00fh
+	add	a,90h
+	daa
+	adc	a,40h
+	daa
+	ld	c,a				;hex to ASC
+	ret
+;
+exlf:
+	call	expr
+	pop	de
+	pop	hl
+;
+crlf:
+	push	hl
+	ld	b,2
+	call	tom1
+	pop	hl
+	ret
+;
+;	verify
+;   ------
+verify:
+	call	expr3
+veri0:
+	ld	a,(bc)
+	cp	(hl)
+	jr	z,lxbbn
+	push	bc
+	call	cerr
+	pop	bc
+lxbbn:
+	inc	bc
+	call	hilox
+	jr	veri0
+;
+;	write
+;   -----
+write:
+	call	exlf
+lxw0:
+	call	peol
+	ld	bc,':'
+	call	poo
+	push	de
+	push	hl
+lxw1:
+	inc	b
+	call	hilo
+	jr	c,lxw4
+	ld	a,24
+	sub	b
+	jr	nz,lxw1
+	pop	hl
+	call	lxw2
+	pop	de
+	jr	lxw0
+lxw2:
+	ld	d,a
+	ld	a,b
+	call	pbyte
+	call	padr
+	xor	a
+	call	pbyte
+lxw3:
+	ld	a,(hl)
+	call	pbyte
+	inc	hl
+	djnz	lxw3
+	xor	a
+	sub	d
+	jp	pbyte
+lxw4:
+	pop	hl
+	pop	de
+	xor	a
+	jr	lxw2
+;
+;	xam user reg
+;   ---
+xam:
+	call	ti
+	ld	hl,actbl
+	cp	cr
+	jr	z,lxx6
+	cp	"'"		;27h
+	jr	nz,lxx0
+	ld	hl,prmtb
+	call	ti
+	cp	cr
+	jr	z,lxx6
+lxx0:
+	cp	(hl)
+	jr	z,lxx1
+	bit	7,(hl)
+	jp	nz,error
+	inc	hl
+	inc	hl
+	jr	lxx0
+lxx1:
+	call	blk
+lxx2:
+	inc	hl
+	ld	a,(hl)
+	ld	b,a
+	and	3fh
+	ex	de,hl
+	ld	l,a
+	ld	h,0
+	add	hl,sp
+	ex	de,hl
+	inc	hl
+	ld	a,(de)
+	call	lbyte
+	bit	7,b
+	jr	z,lxx3
+	dec	de
+	ld	a,(de)
+	call	lbyte
+lxx3:
+	call	copck
+	ret	c
+	jr	z,lxx5
+	push	hl
+	push	bc
+	call	exf
+	pop	hl
+	pop	af
+	push	bc
+	push	af
+	ld	a,l
+	ld	(de),a
+	pop	bc
+	bit	7,b
+	jr	z,lxx4
+	inc	de
+	ld	a,h
+	ld	(de),a
+lxx4:
+	pop	bc
+	pop	hl
+	ld	a,b
+	cp	cr
+	ret	z
+lxx5:
+	bit	7,(hl)
+	ret	nz
+	jr	lxx2
+lxx6:
+	call	crlf
+lxx7:
+	call	blk
+	ld	a,(hl)
+	inc	hl
+	or	a
+	ret	m
+	ld	c,a
+	call	co
+	ld	c,'='
+	call	co
+	ld	a,(hl)
+	ld	b,a
+	and	3fh
+	inc	hl
+	ex	de,hl
+	ld	l,a
+	ld	h,0
+	add	hl,sp
+	ex	de,hl
+	bit	6,b
+	jr	nz,lxx9
+	ld	a,(de)
+	call	lbyte
+	bit	7,b
+	jr	z,lxx7
+	dec	de
+	ld	a,(de)
+lxx8:
+	call	lbyte
+	jr	lxx7
+lxx9:
+	push	hl
+	ld	a,(de)
+	ld	h,a
+	dec	de
+	ld	a,(de)
+	ld	l,a
+	ld	a,(hl)
+	pop	hl
+	jr	lxx8
+;
+;	search
+;   ------
+; 	Suchen von Werten im Speicher
+where:
+	ld	d,0
+lxw00:
+	call	expr1
+	pop	hl
+	ld	h,l
+	push	hl
+	inc	sp
+	inc	d
+	ld	a,b
+	sub	cr
+	jr	nz,lxw00
+	ld	b,a
+	ld	c,a
+	ld	h,a
+	ld	l,d
+	dec	l
+	add	hl,sp
+	push	hl
+	push	bc
+findc:
+	push	bc
+	call	crlf
+	pop	bc
+find:
+	pop	hl
+	pop	ix
+	ld	e,d
+	ld	a,(ix+0)
+	cpir
+	jp	po,done2
+	push	ix
+	push	hl
+found:
+	dec	e
+	jr	z,tell
+	ld	a,(ix-1)
+	cp	(hl)
+	jr	nz,find
+	inc	hl
+	dec	ix
+	jr	found
+tell:
+	pop	hl
+	push	hl
+	dec	hl
+	push	bc
+	call	ladr
+	pop	bc
+	jr	findc
+done2:
+	inc	sp
+	dec	e
+	jr	nz,done2
+	ret
+;
+;	search mem
+;   
+size:
+	call	memsiz
+	ld	bc,endx-exit
+	add	hl,bc
+;
+lfadr:
+	call	crlf
+;
+hlsp:
+	call	ladr
+;
+blk:
+	ld	c,' '
+	jp	co
+

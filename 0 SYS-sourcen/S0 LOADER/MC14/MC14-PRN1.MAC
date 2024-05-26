@@ -1,0 +1,673 @@
+                                        EXTERNAL        KR.INIT,KR.BRKMB,KR.BERT,KS.PUFFS
+                                
+                                ;       PN      MC14
+                                ;****************************************************************
+                                ;*               M  C  S   8  4     Kassettendrive-Loader       *
+                                ;*  Version      -----------------------------------------------*
+                                ;*               Programmierer: M. Herbote --- K EAW  ZFT (WFT) *
+                                ;*  V 2 . 4      -----------------------------------------------*
+                                ;*               Stand        : 04.Juni 1984                    *
+                                ;****************************************************************
+                                
+                                ;****************************************************************
+                                ;*               Generierungsvariable                           *
+                                ;****************************************************************
+  0002                          PASS    EQU     2       ;1 --- ohne Passwort-Abfrage
+                                                        ;2 --- mit  Passwort-Abfrage
+  0002                          ANST    EQU     2       ;8 --- PIO- Ansteuerung
+                                                        ;4 --- ATD- Ansteuerung
+                                                        ;2 --- ATS- Ansteuerung
+  0001                          TAST    EQU     1       ;2 --- ohne CPU
+                                                        ;1 --- mit  CPU
+  0001                          CTR     EQU     1       ;1 --- ohne Code-Transformation
+                                                        ;2 --- mit  Code-Transformation
+  0004                          SPUM1   EQU     4       ;1 --- kleine SPB
+                                                        ;2 --- grosse SPB
+                                                        ;4 --- D R A M
+                                                        ;8 --- O P S 6 4 / ZWG
+                                
+  0000'                         ANF     EQU     $
+                                        IF      SPUM1 AND 1
+                                        OUT     SPUM+0DH
+                                        ENDIF
+  0000'   F3                            DI              ; C P U  initialisieren
+  0001'   31 1000                       LD      SP,STACK
+  0004'   3E 04                         LD      A,HIGH IV
+  0006'   ED 47                         LD      I,A
+  0008'   ED 5E                         IM      2
+  000A'   3E A0                         LD      A,AT    ;Initialisierung der Tastatur
+                                        IF      ANST AND 8      ;PIO
+                                        LD      HL,PTAB1
+                                        LD      C,A
+                                        INC     C
+                                        INC     C
+                                        LD      B,3
+                                        OTIR
+                                        INC     C
+                                        LD      B,3
+                                        LD      HL,PPTAB
+                                        OTIR
+                                        ENDIF
+                                        IF      ANST AND 4 OR ANST AND 2
+  000C'   C6 02                         ADD     A,2     ;ATS / ATD
+  000E'   4F                            LD      C,A
+  000F'   AF                            XOR     A
+  0010'   ED 79                         OUT     (C),A
+  0012'   21 3000                       LD      HL,BWS
+                                ;=====================================\
+                                ; wird vom Emulator nicht bentigt !!!
+                                ;       CALL    TA3
+                                ;       LD      BC,08000H
+                                ;M1:    DEC     BC
+                                ;       LD      A,B
+                                ;       OR      C
+                                ;       JR      NZ,M1
+                                ;       CALL    TA3
+                                ;=====================================/
+                                        ENDIF
+                                
+                                        IF      SPUM1 AND 4
+                                ;****************************************************************
+                                ;*               Initialisierung  D R A M                       *
+                                ;****************************************************************
+  0015'   AF                            XOR     A       ;Zuordnung interner Sektor
+  0016'   47                            LD      B,A     ;          externer Sektor
+  0017'   0E 2A                         LD      C,SPUM+2
+  0019'   16 10                         LD      D,16    ;Anzahl
+  001B'   ED 79                 SP1:    OUT     (C),A
+  001D'   C6 01                         ADD     A,1
+  001F'   CD 01AA'                      CALL    UPT1
+  0022'   20 F7                         JR      NZ,SP1
+  0024'   0D                            DEC     C       ;Inaktivierung Sektor 0-F
+  0025'   0D                            DEC     C
+  0026'   3E 08                         LD      A,8
+  0028'   06 00                         LD      B,0     ;externer Sektor
+  002A'   16 10                         LD      D,16    ;Anzahl
+  002C'   ED 79                 SP2:    OUT     (C),A
+  002E'   CD 01AA'                      CALL    UPT1
+  0031'   20 F9                         JR      NZ,SP2
+  0033'   AF                            XOR     A       ;Aktivierung   Sektor 4-F
+  0034'   06 40                         LD      B,40H   ;externer Sektor
+  0036'   16 0C                         LD      D,12    ;Anzahl
+  0038'   ED 79                 SP3:    OUT     (C),A
+  003A'   CD 01AA'                      CALL    UPT1
+  003D'   20 F9                         JR      NZ,SP3
+  003F'   0E 2B                         LD      C,SPUM+3        ;Aktivierung   D R A M
+  0041'   3C                            INC     A
+  0042'   ED 79                         OUT     (C),A
+                                        ENDIF
+                                        IF      SPUM1 AND 8
+                                ;****************************************************************
+                                ;*               Initialisierung  O P S 6 4  vom Z W G          *
+                                ;****************************************************************
+                                        LD      A,00H   ;Sektor  0 - F
+                                        LD      B,16
+                                SP1:    PUSH    BC
+                                        LD      B,A
+                                        LD      C,SPUM+7        ;Sektor (B) abschalten
+                                        OUT     (C),A
+                                        LD      C,SPUM+4        ;Sektor (B) fuer Schreiben freigeben
+                                        OUT     (C),A
+                                        ADD     A,10H
+                                        POP     BC
+                                        DJNZ    SP1
+                                        LD      A,40H   ;Sektor  4 - F
+                                        LD      C,SPUM+6        ;Sektor (B) zuschalten
+                                        LD      B,12
+                                SP2:    PUSH    BC
+                                        LD      B,A
+                                        OUT     (C),A
+                                        ADD     A,10H
+                                        POP     BC
+                                        DJNZ    SP2
+                                        OUT     SPUM+8  ;Schreibsperre gueltig
+                                        OUT     SPUM+10 ;Sektoraktivierung gueltig
+                                        OUT     SPUM+13 ;Speicher zuschalten
+                                        OUT     SPUM+15 ;Bereich fuer Lesen freigeben
+                                        ENDIF
+                                
+                                        PAGE
+                                ;****************************************************************
+                                ;*               Bedienerkommunikation                          *
+                                ;****************************************************************
+  0044'   21 3000                       LD      HL,BWS  ;Bild loeschen
+  0047'   11 3001                       LD      DE,BWS+1
+  004A'   01 0780                       LD      BC,BWSL
+  004D'   36 20                         LD      (HL),' '
+  004F'   ED B0                         LDIR
+  0051'   21 028E'                      LD      HL,T1   ;Systemausschrift
+  0054'   11 3000                       LD      DE,BWS
+  0057'   01 0027                       LD      BC,LT1
+  005A'   ED B0                         LDIR
+  005C'   21 02B5'                      LD      HL,T2
+  005F'   11 30A0                       LD      DE,BWS+160
+  0062'   01 001C                       LD      BC,LT2
+  0065'   ED B0                         LDIR
+  0067'   21 0314'                      LD      HL,T7   ;Abfrage nach Eintrittspunkt
+  006A'   11 31E0                       LD      DE,BWS+480
+  006D'   01 000D                       LD      BC,LT7
+  0070'   ED B0                         LDIR
+  0072'   EB                            EX      DE,HL
+  0073'   36 20                 M2:     LD      (HL),' '
+  0075'   CD 0283'                      CALL    TA5
+  0078'   FE 4C                         CP      'L'
+  007A'   28 09                         JR      Z,M3
+  007C'   FE 53                         CP      'S'
+  007E'   20 F3                         JR      NZ,M2
+  0080'   2A 0C02                       LD      HL,(START)      ;bereits geladenes System starten
+  0083'   E5                            PUSH    HL
+  0084'   C9                            RET
+                                
+  0085'   21 02D1'              M3:     LD      HL,T3   ;Abfrage nach Kassettengeraet
+  0088'   11 3230                       LD      DE,BWS+560
+  008B'   01 000D                       LD      BC,LT3
+  008E'   ED B0                         LDIR
+  0090'   EB                            EX      DE,HL
+                                
+                                        IF      PASS AND 1
+                                        JP      M6
+                                        ENDIF
+                                
+                                        PAGE
+                                        IF      PASS AND 2
+  0091'   E5                            PUSH    HL
+  0092'   CD 024E'                      CALL    TA4
+  0095'   E1                            POP     HL
+  0096'   E5                            PUSH    HL
+  0097'   16 41                         LD      D,'A'
+  0099'   06 06                         LD      B,6
+  009B'   7E                    M4:     LD      A,(HL)
+  009C'   92                            SUB     D
+  009D'   77                            LD      (HL),A
+  009E'   23                            INC     HL
+  009F'   10 FA                         DJNZ    M4
+  00A1'   DD E1                         POP     IX
+  00A3'   DD E5                         PUSH    IX
+  00A5'   DD 66 00                      LD      H,(IX+0)
+  00A8'   DD 6E 01                      LD      L,(IX+1)
+  00AB'   01 8880                       LD      BC,08880H
+  00AE'   09                            ADD     HL,BC
+  00AF'   DD 74 00                      LD      (IX+0),H
+  00B2'   DD 75 01                      LD      (IX+1),L
+  00B5'   DD 66 04                      LD      H,(IX+4)
+  00B8'   DD 6E 05                      LD      L,(IX+5)
+  00BB'   09                            ADD     HL,BC
+  00BC'   DD 74 04                      LD      (IX+4),H
+  00BF'   DD 75 05                      LD      (IX+5),L
+  00C2'   DD 66 02                      LD      H,(IX+2)
+  00C5'   DD 6E 03                      LD      L,(IX+3)
+  00C8'   01 A840                       LD      BC,0A840H
+  00CB'   09                            ADD     HL,BC
+  00CC'   DD 74 02                      LD      (IX+2),H
+  00CF'   DD 75 03                      LD      (IX+3),L
+  00D2'   E1                            POP     HL
+  00D3'   E5                            PUSH    HL
+  00D4'   06 06                         LD      B,6
+  00D6'   7E                    M5:     LD      A,(HL)
+  00D7'   0F                            RRCA
+  00D8'   77                            LD      (HL),A
+  00D9'   23                            INC     HL
+  00DA'   10 FA                         DJNZ    M5
+  00DC'   E1                            POP     HL
+  00DD'   E5                            PUSH    HL
+  00DE'   11 02EB'                      LD      DE,T5
+  00E1'   06 06                         LD      B,6
+  00E3'   CD 01B2'                      CALL    VERG
+  00E6'   E1                            POP     HL
+  00E7'   E5                            PUSH    HL
+  00E8'   D1                            POP     DE
+  00E9'   D5                            PUSH    DE
+  00EA'   13                            INC     DE
+  00EB'   01 0006                       LD      BC,6
+  00EE'   36 20                         LD      (HL),' '
+  00F0'   ED B0                         LDIR
+  00F2'   E1                            POP     HL
+  00F3'   28 0F                         JR      Z,M6
+  00F5'   21 02F1'                      LD      HL,T6
+  00F8'   11 3140                       LD      DE,BWS+320
+  00FB'   01 0023                       LD      BC,LT6
+  00FE'   ED B0                         LDIR
+  0100'   76                            HALT
+  0101'   C3 0000'                      JP      ANF
+                                        ENDIF
+                                
+                                        PAGE
+  0104'   36 20                 M6:     LD      (HL),' '
+  0106'   CD 0283'                      CALL    TA5     ;Tastencode einlesen
+  0109'   FE 33                         CP      '3'
+  010B'   CA 1870                       JP      Z,01870H        ;Sprung zur M R E S
+  010E'   FE 31                         CP      '1'     ;nur "1" bzw. "2" zugelassen
+  0110'   28 04                         JR      Z,M7
+  0112'   FE 32                         CP      '2'
+  0114'   20 EE                         JR      NZ,M6
+  0116'   E6 0F                 M7:     AND     00FH
+  0118'   DD 21 0C10                    LD      IX,EATAB        ;E/A-Tabelle laden
+  011C'   DD 36 02 30                   LD      (IX+2),AKB
+  0120'   DD 77 03                      LD      (IX+3),A
+  0123'   00                            NOP
+  0124'   00                            NOP
+  0125'   00                            NOP
+                                ;       CALL    KR.INIT ;PIOs auf AKB initialisieren
+                                ;****************************************************************
+                                ;*               Eingabe des System-Datei-Namens                *
+                                ;****************************************************************
+  0126'   21 02DE'                      LD      HL,T4   ;Anforderung auf Bildschirm
+  0129'   11 3280                       LD      DE,BWS+640
+  012C'   01 000D                       LD      BC,LT4
+  012F'   ED B0                         LDIR
+  0131'   EB                            EX      DE,HL
+  0132'   CD 024E'                      CALL    TA4
+                                
+                                        PAGE
+                                ;****************************************************************
+                                ;*               Positionierung der Systemkassette und          *
+                                ;*               Einlesen des gewuenschten Systems              *
+                                ;****************************************************************
+  0135'   CD 01E5'                      CALL    GNRE    ;Kassette reservieren
+  0138'   CD 01FF'                      CALL    GNRW    ;Kassette zurueckspulen
+  013B'   3E 02                         LD      A,2     ;auf Verzeichnis positionieren
+  013D'   CD 020F'                      CALL    GNLPN
+  0140'   CD 0221'                      CALL    GNRDR
+  0143'   CD 0221'                      CALL    GNRDR
+  0146'   3A 0004*                      LD      A,(KS.PUFFS+4)
+  0149'   47                            LD      B,A
+  014A'   C5                    LO1:    PUSH    BC
+  014B'   CD 0221'                      CALL    GNRDR
+  014E'   E5                            PUSH    HL
+  014F'   FD E1                         POP     IY
+  0151'   FD 7E 06                      LD      A,(IY+6)        ;Test, ob MRES-Dateityp "P"
+  0154'   FE 50                         CP      'P'
+  0156'   20 11                         JR      NZ,LO2
+  0158'   FD 7E 07                      LD      A,(IY+7)        ;Test, ob Dateiattr.    "M"
+  015B'   FE 4D                         CP      'M'
+  015D'   20 0A                         JR      NZ,LO2
+  015F'   11 328D                       LD      DE,BWS+640+LT4
+  0162'   06 06                         LD      B,6
+  0164'   CD 01B2'                      CALL    VERG
+  0167'   28 08                         JR      Z,LO3
+  0169'   C1                    LO2:    POP     BC
+  016A'   10 DE                         DJNZ    LO1
+  016C'   11 0000'              ANF2:   LD      DE,ANF
+  016F'   18 2D                         JR      ANF1
+  0171'   C1                    LO3:    POP     BC
+  0172'   FD 7E 17                      LD      A,(IY+17H)
+  0175'   CD 020F'                      CALL    GNLPN   ;Posit. auf entspr. Datei
+  0178'   CD 0221'                      CALL    GNRDR   ;HDR-Satz
+  017B'   CD 0221'                      CALL    GNRDR   ;erster Ladedatei Satz
+                                
+  017E'   CD 01BD'              UW:     CALL    LESV
+  0181'   47                            LD      B,A     ;Anzahl Byte
+  0182'   B7                            OR      A
+  0183'   28 11                         JR      Z,UWEND
+  0185'   CD 01BD'                      CALL    LESV
+  0188'   57                            LD      D,A     ;Adresse
+  0189'   CD 01BD'                      CALL    LESV
+  018C'   5F                            LD      E,A
+                                
+  018D'   CD 01BD'              UW1:    CALL    LESV
+  0190'   12                            LD      (DE),A  ;Programm- bzw. Daten- Byte
+  0191'   13                            INC     DE
+  0192'   10 F9                         DJNZ    UW1
+  0194'   18 E8                         JR      UW
+                                
+  0196'   CD 01BD'              UWEND:  CALL    LESV
+  0199'   57                            LD      D,A
+  019A'   CD 01BD'                      CALL    LESV
+  019D'   5F                            LD      E,A
+  019E'   D5                    ANF1:   PUSH    DE
+  019F'   ED 53 0C02                    LD      (START),DE
+  01A3'   CD 01FF'                      CALL    GNRW    ;Kassette zurueckspulen
+  01A6'   CD 01F4'                      CALL    GNRA    ;Kassette entriegeln
+  01A9'   C9                            RET             ;  ===>  geladenen System
+                                        PAGE
+                                ;****************************************************************
+                                ;*               Unterprogramme                                 *
+                                ;****************************************************************
+                                        IF      SPUM1 AND 4
+  01AA'   5F                    UPT1:   LD      E,A
+  01AB'   78                            LD      A,B
+  01AC'   C6 10                         ADD     A,16
+  01AE'   47                            LD      B,A
+  01AF'   7B                            LD      A,E
+  01B0'   15                            DEC     D
+  01B1'   C9                            RET
+                                        ENDIF
+                                
+  01B2'   D5                    VERG:   PUSH    DE
+  01B3'   1A                    VERG1:  LD      A,(DE)
+  01B4'   BE                            CP      (HL)
+  01B5'   20 04                         JR      NZ,VERG2
+  01B7'   23                            INC     HL
+  01B8'   13                            INC     DE
+  01B9'   10 F8                         DJNZ    VERG1
+  01BB'   D1                    VERG2:  POP     DE
+  01BC'   C9                            RET
+                                
+  01BD'   C5                    LESV:   PUSH    BC
+  01BE'   D5                            PUSH    DE
+  01BF'   ED 5B 0C00                    LD      DE,(POIE)
+  01C3'   1A                            LD      A,(DE)
+  01C4'   13                            INC     DE
+  01C5'   ED 53 0C00                    LD      (POIE),DE
+  01C9'   21 0081*                      LD      HL,KS.PUFFS+81H
+  01CC'   B7                            OR      A
+  01CD'   ED 52                         SBC     HL,DE
+  01CF'   D1                            POP     DE
+  01D0'   C1                            POP     BC
+  01D1'   C0                            RET     NZ
+                                
+  01D2'   CD 0221'                      CALL    GNRDR
+  01D5'   C9                            RET
+                                
+  01D6'   DD CB 00 7E           ARBT:   BIT     7,(IX)
+  01DA'   C2 016C'                      JP      NZ,ANF2
+  01DD'   C9                            RET
+                                
+                                        PAGE
+  01DE'   00                    ARMB:   NOP
+  01DF'   00                            NOP
+  01E0'   00                            NOP
+  01E1'   CD 0000*                      CALL    KR.BRKMB
+  01E4'   C9                            RET
+                                
+                                
+                                
+  01E5'   DD 36 04 31           GNRE:   LD      (IX+4),31H
+  01E9'   CD 01DE'                      CALL    ARMB
+  01EC'   DD CB 00 66                   BIT     4,(IX)
+  01F0'   C2 016C'                      JP      NZ,ANF2
+  01F3'   C9                            RET
+                                
+                                
+                                
+  01F4'   DD 36 04 41           GNRA:   LD      (IX+4),41H
+  01F8'   CD 01DE'                      CALL    ARMB
+  01FB'   CD 01D6'                      CALL    ARBT
+  01FE'   C9                            RET
+                                
+                                
+                                
+  01FF'   DD 36 04 21           GNRW:   LD      (IX+4),21H
+  0203'   CD 01DE'                      CALL    ARMB
+  0206'   00                    RW1:    NOP
+  0207'   00                            NOP
+  0208'   00                            NOP
+  0209'   CD 0000*                      CALL    KR.BERT
+  020C'   38 F8                         JR      C,RW1
+  020E'   C9                            RET
+                                
+                                
+                                
+  020F'   DD 36 04 71           GNLPN:  LD      (IX+4),71H
+  0213'   DD 36 09 00                   LD      (IX+9),0
+  0217'   DD 77 0A                      LD      (IX+10),A
+  021A'   CD 01DE'                      CALL    ARMB
+  021D'   CD 01D6'                      CALL    ARBT
+  0220'   C9                            RET
+                                
+                                
+                                
+  0221'   DD 36 04 02           GNRDR:  LD      (IX+4),2
+  0225'   CD 01DE'                      CALL    ARMB
+  0228'   CD 01D6'                      CALL    ARBT
+  022B'   21 0001*                      LD      HL,KS.PUFFS+1
+  022E'   22 0C00                       LD      (POIE),HL
+  0231'   C9                            RET
+                                
+                                        PAGE
+                                ;****************************************************************
+                                ;*               UP zum Abfragen nach gedrueckter Taste         *
+                                ;****************************************************************
+  0232'   3E A0                 TA1:    LD      A,AT
+                                
+                                        IF      ANST AND 8      ;PIO
+                                        LD      C,A
+                                        LD      A,0FEH
+                                        OUT     (C),A
+                                        LD      A,0FAH
+                                        OUT     (C),A
+                                        IN      A,(C)
+                                        BIT     0,A
+                                        ENDIF
+                                
+                                        IF      ANST AND 4      ;ATD
+                                        ADD     A,4
+                                        ENDIF
+                                
+                                        IF      ANST AND 2      ;ATS
+  0234'   3C                            INC     A
+                                        ENDIF
+                                
+                                        IF      ANST AND 4 OR ANST AND 2
+  0235'   4F                            LD      C,A
+  0236'   ED 78                         IN      A,(C)
+  0238'   CB 5F                         BIT     3,A
+                                        ENDIF
+                                
+  023A'   C9                            RET
+                                
+                                ;****************************************************************
+                                ;*               UP zum einlesen des Tastaturcodes              *
+                                ;****************************************************************
+  023B'   3E A0                 TA2:    LD      A,AT
+  023D'   4F                            LD      C,A
+                                
+                                        IF      ANST AND 8      ;PIO
+                                        LD      A,0FCH
+                                        OUT     (C),A
+                                        INC     C
+                                        IN      A,(C)
+                                        ENDIF
+                                
+                                        IF      ANST AND 4 OR ANST AND 2
+  023E'   ED 78                         IN      A,(C)
+                                        ENDIF
+                                
+                                        IF      CTR AND 2
+                                        LD      HL,TAB1
+                                        LD      B,0
+                                        LD      C,(HL)
+                                        INC     HL
+                                        CPIR
+                                        RNZ
+                                        OR      A
+                                        LD      HL,TAB2
+                                        SBC     HL,BC
+                                        LD      A,(HL)
+                                        ENDIF
+  0240'   C9                            RET
+                                
+  0241'   CB FE                 TA3:    SET     7,(HL)
+  0243'   CD 0232'                      CALL    TA1
+  0246'   20 FB                         JR      NZ,$-3
+  0248'   CD 023B'                      CALL    TA2
+  024B'   CB BE                         RES     7,(HL)
+  024D'   C9                            RET
+                                
+                                        PAGE
+  024E'   CD 0241'              TA4:    CALL    TA3     ;Tastencode einlesen
+  0251'   FE 0B                         CP      TCL     ; <==
+  0253'   28 20                         JR      Z,CL
+  0255'   FE 04                         CP      TCR     ; ==>
+  0257'   28 19                         JR      Z,CR
+  0259'   FE 06                         CP      TPQ     ; POS QUIT
+  025B'   28 20                         JR      Z,PQ
+  025D'   FE 20                         CP      ' '     ; blank
+  025F'   28 10                         JR      Z,ZEI
+                                
+  0261'   FE 5B                         CP      '['     ; erkennen der Buchstaben
+  0263'   30 11                         JR      NC,CL1
+  0265'   FE 41                         CP      'A'
+  0267'   30 08                         JR      NC,ZEI
+                                
+  0269'   FE 3A                         CP      ':'     ; erkennen der Ziffern
+  026B'   30 09                         JR      NC,CL1
+  026D'   FE 30                         CP      '0'
+  026F'   38 05                         JR      C,CL1
+                                
+  0271'   77                    ZEI:    LD      (HL),A  ;Zeichen abspeichern
+                                
+  0272'   23                    CR:     INC     HL      ;Position  weitersetzen
+  0273'   18 01                         JR      CL1
+                                
+  0275'   2B                    CL:     DEC     HL      ;Position zuruecksetzen
+                                
+  0276'   CD 0232'              CL1:    CALL    TA1     ;warten auf Tastenende
+  0279'   28 FB                         JR      Z,CL1
+  027B'   18 D1                         JR      TA4     ;naechste Taste anfordern
+                                
+  027D'   CD 0232'              PQ:     CALL    TA1
+  0280'   28 FB                         JR      Z,PQ
+  0282'   C9                            RET
+                                
+                                
+                                
+  0283'   CD 0241'              TA5:    CALL    TA3
+  0286'   77                            LD      (HL),A
+  0287'   CD 0232'                      CALL    TA1
+  028A'   28 FB                         JR      Z,$-3
+  028C'   7E                            LD      A,(HL)
+  028D'   C9                            RET
+                                
+                                        PAGE
+                                        IF      ANST AND 8      ;PIO
+                                ;****************************************************************
+                                ;*               PIO-Programmiertabellen                        *
+                                ;****************************************************************
+                                PPTAB:  DB      0CFH
+                                        DB      0FFH
+                                        DB      003H
+                                PTAB1:  DB      0CFH
+                                        DB      001H
+                                        DB      003H
+                                        ENDIF
+                                
+                                ;****************************************************************
+                                ;*               Tastencodes                                    *
+                                ;****************************************************************
+                                        IF      TAST AND 1
+  000B                          TCL     EQU     00BH
+  0004                          TCR     EQU     004H
+  0006                          TPQ     EQU     006H
+                                        ENDIF
+                                
+                                        IF      TAST AND 2
+                                TCL     EQU     0F7H
+                                TCR     EQU     0F9H
+                                TPQ     EQU     0B0H
+                                        ENDIF
+                                
+                                        PAGE
+                                ;****************************************************************
+                                ;*               Betriebssystem - Anzeigetexte                  *
+                                ;****************************************************************
+  028E'   4D 5F 43 5F           T1:     DB      'M_C_S___84   -   Kassettenloader  V:2.5'
+  0292'   53 5F 5F 5F           
+  0296'   38 34 20 20           
+  029A'   20 2D 20 20           
+  029E'   20 4B 61 73           
+  02A2'   73 65 74 74           
+  02A6'   65 6E 6C 6F           
+  02AA'   61 64 65 72           
+  02AE'   20 20 56 3A           
+  02B2'   32 2E 35              
+  0027                          LT1     EQU     $-T1
+                                
+  02B5'   28 43 29 4A           T2:     DB      '(C)January 84  by  M.Herbote'
+  02B9'   61 6E 75 61           
+  02BD'   72 79 20 38           
+  02C1'   34 20 20 62           
+  02C5'   79 20 20 4D           
+  02C9'   2E 48 65 72           
+  02CD'   62 6F 74 65           
+  001C                          LT2     EQU     $-T2
+                                
+  02D1'   64 72 69 76           T3:     DB      'drive 1/2  ? '
+  02D5'   65 20 31 2F           
+  02D9'   32 20 20 3F           
+  02DD'   20                    
+  000D                          LT3     EQU     $-T3
+                                
+  02DE'   73 79 73 74           T4:     DB      'systemname ? '
+  02E2'   65 6D 6E 61           
+  02E6'   6D 65 20 3F           
+  02EA'   20                    
+  000D                          LT4     EQU     $-T4
+                                
+  02EB'   45 41 57 20           T5:     DB      'EAW MH'
+  02EF'   4D 48                 
+  0006                          LT5     EQU     $-T5
+                                
+  02F1'   44 61 73 20           T6:     DB      'Das eingegebene Codewort ist falsch'
+  02F5'   65 69 6E 67           
+  02F9'   65 67 65 62           
+  02FD'   65 6E 65 20           
+  0301'   43 6F 64 65           
+  0305'   77 6F 72 74           
+  0309'   20 69 73 74           
+  030D'   20 66 61 6C           
+  0311'   73 63 68              
+  0023                          LT6     EQU     $-T6
+                                
+  0314'   4C 6F 61 64           T7:     DB      'Load/Start ? '
+  0318'   2F 53 74 61           
+  031C'   72 74 20 3F           
+  0320'   20                    
+  000D                          LT7     EQU     $-T7
+                                
+                                ;****************************************************************
+                                ;*               Konstanten-Definitionen                        *
+                                ;****************************************************************
+  0780                          BWSL    EQU     1920    ;Anzahl Zeichen auf ABS
+  0050                          SPANZ   EQU     80      ;Spaltenanzahl ABS
+  0018                          ZANZ    EQU     24      ;Zeilenanzahl  ABS
+                                
+  3000                          BWS     EQU     03000H  ;Adresse des Bildwiederholspeichers
+  1000                          STACK   EQU     01000H  ;obere Adressgrenze des Kellers
+  0C10                          EATAB   EQU     00C10H  ;Adresse der E/A-Tabelle fuer KMBG
+  0C00                          POIE    EQU     00C00H  ;Adresse des Zeigers zum Eingabekeller
+  0C02                          START   EQU     00C02H  ;Startadress-Merker
+  0400                          IV      EQU     00400H  ;Interruptvektorbereich
+                                
+  0030                          AKB     EQU     030H    ;Adresse der  A K B
+  00A0                          AT      EQU     0A0H    ;Adresse der  Ansteuerung Tast
+  0028                          SPUM    EQU     028H    ;Adresse der  SPeicherUMschaltung
+                                
+                                
+                                        END
+
+Macros:
+
+Symbols:
+0030    AKB             0000'   ANF             019E'   ANF1            
+016C'   ANF2            0002    ANST            01D6'   ARBT            
+01DE'   ARMB            00A0    AT              3000    BWS             
+0780    BWSL            0275'   CL              0276'   CL1             
+0272'   CR              0001    CTR             0C10    EATAB           
+020F'   GNLPN           01F4'   GNRA            0221'   GNRDR           
+01E5'   GNRE            01FF'   GNRW            0400    IV              
+020A*   KR.BERT         01E2*   KR.BRKMB        0000*   KR.INIT         
+022C*   KS.PUFFS        01BD'   LESV            014A'   LO1             
+0169'   LO2             0171'   LO3             0027    LT1             
+001C    LT2             000D    LT3             000D    LT4             
+0006    LT5             0023    LT6             000D    LT7             
+0073'   M2              0085'   M3              009B'   M4              
+00D6'   M5              0104'   M6              0116'   M7              
+0002    PASS            0C00    POIE            027D'   PQ              
+0206'   RW1             001B'   SP1             002C'   SP2             
+0038'   SP3             0050    SPANZ           0028    SPUM            
+0004    SPUM1           1000    STACK           0C02    START           
+028E'   T1              02B5'   T2              02D1'   T3              
+02DE'   T4              02EB'   T5              02F1'   T6              
+0314'   T7              0232'   TA1             023B'   TA2             
+0241'   TA3             024E'   TA4             0283'   TA5             
+0001    TAST            000B    TCL             0004    TCR             
+0006    TPQ             01AA'   UPT1            017E'   UW              
+018D'   UW1             0196'   UWEND           01B2'   VERG            
+01B3'   VERG1           01BB'   VERG2           0018    ZANZ            
+0271'   ZEI             
+
+
+
+No Fatal error(s)
+

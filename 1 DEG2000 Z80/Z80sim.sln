@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31717.71
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "DEG2000", "Z80sim\DEG2000.vbproj", "{A5FAD7A5-BA0C-47E7-9521-95641AB9B35C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A5FAD7A5-BA0C-47E7-9521-95641AB9B35C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5FAD7A5-BA0C-47E7-9521-95641AB9B35C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5FAD7A5-BA0C-47E7-9521-95641AB9B35C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5FAD7A5-BA0C-47E7-9521-95641AB9B35C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E605900A-B90A-471E-90C8-BE510C860502}
+	EndGlobalSection
+EndGlobal

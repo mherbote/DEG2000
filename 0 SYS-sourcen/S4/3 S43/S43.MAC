@@ -1,0 +1,1618 @@
+;**********************************************************************
+;  B e t r i e b s s y s t e m     D  E  G  2  0  0  0   Version 4.3
+;                                  ---------------------------------
+;
+;  Systemteil:                     DEG2000 - BIOS
+;**********************************************************************
+;
+;----------------------------------------------------------------------
+;  Bearbeiter:   Marcus Herbote     K EAW  /  ZFT - wfvm
+;  Stand     :   12. August 1985
+;----------------------------------------------------------------------
+;  Hinweis zur Implementierung auf  Standard - TAP2/TAP3:
+;
+;     Folgende Routinen aus dem DEG2000-Betriebssystem Version 1.2
+;  werden benutzt
+;
+;  physischer Teil  Kassettenroutine --- EPROM 40, 44, 48
+;  physischer Teil  Tastatur routine --- EPROM 6C
+;  physischer Teil  Lochband routine --- EPROM 70
+;  physischer Teil  Drucker  routine --- EPROM 7C
+;----------------------------------------------------------------------
+;  Inhalt
+;
+;  ..  - generierungsangaben
+;  ..  - sprungtabelle
+;  ..  - interruptadressen und - behandlungen
+;  ..  - speicherumschaltungen
+;  ..  - status konsole und drucker
+;  ..  - konsoleingabe
+;  ..  - konsolausgabe
+;  ..  - druckerausgabe
+;  ..  - lesereingabe
+;  ..  - stanzerausgabe
+;  ..  - read / write  hilfsroutinen
+;  ..  - read / write
+;  ..  - read / write  tpa-disk
+;  ..  - read / write  kassetten geblockt
+;  ..  - kassettenroutinen laden/entladen/positionieren
+;  ..  - boot / wboot
+;  ..  - kassettenbedienung laden/entladen
+;  ..  - hardwarebeschreibungen
+;  ..  - e/a tabellen
+;  ..  - arbeitszellen
+;
+;----------------------------------------------------------------------
+;
+	page	86
+;	Laufwerksaufteilung   DEG2000 ---  S Y S 4
+;	==============================================
+;
+;	 A	-	TPA - Disk
+;	----------------------------------------------
+;	 B	-	Kassettenlaufwerk 1
+;	 C	-	Kassettenlaufwerk 2
+;
+;	*D	-	Kassettenlaufwerk 3
+;	*E	-	Kassettenlaufwerk 4
+;
+;	*F	-	Kassettenlaufwerk 5
+;	*G	-	Kassettenlaufwerk 6
+;	----------------------------------------------
+;	*H	-	Mini     Diskette 1
+;	*I	-	Mini     Diskette 2
+;	*J	-	Mini     Diskette 3
+;	*K	-	Mini     Diskette 4
+;	----------------------------------------------
+;	*L	-	Standard Diskette 1
+;	*M	-	Standard Diskette 2
+;	----------------------------------------------
+;	*N	-	Zentralstation
+;	*O	-	T R A M   - Pseudodisk
+;	*P	-	16k - OPS - Pseudodisk
+
+;	*	Besagt, dass entsprechendes Laufwerk
+;		bei der Systemgenerierung ein- bzw. ausgeschlossen
+;		werden kann.
+	page
+	include	EQ.ASM
+	page	
+;
+;----------------------------------------------------------------------
+;
+cr	equ	0dh
+lf	equ	0ah
+ff	equ	0ch
+tab	equ	09h
+esc	equ	1bh
+;
+;   generierungsangaben
+;   -------------------
+;
+zeil	equ	40h		; adresse der zeilennummer
+spalt	equ	41h		; adresse der spaltennummer
+;
+; parameter fuer blockung (stehen in den e/a-tabellen)
+;
+;blklog	equ	8		; anzahl der recorde in einem logischen block
+;cpmspt	equ	16		; sector per track
+;blksiz	equ	2		; anzahl der recorde in einem hostblock
+;				;   (potenz von 2!!!)
+;secshf	equ	1		; 2**secshf = blksiz
+;secmsk	equ	1		; schneidet secshf bits hinten heraus
+;
+erranz	equ	4		; anzahl der fehlerwiederholungen
+;
+; parameter fuer tpa-disk
+;
+simsiz	equ	42h		; adresse auf der groesse des tpa-disk steht
+simad	equ	biosan-1600h	; 1. adr., die nicht zum tpa-disk gehoert
+simgr	equ	0		; groesse des tpa-disk in kbyte
+;
+lwa	equ	43h		; laufwerksnummer laufwerk A
+;
+datum	equ	44h		; aktuelles Datum tag/monat/jahr
+;
+	.z80
+;
+start::	ld	hl,biosan-01700h	;SYS4- Speicherbereich loeschen
+	ld	de,biosan-01700h+1
+	ld	bc,01700h+biosle-1
+	ld	(hl),0
+	ldir
+	ld	hl,anfang		;BIOS - Teil laden 
+	ld	de,biosan
+ if opsdk
+	ld	bc,op12-anfang
+ else
+	ld	bc,ende-anfang
+ endif
+	ldir
+	ld	hl,cca1			;CCP  - Umladeroutine laden
+	ld	de,biosan-01700h
+	ld	bc,cca2-cca1
+	ldir
+	ld	hl,gosys2		;Sprung zur Version 1.2
+	ld	de,gosys0
+	ld	bc,gosys3-gosys2
+	ldir
+	jp	gosys0
+
+cca1::
+	.phase	biosan-01700h
+	defw	$
+	defb	'CCP '
+	ld	hl,biosan-01600h
+	ld	de,0e800h
+	ld	bc,00800h
+	ldir
+	jp	11
+	.dephase
+cca2::
+
+	page
+	org	start+100h-3
+anfang:
+;
+;----------------------------------------------------------------------
+;
+	.phase	biosan
+;
+	jp	boot
+	jp	wboot
+	jp	const
+	jp	conin
+	jp	conou
+	jp	list
+	jp	punch
+	jp	reade
+	jp	home
+	jp	selds
+	jp	settr
+	jp	setse
+	jp	setdm
+	jp	read
+	jp	write
+	jp	lists
+	jp	sectr
+;
+	jp	return
+	jp	return
+	jp	return
+	jp	return
+	jp	return
+	jp	return
+	jp	return
+;
+	page	
+; interrupt sprungtabelle (beginnt auf xx48h)
+; -------------------------------------------
+;
+	include	IT.ASM	
+;
+;----------------------------------------------------------------------
+;
+; stackrettung
+; ------------
+;	biosan+100h
+;
+reta::	ex	(sp),hl
+	push	de
+	push	bc
+	push	ix
+	push	iy
+	jp	(hl)
+;
+retu::	pop	iy
+	pop	ix
+	pop	bc
+	pop	de
+	pop	hl
+return::ret
+
+; Sprungverteiler-Routine
+; -----------------------
+;
+iodisp::
+	pop	hl
+	push	bc
+	push	de
+	ld	a,(hl)
+	inc	hl
+	ld	b,a
+	or	a
+	ld	a,(3)
+	jr	z,iodis2
+iodis1::
+	rra
+	djnz	iodis1
+iodis2::
+	and	3
+	rla
+	ld	c,a
+	add	hl,bc
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	ex	de,hl
+	pop	de
+	pop	bc
+	jp	(hl)
+;
+; dph-adresse laden
+; -----------------
+;
+ldhldp:	ld	hl,dpha
+	ld	a,(lwa)
+	cp	e
+	ret	z
+	ld	a,e
+	add	a,a
+	ld	d,0
+	ld	e,a
+	add	hl,de
+	ret
+;
+	include	UM.ASM
+	page	
+; consol-status
+; -------------
+;
+const::	call	reta		; iobyte  00 00 00 xx
+	call	iodisp		;    0, 1, 3  crt:
+	defb	0		;    2        bat:
+	defw	const0
+	defw	const1
+	defw	reads1
+	defw	const3
+
+const0::
+const1::
+const3::
+	call	ciber
+	jp	retu
+
+
+ciber::				; liefert a = ff wenn taste gedrueckt ist
+	call	ci.sta		; liefert zero cond. wenn taste gedrueckt ist
+	jr	nz,m002
+	ld	a,(sverz)	; es ist eine taste gedruckt, jedoch
+	or	a		; beim schnellschreiben verzoegern
+	jr	z,m001		;   -> kein schnellschreiben
+	dec	a
+	ld	(sverz),a
+	xor	a		; keine taste gedrueckt
+	ret
+;
+m001::	xor	a		; es ist eine taste gedrueckt
+	dec	a
+	ret
+;
+m002::	xor	a		; es ist keine taste gedrueckt
+	ld	(sverz),a	; kein weiteres verzoegern
+	ld	(sschr),a	; kein weiteres schnellschreiben
+m003::	ret
+;
+	page	
+; consol eingabe
+; --------------
+;
+ if talt
+zklein::defw	100h
+zgros::	defw	800h
+ else
+zklein::defw	200h		; wartezeit fuer schnellschreiben
+zgros::	defw	2000h
+ endif
+;
+conin::				; iobyte:  00 00 00 xx
+	call	reta		;   0, 1, 3  crt:
+	call	iodisp		;   2        bat:
+	defb	0
+	defw	conin0
+	defw	conin1
+	defw	reade1
+	defw	conin3
+;
+conin0::
+conin1::
+conin3::
+	call	ci
+	jp	retu
+
+ci:
+	xor	a
+	ld	(sverz),a	; damit ciber nicht verzoegert
+	call	ciber
+	jr	z,m012		; -> taste nicht gedrueckt
+	ld	a,(sschr)
+	or	a
+	jr	z,m012
+	ld	de,(zklein)
+	jr	m013
+m012::	ld	de,(zgros)
+m013::	call	ciber		; warten bis taste gedrueckt ist
+	jr	z,m013
+	call	ci.ch		; zeichen uebernehmen
+;
+m014::	call	ciber
+	jr	z,m015		; -> taste wurde losgelassen
+	dec	e
+	jr	nz,m014
+	dec	d
+	jr	nz,m014
+;
+	ld	a,0ffh		; es beginnt schnellschreiben
+	jr	m016
+m015::	xor	a		; kein schnellschreiben
+m016::	ld	(sschr),a
+	ld	(sverz),a
+	page
+;
+; bearbeitung der sondertasten
+;
+;   1. eq.sys   zurueck ins urbetriebssystem (falls vorhanden)
+;   2. eq.hex   hexadezimale eingabe eines zeichens
+;   3. eq.lr0   druckerreset
+;   4. eq.lw    laufwerk A auf anderes phys. definieren
+;   5. eq.cap   buchstaben gross/kleinschaltung aendern
+;   6. eq.gra   groesse des geraetes a festlegen
+;   7. eq.le1   laden/entladen geraet 1
+;   8. eq.le2           "             2
+;   9. eq.le3           "             3
+;      ...
+;  14. eq.sio	leser-/stanzer-Kanal auf ATS-Kanal A bzw. B schalten
+;  15. eq.ini	init. laufwerk O , P
+;  16. eq.bcu	monitorsteuerung BCU
+;  17. eq.deg	monitorsteuerung DEG
+;  18. eq.bsd   bildschirm drucken
+;
+	ld	a,b
+;
+ if eq.sys ne 0
+	cp	eq.sys		; S Y S ?
+	jr	nz,c03		; -------
+	ld	a,(pf10er)	; zurueck ins urbetriebssystem
+	dec	a
+	ld	a,20h
+	jr	nz,c03
+	gosys
+ endif
+;
+c03::
+ if eq.hex ne 0
+	cp	eq.hex		; E 1 ?
+	jr	nz,c04		; -----
+	call	cbit4		; hexaeingabe eines zeichens
+	or	a
+	rla
+	rla
+	rla
+	rla
+	ld	c,a
+	call	cbit4
+	add	a,c
+	jp	c18
+ endif
+;
+c04::
+ if eq.lr0 ne 0
+	cp	eq.lr0		; E 2 ?
+	jp	nz,c06		; -----
+	ld	a,(pf10er)
+	dec	a
+	ld	a,' '
+	jp	nz,c18		; --> nicht erlaubt
+	ld	sp,spber1
+lr011:	ld	de,lrtxt
+	ld	c,9
+	call	5
+	ld	de,ccppuf
+	ld	c,10
+	call	5
+	ld	a,(ccppuf+1)	; laenge der eingabe
+	cp	3
+	jr	nz,lr011
+	ld	a,(ccppuf+2)
+	ld	ix,eadr+3
+	ld	b,0
+	cp	'0'
+	jr	z,lr012
+	cp	'2'
+	jr	nz,lr013
+	set	0,b
+	jr	lr013
+lr012:
+lr013:	ld	a,(ccppuf+3)
+	cp	'6'
+	jr	z,lr014
+	cp	'8'
+	jr	nz,lr015
+	set	1,b
+	jr	lr015
+lr014:
+lr015:	ld	a,(ccppuf+4)
+	cp	'O'
+	jr	z,lr016
+	cp	'M'
+	jr	nz,lr016
+	ld	a,-1
+	jr	lr017
+lr016:	xor	a
+lr017:	set12
+	ld	(ix+4),b
+	ld	(ix+12),a
+	res12
+	call	lo.reset	; druckerreset
+	jp	0
+lrtxt::	defb	cr,lf,'Drucker - Parameter { 0|2 6|8 O|M } $'
+ endif
+;
+c06::
+ if eq.lw ne 0
+	cp	eq.lw		; E 3 ?
+	jp	nz,c07		; -----
+	ld	a,(pf10er)
+	dec	a
+	ld	a,' '
+	jp	nz,c18		; --> nicht erlaubt
+	ld	sp,spber1
+	ld	de,defa		; laufwerk A := neue laufwerksnummer
+	ld	c,9
+	call	5		; eingabe anfordern
+	ld	de,ccppuf
+	ld	c,10
+	call	5		; eingabe
+	ld	a,(ccppuf+1)	; laenge der eingabe
+	or	a
+	jr	z,c069
+	ld	a,(ccppuf+2)	; laufwerksangabe
+	cp	'q'
+	jr	nc,c069
+	cp	'a'
+	jr	c,c062
+	sub	20h
+	jr	c061
+c062::	cp	'Q'
+	jr	nc,c069
+	cp	'A'
+	jr	c,c069
+c061::	sub	41h
+	push	af
+	call	exch2
+	pop	af
+	ld	(lwa),a
+	call	exch2
+c069::	ld	a,(lwa)
+	add	a,41h
+	ld	(defa2+12),a
+	ld	de,defa2
+	ld	c,9
+	call	5
+	jp	0
+exch:	ld	a,(hl)
+	ex	de,hl
+	ld	b,(hl)
+	ld	(hl),a
+	ex	de,hl
+	ld	(hl),b
+	ret
+exch1:	push	hl
+	pop	de
+	add	hl,bc
+	call	exch
+	inc	hl
+	inc	de
+	call	exch
+	ld	b,0
+	ret
+exch2:	ld	a,(lwa)
+	or	a
+	ret	z
+	add	a,a
+	ld	b,0
+	ld	c,a
+	ld	hl,ixtab
+	call	exch1
+	ld	hl,dpha
+	call	exch1
+	ret
+defa::	defb	cr,lf,'Laufwerk A := $'
+defa2::	defb	cr,lf,lf,'Laufwerk . <=> A$'
+ endif
+;
+c07::
+ if eq.cap ne 0
+	cp	eq.cap		; E 0 ?
+	jr	nz,c08		; -----
+	ld	a,(umsch)	; standard shiftposition aendern
+	xor	20h
+	ld	(umsch),a
+	jp	ci
+ endif
+;
+c08::
+ if eq.gra ne 0
+	cp	eq.gra		; pf1?
+	jp	nz,c09		; ----
+	ld	a,(pf10er)	; tpa - diskgroesse setzen
+	dec	a
+	ld	a,' '
+	jp	nz,c18		; -> nicht erlaubt
+	ld	sp,spber1
+	ld	de,setams
+	ld	c,9
+	call	5
+	ld	de,ccppuf
+	ld	c,10
+	call	5
+	ld	a,(ccppuf+1)	; laenge der eingabe
+	or	a
+	jp	z,0		; keine eingabe = simsiz bleibt unveraendert
+	ld	b,a
+	xor	a
+	ld	(simsiz),a
+	ld	hl,ccppuf+2
+c081::	ld	a,(simsiz)
+	add	a,a
+	ld	c,a
+	add	a,a
+	add	a,a
+	add	a,c
+	add	a,(hl)
+	sub	'0'
+	ld	(simsiz),a	; siz := siz*10 + ziffer - ord('0')
+	inc	hl
+	djnz	c081
+	cp	(biosan-1800h) shr 10
+	jr	c,c082
+	xor	a
+	ld	(simsiz),a	; a war zu gross
+c082::	cp	3
+	jr	nc,c083
+	xor	a
+	ld	(simsiz),a	; simsiz < 3 ist nicht erlaubt
+c083::	call	dirdel
+	jp	0
+setams::defb	cr,lf,'Groesse TPA-Disk: $'
+ endif
+;
+c09::	cp	eq.le1		; pf2?
+	jr	nz,c10		; ----
+	ld	ix,eatab1	; kassettenlaufwerk 1
+	ld	e,1
+	call	ldhldp
+	ld	de,dphc1
+;
+km.le::	push	hl		; kassette laden/entladen
+	push	de
+	ld	a,(ix+gelade)
+	or	a
+	jr	nz,km.le1	; -> entladen
+	call	clad		; laden
+	pop	de
+	pop	hl
+	jr	nz,km.le2	; -> fehler beim laden
+	ld	(hl),e		; geraet als geladen in dph-tabelle eintragen
+	inc	hl
+	ld	(hl),d
+	jr	km.le2
+;
+km.le1::call	centl		; b entladen
+	pop	de
+	pop	hl
+	ld	(hl),0		; geraet aus dph-tabelle streichen
+	inc	hl
+	ld	(hl),0
+km.le2::jp	ci
+;
+c10::	cp	eq.le2		; pf3?
+	jr	nz,c11		; ----
+	ld	ix,eatab2	; kassettenlaufwerk 2
+	ld	e,2
+	call	ldhldp
+	ld	de,dphc2
+	jr	km.le
+;
+c11::
+ if anzakb gt 1
+	cp	eq.le3		; pf4?
+	jr	nz,c12		; ----
+	ld	ix,eatab3	; kassettenlaufwerk 3
+	ld	e,3
+	call	ldhldp
+	ld	de,dphc3
+	jr	km.le
+;
+c12::	cp	eq.le4		; pf5?
+	jr	nz,c13		; ----
+	ld	ix,eatab4	; kassettenlaufwerk 4
+	ld	e,4
+	call	ldhldp
+	ld	de,dphc4
+	jr	km.le
+ endif
+;
+c13::
+ if anzakb gt 2
+	cp	eq.le5		; pf6?
+	jr	nz,c14		; ----
+	ld	ix,eatab5	; kassettenlaufwerk 5
+	ld	e,5
+	call	ldhldp
+	ld	de,dphc5
+	jr	km.le
+;
+c14::	cp	eq.le6		; pf7?
+	jr	nz,c17		; ----
+	ld	ix,eatab6	; kassettenlaufwerk 6
+	ld	e,6
+	call	ldhldp
+	ld	de,dphc6
+	jr	km.le
+ endif
+;
+c17::
+ if eq.sio ne 0
+	cp	eq.sio		; pf9?
+	jp	nz,c189		; ----
+	ld	a,(pf10er)	; init. ATS-Kanal A bzw. B
+	dec	a
+	ld	a,' '
+	jp	nz,c18		; --> nicht erlaubt
+	ld	sp,spber1
+	ld	de,siot1
+	ld	c,9
+	call	5
+	ld	de,ccppuf
+	ld	c,10
+	call	5
+	ld	a,(ccppuf+1)
+	or	a
+	jp	z,0
+	ld	a,(ccppuf+2)
+	cp	'a'
+	jr	z,sioa
+	cp	'A'
+	jr	z,sioa
+	cp	'b'
+	jr	z,siob
+	cp	'B'
+	jr	z,siob
+	jp	0
+sioa:	call	ri.ata
+	ld	a,(3)
+	and	11000011b
+	or	00101000b
+	ld	(3),a
+	jp	0
+siob:	call	ri.atb
+	ld	a,(3)
+	and	11000011b
+	or	00111100b
+	ld	(3),a
+	jp	0
+siot1:	defb	cr,lf,'ATS-Kanal { A|B } : $'
+ endif
+;
+c189:
+ if eq.ini ne 0   and   ( tramdk or opsdk )
+	cp	eq.ini		; pf10?
+	jr	nz,c170		; -----
+	ld	a,(pf10er)	; init. laufwerk O , P
+	dec	a
+	ld	a,' '
+	jp	nz,c18		; --> nicht erlaubt
+	ld	sp,spber1
+	ld	de,int1		
+	ld	c,9
+	call	5
+	ld	de,ccppuf
+	ld	c,10
+	call	5		; eingabe des laufwerkes
+	ld	a,(ccppuf+1)
+	or	a
+	jp	z,0
+	ld	a,(ccppuf+2)	; laufwerksangabe
+	cp	'o'
+	jr	z,ino1
+	cp	'O'
+	jr	z,ino1
+	cp	'p'
+	jr	z,inp2
+	cp	'P'
+	jr	z,inp2
+	jp	0
+
+ino1:
+ if tramdk
+	call	md.ino
+ endif
+	jp	0
+inp2:
+ if opsdk
+	call	md.inp
+ endif
+	jp	0
+
+int1:	db	cr,lf,'Init Laufwerk { O|P } : $'
+ endif
+;
+c170::
+ if eq.bcu ne 0
+	cp	eq.bcu		; pf11?
+	jr	nz,c173		; -----
+	ld	a,(pf10er)	; monitor BCU
+	dec	a
+	ld	a,' '
+	jp	nz,c18		; -> nicht erlaubt
+	ld	sp,spber1
+	call	co.bcu
+	ld	de,mon1
+	ld	c,9
+	call	5
+	jp	0
+mon1:	db	cr,lf,'monitor  B C U$'
+ endif
+;
+c173::
+ if eq.deg ne 0
+	cp	eq.deg		; pf12?
+	jr	nz,c174		; -----
+	ld	a,(pf10er)	; monitor DEG
+	dec	a
+	ld	a,' '
+	jp	nz,c18		; -> nicht erlaubt
+	ld	sp,spber1
+	call	co.deg
+	ld	de,mon2
+	ld	c,9
+	call	5
+	jp	0
+mon2:	db	cr,lf,'monitor  D E G$'
+ endif
+;
+c174::
+ if eq.bsd ne 0
+	cp	eq.bsd		; H C P ?
+	jr	nz,c18		; -------
+	ld	b,maxz		; bildschirminhalt ausdrucken
+	ld	hl,bsanf
+c171::	push	bc
+	push	hl
+	ld	a,lf
+	ld	c,a
+	call	lo.ch
+	ld	a,cr
+	ld	c,a
+	call	lo.ch
+	pop	hl
+	ld	b,maxs
+c172::	push	bc
+	set12
+	ld	a,(hl)
+	res12
+	inc	hl
+	push	hl
+	and	07fh
+	ld	c,a
+	call	lo.ch
+	pop	hl
+	pop	bc
+	djnz	c172
+	pop	bc
+	djnz	c171
+	ld	a,lf
+	ld	c,a
+	call	lo.ch
+	ld	a,cr
+	ld	c,a
+	call	lo.ch
+	jp	ci
+ endif
+;
+c18::	ld	b,a
+	xor	a
+	ld	(pf10er),a
+	ld	a,b
+	and	07fh		; paritaet loeschen
+	ret
+;
+;----------------------------------------------------------------------
+;
+ if eq.hex ne 0
+cbit4::	push	bc
+	xor	a
+	ld	(sverz),a
+cbit41::call	ciber		; warten bis taste losgelassen
+	jr	nz,cbit41
+cbit42::call	ciber		; warten bis taste gedrueckt
+	jr	z,cbit42
+;
+	call	ci.ch		; zeichen uebernehmen
+	ld	b,a
+cbit43::call	ciber		; warten bis taste losgelassen
+	jr	nz,cbit43
+	ld	a,b
+	and	7fh
+	cp	41h
+	jr	c,cbit44
+	sub	7
+cbit44::sub	30h
+	and	0fh
+	pop	bc
+	ret
+ endif
+;
+	page	
+; console ausgabe
+; ---------------
+;
+conou::				; iobyte:   00 00 00 xx
+	call	reta		;   0, 1  crt:
+	push	af		;   2     bat:
+	call	iodisp		;   3     crt: + lpt:
+	defb	0
+	defw	conou0
+	defw	conou1
+	defw	listx
+	defw	conou3
+
+conou0::
+conou1::
+	call	co.ch
+	pop	af
+	jp	retu
+
+conou3::
+	call	co.ch
+	call	lo.ch
+	pop	af
+	jp	retu
+
+; drucker ausgabe
+; ---------------
+;
+lists::	call	reta
+	call	iodisp
+	defb	6
+	defw	lsst0
+	defw	lsst1
+	defw	lsst2
+	defw	lsst3
+
+lsst0::
+lsst1::
+lsst2::
+lsst3::
+	xor	a		; immer bereit
+	jp	retu
+
+
+list::				; iobyte:  xx 00 00 00
+	call	reta		;   0			ATS-Kanal A
+	push	af		;   1        crt:
+listx::	call	iodisp		;   2	     lpt:
+	defb	6		;   3			ATS-Kanal B
+	defw	list0
+	defw	list1
+	defw	list2
+	defw	list3
+
+list0::
+	call	pu1.ch
+	pop	af
+	jp	retu
+list1::
+	call	co.ch
+	pop	af
+	jp	retu
+list2::
+	call	lo.ch
+	pop	af
+	jp	retu
+list3::
+	call	pu2.ch
+	pop	af
+	jp	retu
+;
+	page	
+; leser eingabe
+; -------------
+;
+readst::call	reta
+reads1::call	iodisp
+	defb	2
+	defw	rdst0
+	defw	rdst1
+	defw	rdst2
+	defw	rdst3
+
+rdst0::
+rdst1::
+rdst2::
+rdst3::
+	xor	a
+	dec	a
+	jp	retu
+
+
+reade::				; iobyte:   00 00 xx 00
+	call	reta		;   0     crt:
+reade1::call	iodisp		;   1     ptr:
+	defb	2		;   2	  ur1:	ATS-Kanal A
+	defw	read0		;   3	  ur2:	ATS-Kanal B
+	defw	read1
+	defw	read2
+	defw	read3
+
+
+read0::
+	call	ci.ch
+	jp	retu
+
+read1::
+	call	ri.ch
+	and	7fh
+	jp	retu
+
+read2::
+	call	ri1.ch
+	jp	retu
+
+read3::
+	call	ri2.ch
+	jp	retu
+;
+; stanzer ausgabe
+; ---------------
+;
+punch::				; iobyte:   00 xx 00 00
+	call	reta		;   0        crt:
+	push	af		;   1        ptp:
+	call	iodisp		;   2        up1:	ATS-Kanal A
+	defb	4		;   3	     up2:	ATS-Kanal B
+	defw	punch0
+	defw	punch1
+	defw	punch2
+	defw	punch3
+
+punch0::
+	call	co.ch
+	pop	af
+	jp	retu
+
+punch1::
+	call	pu.ch
+	pop	af
+	jp	retu
+
+punch2::
+	call	pu1.ch
+	pop	af
+	jp	retu
+
+punch3::
+	call	pu2.ch
+	pop	af
+	jp	retu
+;
+	page
+	include	CI.ASM
+	
+
+
+	include	CO.ASM
+
+
+
+	include	LO.ASM
+
+
+
+	include	RI.ASM
+
+
+
+	include	PU.ASM
+
+
+
+	page	
+; read/write hilfsroutinen
+; ------------------------
+;
+setse::	ld	(sec),bc	; set sector
+	ret
+;
+home::	call	reta		; head home
+	ld	bc,0
+	call	settr
+	call	setix
+	jr	z,home1		; -> geraet nicht vorhanden
+	ld	a,(ix-isblk)	; arbeitet geraet mit blockung?
+	or	a
+	jr	z,home1		; -> nein
+	ld	a,(ix+hstact)	; ist hostbuffer aktiv?
+	or	a
+	jr	z,home1		; -> nein
+	ld	a,(ix+hstwrt)	; wurde in hostbuffer geschrieben?
+	or	a
+	jr	nz,home1	; -> ja
+	ld	(ix+hstact),0	; flush hostbuffer
+home1::	jp	retu
+;
+settr::	ld	(trk),bc	; set track
+	ret
+;
+setdm::	ld	(dma),bc	; set memory address
+	ret
+;
+selds::	ld	a,c		; select disk
+	push	bc
+	ld	(dev),a
+	add	a,a
+	ld	c,a
+	ld	b,0
+	ld	hl,dpha
+	add	hl,bc
+	ld	a,(hl)
+	inc	hl
+	ld	h,(hl)
+	ld	l,a
+	pop	bc
+	ret
+;
+sectr::	ld	a,d		; translate sector
+	or	e		; wenn de=0, dann keine transformation
+	jr	z,sectr1
+	ex	de,hl
+	add	hl,bc
+	ld	l,(hl)
+	ld	h,0
+	ret
+sectr1::ld	h,b
+	ld	l,c
+	inc	hl
+	ret
+;
+setix::	ld	a,(dev)		; e/a-tabellenadresse nach ix laden
+	ld	e,a
+	ld	d,0
+	ld	hl,ixtab
+	add	hl,de
+	add	hl,de
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	ld	a,e
+	or	d
+	ret	z		; -> geraet nicht vorhanden
+	push	de
+	pop	ix
+	ret
+;
+	page	
+; massespeicher lesen/schreiben
+; -----------------------------
+;
+; aufteilung auf die physischen geraete
+;
+write::	call	reta
+	call	setix
+	jr	z,wr15
+	ld	l,(ix-ixwr)
+	ld	h,(ix-ixwr+1)
+	call	callhl		; writeroutine aufrufen
+	jr	wr16
+;
+wr15::	ld	a,1		; fehler: falsches geraet
+wr16::	jp	retu
+;
+;----------------------------------------------------------------------
+;
+read::	call	reta
+	call	setix
+	jr	z,wr15		; -> geraet nicht vorhanden
+	ld	l,(ix-ixrd)
+	ld	h,(ix-ixrd+1)
+	call	callhl		; readroutine aufrufen
+	jr	wr16
+;
+	page	
+; lesen / schreiben im tpa-disk
+;
+wrmem::	ld	a,(simsiz)
+	or	a
+	jr	z,wrmem0	; -> kein sim.disk
+	call	hsadr		; hs-adresse des simulierten floppy-sektors
+	jr	c,m05
+	ex	de,hl
+	ld	hl,(dma)
+m04::	ld	bc,80h		; vom sim.disk in den hs uebertragen
+m041::	ldir
+	xor	a
+	ret
+rdmem::	ld	a,(simsiz)
+	or	a
+	jr	z,rdmem0	; -> keim sim.disk
+	call	hsadr
+	jr	c,m05
+	ld	de,(dma)
+	jr	m04
+m05:
+wrmem0::ld	a,1
+	ret			; schreibfehler
+rdmem0::ld	hl,(dma)
+	ld	e,l
+	ld	d,h
+	inc	de
+	ld	(hl),0e5h
+	ld	bc,127
+	jr	m041
+;
+hsadr::	ld	de,(trk)
+	ld	hl,0
+	ld	b,26
+hsad1::	add	hl,de
+	djnz	hsad1
+	ld	bc,(sec)
+	add	hl,bc
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl		; hl := 128*(26*trk+sec)
+	ld	a,(simsiz)
+	add	a,a
+	add	a,a
+	neg
+	ld	b,a
+	ld	c,0		; bc := - simsiz*1024
+	add	hl,bc
+	ld	bc,simad-80h
+	add	hl,bc
+	ld	a,0+(high simad)-1 ; simulierter disk bis max. simad-1
+	cp	h
+	ret
+	page
+	include	KR.ASM
+	page	
+ if mindk or stadk
+	include	FL.ASM
+ endif
+	page	
+ if zst or tramdk or opsdk
+	include	MD.ASm
+ endif
+	page	
+	include	BK.ASM
+;-------------------------------
+;
+callhl::jp	(hl)
+;
+	page	
+; kaltstart
+; ---------
+;
+boot::	ld	sp,spber
+	ld	(stkret),sp
+	di
+	res12			; speicherumschaltungen initialisieren
+;
+	ld	a,simgr		; groesse des sim.disk
+	ld	(simsiz),a
+	ld	hl,3
+	ld	(hl),95h	; iobyte
+	inc	hl
+	ld	(hl),0		; default dev.
+	jp	boot01
+
+; verzeichnis A: loeschen
+; -----------------------
+;
+dirdel::ld	a,(simsiz)
+	or	a
+	ret	z
+	add	a,a
+	add	a,a
+	neg
+	ld	h,a
+	ld	l,0
+	ld	bc,simad
+	add	hl,bc
+	push	hl
+	pop	de
+	inc	de
+	ld	bc,7ffh
+	ld	(hl),0e5h
+	push	hl
+	ldir
+	pop	hl
+	push	hl
+	push	hl
+	pop	de
+	inc	de
+ if pipeq
+	ld	bc,3fh
+ else
+	ld	bc,1fh
+ endif
+	ld	(hl),0
+	ldir
+	pop	de
+	push	de
+	ld	hl,dirgo
+	ld	bc,12
+	ldir
+	pop	hl
+ if pipeq
+	push	hl
+	ld	de,32
+	add	hl,de
+	ex	de,hl
+	ld	hl,dirgo1
+	ld	bc,17
+	ldir
+	pop	hl
+	ld	de,800h
+	add	hl,de
+	ex	de,hl
+	ld	hl,dirg11
+	ld	bc,dirg12-dirg11
+	ldir
+ endif
+	ret
+
+dirgo:	defb	0,'GO      ',0c3h,'OM'
+ if pipeq
+dirgo1:	defb	0,'PIP     SUB',0,0,0,2,2
+dirg11:	dirg
+dirg12:
+ endif
+;
+boot01::call	dirdel
+;
+; bildschirm initialisieren
+; -------------------------
+;
+	xor	a
+	ld	(qrmode),a
+	ld	(qroll),a
+	ld	(qesc),a
+	ld	hl,bsanf
+	ld	(bsaddr),hl
+	ld	hl,bootms
+	ld	b,bootme-bootms
+boot03::push	bc
+	ld	a,(hl)
+	inc	hl
+	ld	c,a
+	push	hl
+	call	co.ch
+	pop	hl
+	pop	bc
+	djnz	boot03
+	jr	boot04
+;
+bootms::mbootm
+bootme::
+boot04::
+;
+; geraetezustand initialisieren
+; -----------------------------
+;
+	ld	hl,dpha		; geraete a bis p entladen
+	ld	b,32
+boot05::ld	(hl),0
+	inc	hl
+	djnz	boot05
+	ld	hl,dphad	; a ist tpa-disk
+	ld	(dpha),hl
+	ld	hl,ixtab1
+	ld	de,ixtab
+	ld	bc,32
+	ldir
+	xor	a		; a ist a
+	ld	(lwa),a
+;
+; kassetten initialisieren
+; ------------------------
+;
+	set12
+	ld	ix,eatab1
+	call	kmbini
+ if anzakb gt 1
+	ld	ix,eatab3
+	call	kmbini
+ endif
+ if anzakb gt 2
+	ld	ix,eatab5
+	call	kmbini
+ endif
+	res12
+
+	ld	a,10h		; status nicht bereit setzen
+	ld	(eatab1),a
+	ld	(eatab2),a
+ if anzakb gt 1
+	ld	(eatab3),a
+	ld	(eatab4),a
+ endif
+ if anzakb gt 2
+	ld	(eatab5),a
+	ld	(eatab6),a
+ endif
+;
+; gereate kaltinitialisierung
+; ---------------------------
+;
+	call	ci.kalt		; Tastatur
+ if mindk or stadk
+	call	fl.kalt		; Floppy initialisieren
+ endif
+ if zst or tramdk or opsdk
+	call	md.kalt		; simulierten disk initialisieren
+ endif
+	xor	a
+	ld	(sverz),a
+	ld	(sschr),a
+	ld	(eatab1+gelade),a
+	ld	(eatab2+gelade),a
+ if anzakb gt 1
+	ld	(eatab3+gelade),a
+	ld	(eatab4+gelade),a
+ endif
+ if anzakb gt 2
+	ld	(eatab5+gelade),a
+	ld	(eatab6+gelade),a
+ endif
+;
+;----------------------------------------------------------------------
+;
+	page
+; warmstart
+; ---------
+;
+wboot::	di
+	ld	sp,spber
+	ld	(stkret),sp
+	res12
+	ld	bc,80h
+	call	setdm
+;
+; geraete warminitialisierung
+; ---------------------------
+;
+	call	ci.warm
+ if mindk or stadk
+	call	fl.warm		; zum motor ausschalten
+ endif
+ if zst or tramdk or opsdk
+	call	md.warm
+ endif
+	xor	a
+	ld	(qrmode),a
+;
+	ld	a,1		; kassettenladen/-entladen erlauben
+	ld	(pf10er),a
+;
+; ccp und bdos umkopieren
+; -----------------------
+;
+	ccpcop
+;
+; systemanspruenge setzen
+; -----------------------
+;
+	ld	hl,biosan-0e00h+6
+	ld	(cubdos),hl
+	ld	a,(simsiz)
+	dec	a
+	ld	(sizem),a	; groesse des sim.disk in paramtabelle eintragen
+	inc	a
+	jr	z,noadev	; -> kein simulierter disk
+	add	a,a
+	add	a,a
+	neg
+	ld	h,a
+	ld	l,0
+	ld	bc,simad-80h+6
+	add	hl,bc
+	ld	(cubdos),hl
+	ld	(hl),0c3h
+	inc	hl
+	ld	(hl),low (biosan-0e00h+6)
+	inc	hl
+	ld	(hl),high (biosan-0e00h+6)
+noadev::
+;
+	ld	a,(3)
+	ld	(iobyt),a
+	ld	a,(4)		; pruefen, ob current dev. gueltig ist
+	ld	d,a
+	ld	c,a
+	ld	b,0
+	ld	hl,dpha
+	add	hl,bc
+	add	hl,bc
+	ld	a,(hl)
+	inc	hl
+	or	(hl)
+	jr	z,m104		; -> nicht gueltige current dev.
+	ld	a,d
+m104::	ld	(cudev),a	; aktuelles geraet
+	ld	hl,syspa
+	ld	de,0
+	ld	bc,23
+	ldir
+	ld	c,a
+;
+; interruptsystem setzen
+; ----------------------
+;
+	ld	a,high biosan
+	ld	i,a
+	im 2
+	ei
+	ld	a,c
+	jp	biosan-1600h	; ===> ccp
+;
+; Werte stehen nach Init ab Adresse 0000   
+; --------------------------------------
+;
+syspa::	jp	biosan+3	; -> wboot
+iobyt::	defb	095h		; list=lpt:/punch=ptp:/reader=ptr:/console=crt:
+cudev::	defb	0		; current device
+	defb	0c3h		; jp
+cubdos::defw	simad-80h+6-(simgr*1024)
+;
+	jp	kmbuse		; 0008h eintritt bamos kmb
+	jp	enduse		; 000bh	warten auf kmb-bereitschaft
+	jp	getpuf		; 000eh aus kmb-puffer in ram laden
+	defw	kmbpuf		; 0011h adresse eines hilfspuffers
+	defw	eatab1		; 0013h	adresse e/a-tabelle 1
+	defw	eatab2		; 0015h adresse e/a-tabelle 2
+;
+	page	
+; user-unterprogramme
+; -------------------
+;
+; erhaelt in ix die adresse der e/a-tabelle
+;         in a  das kmb-kommando
+; fuehrt dann das kmb-kommando aus und wartet auf die beendigung
+;
+kmbuse::ld	(spret),sp
+	ld	sp,spber1
+	call	kmb
+	ld	sp,(spret)
+	ret
+;
+; erhaelt in ix die adresse der e/a-tabelle
+; wartet dann auf das ende des rueckspulens
+;
+enduse::ld	(spret),sp
+	ld	sp,spber1
+	call	endruc
+	ld	sp,(spret)
+	ret
+;
+; erhaelt in ix die adresse der e/a-tabelle
+;         in de die adresse des zielbereiches, in den aus dem kassetten-
+;               puffer der e/a-tabelle uebertragen werden soll
+; uebertraegt dann aus dem kmb-puffer in den nutzerpuffer
+;
+getpuf::ld	(spret),sp
+	ld	sp,spber1
+	ld	l,(ix+eaadr)
+	ld	h,(ix+eaadr+1)
+	ld	b,(ix+ealen)
+	ld	c,(ix+ealen+1)
+getpu1::ld	a,b
+	or	c
+	jr	z,getpu2
+	set12
+	ld	a,(hl)
+	res12
+	ld	(de),a
+	inc	hl
+	inc	de
+	dec	bc
+	jr	getpu1
+;
+getpu2::ld	sp,(spret)
+	ret
+;
+;-------------------
+;
+	page	
+; hardware beschreibungstabellen
+; ------------------------------
+	include	IX.ASM
+	page
+	include	DH.ASM
+	page
+	include	DB.ASM
+	page
+;  arbeitszellen
+;  =============
+;
+;
+dma::	defw	0
+trk::	defw	0
+sec::	defw	0
+dev::	defb	0
+;
+readop::defb	0		; workspace for blocking/deblocking
+rsflag::defb	0
+wrtype::defb	0
+erflag::defb	0
+rderr::	defb	0
+sechst::defb	0
+;
+bsaddr::defw	0		; aktuelle bs-adresse
+qrmode::defb	0		; 1 spezieller rollmodus
+qroll::	defb	0		; 1 es wurde rollen verzoegert
+qesc::	defb	0		; anzeiger fuer steuerfolgen
+qesc0	equ	0
+qesc1	equ	1
+qesc2	equ	2
+umsch::	defb	20h		; aktuelle shiftmaske
+cont::	defb	0		; merkzelle fuer control-taste
+pf10er::defb	0		; 1 - kassettenladen/-entladen erlaubt
+;
+sverz::	defb	0		; zum verzoegern von const
+sschr::	defb	0		; 00 - kein schnellschreiben
+;
+ccppuf::defb	5,0,0,0,0,0,0	; puffer zur eingabe des lade/entladekommandos
+;
+dirbf::	defs	128
+;
+kmbpuf::defs	100h		; hilfspuffer zum direkten kmbschreiben
+;
+;
+;
+	defs	80h		; davon ?? benutzt
+spber::	defs	0
+
+	defs	20h		; davon ?? benutzt
+spber1::defs	0
+
+	defs	40h
+stk12::	defs	0
+
+spret::	defs	2
+stkret::defw	stk12
+;
+	page	
+
+	defw	$
+	defb	'SYS4'
+ if not tap
+	ld	hl,biosan
+	ld	(00c02h),hl
+ endif
+	jp	biosan
+
+biosxx::
+	.dephase
+ende::
+
+ if opsdk
+op11::
+	.phase	00c00h
+	opsmac
+	.dephase
+op12::
+ endif
+
+gosys2::
+	.phase	gosys0
+	gosys1
+	.dephase
+gosys3::
+
+	end	start
+

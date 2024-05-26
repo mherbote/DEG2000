@@ -1,0 +1,1200 @@
+	TITLE	'M E M O'
+	PAGE
+;	PN	ME02
+;	ORG	2000H
+;**********************************************************
+;        Darstellung (BZMAX) * 16 Byte Hexa und ASCII
+;**********************************************************
+;
+ME.AZBLD:
+	PUSH	HL
+	PUSH	DE
+	PUSH	BC
+	LD	HL,(ME.AADR)	;HL:= Bereichsanfang
+	LD	DE,SD.BWSA	;DE:= Bildwiederholsp.
+	LD	A,(ME.BZMAX)
+	OR	A
+	JR	Z,ME.AZBL2	;0 Zeilen
+	CP	23
+	JR	NC,ME.AZBL2	;mehr als 24 Zeilen
+	LD	B,A	;B:=Zeilenzahl
+ME.AZBL1:
+	CALL	ME.ANZ1Z
+	DJNZ	ME.AZBL1
+ME.AZBL2:
+	POP	BC
+	POP	DE
+	POP	HL
+	RET
+;
+ME.ANZ1Z:
+	CALL	ME.CVAX
+	PUSH	BC
+	INC	DE
+	INC	DE
+	PUSH	HL
+	LD	B,4
+ME.ANZ11:
+	CALL	ME.AZ4BY	;Hexa-Darstellung
+	DJNZ	ME.ANZ11
+	INC	DE
+	POP	HL
+	LD	B,16
+ME.ANZ12:
+	LD	A,(HL)	;ASCII-Darstellung
+	CALL	ME.ANZ1B
+	INC	HL
+	INC	DE
+	DJNZ	ME.ANZ12
+	LD	B,5
+ME.ANZ13:
+	INC	DE
+	DJNZ	ME.ANZ13
+	POP	BC
+	RET
+;
+ME.AZ4BY:
+	PUSH	BC	;Anzeige Vierergruppe
+	LD	B,4
+ME.AZ4B1:
+	LD	A,(HL)
+	CALL	UC.CVBX+2
+	INC	DE
+	INC	HL
+	DJNZ	ME.AZ4B1
+	INC	DE
+	POP	BC
+	RET
+;
+ME.ANZ1B:
+	CALL	ME.TASCI	;Anzeige 1 Byte ASCII
+	LD	(DE),A
+	RET
+;
+ME.TASCI:
+	RET	;aktualisiert fuer Emulator
+	CP	' '
+	JR	C,ME.TASC1
+	CP	80H
+	RET	C
+ME.TASC1:
+	LD	A,7FH
+	RET
+;
+;********************************************************
+;        Ausfuehrungsroutinen fuer die einzelnen
+;        Tastencodes
+;--------------------------------------------------------
+; CDH    SYS-Taste  (Systemruecksprung)
+;--------------------------------------------------------
+;
+ME.SYS:
+	LD	HL,ME.SYSM
+	EX	(SP),HL
+	RET
+;
+;--------------------------------------------------------
+; F8H   Home (Kursor nach oben links)
+;--------------------------------------------------------
+;
+ME.HOME:
+	CALL	ME.BSADL
+	LD	HL,(ME.AADR)
+	LD	(ME.AKTAD),HL	;aktuelle Adresse
+	LD	A,(ME.MOD)
+	OR	A
+	JR	NZ,ME.AHOME	;---> ASCII-Mode
+	LD	A,6
+ME.HOME1:
+	LD	(ME.BPZEI),A	;Position/Zeile
+	XOR	A
+	LD	(ME.BZEIN),A
+	CALL	ME.BSADS
+	RET
+ME.AHOME:
+	LD	A,59
+	JR	ME.HOME1
+;
+;BWS-Adresse aus (BZEIN) und (BPZEI) berechnen
+;OUT   HL=aktuelle BWS-Adresse
+;
+ME.BSADR:
+	PUSH	AF
+	PUSH	BC
+	PUSH	DE
+	LD	A,(ME.BZEIN)	;Zeilennummer
+	LD	HL,SD.BWSA
+	OR	A
+	JR	Z,ME.BSAD2
+	LD	B,A
+	LD	DE,80
+ME.BSAD1:
+	ADD	HL,DE
+	DJNZ	ME.BSAD1
+ME.BSAD2:
+	LD	A,(ME.BPZEI)	;Position
+	LD	E,A
+	LD	D,0
+	ADD	HL,DE
+	POP	DE
+	POP	BC
+	POP	AF
+	RET
+;
+ME.BSADL:
+;	CALL	ME.BSADR
+;	RES	7,(HL)
+	CALL	SY.RESC
+	RET
+ME.BSADS:
+	CALL	ME.BSADR
+	; SET	7,(HL)
+	CALL	SY.SETCHL
+	; PUSH	AF
+	; LD	A,(ME.BPZEI)	;Position
+	; LD	(SM.SPOS),A
+	; LD	A,(ME.BZEIN)	;Zeilennummer
+	; LD	(SM.ZPOS),A
+	; CALL	SY.SETC
+	; POP	AF
+	RET
+;
+;----------------------------------------------------------
+; FAH    New Line (Anfang naechste Zeile)
+;----------------------------------------------------------
+;
+ME.NEWL:
+	LD	A,(ME.BZEIN)
+	INC	A
+	CALL	ME.TSZMX
+	JR	NC,ME.HOME	;---> Max. Zeilennummer
+	CALL	ME.BSADL
+	LD	HL,ME.BZEIN
+	INC	(HL)
+	LD	A,(ME.MOD)
+	OR	A
+	JR	NZ,ME.ANEWL
+	LD	A,6
+ME.NEWL1:
+	LD	(ME.BPZEI),A
+	CALL	ME.BSADS
+	CALL	ME.CAKAL	;Korrektur akt. Adresse
+	RET
+ME.ANEWL:
+	LD	A,59
+	JR	ME.NEWL1
+;
+ME.TSZMX:
+	PUSH	HL	;Test auf max. Zeilennummer
+	LD	HL,ME.BZMAX
+	CP	(HL)
+	POP	HL
+	RET
+;
+ME.CAKAL:
+	LD	HL,(ME.AADR)
+	PUSH	BC
+	LD	A,(ME.BZEIN)
+	OR	A
+	JR	Z,ME.CAKA1
+	LD	B,A
+ME.CAKA2:
+	LD	DE,10H
+	ADD	HL,DE
+	DJNZ	ME.CAKA2
+	LD	(ME.AKTAD),HL
+ME.CAKA1:
+	POP	BC
+	RET
+;
+;---------------------------------------------------------------
+; FBH    Kursor nach unten
+;---------------------------------------------------------------
+;
+ME.CRUNT:
+	LD	A,(ME.BZEIN)
+	INC	A
+	CALL	ME.TSZMX
+	JR	NC,ME.CRBLD	;max. Zeilenanzahl
+	CALL	ME.BSADL
+	LD	HL,ME.BZEIN
+	INC	(HL)
+ME.CRUN1:
+	CALL	ME.BSADS
+	LD	HL,(ME.AKTAD)
+	LD	DE,10H
+	ADD	HL,DE
+	LD	(ME.AKTAD),HL
+	RET
+ME.CRBLD:
+	LD	HL,(ME.AADR)
+	LD	DE,10H
+	ADD	HL,DE
+	LD	(ME.AADR),HL
+	CALL	ME.AZBLD
+	JR	ME.CRUN1
+;
+;----------------------------------------------------------
+; F5H    Kursor nach oben
+;----------------------------------------------------------
+;
+ME.CHOCH:
+	LD	A,(ME.BZEIN)
+	OR	A
+	JR	Z,ME.CHBLD	;1. Zeile
+	CALL	ME.BSADL
+	LD	HL,ME.BZEIN
+	DEC	(HL)
+ME.CHOC1:
+	CALL	ME.BSADS
+	LD	HL,(ME.AKTAD)
+	LD	DE,10H
+	OR	A
+	SBC	HL,DE
+	LD	(ME.AKTAD),HL
+	RET
+ME.CHBLD:
+	LD	HL,(ME.AADR)
+	LD	DE,10H
+	OR	A
+	SBC	HL,DE
+	LD	(ME.AADR),HL
+	CALL	ME.AZBLD
+	JR	ME.CHOC1
+;
+;-----------------------------------------------------------
+; F0H    INS MODE (Umschaltung ASCII <---> HEXA)
+;-----------------------------------------------------------
+;
+ME.UMOD:
+	CALL	ME.BSADL
+	LD	A,(ME.MOD)
+	OR	A
+	JR	Z,ME.ASCMD
+	CALL	ME.REFAH
+	CALL	ME.BSADS
+	XOR	A
+	LD	(ME.MOD),A
+	RET
+;
+ME.REFAH:
+	LD	A,(ME.BPZEI)
+	LD	HL,ME.REFTB+10H
+ME.HEMD2:
+	CP	(HL)
+	JR	Z,ME.HEMD1
+	INC	HL
+	JR	ME.HEMD2
+ME.HEMD1:
+	LD	DE,10H
+	OR	A
+	SBC	HL,DE
+	LD	A,(HL)
+	LD	(ME.BPZEI),A
+	RET
+;
+ME.ASCMD:
+	CALL	ME.CBPZ
+	CALL	ME.REFHA
+	CALL	ME.BSADS
+	LD	A,1
+	LD	(ME.MOD),A
+	RET
+;
+ME.CBPZ:
+	INC	HL
+	LD	A,(HL)
+	CP	' '
+	RET	NZ
+	LD	HL,ME.BPZEI
+	DEC	(HL)
+	RET
+;
+ME.REFHA:
+	LD	A,(ME.BPZEI)
+	LD	HL,ME.REFTB
+ME.ASMD2:
+	CP	(HL)
+	JR	Z,ME.ASMD1
+	INC	HL
+	JR	ME.ASMD2
+ME.ASMD1:
+	LD	DE,10H
+	ADD	HL,DE
+	LD	A,(HL)
+	LD	(ME.BPZEI),A
+	RET
+;
+;------------------------------------------------------------
+; B0H    POS. QUIT.  (Blaettern vorwaerts)
+;------------------------------------------------------------
+;
+ME.BLVOR:
+	LD	HL,(ME.AADR)
+	LD	A,(ME.BZMAX)
+	LD	B,A
+	LD	DE,10H
+ME.BLVO3:
+	ADD	HL,DE
+	DJNZ	ME.BLVO3
+ME.BLVO2:
+	LD	(ME.AADR),HL
+	LD	(ME.AKTAD),HL
+	CALL	ME.AZBLD
+	XOR	A
+	LD	(ME.BZEIN),A
+	LD	A,(ME.MOD)
+	OR	A
+	JR	NZ,ME.ABLVO
+	LD	A,6
+ME.BLVO1:
+	LD	(ME.BPZEI),A
+	CALL	ME.BSADS
+	RET
+ME.ABLVO:
+	LD	A,59
+	JR	ME.BLVO1
+;
+;----------------------------------------------------------
+; CCH    NEG. QUIT.  (Blaettern rueckwaerts)
+;----------------------------------------------------------
+;
+ME.BLRUC:
+	LD	HL,(ME.AADR)
+	LD	A,(ME.BZMAX)
+	LD	B,A
+	LD	DE,10H
+ME.BLRU1:
+	OR	A
+	SBC	HL,DE
+	DJNZ	ME.BLRU1
+	JR	ME.BLVO2
+;
+;----------------------------------------------------------
+; F9H    Kursor nach rechts
+;----------------------------------------------------------
+;
+ME.CRECH:
+	LD	A,(ME.MOD)
+	OR	A
+	JP	NZ,ME.ACREC	;---> ASCII-Mode
+	LD	A,(ME.BPZEI)
+	CP	55
+	JR	Z,ME.CRNZ	;---> naechste Zeile
+	CALL	ME.BSADL
+	INC	HL
+	LD	A,(HL)
+	CP	' '
+	JR	Z,ME.CRAIC	;---> Adresse erhoehen
+	LD	HL,ME.BPZEI
+	INC	(HL)
+	CALL	ME.BSADS
+	RET
+;
+ME.CRAIC:
+	INC	HL
+	LD	A,(HL)
+	CP	' '
+	JR	Z,ME.CREC2	;---> naechste Vierergruppe
+	; SET	7,(HL)
+	CALL	SY.SETCHL
+	LD	HL,ME.BPZEI
+ME.CREC4:
+	INC	(HL)
+	INC	(HL)
+	JR	ME.CREC3
+ME.CREC2:
+	INC	HL
+	; SET	7,(HL)
+	CALL	SY.SETCHL
+	LD	HL,ME.BPZEI
+	INC	(HL)
+	JR	ME.CREC4
+ME.CREC3:
+	LD	HL,(ME.AKTAD)	;aktuelle Adr. erhoehen
+	INC	HL
+	LD	(ME.AKTAD),HL
+	RET
+;
+ME.CRNZ:
+	CALL	ME.BSADL
+	LD	A,6
+ME.CRNZ2:
+	LD	(ME.BPZEI),A
+	LD	A,(ME.BZEIN)
+	INC	A
+	CALL	ME.TSZMX
+	JR	NC,ME.CRCBD	;---> letzte Zeile
+	LD	HL,ME.BZEIN
+	INC	(HL)
+ME.CRNZ1:
+	CALL	ME.BSADS
+	JP	ME.CREC3
+;
+ME.CRCBD:
+	LD	HL,(ME.AADR)
+	LD	DE,10H
+	ADD	HL,DE
+	LD	(ME.AADR),HL
+	CALL	ME.AZBLD
+	JR	ME.CRNZ1
+;
+;-------------------------------------------------------
+;
+ME.ACREC:
+	CALL	ME.BSADL
+	LD	A,(ME.BPZEI)
+	CP	74
+	JR	Z,ME.ACRNZ	;---> naechste Zeile
+	INC	A
+	LD	(ME.BPZEI),A
+	CALL	ME.BSADS
+	JP	ME.CREC3
+;
+ME.ACRNZ:
+	LD	A,59
+	JR	ME.CRNZ2
+;
+;-------------------------------------------------------
+; F7H    Kursor nach links
+;-------------------------------------------------------
+;
+ME.CLINK:
+	LD	A,(ME.MOD)
+	OR	A
+	JP	NZ,ME.ACLNK	;---> ASCII-Mode
+	LD	A,(ME.BPZEI)
+	CP	6
+	JR	Z,ME.CLNZ	;---> 1 Zeile zurueck
+	CALL	ME.BSADL
+	DEC	HL
+	LD	A,(HL)
+	CP	' '
+	JR	Z,ME.CLDEC	;Adresse decrementieren
+	LD	HL,ME.BPZEI
+	DEC	(HL)
+	CALL	ME.BSADS
+	RET
+;
+ME.CLDEC:
+	DEC	HL
+	LD	A,(HL)
+	CP	' '
+	JR	Z,ME.CLDE2	;---> 1 Vierergruppe zurueck
+	; SET	7,(HL)
+	CALL	SY.SETCHL
+	LD	HL,ME.BPZEI
+ME.CLDE4:
+	DEC	(HL)
+	DEC	(HL)
+	JR	ME.CLDE3
+ME.CLDE2:
+	DEC	HL
+	; SET	7,(HL)
+	CALL	SY.SETCHL
+	LD	HL,ME.BPZEI
+	DEC	(HL)
+	JR	ME.CLDE4
+ME.CLDE3:
+	LD	HL,(ME.AKTAD)
+	DEC	HL
+	LD	(ME.AKTAD),HL
+	RET
+;
+ME.CLNZ:
+	CALL	ME.BSADL
+	LD	A,55
+ME.CLNZ2:
+	LD	(ME.BPZEI),A
+	LD	A,(ME.BZEIN)
+	OR	A
+	JR	Z,ME.CLCBD	;1.Zeile
+	LD	HL,ME.BZEIN
+	DEC	(HL)
+ME.CLNZ1:
+	CALL	ME.BSADS
+	JP	ME.CLDE3
+;
+ME.CLCBD:
+	LD	HL,(ME.AADR)
+	LD	DE,10H
+	OR	A
+	SBC	HL,DE
+	LD	(ME.AADR),HL
+	CALL	ME.AZBLD
+	JR	ME.CLNZ1
+;
+;---------------------------------------------------------
+;
+ME.ACLNK:
+	CALL	ME.BSADL
+	LD	A,(ME.BPZEI)
+	CP	59
+	JR	Z,ME.ACLNZ
+	DEC	A
+	LD	(ME.BPZEI),A
+	CALL	ME.BSADS
+	JP	ME.CLDE3
+ME.ACLNZ:
+	LD	A,74
+	JR	ME.CLNZ2
+;
+;-------------------------------------------------------------
+; F6H   Schieben rechts  (Ablegen im Puffer)
+;-------------------------------------------------------------
+;
+ME.INPUF:
+	LD	DE,(ME.PUZEI)
+	LD	HL,400H
+	OR	A
+	SBC	HL,DE
+	RET	Z		;Puffer voll
+	CALL	ME.CCPO	;Korrektur Kursorpos.
+	LD	HL,(ME.AKTAD)
+	LD	A,(HL)
+	LD	HL,ME.PUFAN
+	ADD	HL,DE
+	LD	(HL),A
+	INC	DE
+	LD	(ME.PUZEI),DE
+	CALL	ME.CRECH
+	LD	A,(ME.MOD)
+	OR	A
+	RET	NZ
+	CALL	ME.CRECH
+	RET
+;
+ME.CCPO:
+	LD	A,(ME.MOD)
+	OR	A
+	RET	NZ
+	CALL	ME.BSADR
+	INC	HL
+	LD	A,(HL)
+	CP	' '
+	RET	NZ
+	DEC	HL
+;	RES	7,(HL)
+	CALL	ME.BSADL
+	LD	HL,ME.BPZEI
+	DEC	(HL)
+	RET
+;
+;--------------------------------------------------------------
+; F4H   Schieben links (Auslagern Pufferinhalt)
+;--------------------------------------------------------------
+;
+ME.AUPUF:
+	LD	DE,(ME.PUZEI)
+	LD	A,D
+	OR	E
+	RET	Z
+	CALL	ME.CCPO
+	LD	DE,ME.PUFAN
+	LD	A,(DE)
+	LD	HL,(ME.AKTAD)
+	LD	(HL),A
+	CP	(HL)
+	RET	NZ
+	PUSH	DE
+	POP	HL
+	INC	HL
+	LD	BC,(ME.PUZEI)
+	PUSH	BC
+	LDIR
+	POP	BC
+	DEC	BC
+	LD	(ME.PUZEI),BC
+	LD	C,A
+	LD	A,(ME.MOD)
+	OR	A
+	JR	NZ,ME.AUPU1
+	LD	HL,ME.BPZEI
+	LD	B,(HL)
+	CALL	ME.DSBAH
+	CALL	ME.CRECH
+	CALL	ME.CRECH
+	RET
+ME.AUPU1:
+	CALL	ME.BSADR
+	LD	A,C
+	CALL	ME.TASCI
+	LD	(HL),A
+	LD	B,C
+	CALL	ME.DSBH
+	CALL	ME.CRECH
+	RET
+;
+;--------------------------------------------------------------
+; F3H    DEL LINE (Zeile mit 00H fuellen)
+;--------------------------------------------------------------
+;
+ME.DELL:
+	LD	A,(ME.MOD)
+	OR	A
+	RET	NZ
+	CALL	ME.BSADL
+	LD	A,6
+	LD	(ME.BPZEI),A
+	CALL	ME.BSADS
+	CALL	ME.CAKAL
+	LD	(ME.AKTAD),HL
+	LD	B,32
+ME.DELL1:
+	LD	A,'0'
+	PUSH	BC
+	CALL	ME.HEXMO
+	POP	BC
+	DJNZ	ME.DELL1
+	RET
+;
+;--------------------------------------------------------------
+; F0H    DEL  (Bildneuaufbau) 
+;--------------------------------------------------------------
+;
+ME.TDEL:
+	LD	HL,(ME.AADR)
+	LD	(ME.AKTAD),HL
+	LD	(ME.AADR1),HL
+	LD	(ME.AKTA1),HL
+	LD	A,6
+	LD	(ME.BPZEI),A
+	LD	(ME.BPZE1),A
+	XOR	A
+	LD	(ME.MOD),A
+	LD	(ME.BZEIN),A
+	LD	(ME.MOD1),A
+	LD	(ME.BZEI1),A
+	LD	A,16
+	LD	(ME.BZMAX),A
+	LD	HL,550H
+	LD	(ME.VTAS),HL
+	LD	HL,0
+	LD	(ME.PUZEI),HL
+ME.INSLN:
+	CALL	KH.BILO
+	CALL	ME.AZBLD
+	CALL	ME.BSADS
+	CALL	ME.DSPAD
+	CALL	ME.DSPOI
+	RET
+;
+;--------------------------------------------------------------
+; B1H    TABS  (aktuellen Zustand retten)
+;--------------------------------------------------------------
+;
+ME.SAVE:
+	LD	HL,ME.AADR
+	LD	DE,ME.AADR1
+ME.SAVE1:
+	LD	BC,7
+	LDIR
+	RET
+;
+;-------------------------------------------------------------
+; B2H    TABL  (geretteten Zustand herstellen)
+;-------------------------------------------------------------
+;
+ME.GET:
+	LD	HL,ME.AADR1
+	LD	DE,ME.AADR
+	CALL	ME.SAVE1
+	LD	A,(ME.BZMAX)
+	LD	B,A
+	LD	A,(ME.BZEIN)
+ME.GET2:
+	CP	B
+	JR	C,ME.GET1
+	LD	HL,(ME.AADR)
+	LD	DE,10H
+	ADD	HL,DE
+	LD	(ME.AADR),HL
+	DEC	A
+	LD	(ME.BZEIN),A
+	JR	ME.GET2
+ME.GET1:
+	CALL	ME.INSLN
+	RET
+;
+;-------------------------------------------------------------
+; 09H    ET2   (Start eines Programms ab Kursorposition)
+;-------------------------------------------------------------
+;
+ME.START:
+	LD	HL,(ME.AKTAD)
+	LD	BC,ME.STAR1
+	PUSH	BC
+	JP	(HL)
+ME.STAR1:
+	CALL	ME.INSLN
+	RET
+;
+;--------------------------------------------------------------
+; B3H    (Zeilenanzahl erhoehen)
+;--------------------------------------------------------------
+;
+ME.INCBZ:
+	LD	A,(ME.BZMAX)
+	CP	22
+	RET	NC
+	INC	A
+	LD	(ME.BZMAX),A
+	CALL	ME.INSLN
+	RET
+;
+;-------------------------------------------------------------
+; B4H    (Zeilenanzahl verringern)
+;-------------------------------------------------------------
+;
+ME.DECBZ:
+	LD	A,(ME.BZMAX)
+	CP	1
+	RET	Z
+	DEC	A
+	LD	(ME.BZMAX),A
+	LD	B,A
+	LD	A,(ME.BZEIN)
+	LD	C,A
+	LD	A,B
+	DEC	A
+	CP	C
+	JR	NC,ME.DECB1
+	OR	A
+	LD	DE,10H
+	LD	HL,(ME.AKTAD)
+	SBC	HL,DE
+	LD	(ME.AKTAD),HL
+	LD	A,C
+	DEC	A
+	LD	(ME.BZEIN),A
+ME.DECB1:	CALL	ME.INSLN
+	RET
+;
+;-------------------------------------------------------------
+;        Positionstabelle   HEXA ---- ASCII fuer Byte 00...0FH
+;-------------------------------------------------------------
+;
+ME.REFTB:
+	DB	6	;00H   HEXA-Mode
+	DB	9	;01H
+	DB	12
+	DB	15
+	DB	19
+	DB	22
+	DB	25
+	DB	28
+	DB	32
+	DB	35
+	DB	38
+	DB	41
+	DB	45
+	DB	48
+	DB	51
+	DB	54	;0FH
+	DB	59	;00H  ASCII-Mode
+	DB	60
+	DB	61
+	DB	62
+	DB	63
+	DB	64
+	DB	65
+	DB	66
+	DB	67
+	DB	68
+	DB	69
+	DB	70
+	DB	71
+	DB	72
+	DB	73
+	DB	74	;0FH
+;
+;-------------------------------------------------------------
+;        Auswertung alphanumerischer Tasten im ASCII-Mode
+;-------------------------------------------------------------
+;
+ME.ASCMO:
+	LD	B,A	;Code retten
+	CALL	ME.BSADR
+	LD	(HL),A	;Code anzeigen
+	LD	HL,(ME.AKTAD)
+	LD	(HL),A	;Code abspeichern
+	LD	A,(HL)	;ruecklesen
+	CP	B
+	JR	Z,ME.ASCM1	;---> RAM-Bereich
+	CALL	ME.BSADR
+	CALL	ME.TASCI
+	LD	(HL),A	;Speicherinhalt anzeigen
+	; SET	7,(HL)	;Kursor setzen
+	CALL	SY.SETCHL
+	RET
+ME.ASCM1:
+	CALL	ME.DSBH
+	CALL	ME.CRECH
+	RET
+;
+ME.DSBH:
+	LD	A,(ME.BPZEI)
+	PUSH	AF	;Position retten
+	CALL	ME.REFAH	;Position HEXA
+	CALL	ME.BSADR	;BWS-Adresse HEXA
+	POP	AF
+	LD	(ME.BPZEI),A	;Position ASCII
+	EX	DE,HL
+	LD	A,B
+	CALL	UC.CVBX+2	;Anzeige HEXA
+	RET
+;
+;-------------------------------------------------------------
+;        Auswertung Tasten 0...9,A...F im HEXA-Mode
+;-------------------------------------------------------------
+;
+ME.HEXMO:
+	LD	B,A	;Code retten
+	CALL	UC.CVAXB	;ASCII-Hexa ---> Binaer < 16
+	LD	C,A
+	CALL	ME.BSADR
+	INC	HL
+	LD	A,(HL)
+	CP	' '
+	JR	Z,ME.RHB	;---> rechtes Halbbyte
+ME.LHB:
+	LD	HL,(ME.AKTAD)	;linkes Halbbyte
+	LD	A,C
+	ADD	A,A	;*16
+	ADD	A,A
+	ADD	A,A
+	ADD	A,A
+	LD	C,A
+	LD	A,(HL)	;A:= Speicherinhalt
+	AND	0FH	;linkes Halbbyte ausblenden
+	OR	C	;neuer Wert
+ME.LHB1:
+	LD	D,A	;Wert retten
+	LD	(HL),A	;abspeichern
+	LD	C,A
+	LD	A,(HL)	;ruecklesen
+	CP	D
+	JR	Z,ME.HEXM0	;---> RAM
+	EX	DE,HL
+	LD	A,C
+	CALL	UC.CVBX+2	;alten Wert anzeigen
+	CALL	ME.BSADS
+	RET
+;
+ME.RHB:
+	LD	HL,(ME.AKTAD)	;rechtes Halbbyte
+	LD	A,(HL)
+	AND	0F0H	;rechtes Halbbyte ausblenden
+	OR	C
+	JR	ME.LHB1
+;
+ME.HEXM0:
+	LD	A,(ME.BPZEI)
+	LD	B,A
+	CALL	ME.BSADR
+	INC	HL
+	LD	A,(HL)
+	CP	' '
+	CALL	Z,ME.RHB1
+	CALL	ME.DSBAH
+	CALL	ME.CRECH
+	RET
+;
+ME.DSBAH:
+	CALL	ME.BSADR
+	LD	A,C
+	EX	DE,HL
+	CALL	UC.CVBX+2
+ME.HEXM1:
+	CALL	ME.REFHA
+	CALL	ME.BSADR
+	LD	A,C
+	CALL	ME.TASCI
+	LD	(HL),A	;Anzeige ASCII
+	LD	HL,ME.BPZEI
+	LD	(HL),B
+	RET
+;
+ME.RHB1:
+	LD	HL,ME.BPZEI
+	DEC	(HL)
+	RET
+;
+;***************************************************************
+;        Tastencodeauswertung
+;***************************************************************
+;
+ME.ATACO:
+	CALL	ME.TAREP
+	PUSH	AF
+	CALL	ME.TAUSF
+	CALL	ME.DSPAD
+	CALL	ME.DSPOI
+	POP	AF
+	JR	ME.ATACO
+ME.SYSM:
+	POP	AF
+	RET
+;
+ME.TAUSF:
+	CP	0CDH
+	JP	Z,ME.SYS
+	CP	0CEH
+	JP	Z,ME.HDCOP
+	CP	0B0H
+	JP	Z,ME.BLVOR
+	CP	0B1H
+	JP	Z,ME.SAVE
+	CP	0B2H
+	JP	Z,ME.GET
+	CP	0B3H
+	JP	Z,ME.INCBZ
+	CP	0B4H
+	JP	Z,ME.DECBZ
+	CP	09H
+	JP	Z,ME.START
+	CP	0CCH
+	JP	Z,ME.BLRUC
+	CP	0F0H
+	JP	Z,ME.UMOD
+	CP	0F8H
+	JP	Z,ME.HOME
+	CP	0FAH
+	JP	Z,ME.NEWL
+	CP	0F7H
+	JP	Z,ME.CLINK
+	CP	0F9H
+	JP	Z,ME.CRECH
+	CP	0F2H
+	JP	Z,ME.INSLN
+	CP	0F3H
+	JP	Z,ME.DELL
+	CP	0F5H
+	JP	Z,ME.CHOCH
+	CP	0FBH
+	JP	Z,ME.CRUNT
+	CP	0F6H
+	JP	Z,ME.INPUF
+	CP	0F4H
+	JP	Z,ME.AUPUF
+	CP	0F1H
+	JP	Z,ME.TDEL
+	PUSH	AF
+	LD	A,(ME.MOD)
+	OR	A
+	JR	Z,ME.NHEXA
+	POP	AF
+	CP	20H
+	RET	C
+	CP	80H
+	RET	NC
+	JP	ME.ASCMO
+ME.NHEXA:
+	POP	AF
+	CP	'0'
+	RET	C
+	CP	3AH
+	JP	C,ME.HEXMO
+	CP	'G'
+	RET	NC
+	CP	'A'
+	RET	C
+	JP	ME.HEXMO
+
+;      INITIALISIERUNG
+
+	DW	$
+	DB	'M   '
+	CALL	ME.INSLN
+	CALL	ME.ATACO
+	JP	SY.SYSTB
+
+	DW	$
+	DB	'MEMO'
+	LD	DE,SD.BWSA + 10*80 +7	;327H
+	CALL	ME.CVXA
+	JR	C,ME.AAALT
+	LD	(ME.AADR),HL
+ME.AAALT:
+	CALL	ME.TDEL
+	CALL	ME.ATACO
+	JP	SY.SYSTB
+
+;---------------------------
+
+ME.DSPAD:
+	PUSH	HL
+	PUSH	DE
+	LD	DE,SD.BWSA + 23*80	;730H
+	LD	HL,(ME.AKTAD)
+ME.DSPA1:
+	CALL	ME.CVAX
+	POP	DE
+	POP	HL
+	RET
+ME.DSPOI:
+	PUSH	HL
+	PUSH	DE
+	LD	DE,SD.BWSA + 23*80 +10	;73AH
+	LD	HL,(ME.PUZEI)
+	JR	ME.DSPA1
+
+ME.CVAX:
+	LD	A,H
+	CALL	UC.CVBX+2
+	LD	A,L
+	CALL	UC.CVBX+2
+	RET
+
+ME.CVXB:
+	PUSH	BC
+	CALL	ME.CVX1B
+	JR	C,ME.CVX11
+	ADD	A,A
+	ADD	A,A
+	ADD	A,A
+	ADD	A,A
+	LD	C,A
+	CALL	ME.CVX1B
+	JR	C,ME.CVX11
+	ADD	A,C
+	OR	A
+	POP	BC
+	RET
+ME.CVX11:
+	POP	BC
+	SCF
+	RET
+
+ME.CVXA:
+	CALL	ME.CVXB
+	RET	C
+	LD	H,A
+	CALL	ME.CVXB
+	RET	C
+	LD	L,A
+	RET
+
+ME.CVX1B:
+	LD	A,(DE)	; ASCII hexa (DE) --> A binaer,DE+1
+	CALL	UC.CVAXB
+	INC	DE
+	RET
+
+ME.TAREP:
+	CALL	TA.ABFR1
+	JR	Z,ME.TAREP
+	RET
+
+;***************  HARDCOPY  *******************
+
+ME.HDCOP:
+	CALL	ME.TDEL
+	LD	A,20
+	LD	(ME.ZN),A
+	LD	HL,ME.ZKEIN
+	CALL	UR.MIMO
+	RET	C
+
+	EX	DE,HL
+	CALL	ME.CVXA
+	RET	C
+
+	LD	DE,(ME.AADR)
+	XOR	A
+	SBC	HL,DE
+	RET	C
+	RET	Z
+
+	LD	DE,100H
+	XOR	A
+	LD	B,A
+	LD	C,A
+	PUSH	HL
+
+ME.HC01:
+	SBC	HL,DE
+	JR	C,ME.HC02
+	INC	B
+	JR	ME.HC01
+
+ME.HC02:
+	POP	HL
+	NOP
+	NOP
+	NOP
+	SRL	L
+	SRL	L
+	SRL	L
+	SRL	L
+	INC	L
+	LD	C,L
+ME.HC021:
+	CP	B
+	JR	Z,ME.HC04
+
+ME.HC03:
+	PUSH	BC
+	LD	B,16
+	CALL	ME.HC
+	LD	DE,100H
+	LD	HL,(ME.AADR)
+	ADD	HL,DE
+	LD	(ME.AADR),HL
+	CALL	ME.TDEL
+	POP	BC
+	DJNZ	ME.HC03
+
+	XOR	A
+	CP	C
+	JR	Z,ME.END
+
+ME.HC04:
+	LD	B,C
+	CALL	ME.HC
+
+ME.END:
+	RET
+
+ME.HC:
+	LD	HL,SD.BWSA
+	LD	C,80
+	CALL	S1.HCP
+	LD	A,1EH
+	CALL	P1.PRINT
+	CALL	P1.PRINT
+	RET
+
+ME.ZKEIN:
+	DB	4
+	DB	22
+	DB	8
+	DB	'Drucken bis Adresse : '
+
+;	END
+;	PN	ME01
+ME.ZN     EQU   02B00H
+	ORG	2BE0H
+;***********************************************************
+;      Arbeitszellen fuer MEMO
+;***********************************************************
+
+ME.AADR:    DEFS	2,0
+ME.AKTAD:   DEFS	2,0
+ME.MOD:     DEFS	1,0
+ME.BZEIN:   DEFS	1,0
+ME.BPZEI:   DEFS	1,0
+ME.PUZEI:   DEFS	2,0
+ME.VTAS:    DEFS	2,0
+ME.BZMAX:   DEFS	1,0
+
+ME.AADR1:   DEFS	2,0
+ME.AKTA1:   DEFS	2,0
+ME.MOD1:    DEFS	1,0
+ME.BZEI1:   DEFS	1,0
+ME.BPZE1:   DEFS	1,0
+
+ME.PUFAN  EQU   02C00H
+
+;	END
+

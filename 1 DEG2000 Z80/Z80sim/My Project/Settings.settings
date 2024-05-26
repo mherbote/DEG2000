@@ -1,0 +1,48 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="My" GeneratedClassName="MySettings" UseMySettingsClassName="true">
+  <Profiles />
+  <Settings>
+    <Setting Name="ProgVerz" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">D:\\devel\\1 DEG2000\\</Value>
+    </Setting>
+    <Setting Name="BinVerzeichnis" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">BIN1</Value>
+    </Setting>
+    <Setting Name="MemVerzeichnis" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">MEM</Value>
+    </Setting>
+    <Setting Name="TapeVerzeichnis" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">TAPE</Value>
+    </Setting>
+    <Setting Name="FontVerzeichnis" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">FONT</Value>
+    </Setting>
+    <Setting Name="FontDateiname" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">7024-0.FNT</Value>
+    </Setting>
+    <Setting Name="BWSspalten" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">80</Value>
+    </Setting>
+    <Setting Name="BWSzeilen" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">32</Value>
+    </Setting>
+    <Setting Name="PixelanzX" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="PixelanzY" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="NextCharTast" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">500</Value>
+    </Setting>
+    <Setting Name="KeyCodes" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">100</Value>
+    </Setting>
+    <Setting Name="COMVerzeichnis" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">COM</Value>
+    </Setting>
+    <Setting Name="WavVerzeichnis" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">WAV</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

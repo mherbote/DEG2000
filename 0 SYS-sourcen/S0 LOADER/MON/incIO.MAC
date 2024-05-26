@@ -1,0 +1,246 @@
+	IF gene2 AND 2
+	page
+	ENDIF
+;**************************************
+;* IO Routinen                        *
+;**************************************
+;
+;	+++ ci main Routine +++
+;       ==
+ci:
+	IF gene2 AND 1
+ttyin:
+	jp	Gate.conin	; fuer AgonLight
+	ENDIF
+
+	IF gene2 AND 2
+	ld	a,(iobyt)
+	and	3
+	jr	nz,ci1
+ttyin:
+	in	a,(atss1)
+	bit	3,a
+	jr	nz,ttyin
+	push	bc
+	push	af
+	in	a,(atsd)
+	ld	b,a
+	pop	af
+	bit	2,a
+	jr	nz,ta21
+	ld	a,b
+	cp	60h
+	jr	nc,ta21
+	cp	40h
+	jr	c,ta21
+	sub	40h
+	ld	b,a
+ta21:	ld	a,b
+	pop	bc
+	ret
+
+ci1:	jp	userci	;dort Sprung moeglich
+	ENDIF
+;
+;	+++ ri main Routine +++
+;       ==
+ri:
+	ld	a,(iobyt)
+	and	00001100b
+	jp	z,ci				;AR=T
+	cp	00000100b
+	jp	nz,userri
+lxlpi:						;AR=P
+	jp	userri
+;
+;	+++ co main Routine +++  mod
+;       ==
+co:
+	IF gene2 AND 1
+ttyout:
+	jp	Gate.conout	;fuer AgonLight
+	ENDIF
+
+	IF gene2 AND 2
+	ld	a,(iobyt)
+	and	3
+	jr	nz,co1
+;
+ttyout:
+	push	hl
+	push	bc
+	push	de
+	push	bc
+
+	; xor	a
+	; out	(0c1h),a
+	; out	(0c0h),a
+
+	pop	bc
+	ld	a,c
+	cp	0
+	jr	z,toute
+	cp	0ch
+	jr	z,toutff
+	cp	cr
+	jr	z,toutcr
+	cp	lf
+	jr	z,toutlf
+	cp	bell
+	jr	z,toutb
+	ld	hl,(bpos)
+	ld	(hl),a
+	inc	hl
+	ld	(bpos),hl
+	ld	de,bws+80*24
+	or	a
+	sbc	hl,de
+	jr	nz,toute
+toutcr:	ld	hl,bws+80
+	ld	de,bws
+	ld	bc,80*24-1
+tout:	ldir
+toutlf:	ld	hl,bws+23*80
+	ld	(bpos),hl
+toute:
+	; ld	a,01000111b
+	; out	(0c0h),a
+	; ld	a,10000100b
+	; out	(0c1h),a
+
+	pop	de
+	pop	bc
+	pop	hl
+	ret
+toutff:	ld	hl,bws
+	ld	de,bws+1
+	ld	bc,80*24-1
+	ld	(hl),' '
+	jr	tout
+
+toutb:
+	ld	a,6				;10111110b
+	out	(atss2),a
+	jr	toute
+;
+co1:
+	jp	userco				;dort Sprung moeglich
+	ENDIF
+;
+;	+++ poo main Routine +++
+;       ===
+poo:
+	ld	a,(iobyt)
+	and	00110000b
+	jp	z,co				;AP=T
+	cp	00010000b
+	jp	nz,userpoo
+lxlpo:
+	ld	a,c
+	ret
+;
+;	+++ lo main Routine +++   mod
+;       ==
+lo:
+	ld	a,(iobyt)
+	and	0c0h
+	jp	z,ttyout			;AL=T
+	cp	10000000b
+	jp	nz,userlo
+lo1:
+	ld	a,c
+	ret
+;
+;	+++ status main Routine +++
+;       ======
+csts:
+	IF gene2 AND 1
+ttycsts:
+	ld	a,0ffh
+	ENDIF
+
+	IF gene2 AND 2
+	ld	a,(iobyt)
+	and	3
+	jr	nz,cs0
+ttycsts:
+	in	a,(atss1)
+	bit	3,a
+	ld	a,0
+	jr	nz,tsts
+	ld	a,0ffh
+tsts:
+	or	a
+	ENDIF
+	ret
+;
+cs0:	jp	usercsts			;user bereich
+;
+;	iobyte
+;   ======
+;	Das IOBYTE dient der Umschaltung von
+;	physikalischem nach logischem Geraet
+;	Es hat die gleiche Bedeutung wie im CP/M-Bios 
+;
+iobyte:
+	ld	a,(iobyt)
+	ret
+;
+;	ioset
+;   =====
+;	kann z.B. im Bios gesetzt werden
+;
+ioset:
+	ld	a,c
+	ld	(iobyt),a
+	ret
+;
+;   memck
+;   =====
+;	Prueft den Speicherbereich und gibt die hoechste verfuegbare Zelle an
+memck:
+	push	hl
+	call	memsiz
+	ld	a,l
+	sub	3ch
+	jr	nc,lxbz
+	dec	h
+lxbz:
+	ld	b,h
+	pop	hl
+	ret
+;
+memsiz:		;Unterprogramm fuer Speicherendebestimmung
+	push	bc
+	ld	hl,-1
+lxm0:
+	inc	h
+	ld	a,(hl)
+	cpl
+	ld	(hl),a
+	cp	(hl)
+	cpl
+	ld	(hl),a
+	jr	nz,lxm0
+lxm1:
+	inc	h
+	ld	a,h
+	cp	0f0h				;all RAM
+	jr	z,lxm2				;ready 0f000h
+	ld	a,(hl)				;max 0f000h da dort Monitor startet
+	cpl
+	ld	(hl),a
+	cp	(hl)
+	cpl
+	ld	(hl),a
+	jr	z,lxm1
+lxm2:
+	dec	h
+	ld	bc,exit-endx
+	add	hl,bc
+	pop	bc
+	IF gene2 AND 2
+	out	(0FDh),a	; nur fuer DEG2000-Emulator, bereinigt Statusbereich
+	ENDIF
+	ret
+

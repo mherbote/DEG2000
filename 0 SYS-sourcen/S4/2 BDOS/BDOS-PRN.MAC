@@ -1,0 +1,2325 @@
+                                        PAGE    87
+''      MACRO-80 3.44   09-Dec-81       PAGE    1
+
+
+                                
+                                ;       ORG             0E600H
+                         C              INCLUDE BDOS.ASM
+                         C              PAGE
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-1
+
+
+                         C      
+                         C      ;       PN      BD08
+                         C      ;****************************************************************
+                         C      ;*               S  Y  S  4    --- Basisroutinen  (B D O S)     *
+                         C      ;*                                 basic disc operating system  *
+                         C      ;*                                 entspricht CP/M version 2.2  *
+                         C      ;*  Version      -----------------------------------------------*
+                         C      ;*               reassembliert: M. Herbote --- K EAW  ZFT (WFT) *
+                         C      ;*  V 4 . 1      -----------------------------------------------*
+                         C      ;*               Stand        : 20. Juli 1984                   *
+                         C      ;****************************************************************
+                         C              .PHASE  0E600H
+  E600                   C      BDOS    EQU     $
+  E600    0000           C              DW      0
+  E602    0000           C              DW      0
+  E604    0000           C              DW      0
+                         C      
+  E606    C3 E611        C              JP      J010
+                         C      
+  E609    E699           C      D135:   DW      D155
+  E60B    E6A5           C      D140:   DW      D160
+  E60D    E6AB           C      D145:   DW      D165
+  E60F    E6B1           C      D150:   DW      D170
+                         C      
+  E611    EB             C      J010:   EX      DE,HL
+  E612    22 E943        C              LD      (D295),HL
+  E615    EB             C              EX      DE,HL
+  E616    7B             C              LD      A,E
+  E617    32 F3D6        C              LD      (D580),A
+  E61A    21 0000        C              LD      HL,0
+  E61D    22 E945        C              LD      (D300),HL
+  E620    39             C              ADD     HL,SP
+  E621    22 E90F        C              LD      (D280),HL
+  E624    31 E941        C              LD      SP,D285
+  E627    AF             C              XOR     A
+  E628    32 F3E0        C              LD      (D615),A
+  E62B    32 F3DE        C              LD      (D605),A
+  E62E    21 F374        C              LD      HL,D435
+  E631    E5             C              PUSH    HL
+  E632    79             C              LD      A,C
+  E633    FE 29          C              CP      029H
+  E635    D0             C              RET     NC
+  E636    4B             C              LD      C,E
+  E637    21 E647        C              LD      HL,TB1
+  E63A    5F             C              LD      E,A
+  E63B    16 00          C              LD      D,0
+  E63D    19             C              ADD     HL,DE
+  E63E    19             C              ADD     HL,DE
+  E63F    5E             C              LD      E,M
+  E640    23             C              INC     HL
+  E641    56             C              LD      D,M
+  E642    2A E943        C              LD      HL,(D295)
+  E645    EB             C              EX      DE,HL
+  E646    E9             C              JP      (HL)
+                         C      
+                         C              PAGE
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-2
+
+
+                         C      
+  E647    F403           C      TB1:    DW      FKT00
+  E649    E8C8           C              DW      FKT01
+  E64B    E790           C              DW      FKT02
+  E64D    E8CE           C              DW      FKT03
+  E64F    F412           C              DW      FKT04
+  E651    F40F           C              DW      FKT05
+  E653    E8D4           C              DW      FKT06
+  E655    E8ED           C              DW      FKT07
+  E657    E8F3           C              DW      FKT08
+  E659    E8F8           C              DW      FKT09
+                         C      
+  E65B    E7E1           C              DW      FKT10
+  E65D    E8FE           C              DW      FKT11
+  E65F    F27E           C              DW      FKT12
+  E661    F283           C              DW      FKT13
+  E663    F245           C              DW      FKT14
+  E665    F29C           C              DW      FKT15
+  E667    F2A5           C              DW      FKT16
+  E669    F2AB           C              DW      FKT17
+  E66B    F2C8           C              DW      FKT18
+  E66D    F2D7           C              DW      FKT19
+                         C      
+  E66F    F2E0           C              DW      FKT20
+  E671    F2E6           C              DW      FKT21
+  E673    F2EC           C              DW      FKT22
+  E675    F2F5           C              DW      FKT23
+  E677    F2FE           C              DW      FKT24
+  E679    F304           C              DW      FKT25
+  E67B    F30A           C              DW      FKT26
+  E67D    F311           C              DW      FKT27
+  E67F    EB2C           C              DW      FKT28
+  E681    F317           C              DW      FKT29
+                         C      
+  E683    F31D           C              DW      FKT30
+  E685    F326           C              DW      FKT31
+  E687    F32D           C              DW      FKT32
+  E689    F341           C              DW      FKT33
+  E68B    F347           C              DW      FKT34
+  E68D    F34D           C              DW      FKT35
+  E68F    F20E           C              DW      FKT36
+  E691    F353           C              DW      FKT37
+                         C      
+  E693    E904           C              DW      D250
+  E695    E904           C              DW      D250
+  E697    F39B           C              DW      D445
+                         C      
+                         C      
+                         C      
+  E699    21 E6CA        C      D155:   LD      HL,D185
+  E69C    CD E6E5        C              CALL    C005
+  E69F    FE 03          C              CP      003H
+  E6A1    CA 0000        C              JP      Z,J005
+  E6A4    C9             C              RET
+                         C      
+  E6A5    21 E6D5        C      D160:   LD      HL,D190
+  E6A8    C3 E6B4        C              JP      J015
+                         C      
+  E6AB    21 E6E1        C      D165:   LD      HL,D200
+  E6AE    C3 E6B4        C              JP      J015
+                         C      
+  E6B1    21 E6DC        C      D170:   LD      HL,D195
+  E6B4    CD E6E5        C      J015:   CALL    C005
+  E6B7    C3 0000        C              JP      J005
+                         C      
+  E6BA    42 64 6F 73    C      D175:   DB      'Bdos Err On '
+  E6BE    20 45 72 72    C      
+  E6C2    20 4F 6E 20    C      
+  E6C6    20 3A 20 24    C      D180:   DB      ' : $'
+  E6CA    42 61 64 20    C      D185:   DB      'Bad Sector$'
+  E6CE    53 65 63 74    C      
+  E6D2    6F 72 24       C      
+  E6D5    53 65 6C 65    C      D190:   DB      'Select$'
+  E6D9    63 74 24       C      
+  E6DC    46 69 6C 65    C      D195:   DB      'File '
+  E6E0    20             C      
+  E6E1    52 2F 4F 24    C      D200:   DB      'R/O$'
+                         C      
+  E6E5    E5             C      C005:   PUSH    HL
+  E6E6    CD E7C9        C              CALL    C060
+  E6E9    3A E942        C              LD      A,(D290)
+  E6EC    C6 41          C              ADD     A,041H
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-3
+
+
+  E6EE    32 E6C6        C              LD      (D180),A
+  E6F1    01 E6BA        C              LD      BC,D175
+  E6F4    CD E7D3        C              CALL    C065
+  E6F7    C1             C              POP     BC
+  E6F8    CD E7D3        C              CALL    C065
+  E6FB    21 E90E        C      C010:   LD      HL,D275
+  E6FE    7E             C              LD      A,M
+  E6FF    36 00          C              LD      M,000H
+  E701    B7             C              OR      A
+  E702    C0             C              RET     NZ
+  E703    C3 F409        C              JP      C420
+                         C      
+  E706    CD E6FB        C      C015:   CALL    C010
+  E709    CD E714        C              CALL    C020
+  E70C    D8             C              RET     C
+  E70D    F5             C              PUSH    AF
+  E70E    4F             C              LD      C,A
+  E70F    CD E790        C              CALL    C040
+  E712    F1             C              POP     AF
+  E713    C9             C              RET
+                         C      
+  E714    FE 0D          C      C020:   CP      00DH
+  E716    C8             C              RET     Z
+  E717    FE 0A          C              CP      00AH
+  E719    C8             C              RET     Z
+  E71A    FE 09          C              CP      009H
+  E71C    C8             C              RET     Z
+  E71D    FE 08          C              CP      008H
+  E71F    C8             C              RET     Z
+  E720    FE 20          C              CP      020H
+  E722    C9             C              RET
+                         C      
+  E723    3A E90E        C      C025:   LD      A,(D275)
+  E726    B7             C              OR      A
+  E727    C2 E745        C              JP      NZ,J025
+  E72A    CD F406        C              CALL    C415
+  E72D    E6 01          C              AND     001H
+  E72F    C8             C              RET     Z
+  E730    CD F409        C              CALL    C420
+  E733    FE 13          C              CP      013H
+  E735    C2 E742        C              JP      NZ,J020
+  E738    CD F409        C              CALL    C420
+  E73B    FE 03          C              CP      003H
+  E73D    CA 0000        C              JP      Z,J005
+  E740    AF             C              XOR     A
+  E741    C9             C              RET
+                         C      
+  E742    32 E90E        C      J020:   LD      (D275),A
+  E745    3E 01          C      J025:   LD      A,001H
+  E747    C9             C              RET
+                         C      
+  E748    3A E90A        C      C030:   LD      A,(D255)
+  E74B    B7             C              OR      A
+  E74C    C2 E762        C              JP      NZ,J030
+  E74F    C5             C              PUSH    BC
+  E750    CD E723        C              CALL    C025
+  E753    C1             C              POP     BC
+  E754    C5             C              PUSH    BC
+  E755    CD F40C        C              CALL    C425
+  E758    C1             C      D205:   POP     BC
+  E759    C5             C              PUSH    BC
+  E75A    3A E90D        C              LD      A,(D270)
+  E75D    B7             C              OR      A
+  E75E    C4 F40F        C              CALL    NZ,C430
+  E761    C1             C              POP     BC
+  E762    79             C      J030:   LD      A,C
+  E763    21 E90C        C              LD      HL,D265
+  E766    FE 7F          C              CP      07FH
+  E768    C8             C              RET     Z
+  E769    34             C              INC     M
+  E76A    FE 20          C              CP      020H
+  E76C    D0             C              RET     NC
+  E76D    35             C              DEC     M
+  E76E    7E             C              LD      A,M
+  E76F    B7             C              OR      A
+  E770    C8             C              RET     Z
+  E771    79             C              LD      A,C
+  E772    FE 08          C              CP      008H
+  E774    C2 E779        C              JP      NZ,J035
+  E777    35             C              DEC     M
+  E778    C9             C              RET
+                         C      
+  E779    FE 0A          C      J035:   CP      00AH
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-4
+
+
+  E77B    C0             C              RET     NZ
+  E77C    36 00          C              LD      M,000H
+  E77E    C9             C              RET
+                         C      
+  E77F    79             C      C035:   LD      A,C
+  E780    CD E714        C              CALL    C020
+  E783    D2 E790        C              JP      NC,C040
+  E786    F5             C              PUSH    AF
+  E787    0E 5E          C              LD      C,05EH
+  E789    CD E748        C              CALL    C030
+  E78C    F1             C              POP     AF
+  E78D    F6 40          C              OR      040H
+  E78F    4F             C              LD      C,A
+                         C      
+  E790                   C      C040    EQU     $
+  E790    79             C      FKT02:  LD      A,C
+  E791    FE 09          C              CP      009H
+  E793    C2 E748        C              JP      NZ,C030
+  E796    0E 20          C      J040:   LD      C,020H
+  E798    CD E748        C              CALL    C030
+  E79B    3A E90C        C              LD      A,(D265)
+  E79E    E6 07          C              AND     007H
+  E7A0    C2 E796        C              JP      NZ,J040
+  E7A3    C9             C              RET
+                         C      
+  E7A4    CD E7AC        C      C045:   CALL    C050
+  E7A7    0E 20          C              LD      C,020H
+  E7A9    CD F40C        C              CALL    C425
+  E7AC    0E 08          C      C050:   LD      C,008H
+  E7AE    C3 F40C        C              JP      C425
+                         C      
+  E7B1    0E 23          C      C055:   LD      C,023H
+  E7B3    CD E748        C              CALL    C030
+  E7B6    CD E7C9        C              CALL    C060
+  E7B9    3A E90C        C      J045:   LD      A,(D265)
+  E7BC    21 E90B        C              LD      HL,D260
+  E7BF    BE             C              CP      M
+  E7C0    D0             C              RET     NC
+  E7C1    0E 20          C              LD      C,020H
+  E7C3    CD E748        C              CALL    C030
+  E7C6    C3 E7B9        C              JP      J045
+                         C      
+  E7C9    0E 0D          C      C060:   LD      C,00DH
+  E7CB    CD E748        C              CALL    C030
+  E7CE    0E 0A          C              LD      C,00AH
+  E7D0    C3 E748        C              JP      C030
+                         C      
+  E7D3    0A             C      C065:   LD      A,(BC)
+  E7D4    FE 24          C              CP      024H
+  E7D6    C8             C              RET     Z
+  E7D7    03             C              INC     BC
+  E7D8    C5             C              PUSH    BC
+  E7D9    4F             C              LD      C,A
+  E7DA    CD E790        C              CALL    C040
+  E7DD    C1             C              POP     BC
+  E7DE    C3 E7D3        C              JP      C065
+                         C      
+  E7E1                   C      J050    EQU     $
+  E7E1    3A E90C        C      FKT10:  LD      A,(D265)
+  E7E4    32 E90B        C              LD      (D260),A
+  E7E7    2A E943        C              LD      HL,(D295)
+  E7EA    4E             C              LD      C,M
+  E7EB    23             C              INC     HL
+  E7EC    E5             C              PUSH    HL
+  E7ED    06 00          C              LD      B,000H
+  E7EF    C5             C      J055:   PUSH    BC
+  E7F0    E5             C              PUSH    HL
+  E7F1    CD E6FB        C      J060:   CALL    C010
+  E7F4    E6 7F          C      D210:   AND     07FH
+  E7F6    E1             C              POP     HL
+  E7F7    C1             C              POP     BC
+  E7F8    FE 0D          C              CP      00DH
+  E7FA    CA E8C1        C              JP      Z,J135
+  E7FD    FE 0A          C              CP      00AH
+  E7FF    CA E8C1        C              JP      Z,J135
+  E802    FE 08          C              CP      008H
+  E804    C2 E816        C              JP      NZ,J065
+  E807    78             C              LD      A,B
+  E808    B7             C              OR      A
+  E809    CA E7EF        C              JP      Z,J055
+  E80C    05             C              DEC     B
+  E80D    3A E90C        C              LD      A,(D265)
+  E810    32 E90A        C              LD      (D255),A
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-5
+
+
+  E813    C3 E870        C              JP      J100
+                         C      
+  E816    FE 7F          C      J065:   CP      07FH
+  E818    C2 E826        C              JP      NZ,J070
+  E81B    78             C              LD      A,B
+  E81C    B7             C              OR      A
+  E81D    CA E7EF        C              JP      Z,J055
+  E820    7E             C              LD      A,M
+  E821    05             C              DEC     B
+  E822    2B             C              DEC     HL
+  E823    C3 E8A9        C              JP      J125
+                         C      
+  E826    FE 05          C      J070:   CP      005H
+  E828    C2 E837        C              JP      NZ,J075
+  E82B    C5             C              PUSH    BC
+  E82C    E5             C              PUSH    HL
+  E82D    CD E7C9        C              CALL    C060
+  E830    AF             C              XOR     A
+  E831    32 E90B        C              LD      (D260),A
+  E834    C3 E7F1        C              JP      J060
+                         C      
+  E837    FE 10          C      J075:   CP      010H
+  E839    C2 E848        C              JP      NZ,J080
+  E83C    E5             C              PUSH    HL
+  E83D    21 E90D        C              LD      HL,D270
+  E840    3E 01          C              LD      A,001H
+  E842    96             C              SUB     M
+  E843    77             C              LD      M,A
+  E844    E1             C              POP     HL
+  E845    C3 E7EF        C              JP      J055
+                         C      
+  E848    FE 18          C      J080:   CP      018H
+  E84A    C2 E85F        C              JP      NZ,J090
+  E84D    E1             C              POP     HL
+  E84E    3A E90B        C      J085:   LD      A,(D260)
+  E851    21 E90C        C              LD      HL,D265
+  E854    BE             C              CP      M
+  E855    D2 E7E1        C              JP      NC,J050
+  E858    35             C              DEC     M
+  E859    CD E7A4        C              CALL    C045
+  E85C    C3 E84E        C              JP      J085
+                         C      
+  E85F    FE 15          C      J090:   CP      015H
+  E861    C2 E86B        C              JP      NZ,J095
+  E864    CD E7B1        C              CALL    C055
+  E867    E1             C              POP     HL
+  E868    C3 E7E1        C              JP      J050
+                         C      
+  E86B    FE 12          C      J095:   CP      012H
+  E86D    C2 E8A6        C              JP      NZ,J120
+  E870    C5             C      J100:   PUSH    BC
+  E871    CD E7B1        C              CALL    C055
+  E874    C1             C              POP     BC
+  E875    E1             C              POP     HL
+  E876    E5             C              PUSH    HL
+  E877    C5             C              PUSH    BC
+  E878    78             C      J105:   LD      A,B
+  E879    B7             C              OR      A
+  E87A    CA E88A        C              JP      Z,J110
+  E87D    23             C              INC     HL
+  E87E    4E             C              LD      C,M
+  E87F    05             C              DEC     B
+  E880    C5             C              PUSH    BC
+  E881    E5             C              PUSH    HL
+  E882    CD E77F        C              CALL    C035
+  E885    E1             C              POP     HL
+  E886    C1             C              POP     BC
+  E887    C3 E878        C              JP      J105
+                         C      
+  E88A    E5             C      J110:   PUSH    HL
+  E88B    3A E90A        C              LD      A,(D255)
+  E88E    B7             C              OR      A
+  E88F    CA E7F1        C              JP      Z,J060
+  E892    21 E90C        C              LD      HL,D265
+  E895    96             C              SUB     M
+  E896    32 E90A        C              LD      (D255),A
+  E899    CD E7A4        C      J115:   CALL    C045
+  E89C    21 E90A        C              LD      HL,D255
+  E89F    35             C              DEC     M
+  E8A0    C2 E899        C              JP      NZ,J115
+  E8A3    C3 E7F1        C              JP      J060
+                         C      
+  E8A6    23             C      J120:   INC     HL
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-6
+
+
+  E8A7    77             C              LD      M,A
+  E8A8    04             C              INC     B
+  E8A9    C5             C      J125:   PUSH    BC
+  E8AA    E5             C              PUSH    HL
+  E8AB    4F             C              LD      C,A
+  E8AC    CD E77F        C              CALL    C035
+  E8AF    E1             C              POP     HL
+  E8B0    C1             C              POP     BC
+  E8B1    7E             C              LD      A,M
+  E8B2    FE 03          C              CP      003H
+  E8B4    78             C              LD      A,B
+  E8B5    C2 E8BD        C              JP      NZ,J130
+  E8B8    FE 01          C              CP      001H
+  E8BA    CA 0000        C              JP      Z,J005
+  E8BD    B9             C      J130:   CP      C
+  E8BE    DA E7EF        C              JP      C,J055
+  E8C1    E1             C      J135:   POP     HL
+  E8C2    70             C              LD      M,B
+  E8C3    0E 0D          C              LD      C,00DH
+  E8C5    C3 E748        C              JP      C030
+                         C      
+  E8C8    CD E706        C      FKT01:  CALL    C015
+  E8CB    C3 E901        C              JP      J145
+                         C      
+  E8CE    CD F415        C      FKT03:  CALL    C435
+  E8D1    C3 E901        C              JP      J145
+                         C      
+  E8D4    79             C      FKT06:  LD      A,C
+  E8D5    3C             C              INC     A
+  E8D6    CA E8E0        C              JP      Z,J140
+  E8D9    3C             C              INC     A
+  E8DA    CA F406        C              JP      Z,C415
+  E8DD    C3 F40C        C              JP      C425
+                         C      
+  E8E0    CD F406        C      J140:   CALL    C415
+  E8E3    B7             C              OR      A
+  E8E4    CA F391        C              JP      Z,J605
+  E8E7    CD F409        C              CALL    C420
+  E8EA    C3 E901        C              JP      J145
+                         C      
+  E8ED    3A 0003        C      FKT07:  LD      A,(D015)
+  E8F0    C3 E901        C              JP      J145
+                         C      
+  E8F3    21 0003        C      FKT08:  LD      HL,D015
+  E8F6    71             C              LD      M,C
+  E8F7    C9             C              RET
+                         C      
+  E8F8    EB             C      FKT09:  EX      DE,HL
+  E8F9    4D             C              LD      C,L
+  E8FA    44             C              LD      B,H
+  E8FB    C3 E7D3        C              JP      C065
+                         C      
+  E8FE    CD E723        C      FKT11:  CALL    C025
+  E901    32 E945        C      J145:   LD      (D300),A
+  E904    C9             C      D250:   RET
+                         C      
+  E905    3E 01          C      C070:   LD      A,001H
+  E907    C3 E901        C              JP      J145
+                         C      
+                         C              PAGE
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-7
+
+
+                         C      
+  E90A    00             C      D255:   DB      0
+  E90B    00             C      D260:   DB      0
+  E90C    00             C      D265:   DB      0
+  E90D    00             C      D270:   DB      0
+  E90E    00             C      D275:   DB      0
+  E90F    0000           C      D280:   DW      0
+                         C      
+  E911    0000           C              DW      0
+  E913    0000           C              DW      0
+  E915    0000           C              DW      0
+  E917    0000           C              DW      0
+  E919    0000           C              DW      0
+  E91B    0000           C              DW      0
+  E91D    0000           C              DW      0
+  E91F    0000           C              DW      0
+  E921    0000           C              DW      0
+  E923    0000           C              DW      0
+  E925    0000           C              DW      0
+  E927    0000           C              DW      0
+  E929    0000           C              DW      0
+  E92B    0000           C              DW      0
+                         C      
+  E92D    0000           C              DW      0
+  E92F    0000           C              DW      0
+  E931    0000           C              DW      0
+  E933    0000           C              DW      0
+  E935    0000           C              DW      0
+  E937    0000           C              DW      0
+  E939    0000           C              DW      0
+  E93B    0000           C              DW      0
+  E93D    0000           C              DW      0
+  E93F    0000           C              DW      0
+                         C      
+  E941    00             C      D285:   DB      0
+  E942    00             C      D290:   DB      0
+  E943    0000           C      D295:   DW      0
+  E945    0000           C      D300:   DW      0
+                         C      
+                         C              PAGE
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-8
+
+
+                         C      
+  E947    21 E60B        C      C075:   LD      HL,D140
+  E94A    5E             C      J150:   LD      E,M
+  E94B    23             C              INC     HL
+  E94C    56             C              LD      D,M
+  E94D    EB             C              EX      DE,HL
+  E94E    E9             C              JP      (HL)
+                         C      
+  E94F    0C             C      C080:   INC     C
+  E950    0D             C      J155:   DEC     C
+  E951    C8             C              RET     Z
+  E952    1A             C              LD      A,(DE)
+  E953    77             C              LD      M,A
+  E954    13             C              INC     DE
+  E955    23             C              INC     HL
+  E956    C3 E950        C              JP      J155
+                         C      
+  E959    3A E942        C      C085:   LD      A,(D290)
+  E95C    4F             C              LD      C,A
+  E95D    CD F41B        C              CALL    C445
+  E960    7C             C              LD      A,H
+  E961    B5             C              OR      L
+  E962    C8             C              RET     Z
+  E963    5E             C              LD      E,M
+  E964    23             C              INC     HL
+  E965    56             C              LD      D,M
+  E966    23             C              INC     HL
+  E967    22 F3B3        C              LD      (D470),HL
+  E96A    23             C              INC     HL
+  E96B    23             C              INC     HL
+  E96C    22 F3B5        C              LD      (D475),HL
+  E96F    23             C              INC     HL
+  E970    23             C              INC     HL
+  E971    22 F3B7        C              LD      (D480),HL
+  E974    23             C              INC     HL
+  E975    23             C              INC     HL
+  E976    EB             C              EX      DE,HL
+  E977    22 F3D0        C              LD      (D555),HL
+  E97A    21 F3B9        C              LD      HL,D485
+  E97D    0E 08          C              LD      C,008H
+  E97F    CD E94F        C              CALL    C080
+  E982    2A F3BB        C              LD      HL,(D495)
+  E985    EB             C              EX      DE,HL
+  E986    21 F3C1        C              LD      HL,D510
+  E989    0E 0F          C              LD      C,00FH
+  E98B    CD E94F        C              CALL    C080
+  E98E    2A F3C6        C              LD      HL,(D530)
+  E991    7C             C              LD      A,H
+  E992    21 F3DD        C              LD      HL,D600
+  E995    36 FF          C              LD      M,0FFH
+  E997    B7             C              OR      A
+  E998    CA E99D        C              JP      Z,J160
+  E99B    36 00          C              LD      M,000H
+  E99D    3E FF          C      J160:   LD      A,0FFH
+  E99F    B7             C              OR      A
+  E9A0    C9             C              RET
+                         C      
+  E9A1    CD F418        C      C090:   CALL    C440
+  E9A4    AF             C              XOR     A
+  E9A5    2A F3B5        C              LD      HL,(D475)
+  E9A8    77             C              LD      M,A
+  E9A9    23             C              INC     HL
+  E9AA    77             C              LD      M,A
+  E9AB    2A F3B7        C              LD      HL,(D480)
+  E9AE    77             C              LD      M,A
+  E9AF    23             C              INC     HL
+  E9B0    77             C              LD      M,A
+  E9B1    C9             C              RET
+                         C      
+  E9B2    CD F427        C      C095:   CALL    C455
+  E9B5    C3 E9BB        C              JP      J165
+                         C      
+  E9B8    CD F42A        C      C100:   CALL    C460
+  E9BB    B7             C      J165:   OR      A
+  E9BC    C8             C              RET     Z
+  E9BD    21 E609        C              LD      HL,D135
+  E9C0    C3 E94A        C              JP      J150
+                         C      
+  E9C3    2A F3EA        C      C105:   LD      HL,(D650)
+  E9C6    0E 02          C              LD      C,002H
+  E9C8    CD EAEA        C              CALL    C160
+  E9CB    22 F3E5        C              LD      (D635),HL
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-9
+
+
+  E9CE    22 F3EC        C              LD      (D660),HL
+  E9D1    21 F3E5        C      C110:   LD      HL,D635
+  E9D4    4E             C              LD      C,M
+  E9D5    23             C              INC     HL
+  E9D6    46             C              LD      B,M
+  E9D7    2A F3B7        C              LD      HL,(D480)
+  E9DA    5E             C              LD      E,M
+  E9DB    23             C              INC     HL
+  E9DC    56             C              LD      D,M
+  E9DD    2A F3B5        C              LD      HL,(D475)
+  E9E0    7E             C              LD      A,M
+  E9E1    23             C              INC     HL
+  E9E2    66             C              LD      H,M
+  E9E3    6F             C              LD      L,A
+  E9E4    79             C      J170:   LD      A,C
+  E9E5    93             C              SUB     E
+  E9E6    78             C              LD      A,B
+  E9E7    9A             C              SBC     A,D
+  E9E8    D2 E9FA        C              JP      NC,J175
+  E9EB    E5             C              PUSH    HL
+  E9EC    2A F3C1        C              LD      HL,(D510)
+  E9EF    7B             C              LD      A,E
+  E9F0    95             C              SUB     L
+  E9F1    5F             C              LD      E,A
+  E9F2    7A             C              LD      A,D
+  E9F3    9C             C              SBC     A,H
+  E9F4    57             C              LD      D,A
+  E9F5    E1             C              POP     HL
+  E9F6    2B             C              DEC     HL
+  E9F7    C3 E9E4        C              JP      J170
+                         C      
+  E9FA    E5             C      J175:   PUSH    HL
+  E9FB    2A F3C1        C              LD      HL,(D510)
+  E9FE    19             C              ADD     HL,DE
+  EA00                   C      D305    EQU     $+1
+  E9FF    DA EA0F        C              JP      C,J180
+  EA02    79             C              LD      A,C
+  EA03    95             C              SUB     L
+  EA04    78             C              LD      A,B
+  EA05    9C             C              SBC     A,H
+  EA06    DA EA0F        C              JP      C,J180
+  EA09    EB             C              EX      DE,HL
+  EA0A    E1             C              POP     HL
+  EA0B    23             C              INC     HL
+  EA0C    C3 E9FA        C              JP      J175
+                         C      
+  EA0F    E1             C      J180:   POP     HL
+  EA10    C5             C              PUSH    BC
+  EA11    D5             C              PUSH    DE
+  EA12    E5             C              PUSH    HL
+  EA13    EB             C              EX      DE,HL
+  EA14    2A F3CE        C              LD      HL,(D550)
+  EA17    19             C              ADD     HL,DE
+  EA18    44             C              LD      B,H
+  EA19    4D             C              LD      C,L
+  EA1A    CD F41E        C              CALL    C450
+  EA1D    D1             C      D310:   POP     DE
+  EA1E    2A F3B5        C              LD      HL,(D475)
+  EA21    73             C              LD      M,E
+  EA22    23             C              INC     HL
+  EA23    72             C              LD      M,D
+  EA24    D1             C              POP     DE
+  EA25    2A F3B7        C              LD      HL,(D480)
+  EA28    73             C              LD      M,E
+  EA29    23             C              INC     HL
+  EA2A    72             C              LD      M,D
+  EA2B    C1             C              POP     BC
+  EA2C    79             C              LD      A,C
+  EA2D    93             C              SUB     E
+  EA2E    4F             C              LD      C,A
+  EA2F    78             C              LD      A,B
+  EA30    9A             C              SBC     A,D
+  EA31    47             C              LD      B,A
+  EA32    2A F3D0        C              LD      HL,(D555)
+  EA35    EB             C              EX      DE,HL
+  EA36    CD F430        C              CALL    C465
+  EA39    4D             C              LD      C,L
+  EA3A    44             C              LD      B,H
+  EA3B    C3 F421        C              JP      J610
+                         C      
+  EA3E    21 F3C3        C      C115:   LD      HL,D515
+  EA41    4E             C              LD      C,M
+  EA42    3A F3E3        C              LD      A,(D630)
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-10
+
+
+  EA45    B7             C      J185:   OR      A
+  EA46    1F             C              RRA
+  EA47    0D             C              DEC     C
+  EA48    C2 EA45        C              JP      NZ,J185
+  EA4B    47             C              LD      B,A
+  EA4C    3E 08          C              LD      A,008H
+  EA4E    96             C              SUB     M
+  EA4F    4F             C              LD      C,A
+  EA50    3A F3E2        C              LD      A,(D625)
+  EA53    0D             C      J190:   DEC     C
+  EA54    CA EA5C        C              JP      Z,J195
+  EA57    B7             C              OR      A
+  EA58    17             C              RLA
+  EA59    C3 EA53        C              JP      J190
+                         C      
+  EA5C    80             C      J195:   ADD     A,B
+  EA5D    C9             C              RET
+                         C      
+  EA5E    2A E943        C      C120:   LD      HL,(D295)
+  EA61    11 0010        C              LD      DE,16
+  EA64    19             C              ADD     HL,DE
+  EA65    09             C              ADD     HL,BC
+  EA66    3A F3DD        C              LD      A,(D600)
+  EA69    B7             C              OR      A
+  EA6A    CA EA71        C              JP      Z,J200
+  EA6D    6E             C              LD      L,M
+  EA6E    26 00          C              LD      H,000H
+  EA70    C9             C              RET
+                         C      
+  EA71    09             C      J200:   ADD     HL,BC
+  EA72    5E             C              LD      E,M
+  EA73    23             C              INC     HL
+  EA74    56             C              LD      D,M
+  EA75    EB             C              EX      DE,HL
+  EA76    C9             C              RET
+                         C      
+  EA77    CD EA3E        C      C125:   CALL    C115
+  EA7A    4F             C              LD      C,A
+  EA7B    06 00          C              LD      B,000H
+  EA7D    CD EA5E        C              CALL    C120
+  EA80    22 F3E5        C              LD      (D635),HL
+  EA83    C9             C              RET
+                         C      
+  EA84    2A F3E5        C      C130:   LD      HL,(D635)
+  EA87    7D             C              LD      A,L
+  EA88    B4             C              OR      H
+  EA89    C9             C              RET
+                         C      
+  EA8A    3A F3C3        C      C135:   LD      A,(D515)
+  EA8D    2A F3E5        C              LD      HL,(D635)
+  EA90    29             C      J205:   ADD     HL,HL
+  EA91    3D             C              DEC     A
+  EA92    C2 EA90        C              JP      NZ,J205
+  EA95    22 F3E7        C              LD      (D640),HL
+  EA98    3A F3C4        C              LD      A,(D520)
+  EA9B    4F             C              LD      C,A
+  EA9C    3A F3E3        C              LD      A,(D630)
+  EA9F    A1             C              AND     C
+  EAA0    B5             C              OR      L
+  EAA1    6F             C              LD      L,A
+  EAA2    22 F3E5        C              LD      (D635),HL
+  EAA5    C9             C              RET
+                         C      
+  EAA6    2A E943        C      C140:   LD      HL,(D295)
+  EAA9    11 000C        C              LD      DE,12
+  EAAC    19             C              ADD     HL,DE
+  EAAD    C9             C              RET
+                         C      
+  EAAE    2A E943        C      C145:   LD      HL,(D295)
+  EAB1    11 000F        C              LD      DE,15
+  EAB4    19             C              ADD     HL,DE
+  EAB5    EB             C              EX      DE,HL
+  EAB6    21 0011        C              LD      HL,17
+  EAB9    19             C              ADD     HL,DE
+  EABA    C9             C              RET
+                         C      
+  EABB    CD EAAE        C      C150:   CALL    C145
+  EABE    7E             C              LD      A,M
+  EABF    32 F3E3        C              LD      (D630),A
+  EAC2    EB             C              EX      DE,HL
+  EAC3    7E             C              LD      A,M
+  EAC4    32 F3E1        C              LD      (D620),A
+  EAC7    CD EAA6        C              CALL    C140
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-11
+
+
+  EACA    3A F3C5        C              LD      A,(D525)
+  EACD    A6             C              AND     M
+  EACE    32 F3E2        C              LD      (D625),A
+  EAD1    C9             C              RET
+                         C      
+  EAD2    CD EAAE        C      C155:   CALL    C145
+  EAD5    3A F3D5        C              LD      A,(D575)
+  EAD8    FE 02          C              CP      002H
+  EADA    C2 EADE        C              JP      NZ,J210
+  EADD    AF             C              XOR     A
+  EADE    4F             C      J210:   LD      C,A
+  EADF    3A F3E3        C              LD      A,(D630)
+  EAE2    81             C              ADD     A,C
+  EAE3    77             C              LD      M,A
+  EAE4    EB             C              EX      DE,HL
+  EAE5    3A F3E1        C              LD      A,(D620)
+  EAE8    77             C              LD      M,A
+  EAE9    C9             C              RET
+                         C      
+  EAEA    0C             C      C160:   INC     C
+  EAEB    0D             C      J215:   DEC     C
+  EAEC    C8             C              RET     Z
+  EAED    7C             C              LD      A,H
+  EAEE    B7             C              OR      A
+  EAEF    1F             C              RRA
+  EAF0    67             C              LD      H,A
+  EAF1    7D             C              LD      A,L
+  EAF2    1F             C              RRA
+  EAF3    6F             C              LD      L,A
+  EAF4    C3 EAEB        C              JP      J215
+                         C      
+  EAF7    0E 80          C      C165:   LD      C,080H
+  EAF9    2A F3B9        C              LD      HL,(D485)
+  EAFC    AF             C              XOR     A
+  EAFD    86             C      J220:   ADD     A,M
+  EAFE    23             C              INC     HL
+  EAFF    0D             C              DEC     C
+  EB00    C2 EAFD        C              JP      NZ,J220
+  EB03    C9             C              RET
+                         C      
+  EB04    0C             C      C170:   INC     C
+  EB05    0D             C      J225:   DEC     C
+  EB06    C8             C              RET     Z
+  EB07    29             C              ADD     HL,HL
+  EB08    C3 EB05        C              JP      J225
+                         C      
+  EB0B    C5             C      C175:   PUSH    BC
+  EB0C    3A E942        C              LD      A,(D290)
+  EB0F    4F             C              LD      C,A
+  EB10    21 0001        C              LD      HL,1
+  EB13    CD EB04        C              CALL    C170
+  EB16    C1             C              POP     BC
+  EB17    79             C              LD      A,C
+  EB18    B5             C              OR      L
+  EB19    6F             C              LD      L,A
+  EB1A    78             C              LD      A,B
+  EB1B    B4             C              OR      H
+  EB1C    67             C              LD      H,A
+  EB1D    C9             C              RET
+                         C      
+  EB1E    2A F3AD        C      C180:   LD      HL,(D455)
+  EB21    3A E942        C              LD      A,(D290)
+  EB24    4F             C              LD      C,A
+  EB25    CD EAEA        C              CALL    C160
+  EB28    7D             C              LD      A,L
+  EB29    E6 01          C              AND     001H
+  EB2B    C9             C              RET
+                         C      
+  EB2C                   C      C185    EQU     $
+  EB2C    21 F3AD        C      FKT28:  LD      HL,D455
+  EB2F    4E             C              LD      C,M
+  EB30    23             C              INC     HL
+  EB31    46             C              LD      B,M
+  EB32    CD EB0B        C              CALL    C175
+  EB35    22 F3AD        C              LD      (D455),HL
+  EB38    2A F3C8        C              LD      HL,(D535)
+  EB3B    23             C              INC     HL
+  EB3C    EB             C              EX      DE,HL
+  EB3D    2A F3B3        C              LD      HL,(D470)
+  EB40    73             C              LD      M,E
+  EB41    23             C              INC     HL
+  EB42    72             C              LD      M,D
+  EB43    C9             C              RET
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-12
+
+
+                         C      
+  EB44    CD EB5E        C      C190:   CALL    C205
+  EB47    11 0009        C      C195:   LD      DE,9
+  EB4A    19             C              ADD     HL,DE
+  EB4B    7E             C              LD      A,M
+  EB4C    17             C              RLA
+  EB4D    D0             C              RET     NC
+  EB4E    21 E60F        C              LD      HL,D150
+  EB51    C3 E94A        C              JP      J150
+                         C      
+  EB54    CD EB1E        C      C200:   CALL    C180
+  EB57    C8             C              RET     Z
+  EB58    21 E60D        C              LD      HL,D145
+  EB5B    C3 E94A        C              JP      J150
+                         C      
+  EB5E    2A F3B9        C      C205:   LD      HL,(D485)
+  EB61    3A F3E9        C              LD      A,(D645)
+  EB64    85             C      C210:   ADD     A,L
+  EB65    6F             C              LD      L,A
+  EB66    D0             C              RET     NC
+  EB67    24             C              INC     H
+  EB68    C9             C              RET
+                         C      
+  EB69    2A E943        C      C215:   LD      HL,(D295)
+  EB6C    11 000E        C              LD      DE,14
+  EB6F    19             C              ADD     HL,DE
+  EB70    7E             C              LD      A,M
+  EB71    C9             C              RET
+                         C      
+  EB72    CD EB69        C      C220:   CALL    C215
+  EB75    36 00          C              LD      M,000H
+  EB77    C9             C              RET
+                         C      
+  EB78    CD EB69        C      C225:   CALL    C215
+  EB7B    F6 80          C              OR      080H
+  EB7D    77             C              LD      M,A
+  EB7E    C9             C              RET
+                         C      
+  EB7F    2A F3EA        C      C230:   LD      HL,(D650)
+  EB82    EB             C              EX      DE,HL
+  EB83    2A F3B3        C              LD      HL,(D470)
+  EB86    7B             C              LD      A,E
+  EB87    96             C              SUB     M
+  EB88    23             C              INC     HL
+  EB89    7A             C              LD      A,D
+  EB8A    9E             C              SBC     A,M
+  EB8B    C9             C              RET
+                         C      
+  EB8C    CD EB7F        C      C235:   CALL    C230
+  EB8F    D8             C              RET     C
+  EB90    13             C              INC     DE
+  EB91    72             C              LD      M,D
+  EB92    2B             C              DEC     HL
+  EB93    73             C              LD      M,E
+  EB94    C9             C              RET
+                         C      
+  EB95    7B             C      C240:   LD      A,E
+  EB96    95             C              SUB     L
+  EB97    6F             C              LD      L,A
+  EB98    7A             C              LD      A,D
+  EB99    9C             C              SBC     A,H
+  EB9A    67             C              LD      H,A
+  EB9B    C9             C              RET
+                         C      
+  EB9C    0E FF          C      C245:   LD      C,0FFH
+  EB9E    2A F3EC        C      J230:   LD      HL,(D660)
+  EBA1    EB             C              EX      DE,HL
+  EBA2    2A F3CC        C              LD      HL,(D545)
+  EBA5    CD EB95        C              CALL    C240
+  EBA8    D0             C              RET     NC
+  EBA9    C5             C              PUSH    BC
+  EBAA    CD EAF7        C              CALL    C165
+  EBAD    2A F3BD        C              LD      HL,(D500)
+  EBB0    EB             C              EX      DE,HL
+  EBB1    2A F3EC        C              LD      HL,(D660)
+  EBB4    19             C              ADD     HL,DE
+  EBB5    C1             C              POP     BC
+  EBB6    0C             C              INC     C
+  EBB7    CA EBC4        C              JP      Z,J235
+  EBBA    BE             C              CP      M
+  EBBB    C8             C              RET     Z
+  EBBC    CD EB7F        C              CALL    C230
+  EBBF    D0             C              RET     NC
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-13
+
+
+  EBC0    CD EB2C        C              CALL    C185
+  EBC3    C9             C              RET
+                         C      
+  EBC4    77             C      J235:   LD      M,A
+  EBC5    C9             C              RET
+                         C      
+  EBC6    CD EB9C        C      C250:   CALL    C245
+  EBC9    CD EBE0        C              CALL    C265
+  EBCC    0E 01          C              LD      C,001H
+  EBCE    CD E9B8        C              CALL    C100
+  EBD1    C3 EBDA        C              JP      C260
+                         C      
+  EBD4    CD EBE0        C      C255:   CALL    C265
+  EBD7    CD E9B2        C              CALL    C095
+  EBDA    21 F3B1        C      C260:   LD      HL,D465
+  EBDD    C3 EBE3        C              JP      J240
+                         C      
+  EBE0    21 F3B9        C      C265:   LD      HL,D485
+  EBE3    4E             C      J240:   LD      C,M
+  EBE4    23             C              INC     HL
+  EBE5    46             C              LD      B,M
+  EBE6    C3 F424        C              JP      J615
+                         C      
+  EBE9    2A F3B9        C      J245:   LD      HL,(D485)
+  EBEC    EB             C              EX      DE,HL
+  EBED    2A F3B1        C              LD      HL,(D465)
+  EBF0    0E 80          C              LD      C,080H
+  EBF2    C3 E94F        C              JP      C080
+                         C      
+  EBF5    21 F3EA        C      C270:   LD      HL,D650
+  EBF8    7E             C              LD      A,M
+  EBF9    23             C              INC     HL
+  EBFA    BE             C              CP      M
+  EBFB    C0             C              RET     NZ
+  EBFC    3C             C              INC     A
+  EBFD    C9             C              RET
+                         C      
+  EBFE    21 FFFF        C      C275:   LD      HL,-1
+  EC01    22 F3EA        C              LD      (D650),HL
+  EC04    C9             C              RET
+                         C      
+  EC05    2A F3C8        C      C280:   LD      HL,(D535)
+  EC08    EB             C              EX      DE,HL
+  EC09    2A F3EA        C              LD      HL,(D650)
+  EC0C    23             C              INC     HL
+  EC0D    22 F3EA        C              LD      (D650),HL
+  EC10    CD EB95        C              CALL    C240
+  EC13    D2 EC19        C              JP      NC,J250
+  EC16    C3 EBFE        C              JP      C275
+                         C      
+  EC19    3A F3EA        C      J250:   LD      A,(D650)
+  EC1C    E6 03          C              AND     003H
+  EC1E    06 05          C              LD      B,005H
+  EC20    87             C      J255:   ADD     A,A
+  EC21    05             C              DEC     B
+  EC22    C2 EC20        C              JP      NZ,J255
+  EC25    32 F3E9        C              LD      (D645),A
+  EC28    B7             C              OR      A
+  EC29    C0             C              RET     NZ
+  EC2A    C5             C              PUSH    BC
+  EC2B    CD E9C3        C              CALL    C105
+  EC2E    CD EBD4        C              CALL    C255
+  EC31    C1             C              POP     BC
+  EC32    C3 EB9E        C              JP      J230
+                         C      
+  EC35    79             C      C285:   LD      A,C
+  EC36    E6 07          C              AND     007H
+  EC38    3C             C              INC     A
+  EC39    5F             C              LD      E,A
+  EC3A    57             C              LD      D,A
+  EC3B    79             C              LD      A,C
+  EC3C    0F             C              RRCA
+  EC3D    0F             C              RRCA
+  EC3E    0F             C              RRCA
+  EC3F    E6 1F          C              AND     01FH
+  EC41    4F             C              LD      C,A
+  EC42    78             C              LD      A,B
+  EC43    87             C              ADD     A,A
+  EC44    87             C              ADD     A,A
+  EC45    87             C              ADD     A,A
+  EC46    87             C              ADD     A,A
+  EC47    87             C              ADD     A,A
+  EC48    B1             C              OR      C
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-14
+
+
+  EC49    4F             C              LD      C,A
+  EC4A    78             C              LD      A,B
+  EC4B    0F             C              RRCA
+  EC4C    0F             C              RRCA
+  EC4D    0F             C              RRCA
+  EC4E    E6 1F          C              AND     01FH
+  EC50    47             C              LD      B,A
+  EC51    2A F3BF        C              LD      HL,(D505)
+  EC54    09             C              ADD     HL,BC
+  EC55    7E             C              LD      A,M
+  EC56    07             C      J260:   RLCA
+  EC57    1D             C              DEC     E
+  EC58    C2 EC56        C              JP      NZ,J260
+  EC5B    C9             C              RET
+                         C      
+  EC5C    D5             C      C290:   PUSH    DE
+  EC5D    CD EC35        C              CALL    C285
+  EC60    E6 FE          C              AND     0FEH
+  EC62    C1             C              POP     BC
+  EC63    B1             C              OR      C
+  EC64    0F             C      C295:   RRCA
+  EC65    15             C              DEC     D
+  EC66    C2 EC64        C              JP      NZ,C295
+  EC69    77             C              LD      M,A
+  EC6A    C9             C              RET
+                         C      
+  EC6B    CD EB5E        C      C300:   CALL    C205
+  EC6E    11 0010        C              LD      DE,16
+  EC71    19             C              ADD     HL,DE
+  EC72    C5             C              PUSH    BC
+  EC73    0E 11          C              LD      C,011H
+  EC75    D1             C      J265:   POP     DE
+  EC76    0D             C              DEC     C
+  EC77    C8             C              RET     Z
+  EC78    D5             C              PUSH    DE
+  EC79    3A F3DD        C              LD      A,(D600)
+  EC7C    B7             C              OR      A
+  EC7D    CA EC88        C              JP      Z,J270
+  EC80    C5             C              PUSH    BC
+  EC81    E5             C              PUSH    HL
+  EC82    4E             C              LD      C,M
+  EC83    06 00          C              LD      B,000H
+  EC85    C3 EC8E        C              JP      J275
+                         C      
+  EC88    0D             C      J270:   DEC     C
+  EC89    C5             C              PUSH    BC
+  EC8A    4E             C              LD      C,M
+  EC8B    23             C              INC     HL
+  EC8C    46             C              LD      B,M
+  EC8D    E5             C              PUSH    HL
+  EC8E    79             C      J275:   LD      A,C
+  EC8F    B0             C              OR      B
+  EC90    CA EC9D        C              JP      Z,J280
+  EC93    2A F3C6        C              LD      HL,(D530)
+  EC96    7D             C              LD      A,L
+  EC97    91             C              SUB     C
+  EC98    7C             C              LD      A,H
+  EC99    98             C              SBC     A,B
+  EC9A    D4 EC5C        C              CALL    NC,C290
+  EC9D    E1             C      J280:   POP     HL
+  EC9E    23             C              INC     HL
+  EC9F    C1             C              POP     BC
+  ECA0    C3 EC75        C              JP      J265
+                         C      
+  ECA3    2A F3C6        C      J285:   LD      HL,(D530)
+  ECA6    0E 03          C              LD      C,003H
+  ECA8    CD EAEA        C              CALL    C160
+  ECAB    23             C              INC     HL
+  ECAC    44             C              LD      B,H
+  ECAD    4D             C              LD      C,L
+  ECAE    2A F3BF        C              LD      HL,(D505)
+  ECB1    36 00          C      J290:   LD      M,000H
+  ECB3    23             C              INC     HL
+  ECB4    0B             C              DEC     BC
+  ECB5    78             C              LD      A,B
+  ECB6    B1             C              OR      C
+  ECB7    C2 ECB1        C              JP      NZ,J290
+  ECBA    2A F3CA        C              LD      HL,(D540)
+  ECBD    EB             C              EX      DE,HL
+  ECBE    2A F3BF        C              LD      HL,(D505)
+  ECC1    73             C              LD      M,E
+  ECC2    23             C              INC     HL
+  ECC3    72             C              LD      M,D
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-15
+
+
+  ECC4    CD E9A1        C              CALL    C090
+  ECC7    2A F3B3        C              LD      HL,(D470)
+  ECCA    36 03          C              LD      M,003H
+  ECCC    23             C              INC     HL
+  ECCD    36 00          C              LD      M,000H
+  ECCF    CD EBFE        C              CALL    C275
+  ECD2    0E FF          C      J295:   LD      C,0FFH
+  ECD4    CD EC05        C              CALL    C280
+  ECD7    CD EBF5        C              CALL    C270
+  ECDA    C8             C              RET     Z
+  ECDB    CD EB5E        C              CALL    C205
+  ECDE    3E E5          C              LD      A,0E5H
+  ECE0    BE             C              CP      M
+  ECE1    CA ECD2        C              JP      Z,J295
+  ECE4    3A E941        C              LD      A,(D285)
+  ECE7    BE             C              CP      M
+  ECE8    C2 ECF6        C              JP      NZ,J300
+  ECEB    23             C              INC     HL
+  ECEC    7E             C              LD      A,M
+  ECED    D6 24          C              SUB     024H
+  ECEF    C2 ECF6        C              JP      NZ,J300
+  ECF2    3D             C              DEC     A
+  ECF3    32 E945        C              LD      (D300),A
+  ECF6    0E 01          C      J300:   LD      C,001H
+  ECF8    CD EC6B        C              CALL    C300
+  ECFB    CD EB8C        C              CALL    C235
+  ECFE    C3 ECD2        C              JP      J295
+                         C      
+  ED01    3A F3D4        C      J305:   LD      A,(D570)
+  ED04    C3 E901        C              JP      J145
+                         C      
+  ED07    C5             C      C305:   PUSH    BC
+  ED08    F5             C              PUSH    AF
+  ED09    3A F3C5        C              LD      A,(D525)
+  ED0C    2F             C              CPL
+  ED0D    47             C              LD      B,A
+  ED0E    79             C              LD      A,C
+  ED0F    A0             C              AND     B
+  ED10    4F             C              LD      C,A
+  ED11    F1             C              POP     AF
+  ED12    A0             C              AND     B
+  ED13    91             C              SUB     C
+  ED14    E6 1F          C              AND     01FH
+  ED16    C1             C              POP     BC
+  ED17    C9             C              RET
+                         C      
+  ED18    3E FF          C      C310:   LD      A,0FFH
+  ED1A    32 F3D4        C              LD      (D570),A
+  ED1D    21 F3D8        C              LD      HL,D590
+  ED20    71             C              LD      M,C
+  ED21    2A E943        C              LD      HL,(D295)
+  ED24    22 F3D9        C              LD      (D595),HL
+  ED27    CD EBFE        C              CALL    C275
+  ED2A    CD E9A1        C              CALL    C090
+  ED2D    0E 00          C      C315:   LD      C,000H
+  ED2F    CD EC05        C              CALL    C280
+  ED32    CD EBF5        C              CALL    C270
+  ED35    CA ED94        C              JP      Z,J335
+  ED38    2A F3D9        C              LD      HL,(D595)
+  ED3B    EB             C              EX      DE,HL
+  ED3C    1A             C              LD      A,(DE)
+  ED3D    FE E5          C              CP      0E5H
+  ED3F    CA ED4A        C              JP      Z,J310
+  ED42    D5             C              PUSH    DE
+  ED43    CD EB7F        C              CALL    C230
+  ED46    D1             C              POP     DE
+  ED47    D2 ED94        C              JP      NC,J335
+  ED4A    CD EB5E        C      J310:   CALL    C205
+  ED4D    3A F3D8        C              LD      A,(D590)
+  ED50    4F             C              LD      C,A
+  ED51    06 00          C              LD      B,000H
+  ED53    79             C      J315:   LD      A,C
+  ED54    B7             C              OR      A
+  ED55    CA ED83        C              JP      Z,J330
+  ED58    1A             C              LD      A,(DE)
+  ED59    FE 3F          C              CP      03FH
+  ED5B    CA ED7C        C              JP      Z,J325
+  ED5E    78             C              LD      A,B
+  ED5F    FE 0D          C              CP      00DH
+  ED61    CA ED7C        C              JP      Z,J325
+  ED64    FE 0C          C              CP      00CH
+  ED66    1A             C              LD      A,(DE)
+  ED67    CA ED73        C              JP      Z,J320
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-16
+
+
+  ED6A    96             C              SUB     M
+  ED6B    E6 7F          C              AND     07FH
+  ED6D    C2 ED2D        C              JP      NZ,C315
+  ED70    C3 ED7C        C              JP      J325
+                         C      
+  ED73    C5             C      J320:   PUSH    BC
+  ED74    4E             C              LD      C,M
+  ED75    CD ED07        C              CALL    C305
+  ED78    C1             C              POP     BC
+  ED79    C2 ED2D        C              JP      NZ,C315
+  ED7C    13             C      J325:   INC     DE
+  ED7D    23             C              INC     HL
+  ED7E    04             C              INC     B
+  ED7F    0D             C              DEC     C
+  ED80    C3 ED53        C              JP      J315
+                         C      
+  ED83    3A F3EA        C      J330:   LD      A,(D650)
+  ED86    E6 03          C              AND     003H
+  ED88    32 E945        C              LD      (D300),A
+  ED8B    21 F3D4        C              LD      HL,D570
+  ED8E    7E             C              LD      A,M
+  ED8F    17             C              RLA
+  ED90    D0             C              RET     NC
+  ED91    AF             C              XOR     A
+  ED92    77             C              LD      M,A
+  ED93    C9             C              RET
+                         C      
+  ED94    CD EBFE        C      J335:   CALL    C275
+  ED97    3E FF          C              LD      A,0FFH
+  ED99    C3 E901        C              JP      J145
+                         C      
+  ED9C    CD EB54        C      C320:   CALL    C200
+  ED9F    0E 0C          C              LD      C,00CH
+  EDA1    CD ED18        C              CALL    C310
+  EDA4    CD EBF5        C      J340:   CALL    C270
+  EDA7    C8             C              RET     Z
+  EDA8    CD EB44        C              CALL    C190
+  EDAB    CD EB5E        C              CALL    C205
+  EDAE    36 E5          C              LD      M,0E5H
+  EDB0    0E 00          C              LD      C,000H
+  EDB2    CD EC6B        C              CALL    C300
+  EDB5    CD EBC6        C              CALL    C250
+  EDB8    CD ED2D        C              CALL    C315
+  EDBB    C3 EDA4        C              JP      J340
+                         C      
+  EDBE    50             C      C325:   LD      D,B
+  EDBF    59             C              LD      E,C
+  EDC0    79             C      J345:   LD      A,C
+  EDC1    B0             C              OR      B
+  EDC2    CA EDD1        C              JP      Z,J350
+  EDC5    0B             C              DEC     BC
+  EDC6    D5             C              PUSH    DE
+  EDC7    C5             C              PUSH    BC
+  EDC8    CD EC35        C              CALL    C285
+  EDCB    1F             C              RRA
+  EDCC    D2 EDEC        C              JP      NC,J355
+  EDCF    C1             C              POP     BC
+  EDD0    D1             C              POP     DE
+  EDD1    2A F3C6        C      J350:   LD      HL,(D530)
+  EDD4    7B             C              LD      A,E
+  EDD5    95             C              SUB     L
+  EDD6    7A             C              LD      A,D
+  EDD7    9C             C              SBC     A,H
+  EDD8    D2 EDF4        C              JP      NC,J360
+  EDDB    13             C              INC     DE
+  EDDC    C5             C              PUSH    BC
+  EDDD    D5             C              PUSH    DE
+  EDDE    42             C              LD      B,D
+  EDDF    4B             C              LD      C,E
+  EDE0    CD EC35        C              CALL    C285
+  EDE3    1F             C              RRA
+  EDE4    D2 EDEC        C              JP      NC,J355
+  EDE7    D1             C              POP     DE
+  EDE8    C1             C              POP     BC
+  EDE9    C3 EDC0        C              JP      J345
+                         C      
+  EDEC    17             C      J355:   RLA
+  EDED    3C             C              INC     A
+  EDEE    CD EC64        C              CALL    C295
+  EDF1    E1             C              POP     HL
+  EDF2    D1             C              POP     DE
+  EDF3    C9             C              RET
+                         C      
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-17
+
+
+  EDF4    79             C      J360:   LD      A,C
+  EDF5    B0             C              OR      B
+  EDF6    C2 EDC0        C              JP      NZ,J345
+  EDF9    21 0000        C              LD      HL,0
+  EDFC    C9             C              RET
+                         C      
+  EDFD    0E 00          C      C330:   LD      C,000H
+  EDFF    1E 20          C              LD      E,020H
+  EE01    D5             C      C335:   PUSH    DE
+  EE02    06 00          C              LD      B,000H
+  EE04    2A E943        C              LD      HL,(D295)
+  EE07    09             C              ADD     HL,BC
+  EE08    EB             C              EX      DE,HL
+  EE09    CD EB5E        C              CALL    C205
+  EE0C    C1             C              POP     BC
+  EE0D    CD E94F        C              CALL    C080
+  EE10    CD E9C3        C      J365:   CALL    C105
+  EE13    C3 EBC6        C              JP      C250
+                         C      
+  EE16    CD EB54        C      C340:   CALL    C200
+  EE19    0E 0C          C              LD      C,00CH
+  EE1B    CD ED18        C              CALL    C310
+  EE1E    2A E943        C              LD      HL,(D295)
+  EE21    7E             C              LD      A,M
+  EE22    11 0010        C              LD      DE,16
+  EE25    19             C              ADD     HL,DE
+  EE26    77             C              LD      M,A
+  EE27    CD EBF5        C      J370:   CALL    C270
+  EE2A    C8             C              RET     Z
+  EE2B    CD EB44        C              CALL    C190
+  EE2E    0E 10          C              LD      C,010H
+  EE30    1E 0C          C              LD      E,00CH
+  EE32    CD EE01        C              CALL    C335
+  EE35    CD ED2D        C              CALL    C315
+  EE38    C3 EE27        C              JP      J370
+                         C      
+  EE3B    0E 0C          C      C345:   LD      C,00CH
+  EE3D    CD ED18        C              CALL    C310
+  EE40    CD EBF5        C      J375:   CALL    C270
+  EE43    C8             C              RET     Z
+  EE44    0E 00          C              LD      C,000H
+  EE46    1E 0C          C              LD      E,00CH
+  EE48    CD EE01        C              CALL    C335
+  EE4B    CD ED2D        C              CALL    C315
+  EE4E    C3 EE40        C              JP      J375
+                         C      
+  EE51    0E 0F          C      C350:   LD      C,00FH
+  EE53    CD ED18        C              CALL    C310
+  EE56    CD EBF5        C              CALL    C270
+  EE59    C8             C              RET     Z
+  EE5A    CD EAA6        C      C355:   CALL    C140
+  EE5D    7E             C              LD      A,M
+  EE5E    F5             C              PUSH    AF
+  EE5F    E5             C              PUSH    HL
+  EE60    CD EB5E        C              CALL    C205
+  EE63    EB             C              EX      DE,HL
+  EE64    2A E943        C              LD      HL,(D295)
+  EE67    0E 20          C              LD      C,020H
+  EE69    D5             C              PUSH    DE
+  EE6A    CD E94F        C              CALL    C080
+  EE6D    CD EB78        C              CALL    C225
+  EE70    D1             C              POP     DE
+  EE71    21 000C        C              LD      HL,12
+  EE74    19             C              ADD     HL,DE
+  EE75    4E             C              LD      C,M
+  EE76    21 000F        C              LD      HL,15
+  EE79    19             C              ADD     HL,DE
+  EE7A    46             C              LD      B,M
+  EE7B    E1             C              POP     HL
+  EE7C    F1             C              POP     AF
+  EE7D    77             C              LD      M,A
+  EE7E    79             C              LD      A,C
+  EE7F    BE             C              CP      M
+  EE80    78             C              LD      A,B
+  EE81    CA EE8B        C              JP      Z,J380
+  EE84    3E 00          C              LD      A,000H
+  EE86    DA EE8B        C              JP      C,J380
+  EE89    3E 80          C              LD      A,080H
+  EE8B    2A E943        C      J380:   LD      HL,(D295)
+  EE8E    11 000F        C              LD      DE,15
+  EE91    19             C              ADD     HL,DE
+  EE92    77             C              LD      M,A
+  EE93    C9             C              RET
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-18
+
+
+                         C      
+  EE94    7E             C      C360:   LD      A,M
+  EE95    23             C              INC     HL
+  EE96    B6             C              OR      M
+  EE97    2B             C              DEC     HL
+  EE98    C0             C              RET     NZ
+  EE99    1A             C              LD      A,(DE)
+  EE9A    77             C              LD      M,A
+  EE9B    13             C              INC     DE
+  EE9C    23             C              INC     HL
+  EE9D    1A             C              LD      A,(DE)
+  EE9E    77             C              LD      M,A
+  EE9F    1B             C              DEC     DE
+  EEA0    2B             C              DEC     HL
+  EEA1    C9             C              RET
+                         C      
+  EEA2    AF             C      C365:   XOR     A
+  EEA3    32 E945        C              LD      (D300),A
+  EEA6    32 F3EA        C              LD      (D650),A
+  EEA9    32 F3EB        C              LD      (D655),A
+  EEAC    CD EB1E        C              CALL    C180
+  EEAF    C0             C              RET     NZ
+  EEB0    CD EB69        C              CALL    C215
+  EEB3    E6 80          C              AND     080H
+  EEB5    C0             C              RET     NZ
+  EEB6    0E 0F          C              LD      C,00FH
+  EEB8    CD ED18        C              CALL    C310
+  EEBB    CD EBF5        C              CALL    C270
+  EEBE    C8             C              RET     Z
+  EEBF    01 0010        C              LD      BC,16
+  EEC2    CD EB5E        C              CALL    C205
+  EEC5    09             C              ADD     HL,BC
+  EEC6    EB             C              EX      DE,HL
+  EEC7    2A E943        C              LD      HL,(D295)
+  EECA    09             C              ADD     HL,BC
+  EECB    0E 10          C              LD      C,010H
+  EECD    3A F3DD        C      J385:   LD      A,(D600)
+  EED0    B7             C              OR      A
+  EED1    CA EEE8        C              JP      Z,J400
+  EED4    7E             C              LD      A,M
+  EED5    B7             C              OR      A
+  EED6    1A             C              LD      A,(DE)
+  EED7    C2 EEDB        C              JP      NZ,J390
+  EEDA    77             C              LD      M,A
+  EEDB    B7             C      J390:   OR      A
+  EEDC    C2 EEE1        C              JP      NZ,J395
+  EEDF    7E             C              LD      A,M
+  EEE0    12             C              LD      (DE),A
+  EEE1    BE             C      J395:   CP      M
+  EEE2    C2 EF1F        C              JP      NZ,J415
+  EEE5    C3 EEFD        C              JP      J405
+                         C      
+  EEE8    CD EE94        C      J400:   CALL    C360
+  EEEB    EB             C              EX      DE,HL
+  EEEC    CD EE94        C              CALL    C360
+  EEEF    EB             C              EX      DE,HL
+  EEF0    1A             C              LD      A,(DE)
+  EEF1    BE             C              CP      M
+  EEF2    C2 EF1F        C              JP      NZ,J415
+  EEF5    13             C              INC     DE
+  EEF6    23             C              INC     HL
+  EEF7    1A             C              LD      A,(DE)
+  EEF8    BE             C              CP      M
+  EEF9    C2 EF1F        C              JP      NZ,J415
+  EEFC    0D             C              DEC     C
+  EEFD    13             C      J405:   INC     DE
+  EEFE    23             C              INC     HL
+  EEFF    0D             C              DEC     C
+  EF00    C2 EECD        C              JP      NZ,J385
+  EF03    01 FFEC        C              LD      BC,0FFECH
+  EF06    09             C              ADD     HL,BC
+  EF07    EB             C              EX      DE,HL
+  EF08    09             C              ADD     HL,BC
+  EF09    1A             C              LD      A,(DE)
+  EF0A    BE             C              CP      M
+  EF0B    DA EF17        C              JP      C,J410
+  EF0E    77             C              LD      M,A
+  EF0F    01 0003        C              LD      BC,3
+  EF12    09             C              ADD     HL,BC
+  EF13    EB             C              EX      DE,HL
+  EF14    09             C              ADD     HL,BC
+  EF15    7E             C              LD      A,M
+  EF16    12             C              LD      (DE),A
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-19
+
+
+  EF17    3E FF          C      J410:   LD      A,0FFH
+  EF19    32 F3D2        C              LD      (D560),A
+  EF1C    C3 EE10        C              JP      J365
+                         C      
+  EF1F    21 E945        C      J415:   LD      HL,D300
+  EF22    35             C              DEC     M
+  EF23    C9             C              RET
+                         C      
+  EF24    CD EB54        C      C370:   CALL    C200
+  EF27    2A E943        C              LD      HL,(D295)
+  EF2A    E5             C              PUSH    HL
+  EF2B    21 F3AC        C              LD      HL,D450
+  EF2E    22 E943        C              LD      (D295),HL
+  EF31    0E 01          C              LD      C,001H
+  EF33    CD ED18        C              CALL    C310
+  EF36    CD EBF5        C              CALL    C270
+  EF39    E1             C              POP     HL
+  EF3A    22 E943        C              LD      (D295),HL
+  EF3D    C8             C              RET     Z
+  EF3E    EB             C              EX      DE,HL
+  EF3F    21 000F        C              LD      HL,15
+  EF42    19             C              ADD     HL,DE
+  EF43    0E 11          C              LD      C,011H
+  EF45    AF             C              XOR     A
+  EF46    77             C      J420:   LD      M,A
+  EF47    23             C              INC     HL
+  EF48    0D             C              DEC     C
+  EF49    C2 EF46        C              JP      NZ,J420
+  EF4C    21 000D        C              LD      HL,13
+  EF4F    19             C              ADD     HL,DE
+  EF50    77             C              LD      M,A
+  EF51    CD EB8C        C              CALL    C235
+  EF54    CD EDFD        C              CALL    C330
+  EF57    C3 EB78        C              JP      C225
+                         C      
+  EF5A    AF             C      C375:   XOR     A
+  EF5B    32 F3D2        C              LD      (D560),A
+  EF5E    CD EEA2        C              CALL    C365
+  EF61    CD EBF5        C              CALL    C270
+  EF64    C8             C              RET     Z
+  EF65    2A E943        C              LD      HL,(D295)
+  EF68    01 000C        C              LD      BC,12
+  EF6B    09             C              ADD     HL,BC
+  EF6C    7E             C              LD      A,M
+  EF6D    3C             C              INC     A
+  EF6E    E6 1F          C              AND     01FH
+  EF70    77             C              LD      M,A
+  EF71    CA EF83        C              JP      Z,J425
+  EF74    47             C              LD      B,A
+  EF75    3A F3C5        C              LD      A,(D525)
+  EF78    A0             C              AND     B
+  EF79    21 F3D2        C              LD      HL,D560
+  EF7C    A6             C              AND     M
+  EF7D    CA EF8E        C              JP      Z,J430
+  EF80    C3 EFAC        C              JP      J435
+                         C      
+  EF83    01 0002        C      J425:   LD      BC,2
+  EF86    09             C              ADD     HL,BC
+  EF87    34             C              INC     M
+  EF88    7E             C              LD      A,M
+  EF89    E6 0F          C              AND     00FH
+  EF8B    CA EFB6        C              JP      Z,J445
+  EF8E    0E 0F          C      J430:   LD      C,00FH
+  EF90    CD ED18        C              CALL    C310
+  EF93    CD EBF5        C              CALL    C270
+  EF96    C2 EFAC        C              JP      NZ,J435
+  EF99    3A F3D3        C              LD      A,(D565)
+  EF9C    3C             C              INC     A
+  EF9D    CA EFB6        C              JP      Z,J445
+  EFA0    CD EF24        C              CALL    C370
+  EFA3    CD EBF5        C              CALL    C270
+  EFA6    CA EFB6        C              JP      Z,J445
+  EFA9    C3 EFAF        C              JP      J440
+                         C      
+  EFAC    CD EE5A        C      J435:   CALL    C355
+  EFAF    CD EABB        C      J440:   CALL    C150
+  EFB2    AF             C              XOR     A
+  EFB3    C3 E901        C              JP      J145
+                         C      
+  EFB6    CD E905        C      J445:   CALL    C070
+  EFB9    C3 EB78        C              JP      C225
+                         C      
+  EFBC    3E 01          C      J450:   LD      A,001H
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-20
+
+
+  EFBE    32 F3D5        C              LD      (D575),A
+  EFC1    3E FF          C      C380:   LD      A,0FFH
+  EFC3    32 F3D3        C              LD      (D565),A
+  EFC6    CD EABB        C              CALL    C150
+  EFC9    3A F3E3        C              LD      A,(D630)
+  EFCC    21 F3E1        C              LD      HL,D620
+  EFCF    BE             C              CP      M
+  EFD0    DA EFE6        C              JP      C,J455
+  EFD3    FE 80          C              CP      080H
+  EFD5    C2 EFFB        C              JP      NZ,J460
+  EFD8    CD EF5A        C              CALL    C375
+  EFDB    AF             C              XOR     A
+  EFDC    32 F3E3        C              LD      (D630),A
+  EFDF    3A E945        C              LD      A,(D300)
+  EFE2    B7             C              OR      A
+  EFE3    C2 EFFB        C              JP      NZ,J460
+  EFE6    CD EA77        C      J455:   CALL    C125
+  EFE9    CD EA84        C              CALL    C130
+  EFEC    CA EFFB        C              JP      Z,J460
+  EFEF    CD EA8A        C              CALL    C135
+  EFF2    CD E9D1        C              CALL    C110
+  EFF5    CD E9B2        C              CALL    C095
+  EFF8    C3 EAD2        C              JP      C155
+                         C      
+  EFFB    C3 E905        C      J460:   JP      C070
+                         C      
+  EFFE    3E 01          C      J465:   LD      A,001H
+  F000    32 F3D5        C              LD      (D575),A
+  F003    3E 00          C      C385:   LD      A,000H
+  F005    32 F3D3        C              LD      (D565),A
+  F008    CD EB54        C              CALL    C200
+  F00B    2A E943        C              LD      HL,(D295)
+  F00E    CD EB47        C              CALL    C195
+  F011    CD EABB        C              CALL    C150
+  F014    3A F3E3        C              LD      A,(D630)
+  F017    FE 80          C              CP      080H
+  F019    D2 E905        C              JP      NC,C070
+  F01C    CD EA77        C              CALL    C125
+  F01F    CD EA84        C              CALL    C130
+  F022    0E 00          C              LD      C,000H
+  F024    C2 F06E        C              JP      NZ,J490
+  F027    CD EA3E        C              CALL    C115
+  F02A    32 F3D7        C              LD      (D585),A
+  F02D    01 0000        C              LD      BC,0
+  F030    B7             C              OR      A
+  F031    CA F03B        C              JP      Z,J470
+  F034    4F             C              LD      C,A
+  F035    0B             C              DEC     BC
+  F036    CD EA5E        C              CALL    C120
+  F039    44             C              LD      B,H
+  F03A    4D             C              LD      C,L
+  F03B    CD EDBE        C      J470:   CALL    C325
+  F03E    7D             C              LD      A,L
+  F03F    B4             C              OR      H
+  F040    C2 F048        C              JP      NZ,J475
+  F043    3E 02          C              LD      A,002H
+  F045    C3 E901        C              JP      J145
+                         C      
+  F048    22 F3E5        C      J475:   LD      (D635),HL
+  F04B    EB             C              EX      DE,HL
+  F04C    2A E943        C              LD      HL,(D295)
+  F04F    01 0010        C              LD      BC,16
+  F052    09             C              ADD     HL,BC
+  F053    3A F3DD        C              LD      A,(D600)
+  F056    B7             C              OR      A
+  F057    3A F3D7        C              LD      A,(D585)
+  F05A    CA F064        C              JP      Z,J480
+  F05D    CD EB64        C              CALL    C210
+  F060    73             C              LD      M,E
+  F061    C3 F06C        C              JP      J485
+                         C      
+  F064    4F             C      J480:   LD      C,A
+  F065    06 00          C              LD      B,000H
+  F067    09             C              ADD     HL,BC
+  F068    09             C              ADD     HL,BC
+  F069    73             C              LD      M,E
+  F06A    23             C              INC     HL
+  F06B    72             C              LD      M,D
+  F06C    0E 02          C      J485:   LD      C,002H
+  F06E    3A E945        C      J490:   LD      A,(D300)
+  F071    B7             C              OR      A
+  F072    C0             C              RET     NZ
+  F073    C5             C              PUSH    BC
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-21
+
+
+  F074    CD EA8A        C              CALL    C135
+  F077    3A F3D5        C              LD      A,(D575)
+  F07A    3D             C              DEC     A
+  F07B    3D             C              DEC     A
+  F07C    C2 F0BB        C              JP      NZ,J505
+  F07F    C1             C              POP     BC
+  F080    C5             C              PUSH    BC
+  F081    79             C              LD      A,C
+  F082    3D             C              DEC     A
+  F083    3D             C              DEC     A
+  F084    C2 F0BB        C              JP      NZ,J505
+  F087    E5             C              PUSH    HL
+  F088    2A F3B9        C              LD      HL,(D485)
+  F08B    57             C              LD      D,A
+  F08C    77             C      J495:   LD      M,A
+  F08D    23             C              INC     HL
+  F08E    14             C              INC     D
+  F08F    F2 F08C        C              JP      P,J495
+  F092    CD EBE0        C              CALL    C265
+  F095    2A F3E7        C              LD      HL,(D640)
+  F098    0E 02          C              LD      C,002H
+  F09A    22 F3E5        C      J500:   LD      (D635),HL
+  F09D    C5             C              PUSH    BC
+  F09E    CD E9D1        C              CALL    C110
+  F0A1    C1             C              POP     BC
+  F0A2    CD E9B8        C              CALL    C100
+  F0A5    2A F3E5        C              LD      HL,(D635)
+  F0A8    0E 00          C              LD      C,000H
+  F0AA    3A F3C4        C              LD      A,(D520)
+  F0AD    47             C              LD      B,A
+  F0AE    A5             C              AND     L
+  F0AF    B8             C              CP      B
+  F0B0    23             C              INC     HL
+  F0B1    C2 F09A        C              JP      NZ,J500
+  F0B4    E1             C              POP     HL
+  F0B5    22 F3E5        C              LD      (D635),HL
+  F0B8    CD EBDA        C              CALL    C260
+  F0BB    CD E9D1        C      J505:   CALL    C110
+  F0BE    C1             C              POP     BC
+  F0BF    C5             C              PUSH    BC
+  F0C0    CD E9B8        C              CALL    C100
+  F0C3    C1             C              POP     BC
+  F0C4    3A F3E3        C              LD      A,(D630)
+  F0C7    21 F3E1        C              LD      HL,D620
+  F0CA    BE             C              CP      M
+  F0CB    DA F0D2        C              JP      C,J510
+  F0CE    77             C              LD      M,A
+  F0CF    34             C              INC     M
+  F0D0    0E 02          C              LD      C,002H
+  F0D2    0D             C      J510:   DEC     C
+  F0D3    0D             C              DEC     C
+  F0D4    C2 F0DF        C              JP      NZ,J515
+  F0D7    F5             C              PUSH    AF
+  F0D8    CD EB69        C              CALL    C215
+  F0DB    E6 7F          C              AND     07FH
+  F0DD    77             C              LD      M,A
+  F0DE    F1             C              POP     AF
+  F0DF    FE 7F          C      J515:   CP      07FH
+  F0E1    C2 F100        C              JP      NZ,J525
+  F0E4    3A F3D5        C              LD      A,(D575)
+  F0E7    FE 01          C              CP      001H
+  F0E9    C2 F100        C              JP      NZ,J525
+  F0EC    CD EAD2        C              CALL    C155
+  F0EF    CD EF5A        C              CALL    C375
+  F0F2    21 E945        C              LD      HL,D300
+  F0F5    7E             C              LD      A,M
+  F0F6    B7             C              OR      A
+  F0F7    C2 F0FE        C              JP      NZ,J520
+  F0FA    3D             C              DEC     A
+  F0FB    32 F3E3        C              LD      (D630),A
+  F0FE    36 00          C      J520:   LD      M,000H
+  F100    C3 EAD2        C      J525:   JP      C155
+                         C      
+  F103    AF             C      C390:   XOR     A
+  F104    32 F3D5        C              LD      (D575),A
+  F107    C5             C      C395:   PUSH    BC
+  F108    2A E943        C              LD      HL,(D295)
+  F10B    EB             C              EX      DE,HL
+  F10C    21 0021        C              LD      HL,21H
+  F10F    19             C              ADD     HL,DE
+  F110    7E             C              LD      A,M
+  F111    E6 7F          C              AND     07FH
+  F113    F5             C              PUSH    AF
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-22
+
+
+  F114    7E             C              LD      A,M
+  F115    17             C              RLA
+  F116    23             C              INC     HL
+  F117    7E             C              LD      A,M
+  F118    17             C              RLA
+  F119    E6 1F          C              AND     01FH
+  F11B    4F             C              LD      C,A
+  F11C    7E             C              LD      A,M
+  F11D    1F             C              RRA
+  F11E    1F             C              RRA
+  F11F    1F             C              RRA
+  F120    1F             C              RRA
+  F121    E6 0F          C              AND     00FH
+  F123    47             C              LD      B,A
+  F124    F1             C              POP     AF
+  F125    23             C              INC     HL
+  F126    6E             C              LD      L,M
+  F127    2C             C              INC     L
+  F128    2D             C              DEC     L
+  F129    2E 06          C              LD      L,006H
+  F12B    C2 F18B        C              JP      NZ,J545
+  F12E    21 0020        C              LD      HL,20H
+  F131    19             C              ADD     HL,DE
+  F132    77             C              LD      M,A
+  F133    21 000C        C              LD      HL,12
+  F136    19             C              ADD     HL,DE
+  F137    79             C              LD      A,C
+  F138    96             C              SUB     M
+  F139    C2 F147        C              JP      NZ,J530
+  F13C    21 000E        C              LD      HL,14
+  F13F    19             C              ADD     HL,DE
+  F140    78             C              LD      A,B
+  F141    96             C              SUB     M
+  F142    E6 7F          C              AND     07FH
+  F144    CA F17F        C              JP      Z,J535
+  F147    C5             C      J530:   PUSH    BC
+  F148    D5             C              PUSH    DE
+  F149    CD EEA2        C              CALL    C365
+  F14C    D1             C              POP     DE
+  F14D    C1             C              POP     BC
+  F14E    2E 03          C              LD      L,003H
+  F150    3A E945        C              LD      A,(D300)
+  F153    3C             C              INC     A
+  F154    CA F184        C              JP      Z,J540
+  F157    21 000C        C              LD      HL,12
+  F15A    19             C              ADD     HL,DE
+  F15B    71             C              LD      M,C
+  F15C    21 000E        C              LD      HL,14
+  F15F    19             C              ADD     HL,DE
+  F160    70             C              LD      M,B
+  F161    CD EE51        C              CALL    C350
+  F164    3A E945        C              LD      A,(D300)
+  F167    3C             C              INC     A
+  F168    C2 F17F        C              JP      NZ,J535
+  F16B    C1             C              POP     BC
+  F16C    C5             C              PUSH    BC
+  F16D    2E 04          C              LD      L,004H
+  F16F    0C             C              INC     C
+  F170    CA F184        C              JP      Z,J540
+  F173    CD EF24        C              CALL    C370
+  F176    2E 05          C              LD      L,005H
+  F178    3A E945        C              LD      A,(D300)
+  F17B    3C             C              INC     A
+  F17C    CA F184        C              JP      Z,J540
+  F17F    C1             C      J535:   POP     BC
+  F180    AF             C              XOR     A
+  F181    C3 E901        C              JP      J145
+                         C      
+  F184    E5             C      J540:   PUSH    HL
+  F185    CD EB69        C              CALL    C215
+  F188    36 C0          C              LD      M,0C0H
+  F18A    E1             C              POP     HL
+  F18B    C1             C      J545:   POP     BC
+  F18C    7D             C              LD      A,L
+  F18D    32 E945        C              LD      (D300),A
+  F190    C3 EB78        C              JP      C225
+                         C      
+  F193    0E FF          C      J550:   LD      C,0FFH
+  F195    CD F103        C              CALL    C390
+  F198    CC EFC1        C              CALL    Z,C380
+  F19B    C9             C              RET
+                         C      
+  F19C    0E 00          C      J555:   LD      C,000H
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-23
+
+
+  F19E    CD F103        C              CALL    C390
+  F1A1    CC F003        C              CALL    Z,C385
+  F1A4    C9             C              RET
+                         C      
+  F1A5    EB             C      C400:   EX      DE,HL
+  F1A6    19             C              ADD     HL,DE
+  F1A7    4E             C              LD      C,M
+  F1A8    06 00          C              LD      B,000H
+  F1AA    21 000C        C              LD      HL,12
+  F1AD    19             C              ADD     HL,DE
+  F1AE    7E             C              LD      A,M
+  F1AF    0F             C              RRCA
+  F1B0    E6 80          C              AND     080H
+  F1B2    81             C              ADD     A,C
+  F1B3    4F             C              LD      C,A
+  F1B4    3E 00          C              LD      A,000H
+  F1B6    88             C              ADC     A,B
+  F1B7    47             C              LD      B,A
+  F1B8    7E             C              LD      A,M
+  F1B9    0F             C              RRCA
+  F1BA    E6 0F          C              AND     00FH
+  F1BC    80             C              ADD     A,B
+  F1BD    47             C              LD      B,A
+  F1BE    21 000E        C              LD      HL,14
+  F1C1    19             C              ADD     HL,DE
+  F1C2    7E             C              LD      A,M
+  F1C3    87             C              ADD     A,A
+  F1C4    87             C              ADD     A,A
+  F1C5    87             C              ADD     A,A
+  F1C6    87             C              ADD     A,A
+  F1C7    F5             C              PUSH    AF
+  F1C8    80             C              ADD     A,B
+  F1C9    47             C              LD      B,A
+  F1CA    F5             C              PUSH    AF
+  F1CB    E1             C              POP     HL
+  F1CC    7D             C              LD      A,L
+  F1CD    E1             C              POP     HL
+  F1CE    B5             C              OR      L
+  F1CF    E6 01          C              AND     001H
+  F1D1    C9             C              RET
+                         C      
+  F1D2    0E 0C          C      J560:   LD      C,00CH
+  F1D4    CD ED18        C              CALL    C310
+  F1D7    2A E943        C              LD      HL,(D295)
+  F1DA    11 0021        C              LD      DE,21H
+  F1DD    19             C              ADD     HL,DE
+  F1DE    E5             C              PUSH    HL
+  F1DF    72             C              LD      M,D
+  F1E0    23             C              INC     HL
+  F1E1    72             C              LD      M,D
+  F1E2    23             C              INC     HL
+  F1E3    72             C              LD      M,D
+  F1E4    CD EBF5        C      J565:   CALL    C270
+  F1E7    CA F20C        C              JP      Z,J575
+  F1EA    CD EB5E        C              CALL    C205
+  F1ED    11 000F        C              LD      DE,15
+  F1F0    CD F1A5        C              CALL    C400
+  F1F3    E1             C              POP     HL
+  F1F4    E5             C              PUSH    HL
+  F1F5    5F             C              LD      E,A
+  F1F6    79             C              LD      A,C
+  F1F7    96             C              SUB     M
+  F1F8    23             C              INC     HL
+  F1F9    78             C              LD      A,B
+  F1FA    9E             C              SBC     A,M
+  F1FB    23             C              INC     HL
+  F1FC    7B             C              LD      A,E
+  F1FD    9E             C              SBC     A,M
+  F1FE    DA F206        C              JP      C,J570
+  F201    73             C              LD      M,E
+  F202    2B             C              DEC     HL
+  F203    70             C              LD      M,B
+  F204    2B             C              DEC     HL
+  F205    71             C              LD      M,C
+  F206    CD ED2D        C      J570:   CALL    C315
+  F209    C3 F1E4        C              JP      J565
+                         C      
+  F20C    E1             C      J575:   POP     HL
+  F20D    C9             C              RET
+                         C      
+                         C              PAGE
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-24
+
+
+                         C      
+  F20E    2A E943        C      FKT36:  LD      HL,(D295)
+  F211    11 0020        C              LD      DE,20H
+  F214    CD F1A5        C              CALL    C400
+  F217    21 0021        C              LD      HL,21H
+  F21A    19             C              ADD     HL,DE
+  F21B    71             C              LD      M,C
+  F21C    23             C              INC     HL
+  F21D    70             C              LD      M,B
+  F21E    23             C              INC     HL
+  F21F    77             C              LD      M,A
+  F220    C9             C              RET
+                         C      
+  F221    2A F3AF        C      J580:   LD      HL,(D460)
+  F224    3A E942        C              LD      A,(D290)
+  F227    4F             C              LD      C,A
+  F228    CD EAEA        C              CALL    C160
+  F22B    E5             C              PUSH    HL
+  F22C    EB             C              EX      DE,HL
+  F22D    CD E959        C              CALL    C085
+  F230    E1             C              POP     HL
+  F231    CC E947        C              CALL    Z,C075
+  F234    7D             C              LD      A,L
+  F235    1F             C              RRA
+  F236    D8             C              RET     C
+  F237    2A F3AF        C              LD      HL,(D460)
+  F23A    4D             C              LD      C,L
+  F23B    44             C              LD      B,H
+  F23C    CD EB0B        C              CALL    C175
+  F23F    22 F3AF        C              LD      (D460),HL
+  F242    C3 ECA3        C              JP      J285
+                         C      
+  F245                   C      C405    EQU     $
+  F245    3A F3D6        C      FKT14:  LD      A,(D580)
+  F248    21 E942        C              LD      HL,D290
+  F24B    BE             C              CP      M
+  F24C    C8             C              RET     Z
+  F24D    77             C              LD      M,A
+  F24E    C3 F221        C              JP      J580
+                         C      
+  F251    3E FF          C      C410:   LD      A,0FFH
+  F253    32 F3DE        C              LD      (D605),A
+  F256    2A E943        C              LD      HL,(D295)
+  F259    7E             C              LD      A,M
+  F25A    E6 1F          C              AND     01FH
+  F25C    3D             C              DEC     A
+  F25D    32 F3D6        C              LD      (D580),A
+  F260    FE 1E          C              CP      01EH
+  F262    D2 F275        C              JP      NC,J585
+  F265    3A E942        C              LD      A,(D290)
+  F268    32 F3DF        C              LD      (D610),A
+  F26B    7E             C              LD      A,M
+  F26C    32 F3E0        C              LD      (D615),A
+  F26F    E6 E0          C              AND     0E0H
+  F271    77             C              LD      M,A
+  F272    CD F245        C              CALL    C405
+  F275    3A E941        C      J585:   LD      A,(D285)
+  F278    2A E943        C              LD      HL,(D295)
+  F27B    B6             C              OR      M
+  F27C    77             C              LD      M,A
+  F27D    C9             C              RET
+                         C      
+  F27E    3E 22          C      FKT12:  LD      A,022H
+  F280    C3 E901        C              JP      J145
+                         C      
+  F283    21 0000        C      FKT13:  LD      HL,0
+  F286    22 F3AD        C              LD      (D455),HL
+  F289    22 F3AF        C              LD      (D460),HL
+  F28C    AF             C              XOR     A
+  F28D    32 E942        C              LD      (D290),A
+  F290    21 0080        C              LD      HL,D075
+  F293    22 F3B1        C              LD      (D465),HL
+  F296    CD EBDA        C              CALL    C260
+  F299    C3 F221        C              JP      J580
+                         C      
+  F29C    CD EB72        C      FKT15:  CALL    C220
+  F29F    CD F251        C              CALL    C410
+  F2A2    C3 EE51        C              JP      C350
+                         C      
+  F2A5    CD F251        C      FKT16:  CALL    C410
+  F2A8    C3 EEA2        C              JP      C365
+                         C      
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-25
+
+
+  F2AB    0E 00          C      FKT17:  LD      C,000H
+  F2AD    EB             C              EX      DE,HL
+  F2AE    7E             C              LD      A,M
+  F2AF    FE 3F          C              CP      03FH
+  F2B1    CA F2C2        C              JP      Z,J590
+  F2B4    CD EAA6        C              CALL    C140
+  F2B7    7E             C              LD      A,M
+  F2B8    FE 3F          C              CP      03FH
+  F2BA    C4 EB72        C              CALL    NZ,C220
+  F2BD    CD F251        C              CALL    C410
+  F2C0    0E 0F          C              LD      C,00FH
+  F2C2    CD ED18        C      J590:   CALL    C310
+  F2C5    C3 EBE9        C              JP      J245
+                         C      
+  F2C8    2A F3D9        C      FKT18:  LD      HL,(D595)
+  F2CB    22 E943        C              LD      (D295),HL
+  F2CE    CD F251        C              CALL    C410
+  F2D1    CD ED2D        C              CALL    C315
+  F2D4    C3 EBE9        C              JP      J245
+                         C      
+  F2D7    CD F251        C      FKT19:  CALL    C410
+  F2DA    CD ED9C        C              CALL    C320
+  F2DD    C3 ED01        C              JP      J305
+                         C      
+  F2E0    CD F251        C      FKT20:  CALL    C410
+  F2E3    C3 EFBC        C              JP      J450
+                         C      
+  F2E6    CD F251        C      FKT21:  CALL    C410
+  F2E9    C3 EFFE        C              JP      J465
+                         C      
+  F2EC    CD EB72        C      FKT22:  CALL    C220
+  F2EF    CD F251        C              CALL    C410
+  F2F2    C3 EF24        C              JP      C370
+                         C      
+  F2F5    CD F251        C      FKT23:  CALL    C410
+  F2F8    CD EE16        C              CALL    C340
+  F2FB    C3 ED01        C              JP      J305
+                         C      
+  F2FE    2A F3AF        C      FKT24:  LD      HL,(D460)
+  F301    C3 F329        C              JP      J595
+                         C      
+  F304    3A E942        C      FKT25:  LD      A,(D290)
+  F307    C3 E901        C              JP      J145
+                         C      
+  F30A    EB             C      FKT26:  EX      DE,HL
+  F30B    22 F3B1        C              LD      (D465),HL
+  F30E    C3 EBDA        C              JP      C260
+                         C      
+  F311    2A F3BF        C      FKT27:  LD      HL,(D505)
+  F314    C3 F329        C              JP      J595
+                         C      
+  F317    2A F3AD        C      FKT29:  LD      HL,(D455)
+  F31A    C3 F329        C              JP      J595
+                         C      
+  F31D    CD F251        C      FKT30:  CALL    C410
+  F320    CD EE3B        C              CALL    C345
+  F323    C3 ED01        C              JP      J305
+                         C      
+  F326    2A F3BB        C      FKT31:  LD      HL,(D495)
+  F329    22 E945        C      J595:   LD      (D300),HL
+  F32C    C9             C              RET
+                         C      
+  F32D    3A F3D6        C      FKT32:  LD      A,(D580)
+  F330    FE FF          C              CP      0FFH
+  F332    C2 F33B        C              JP      NZ,J600
+  F335    3A E941        C              LD      A,(D285)
+  F338    C3 E901        C              JP      J145
+                         C      
+  F33B    E6 1F          C      J600:   AND     01FH
+  F33D    32 E941        C              LD      (D285),A
+  F340    C9             C              RET
+                         C      
+  F341    CD F251        C      FKT33:  CALL    C410
+  F344    C3 F193        C              JP      J550
+                         C      
+  F347    CD F251        C      FKT34:  CALL    C410
+  F34A    C3 F19C        C              JP      J555
+                         C      
+  F34D    CD F251        C      FKT35:  CALL    C410
+  F350    C3 F1D2        C              JP      J560
+                         C      
+  F353    2A E943        C      FKT37:  LD      HL,(D295)
+  F356    7D             C              LD      A,L
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-26
+
+
+  F357    2F             C              CPL
+  F358    5F             C              LD      E,A
+  F359    7C             C              LD      A,H
+  F35A    2F             C              CPL
+  F35B    2A F3AF        C              LD      HL,(D460)
+  F35E    A4             C              AND     H
+  F35F    57             C              LD      D,A
+  F360    7D             C              LD      A,L
+  F361    A3             C              AND     E
+  F362    5F             C              LD      E,A
+  F363    2A F3AD        C              LD      HL,(D455)
+  F366    EB             C              EX      DE,HL
+  F367    22 F3AF        C              LD      (D460),HL
+  F36A    7D             C              LD      A,L
+  F36B    A3             C              AND     E
+  F36C    6F             C              LD      L,A
+  F36D    7C             C              LD      A,H
+  F36E    A2             C              AND     D
+  F36F    67             C              LD      H,A
+  F370    22 F3AD        C              LD      (D455),HL
+  F373    C9             C              RET
+                         C      
+  F374    3A F3DE        C      D435:   LD      A,(D605)
+  F377    B7             C              OR      A
+  F378    CA F391        C              JP      Z,J605
+  F37B    2A E943        C              LD      HL,(D295)
+  F37E    36 00          C              LD      M,000H
+  F380    3A F3E0        C      D440:   LD      A,(D615)
+  F383    B7             C              OR      A
+  F384    CA F391        C              JP      Z,J605
+  F387    77             C              LD      M,A
+  F388    3A F3DF        C              LD      A,(D610)
+  F38B    32 F3D6        C              LD      (D580),A
+  F38E    CD F245        C              CALL    C405
+  F391    2A E90F        C      J605:   LD      HL,(D280)
+  F394    F9             C              LD      SP,HL
+  F395    2A E945        C              LD      HL,(D300)
+  F398    7D             C              LD      A,L
+  F399    44             C              LD      B,H
+  F39A    C9             C              RET
+                         C      
+  F39B    CD F251        C      D445:   CALL    C410
+  F39E    3E 02          C              LD      A,002H
+  F3A0    32 F3D5        C              LD      (D575),A
+  F3A3    0E 00          C              LD      C,000H
+  F3A5    CD F107        C              CALL    C395
+  F3A8    CC F003        C              CALL    Z,C385
+  F3AB    C9             C              RET
+                         C      
+                         C              PAGE
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-27
+
+
+                         C      
+  F3AC    E5             C      D450:   DB      0E5H
+  F3AD    0000           C      D455:   DW      0
+  F3AF    0000           C      D460:   DW      0
+  F3B1    0000           C      D465:   DW      0
+  F3B3    0000           C      D470:   DW      0
+  F3B5    0000           C      D475:   DW      0
+  F3B7    0000           C      D480:   DW      0
+  F3B9    00             C      D485:   DB      0
+  F3BA    00             C      D490:   DB      0
+  F3BB    0000           C      D495:   DW      0
+  F3BD    0000           C      D500:   DW      0
+  F3BF    0000           C      D505:   DW      0
+  F3C1    0000           C      D510:   DW      0
+  F3C3    00             C      D515:   DB      0
+  F3C4    00             C      D520:   DB      0
+  F3C5    00             C      D525:   DB      0
+  F3C6    0000           C      D530:   DW      0
+  F3C8    0000           C      D535:   DW      0
+  F3CA    0000           C      D540:   DW      0
+  F3CC    0000           C      D545:   DW      0
+  F3CE    0000           C      D550:   DW      0
+  F3D0    0000           C      D555:   DW      0
+  F3D2    00             C      D560:   DB      0
+  F3D3    00             C      D565:   DB      0
+  F3D4    00             C      D570:   DB      0
+  F3D5    00             C      D575:   DB      0
+  F3D6    00             C      D580:   DB      0
+  F3D7    00             C      D585:   DB      0
+  F3D8    00             C      D590:   DB      0
+  F3D9    0000           C      D595:   DW      0
+  F3DB    0000           C              DW      0
+  F3DD    00             C      D600:   DB      0
+  F3DE    00             C      D605:   DB      0
+  F3DF    00             C      D610:   DB      0
+  F3E0    00             C      D615:   DB      0
+  F3E1    00             C      D620:   DB      0
+  F3E2    00             C      D625:   DB      0
+  F3E3    0000           C      D630:   DW      0
+  F3E5    0000           C      D635:   DW      0
+  F3E7    0000           C      D640:   DW      0
+  F3E9    00             C      D645:   DB      0
+  F3EA    00             C      D650:   DB      0
+  F3EB    00             C      D655:   DB      0
+  F3EC    0000           C      D660:   DW      0
+                         C      
+  F3EE                   C                      DEFS    12H,00H
+                         C      
+                         C              PAGE
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-28
+
+
+                         C      
+  0000                   C      BOOT    EQU     0
+                         C      
+  0000                   C      J005    EQU     BOOT
+  0003                   C      D015    EQU     BOOT+3
+  0080                   C      D075    EQU     BOOT+80H
+                         C      
+  F400                   C      BIOS    EQU     0F400H
+                         C      
+  F403                   C      FKT00   EQU     BIOS+3
+  F406                   C      C415    EQU     BIOS+6
+  F409                   C      C420    EQU     BIOS+9
+  F40C                   C      C425    EQU     BIOS+12
+  F40F                   C      C430    EQU     BIOS+15
+  F40F                   C      FKT05   EQU     BIOS+15
+  F412                   C      FKT04   EQU     BIOS+12H
+  F415                   C      C435    EQU     BIOS+15H
+  F418                   C      C440    EQU     BIOS+18H
+  F41B                   C      C445    EQU     BIOS+1BH
+  F41E                   C      C450    EQU     BIOS+1EH
+  F421                   C      J610    EQU     BIOS+21H
+  F424                   C      J615    EQU     BIOS+24H
+  F427                   C      C455    EQU     BIOS+27H
+  F42A                   C      C460    EQU     BIOS+2AH
+  F430                   C      C465    EQU     BIOS+30H
+                         C              .DEPHASE
+                         C      
+                         C      ;       END
+                                
+                                        TITLE ''
+                                        END
+''      MACRO-80 3.44   09-Dec-81       PAGE    S
+
+
+Macros:
+
+Symbols:
+E600    BDOS            F400    BIOS            0000    BOOT            
+E6E5    C005            E6FB    C010            E706    C015            
+E714    C020            E723    C025            E748    C030            
+E77F    C035            E790    C040            E7A4    C045            
+E7AC    C050            E7B1    C055            E7C9    C060            
+E7D3    C065            E905    C070            E947    C075            
+E94F    C080            E959    C085            E9A1    C090            
+E9B2    C095            E9B8    C100            E9C3    C105            
+E9D1    C110            EA3E    C115            EA5E    C120            
+EA77    C125            EA84    C130            EA8A    C135            
+EAA6    C140            EAAE    C145            EABB    C150            
+EAD2    C155            EAEA    C160            EAF7    C165            
+EB04    C170            EB0B    C175            EB1E    C180            
+EB2C    C185            EB44    C190            EB47    C195            
+EB54    C200            EB5E    C205            EB64    C210            
+EB69    C215            EB72    C220            EB78    C225            
+EB7F    C230            EB8C    C235            EB95    C240            
+EB9C    C245            EBC6    C250            EBD4    C255            
+EBDA    C260            EBE0    C265            EBF5    C270            
+EBFE    C275            EC05    C280            EC35    C285            
+EC5C    C290            EC64    C295            EC6B    C300            
+ED07    C305            ED18    C310            ED2D    C315            
+ED9C    C320            EDBE    C325            EDFD    C330            
+EE01    C335            EE16    C340            EE3B    C345            
+EE51    C350            EE5A    C355            EE94    C360            
+EEA2    C365            EF24    C370            EF5A    C375            
+EFC1    C380            F003    C385            F103    C390            
+F107    C395            F1A5    C400            F245    C405            
+F251    C410            F406    C415            F409    C420            
+F40C    C425            F40F    C430            F415    C435            
+F418    C440            F41B    C445            F41E    C450            
+F427    C455            F42A    C460            F430    C465            
+0003    D015            0080    D075            E609    D135            
+E60B    D140            E60D    D145            E60F    D150            
+E699    D155            E6A5    D160            E6AB    D165            
+E6B1    D170            E6BA    D175            E6C6    D180            
+E6CA    D185            E6D5    D190            E6DC    D195            
+E6E1    D200            E758    D205            E7F4    D210            
+E904    D250            E90A    D255            E90B    D260            
+E90C    D265            E90D    D270            E90E    D275            
+E90F    D280            E941    D285            E942    D290            
+E943    D295            E945    D300            EA00    D305            
+EA1D    D310            F374    D435            F380    D440            
+F39B    D445            F3AC    D450            F3AD    D455            
+F3AF    D460            F3B1    D465            F3B3    D470            
+F3B5    D475            F3B7    D480            F3B9    D485            
+F3BA    D490            F3BB    D495            F3BD    D500            
+F3BF    D505            F3C1    D510            F3C3    D515            
+F3C4    D520            F3C5    D525            F3C6    D530            
+F3C8    D535            F3CA    D540            F3CC    D545            
+F3CE    D550            F3D0    D555            F3D2    D560            
+F3D3    D565            F3D4    D570            F3D5    D575            
+F3D6    D580            F3D7    D585            F3D8    D590            
+F3D9    D595            F3DD    D600            F3DE    D605            
+F3DF    D610            F3E0    D615            F3E1    D620            
+F3E2    D625            F3E3    D630            F3E5    D635            
+F3E7    D640            F3E9    D645            F3EA    D650            
+F3EB    D655            F3EC    D660            F403    FKT00           
+E8C8    FKT01           E790    FKT02           E8CE    FKT03           
+F412    FKT04           F40F    FKT05           E8D4    FKT06           
+E8ED    FKT07           E8F3    FKT08           E8F8    FKT09           
+E7E1    FKT10           E8FE    FKT11           F27E    FKT12           
+F283    FKT13           F245    FKT14           F29C    FKT15           
+F2A5    FKT16           F2AB    FKT17           F2C8    FKT18           
+F2D7    FKT19           F2E0    FKT20           F2E6    FKT21           
+F2EC    FKT22           F2F5    FKT23           F2FE    FKT24           
+F304    FKT25           F30A    FKT26           F311    FKT27           
+EB2C    FKT28           F317    FKT29           F31D    FKT30           
+F326    FKT31           F32D    FKT32           F341    FKT33           
+F347    FKT34           F34D    FKT35           F20E    FKT36           
+F353    FKT37           0000    J005            E611    J010            
+E6B4    J015            E742    J020            E745    J025            
+E762    J030            E779    J035            E796    J040            
+E7B9    J045            E7E1    J050            E7EF    J055            
+E7F1    J060            E816    J065            E826    J070            
+E837    J075            E848    J080            E84E    J085            
+E85F    J090            E86B    J095            E870    J100            
+E878    J105            E88A    J110            E899    J115            
+E8A6    J120            E8A9    J125            E8BD    J130            
+''      MACRO-80 3.44   09-Dec-81       PAGE    S-1
+
+
+E8C1    J135            E8E0    J140            E901    J145            
+E94A    J150            E950    J155            E99D    J160            
+E9BB    J165            E9E4    J170            E9FA    J175            
+EA0F    J180            EA45    J185            EA53    J190            
+EA5C    J195            EA71    J200            EA90    J205            
+EADE    J210            EAEB    J215            EAFD    J220            
+EB05    J225            EB9E    J230            EBC4    J235            
+EBE3    J240            EBE9    J245            EC19    J250            
+EC20    J255            EC56    J260            EC75    J265            
+EC88    J270            EC8E    J275            EC9D    J280            
+ECA3    J285            ECB1    J290            ECD2    J295            
+ECF6    J300            ED01    J305            ED4A    J310            
+ED53    J315            ED73    J320            ED7C    J325            
+ED83    J330            ED94    J335            EDA4    J340            
+EDC0    J345            EDD1    J350            EDEC    J355            
+EDF4    J360            EE10    J365            EE27    J370            
+EE40    J375            EE8B    J380            EECD    J385            
+EEDB    J390            EEE1    J395            EEE8    J400            
+EEFD    J405            EF17    J410            EF1F    J415            
+EF46    J420            EF83    J425            EF8E    J430            
+EFAC    J435            EFAF    J440            EFB6    J445            
+EFBC    J450            EFE6    J455            EFFB    J460            
+EFFE    J465            F03B    J470            F048    J475            
+F064    J480            F06C    J485            F06E    J490            
+F08C    J495            F09A    J500            F0BB    J505            
+F0D2    J510            F0DF    J515            F0FE    J520            
+F100    J525            F147    J530            F17F    J535            
+F184    J540            F18B    J545            F193    J550            
+F19C    J555            F1D2    J560            F1E4    J565            
+F206    J570            F20C    J575            F221    J580            
+F275    J585            F2C2    J590            F329    J595            
+F33B    J600            F391    J605            F421    J610            
+F424    J615            E647    TB1             
+
+
+
+No Fatal error(s)
+

@@ -1,0 +1,183 @@
+;	TITLE	'SYS3 - MEOS1521 ---> Verbindungen'
+;	PAGE
+;====================================================
+	; ORG	0E796H
+	IF kass and 2
+		RET
+		DEFS	07EFH-1,0FFH
+	ENDIF
+;====================================================
+	JP	0CBE7H		;PN ZE	Verbindungsadressen
+	JP	0CC6DH
+	JP	0CEA1H
+	JP	0CEB1H
+	JP	0CD21H
+	JP	0DFA7H
+	; JP	0E533H
+	; JP	0E5EBH
+    RET
+    NOP
+    NOP
+    RET
+    NOP
+    NOP
+;
+	INC	B
+	OR	01EH
+	LD	BC,021E5H
+	XOR	H
+	LD	SP,HL
+	JR	$+08	;E7BE
+	LD	E,002H
+	PUSH	HL
+	LD	HL,0FA4CH
+	LD	(0F9AAH),HL
+	POP	HL
+	PUSH	IY
+	PUSH	IX
+	LD	IX,0F99DH
+	LD	(IX+03),E
+	PUSH	HL
+	PUSH	BC
+	LD	HL,0E83FH
+	LD	B,(HL)
+	INC	HL
+	CP	(HL)
+	INC	HL
+	JR	Z,$+09	;E7DF
+	INC	HL
+	DJNZ	$-06	;E7D3
+	LD	A,001H
+	JR	$+19	;E7F0
+	LD	C,(HL)
+	INC	HL
+	LD	B,(HL)
+	LD	(0FAECH),BC
+	POP	BC
+	POP	HL
+	PUSH	HL
+	PUSH	BC
+	PUSH	HL
+	LD	HL,(0FAECH)
+	EX	(SP),HL
+	RET
+	LD	C,A
+	LD	B,000H
+	SLA	C
+	RL	B
+	LD	HL,0E7FCH
+	ADD	HL,BC
+	JP	(HL)
+;
+	JR	$+21	;E811
+	JR	$+19	;E811
+	; LD	(BC),A	; OLD !!!
+	; RET	M	; OLD !!!
+	JR	$+12	; NEU !!!
+	JR	$+15	;E811
+	JR	$+22	;E81A
+	JR	$+23	;E81D
+	JR	$+43	;E833
+	JR	$+50	;E83C
+	PUSH	AF
+	CALL	0E9F8H
+	POP	AF
+	POP	BC
+	POP	HL
+	POP	IX
+	POP	IY
+	JP	0E796H
+	INC	A
+	JR	$-10	;E811
+	LD	A,012H
+	CALL	0E799H
+	LD	BC,(0FAEEH)
+	LD	DE,(0FAF0H)
+	LD	HL,(0FAF2H)
+	RET	NZ
+	POP	BC
+	LD	A,001H
+	JR	$-32	;E811
+	LD	A,044H
+	CALL	0E799H
+	LD	A,001H
+	JR	$-41	;E811
+	LD	A,D
+	JR	$-44	;E811
+	DEC	BC
+	NOP
+	SUB	H
+	XOR	001H
+	CP	H
+	XOR	002H
+	LD	B,H
+	EX	DE,HL
+	INC	BC
+	DW	0EBDDH	;	EX	DE,IX
+;
+;    PAGE
+;	-----
+	INC	B		;PN ZX	Kassettenhandler Tabellen
+	SBC	A,E
+	CALL	PE,0A605H
+	CALL	PE,0EA06H
+	XOR	00CH
+	XOR	H
+	DB	0EDH
+	DEC	C
+	JP	M,00EEDH
+	LD	C,H
+	XOR	0FFH
+	INC	D
+	RST	28H
+	LD	B,006H
+	CALL	0E980H
+	LD	A,002H
+	CALL	0E992H
+	RET	Z
+	DJNZ	$-06	;E866
+	RET
+	PUSH	BC
+	LD	C,008H
+	JP	0E88DH
+	DI
+	; OUT	(0FCH),A	; OLD !!!
+	NOP
+	NOP
+	LD	A,(DE)
+	EI
+	RET
+	DI
+	; OUT	(0FCH),A	; OLD !!!
+	NOP
+	NOP
+	LD	(HL),B
+	EI
+	RET
+	DI
+	; OUT	(0FCH),A	; OLD !!!
+	NOP
+	NOP
+	LD	A,(HL)
+	EI
+	RET
+	DI
+	; OUT	(0FCH),A	; OLD !!!
+	NOP
+	NOP
+	LD	A,(BC)
+	EI
+	RET
+	CALL	0E861H
+	JR	Z,$+09	;E899
+	CALL	0E89EH
+	JR	C,$+04	;E899
+	POP	BC
+	RET
+	DEC	C
+	JR	NZ,$-13	;E88D
+	POP	BC
+	RET
+;
+ENDE4 EQU $
+

@@ -1,0 +1,157 @@
+false   equ	0
+true    equ	not false
+cr      equ	0dh
+lf      equ	0ah
+  
+s1eq    equ	true		; generierung der datei "S1.COM"
+pipeq   equ	true		; generierung der datei "A:PIP.SUB"
+;
+ if s1eq
+ s1g	macro
+ ;					;	.phase 0000H
+	ld	hl,0116H	; LD	HL,MEM1
+	ld	bc,005C0H	; LD	BC,005C0H
+	otir			; OTIR
+	ld	hl,011BH	; LD	HL,COPS
+	ld	de,08000H	; LD	DE,08000H
+	ld	bc,0000FH	; LD	BC,MEM3-B1
+	jp	08000H		; JP	08000H
+;					;MEM1:
+	 defb	0F0H
+	 defb	001H	; einen Bereich umschalten
+	 defb	008H	; HS Bereich 
+	 defb	001H	; Standardbereich
+	 defb	0FFH
+;					;COPS:	.phase 08000H
+;					;B1 EQU $
+	ld	hl,0800BH	; LD	HL,MEM2
+	ld	bc,004C0H	; LD	BC,004C0H
+	otir			; OTIR
+	jp	0000H		; Sprung zur Version 1.2
+;					;B2 EQU $
+;					;MEM2:
+	defb	0F0H
+	defb	003H	; Bereichsumschaltung
+	defb	4		; Sys_12
+	defb	0FFH
+	endm
+ endif
+; 
+ if pipeq
+dirg	macro
+	defb	'$1:pip p:=$1:xsub.com',cr,lf
+	defb	'go p:s.com=$1:submit.com',cr,lf
+	defb	'go p:=$1:kini.com',cr,lf
+	defb	'go p:=$1:power.com',cr,lf
+	defb	'go o:=$1:m80.com',cr,lf
+	defb	'go o:=$1:l80.com',cr,lf
+	defb	'era pip.sub',cr,lf
+	defb	01ah
+	endm
+ endif
+;
+
+
+
+	ld	hl,8000h
+	ld	de,8001h
+	ld	bc,7ffh
+	ld	(hl),0e5h
+	push	hl
+	push	hl
+	ldir	
+	pop	hl		; verzeichnis fuer GO.COM (PIP.SUB)
+	push	hl
+	push	hl
+	pop	de
+	inc	de
+ if s1eq and pipeq
+	ld	bc,5fh 
+ endif
+ if s1eq and not pipeq
+	ld	bc,3fh
+ endif
+ if pipeq and not s1eq
+	ld	bc,3fh
+ endif
+ if not s1eq and not pipeq
+	ld	bc,1fh
+ endif
+	ld	(hl),0
+	ldir
+
+; ===
+	pop	de
+	push	de
+	ld	hl,dirgo	;Verzeichniseintrag für 'GO.COM'
+	ld	bc,12
+	ldir
+	pop	hl
+
+ if s1eq	;Verzeichniseintrag für 'S1.COM'
+	ld	de,32
+	add	hl,de
+	push	hl
+	ex	de,hl	
+	ld	hl,dirs1
+	ld	bc,17
+	ldir
+	pop	hl
+ endif
+
+ if pipeq	;Verzeichniseintrag für 'PIP.SUB'
+	ld	de,32
+	add	hl,de
+	push	hl
+	ex	de,hl
+	ld	hl,dirgo1
+	ld	bc,17
+	ldir
+	pop	hl
+ endif
+; ===
+	halt
+ 	ld	de,800h
+ if s1eq	;Daten für 'S1.COM'
+ 	pop	hl
+	add	hl,de
+	push	hl
+	ex	de,hl
+	ld	hl,dirs11
+	ld	bc,dirs12-dirs11
+	ldir
+	ld	a,(dirs1+16)
+	ld	b,a
+	ld	hl,0
+	ld	de,80H
+s1a:
+	add	hl,de
+	djnz	s1a
+	ex	de,hl
+ endif
+
+ if pipeq	;Daten für 'PIP.SUB'
+	pop	hl
+	add	hl,de
+	ex	de,hl
+	ld	hl,dirg11
+	ld	bc,dirg12-dirg11
+	ldir
+ endif
+	halt
+;
+dirgo:	defb	0,'GO      ',0c3h,'OM'
+ if s1eq 
+dirs1:	defb	0,'S1      COM',0,0,0,2,2
+dirs11: s1g
+dirs12:
+ endif
+;
+ if pipeq
+dirgo1:	defb	0,'PIP     SUB',0,0,0,2,2
+dirg11:	dirg
+dirg12:
+ endif
+
+    end
+

@@ -1,0 +1,37 @@
+;	PN	KS
+;****************************************************************
+;*               Arbeitsbereich zur Geraetebedienroutine KMBG   *
+;****************************************************************
+KS.AEATB:	DW	0	;Adresse E/A-Tabelle
+KS.PZAUS:	DW	0	;Pufferzeiger Ausgabe
+KS.PZEIN:	DW	0	;Pufferzeiger Eingabe
+KS.ZAUS:	DW	0	;Zaehler Ausgabe
+KS.ZEIN:	DW	0	;Zaehler Eingabe
+KS.Z1:	DB	0	;Zaehler Schreib-/Lese wdhg.
+KS.Z2:	DB	0	;Zaehler Blocklueckenverl.
+KS.CRCZ:	DW	0	;CRC-Zeichen
+KS.FEHLZ:	DB	0	;Interner Fehleranzeiger
+;****************************************************************
+;*               Bedeutung des internen Fehleranzeigers         *
+;*               Bit     Fehler                                 *
+;*               -----------------------------------------------*
+;*               0     kein Echosignal vom Eingabekanal bei RAW *
+;*               1     letzter Interrupt nicht gekommen bei RAW *
+;*               2     Status waehrend der Datenuebertragung    *
+;*               3     CRC-Zeichen fehlerhaft beim Lesen        *
+;*               4     RAW-Fehler                               *
+;****************************************************************
+KS.POS:	DW	0	;Position des Fehlers im Datensatz
+KS.SDAT:	DB	0	;Solldaten
+KS.IDAT:	DB	0	;Istdaten
+KS.PUFFS:	DS	260	;Pufferspeicher
+;****************************************************************
+;*               Arbeitszellen fuer CRC-Routine                 *
+;****************************************************************
+KS.KOMDO:	DB	0	;Kommando
+KS.ZEITK:	DB	0	;Zeitkonstante
+KS.ADR:	DW	0	;Adresse
+KS.CONTR:	DB	0	;Ereigniskontrolle
+;
+;	END
+

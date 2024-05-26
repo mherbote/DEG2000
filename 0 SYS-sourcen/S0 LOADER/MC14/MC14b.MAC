@@ -1,0 +1,607 @@
+	EXTERNAL	KR.INIT,KR.BRKMB,KR.BERT,KS.PUFFS
+
+;	PN	MC14
+;****************************************************************
+;*               M  C  S   8  4     Kassettendrive-Loader       *
+;*  Version      -----------------------------------------------*
+;*               Programmierer: M. Herbote --- K EAW  ZFT (WFT) *
+;*  V 2 . 4      -----------------------------------------------*
+;*               Stand        : 04.Juni 1984                    *
+;****************************************************************
+
+;****************************************************************
+;*               Generierungsvariable                           *
+;****************************************************************
+PASS	EQU	2	;1 --- ohne Passwort-Abfrage
+			;2 --- mit  Passwort-Abfrage
+ANST	EQU	2	;8 --- PIO- Ansteuerung
+			;4 --- ATD- Ansteuerung
+			;2 --- ATS- Ansteuerung
+TAST	EQU	1	;2 --- ohne CPU
+			;1 --- mit  CPU
+CTR	EQU	1	;1 --- ohne Code-Transformation
+			;2 --- mit  Code-Transformation
+SPUM1	EQU	4	;1 --- kleine SPB
+			;2 --- grosse SPB
+			;4 --- D R A M
+			;8 --- O P S 6 4 / ZWG
+
+ANF	EQU	$
+	IF	SPUM1 AND 1
+	OUT	SPUM+0DH
+	ENDIF
+	DI		; C P U  initialisieren
+	LD	SP,STACK
+	LD	A,HIGH IV
+	LD	I,A
+	IM	2
+	LD	A,AT	;Initialisierung der Tastatur
+	IF	ANST AND 8	;PIO
+	LD	HL,PTAB1
+	LD	C,A
+	INC	C
+	INC	C
+	LD	B,3
+	OTIR
+	INC	C
+	LD	B,3
+	LD	HL,PPTAB
+	OTIR
+	ENDIF
+	IF	ANST AND 4 OR ANST AND 2
+	ADD	A,2	;ATS / ATD
+	LD	C,A
+	XOR	A
+	OUT	(C),A
+	LD	HL,BWS
+;=====================================\
+; wird vom Emulator nicht ben”tigt !!!
+;	CALL	TA3
+;	LD	BC,08000H
+;M1:	DEC	BC
+;	LD	A,B
+;	OR	C
+;	JR	NZ,M1
+;	CALL	TA3
+;=====================================/
+	ENDIF
+
+	PAGE
+	IF	SPUM1 AND 4
+;****************************************************************
+;*               Initialisierung  D R A M                       *
+;****************************************************************
+	XOR	A	;Zuordnung interner Sektor
+	LD	B,A	;          externer Sektor
+	LD	C,SPUM+2
+	LD	D,16	;Anzahl
+SP1:	OUT	(C),A
+	ADD	A,1
+	CALL	UPT1
+	JR	NZ,SP1
+	DEC	C	;Inaktivierung Sektor 0-F
+	DEC	C
+	LD	A,8
+	LD	B,0	;externer Sektor
+	LD	D,16	;Anzahl
+SP2:	OUT	(C),A
+	CALL	UPT1
+	JR	NZ,SP2
+	XOR	A	;Aktivierung   Sektor 4-F
+	LD	B,40H	;externer Sektor
+	LD	D,12	;Anzahl
+SP3:	OUT	(C),A
+	CALL	UPT1
+	JR	NZ,SP3
+	LD	C,SPUM+3	;Aktivierung   D R A M
+	INC	A
+	OUT	(C),A
+	ENDIF
+	IF	SPUM1 AND 8
+;****************************************************************
+;*               Initialisierung  O P S 6 4  vom Z W G          *
+;****************************************************************
+	LD	A,00H	;Sektor  0 - F
+	LD	B,16
+SP1:	PUSH	BC
+	LD	B,A
+	LD	C,SPUM+7	;Sektor (B) abschalten
+	OUT	(C),A
+	LD	C,SPUM+4	;Sektor (B) fuer Schreiben freigeben
+	OUT	(C),A
+	ADD	A,10H
+	POP	BC
+	DJNZ	SP1
+	LD	A,40H	;Sektor  4 - F
+	LD	C,SPUM+6	;Sektor (B) zuschalten
+	LD	B,12
+SP2:	PUSH	BC
+	LD	B,A
+	OUT	(C),A
+	ADD	A,10H
+	POP	BC
+	DJNZ	SP2
+	OUT	SPUM+8	;Schreibsperre gueltig
+	OUT	SPUM+10	;Sektoraktivierung gueltig
+	OUT	SPUM+13	;Speicher zuschalten
+	OUT	SPUM+15	;Bereich fuer Lesen freigeben
+	ENDIF
+
+	PAGE
+;****************************************************************
+;*               Bedienerkommunikation                          *
+;****************************************************************
+	LD	HL,BWS	;Bild loeschen
+	LD	DE,BWS+1
+	LD	BC,BWSL
+	LD	(HL),' '
+	LDIR
+	LD	HL,T1	;Systemausschrift
+	LD	DE,BWS
+	LD	BC,LT1
+	LDIR
+	LD	HL,T2
+	LD	DE,BWS+160
+	LD	BC,LT2
+	LDIR
+	LD	HL,T7	;Abfrage nach Eintrittspunkt
+	LD	DE,BWS+480
+	LD	BC,LT7
+	LDIR
+	EX	DE,HL
+M2:	LD	(HL),' '
+	CALL	TA5
+	CP	'L'
+	JR	Z,M3
+	CP	'S'
+	JR	NZ,M2
+	LD	HL,(START)	;bereits geladenes System starten
+	PUSH	HL
+	RET
+
+M3:	LD	HL,T3	;Abfrage nach Kassettengeraet
+	LD	DE,BWS+560
+	LD	BC,LT3
+	LDIR
+	EX	DE,HL
+
+	IF	PASS AND 1
+	JP	M6
+	ENDIF
+
+	PAGE
+	IF	PASS AND 2
+	PUSH	HL
+	CALL	TA4
+	POP	HL
+	PUSH	HL
+	LD	D,'A'
+	LD	B,6
+M4:	LD	A,(HL)
+	SUB	D
+	LD	(HL),A
+	INC	HL
+	DJNZ	M4
+	POP	IX
+	PUSH	IX
+	LD	H,(IX+0)
+	LD	L,(IX+1)
+	LD	BC,08880H
+	ADD	HL,BC
+	LD	(IX+0),H
+	LD	(IX+1),L
+	LD	H,(IX+4)
+	LD	L,(IX+5)
+	ADD	HL,BC
+	LD	(IX+4),H
+	LD	(IX+5),L
+	LD	H,(IX+2)
+	LD	L,(IX+3)
+	LD	BC,0A840H
+	ADD	HL,BC
+	LD	(IX+2),H
+	LD	(IX+3),L
+	POP	HL
+	PUSH	HL
+	LD	B,6
+M5:	LD	A,(HL)
+	RRCA
+	LD	(HL),A
+	INC	HL
+	DJNZ	M5
+	POP	HL
+	PUSH	HL
+	LD	DE,T5
+	LD	B,6
+	CALL	VERG
+	POP	HL
+	PUSH	HL
+	POP	DE
+	PUSH	DE
+	INC	DE
+	LD	BC,6
+	LD	(HL),' '
+	LDIR
+	POP	HL
+	JR	Z,M6
+	LD	HL,T6
+	LD	DE,BWS+320
+	LD	BC,LT6
+	LDIR
+	HALT
+	JP	ANF
+	ENDIF
+
+	PAGE
+M6:	LD	(HL),' '
+	CALL	TA5	;Tastencode einlesen
+	CP	'3'
+	JP	Z,01870H	;Sprung zur M R E S
+	CP	'1'	;nur "1" bzw. "2" zugelassen
+	JR	Z,M7
+	CP	'2'
+	JR	NZ,M6
+M7:	AND	00FH
+	LD	IX,EATAB	;E/A-Tabelle laden
+	LD	(IX+2),AKB
+	LD	(IX+3),A
+	NOP
+	NOP
+	NOP
+;	CALL	KR.INIT	;PIOs auf AKB initialisieren
+;****************************************************************
+;*               Eingabe des System-Datei-Namens                *
+;****************************************************************
+	LD	HL,T4	;Anforderung auf Bildschirm
+	LD	DE,BWS+640
+	LD	BC,LT4
+	LDIR
+	EX	DE,HL
+	CALL	TA4
+
+	PAGE
+;****************************************************************
+;*               Positionierung der Systemkassette und          *
+;*               Einlesen des gewuenschten Systems              *
+;****************************************************************
+	CALL	GNRE	;Kassette reservieren
+	CALL	GNRW	;Kassette zurueckspulen
+	LD	A,2	;auf Verzeichnis positionieren
+	CALL	GNLPN
+	CALL	GNRDR
+	CALL	GNRDR
+	LD	A,(KS.PUFFS+4)
+	LD	B,A
+LO1:	PUSH	BC
+	CALL	GNRDR
+	PUSH	HL
+	POP	IY
+	LD	A,(IY+6)	;Test, ob MRES-Dateityp "P"
+	CP	'P'
+	JR	NZ,LO2
+	LD	A,(IY+7)	;Test, ob Dateiattr.    "M"
+	CP	'M'
+	JR	NZ,LO2
+	LD	DE,BWS+640+LT4
+	LD	B,6
+	CALL	VERG
+	JR	Z,LO3
+LO2:	POP	BC
+	DJNZ	LO1
+ANF2:	LD	DE,ANF
+	JR	ANF1
+LO3:	POP	BC
+	LD	A,(IY+17H)
+	CALL	GNLPN	;Posit. auf entspr. Datei
+	CALL	GNRDR	;HDR-Satz
+	CALL	GNRDR	;erster Ladedatei Satz
+
+UW:	CALL	LESV
+	LD	B,A	;Anzahl Byte
+	OR	A
+	JR	Z,UWEND
+	CALL	LESV
+	LD	D,A	;Adresse
+	CALL	LESV
+	LD	E,A
+
+UW1:	CALL	LESV
+	LD	(DE),A	;Programm- bzw. Daten- Byte
+	INC	DE
+	DJNZ	UW1
+	JR	UW
+
+UWEND:	CALL	LESV
+	LD	D,A
+	CALL	LESV
+	LD	E,A
+ANF1:	PUSH	DE
+	LD	(START),DE
+	CALL	GNRW	;Kassette zurueckspulen
+	CALL	GNRA	;Kassette entriegeln
+	RET		;  ===>  geladenen System
+
+	PAGE
+;****************************************************************
+;*               Unterprogramme                                 *
+;****************************************************************
+	IF	SPUM1 AND 4
+UPT1:	LD	E,A
+	LD	A,B
+	ADD	A,16
+	LD	B,A
+	LD	A,E
+	DEC	D
+	RET
+	ENDIF
+
+VERG:	PUSH	DE
+VERG1:	LD	A,(DE)
+	CP	(HL)
+	JR	NZ,VERG2
+	INC	HL
+	INC	DE
+	DJNZ	VERG1
+VERG2:	POP	DE
+	RET
+
+LESV:	PUSH	BC
+	PUSH	DE
+	LD	DE,(POIE)
+	LD	A,(DE)
+	INC	DE
+	LD	(POIE),DE
+	LD	HL,KS.PUFFS+81H
+	OR	A
+	SBC	HL,DE
+	POP	DE
+	POP	BC
+	RET	NZ
+
+	CALL	GNRDR
+	RET
+
+ARBT:	BIT	7,(IX)
+	JP	NZ,ANF2
+	RET
+
+	PAGE
+ARMB:	NOP
+	NOP
+	NOP
+	CALL	KR.BRKMB
+	RET
+
+
+
+GNRE:	LD	(IX+4),31H
+	CALL	ARMB
+	BIT	4,(IX)
+	JP	NZ,ANF2
+	RET
+
+
+
+GNRA:	LD	(IX+4),41H
+	CALL	ARMB
+	CALL	ARBT
+	RET
+
+
+
+GNRW:	LD	(IX+4),21H
+	CALL	ARMB
+RW1:	NOP
+	NOP
+	NOP
+	CALL	KR.BERT
+	JR	C,RW1
+	RET
+
+
+
+GNLPN:	LD	(IX+4),71H
+	LD	(IX+9),0
+	LD	(IX+10),A
+	CALL	ARMB
+	CALL	ARBT
+	RET
+
+
+
+GNRDR:	LD	(IX+4),2
+	CALL	ARMB
+	CALL	ARBT
+	LD	HL,KS.PUFFS+1
+	LD	(POIE),HL
+	RET
+
+	PAGE
+;****************************************************************
+;*               UP zum Abfragen nach gedrueckter Taste         *
+;****************************************************************
+TA1:	LD	A,AT
+
+	IF	ANST AND 8	;PIO
+	LD	C,A
+	LD	A,0FEH
+	OUT	(C),A
+	LD	A,0FAH
+	OUT	(C),A
+	IN	A,(C)
+	BIT	0,A
+	ENDIF
+
+	IF	ANST AND 4	;ATD
+	ADD	A,4
+	ENDIF
+
+	IF	ANST AND 2	;ATS
+	INC	A
+	ENDIF
+
+	IF	ANST AND 4 OR ANST AND 2
+	LD	C,A
+	IN	A,(C)
+	BIT	3,A
+	ENDIF
+
+	RET
+
+;****************************************************************
+;*               UP zum einlesen des Tastaturcodes              *
+;****************************************************************
+TA2:	LD	A,AT
+	LD	C,A
+
+	IF	ANST AND 8	;PIO
+	LD	A,0FCH
+	OUT	(C),A
+	INC	C
+	IN	A,(C)
+	ENDIF
+
+	IF	ANST AND 4 OR ANST AND 2
+	IN	A,(C)
+	ENDIF
+
+	IF	CTR AND 2
+	LD	HL,TAB1
+	LD	B,0
+	LD	C,(HL)
+	INC	HL
+	CPIR
+	RNZ
+	OR	A
+	LD	HL,TAB2
+	SBC	HL,BC
+	LD	A,(HL)
+	ENDIF
+
+	RET
+
+TA3:	SET	7,(HL)
+	CALL	TA1
+	JR	NZ,$-3
+	CALL	TA2
+	RES	7,(HL)
+	RET
+
+	PAGE
+TA4:	CALL	TA3	;Tastencode einlesen
+	CP	TCL	; <==
+	JR	Z,CL
+	CP	TCR	; ==>
+	JR	Z,CR
+	CP	TPQ	; POS QUIT
+	JR	Z,PQ
+	CP	' '	; blank
+	JR	Z,ZEI
+
+	CP	'['	; erkennen der Buchstaben
+	JR	NC,CL1
+	CP	'A'
+	JR	NC,ZEI
+
+	CP	':'	; erkennen der Ziffern
+	JR	NC,CL1
+	CP	'0'
+	JR	C,CL1
+
+ZEI:	LD	(HL),A	;Zeichen abspeichern
+
+CR:	INC	HL	;Position  weitersetzen
+	JR	CL1
+
+CL:	DEC	HL	;Position zuruecksetzen
+
+CL1:    CALL	TA1	;warten auf Tastenende
+	JR	Z,CL1
+	JR	TA4	;naechste Taste anfordern
+
+PQ:     CALL	TA1
+	JR	Z,PQ
+	RET
+
+
+
+TA5:	CALL	TA3
+	LD	(HL),A
+	CALL	TA1
+	JR	Z,$-3
+	LD	A,(HL)
+	RET
+
+	PAGE
+	IF	ANST AND 8	;PIO
+;****************************************************************
+;*               PIO-Programmiertabellen                        *
+;****************************************************************
+PPTAB:	DB	0CFH
+	DB	0FFH
+	DB	003H
+PTAB1:	DB	0CFH
+	DB	001H
+	DB	003H
+	ENDIF
+
+;****************************************************************
+;*               Tastencodes                                    *
+;****************************************************************
+	IF	TAST AND 1
+TCL	EQU	00BH
+TCR	EQU	004H
+TPQ	EQU	006H
+	ENDIF
+
+	IF	TAST AND 2
+TCL	EQU	0F7H
+TCR	EQU	0F9H
+TPQ	EQU	0B0H
+	ENDIF
+
+	PAGE
+;****************************************************************
+;*               Betriebssystem - Anzeigetexte                  *
+;****************************************************************
+T1:	DB	'M_C_S___84   -   Kassettenloader  V:2.5'
+LT1	EQU	$-T1
+
+T2:	DB	'(C)January 84  by  M.Herbote'
+LT2	EQU	$-T2
+
+T3:	DB	'drive 1/2  ? '
+LT3	EQU	$-T3
+
+T4:	DB	'systemname ? '
+LT4	EQU	$-T4
+
+T5:	DB	'EAW MH'
+LT5	EQU	$-T5
+
+T6:	DB	'Das eingegebene Codewort ist falsch'
+LT6	EQU	$-T6
+
+T7:	DB	'Load/Start ? '
+LT7	EQU	$-T7
+
+;****************************************************************
+;*               Konstanten-Definitionen                        *
+;****************************************************************
+BWSL	EQU	1920	;Anzahl Zeichen auf ABS
+SPANZ	EQU	80	;Spaltenanzahl ABS
+ZANZ	EQU	24	;Zeilenanzahl  ABS
+
+BWS	EQU	03000H	;Adresse des Bildwiederholspeichers
+STACK	EQU	01000H	;obere Adressgrenze des Kellers
+EATAB	EQU	00C10H	;Adresse der E/A-Tabelle fuer KMBG
+POIE	EQU	00C00H	;Adresse des Zeigers zum Eingabekeller
+START	EQU	00C02H	;Startadress-Merker
+IV	EQU	00400H	;Interruptvektorbereich
+
+AKB	EQU	030H	;Adresse der  A K B
+AT	EQU	0A0H	;Adresse der  Ansteuerung Tast
+SPUM	EQU	028H	;Adresse der  SPeicherUMschaltung
+
+
+	END

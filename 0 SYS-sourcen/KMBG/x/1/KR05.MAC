@@ -1,0 +1,1578 @@
+05
+;****************************************************************
+;*               BAMOS   ---   Kassettenmagnetband              *
+;* OS - Version  -----------------------------------------------*
+;*               Programmierer: Hildebrandt      --- RVB        *
+;*               auf aktuellen Stand gebracht 12.Dezember 1983  *
+;*               durch        : Marcus Herbote   --- IfR - OE-S *
+;* V 1 . 2       -----------------------------------------------*
+;*               Stand        : 01.Januar 1981                  *
+;****************************************************************
+
+
+;****************************************************************
+;*               Geraetebedienroutine fuer Kassettenmagnetband  *
+;*               Anschluss von zwei Laufwerken K5200            *
+;*               an einer AKB K5020                             *
+;*               -----------------------------------------------*
+;*               E/A-Tabelle                                    *
+;*               Byte 0    Status                               *
+;*               Byte 1    Fehlerschluessel                     *
+;*               Byte 2    Basisadresse der AKB                 *
+;*               Byte 3    Subadresse                           *
+;*               Byte 4    Kommando                             *
+;*               Byte 5    L-Teil Adresse Eintrittspunkt        *
+;*               Byte 6    H-Teil Adresse Eintrittspunkt        *
+;*               Byte 7    L-Teil Blockadresse                  *
+;*               Byte 8    H-Teil Blockadresse                  *
+;*               Byte 9    H-Teil Blocklaenge (Bit 15...Bit 8)  *
+;*               Byte 10   L-Teil Blocklaenge (Bit  7...Bit 0)  *
+;*                         n      bei suchen Bandmarke          *
+;*               Byte 11   Anzahl Lese-/Schreib wiederholen     *
+;*               Byte 12   Anzahl Blocklueckenverlaengerungen   *
+;*               -----------------------------------------------*
+;*               Status                                         *
+;*               Bit 0     0 Geraet frei                        *
+;*                         1 Geraet besetzt                     *
+;*               Bit 1     0                                    *
+;*                         1 Datentraegerende                   *
+;*               Bit 2     0 Aufzeichnen erlaubt                *
+;*                         1 Aufzeichnen verboten               *
+;*               Bit 3     0 Kassettenseite A                   *
+;*                         1 Kassettenseite B                   *
+;*               Bit 4     0 Geraet       bereit                *
+;*                         1 Geraet nicht bereit                *
+;*               Bit 5     0 Geraet nicht reserviert            *
+;*                         1 Geraet       reserviert            *
+;*               Bit 6     0 Aufzeichnungsverf.  38 CM*S**-1    *
+;*                         1 Aufzeichnungsverf.  19 CM*S**-1    *
+;*               Bit 7     0 Kommando fehlerfrei ausgefuehrt    *
+;*                         1 Fehler (siehe Fehlerschluessel)    *
+;****************************************************************
+	PAGE
+;****************************************************************
+;*               Kommandos:                                     *
+;*                 Hex   Kommando                               *
+;*                 00    Aufzeichnem mit RAW (2=<Blockl. =<256) *
+;*                 08    Aufzeichnen ohne RAW                   *
+;*                 02    Wiedergabe (es wird der naechste Block *
+;*                       gelesen , Adresse und Laenge werden in *
+;*                       der E/A-Tabelle uebermittelt           *
+;*                 11    einen Block vorsetzen                  *
+;*                 15    einen BlocK ruecksetzen                *
+;*                 21    umspulen                               *
+;*                 31    reservieren ein                        *
+;*                 41    reservieren aus                        *
+;*                 51    schreiben einer Bandmarke (Steuerblock)*
+;*                 61    schreiben Schlussluecke                *
+;*                 71    suche n-te Bandmarke vorwaerts         *
+;*                 75    suche n-te Bandmarke rueckwaerts       *
+;*               -----------------------------------------------*
+;*               Fehlerschluessel                               *
+;*                 Hex   Fehler                                 *
+;*                 10    falsches Kommando                      *
+;*                 11    angewaehltes Geraet nicht reserviert   *
+;*                 12    Subadresse falsch                      *
+;*                 13    Pufferl. kleiner 12 oder groesser 256  *
+;*                 14    Ende der Aufzeichnungen auf dieser     *
+;*                       Kassettenseite (Lesen)                 *
+;*                 15    angewaehltes Geraet besetzt            *
+;*                 16    Ende/Anfang der Aufzeichnungen         *
+;*                       (Bandmarke suchen)                     *
+;*                 17    gelesener Block laenger 260 Byte       *
+;*                 18    Bandmarke nicht gefunden               *
+;*                 19    Aufzeichnen verboten                   *
+;*                       (mit Kommando: Aufzeichnen)            *
+;*                 21    Fehler nach festgelegter Anzahl        *
+;*                       Lesewiederholungen                     *
+;*                 22    Fehler nach festgelegter Anzahl        *
+;*                       Schreibwiederholungen                  *
+;*                 23    kein Echosignal vom Eingabekanal       *
+;*                       bei  RAW                               *
+;****************************************************************
+	PAGE
+;****************************************************************
+;*               Hinweise zur Arbeit mit der Geraetebedienr.    *
+;*                - IM2 einstellen , SP und I-Register laden    *
+;*                - E/A-Tabelle laden (Basisadresse AKB)        *
+;*                - Adresse E/A-Tabelle in IX laden             *
+;*                - programmieren AKB durch Aufruf des UP's     *
+;*                    KR.INIT  (CALL KR.INIT)                   *
+;*                - laden Schluessel fuer Kommando , Subadresse *
+;*                    Adresse Eintrittspunkt                    *
+;*                - Aufruf Geraetebedienroutine immer mit       *
+;*                    CALL   KR.BRKMB                           *
+;*                - wird keine Parallelarbeit mit anderen       *
+;*                  Programmen gewuenscht , kann wie in         *
+;*                  folgendem Beispiel verfahren werden:        *
+;*                        ...                                   *
+;*                        CALL KR.BRKMB ;Aufruf                 *
+;*                  MARKE:HALT                                  *
+;*                        JR   MARKE-#                          *
+;*                  ADREP:............  ;Adresse Eintrittspunkt *
+;*                        ...                                   *
+;*                - bei Rueckkehr der Bedienroutine zum Ein-    *
+;*                  trittspunkt ist die Adresse des folgenden   *
+;*                  Befehls , bei dem der letzte Interrupt      *
+;*                  angenommen wurde , noch im SP .             *
+;*                  Wird , wie im obigen Beispiel , diese       *
+;*                  Adresse nicht mehr benoetigt , so ist der   *
+;*                  SP  um 2 zu erhoehen.                       *
+;****************************************************************
+
+
+;****************************************************************
+;*               CTCKA = 0,1,2,3  CTC-KANAL                     *
+;*               CTCBA = Basisadresse CTC (Standard: 80H)       *
+;****************************************************************
+CTCKA	EQU	2	;CTC-Kanal 2
+CTCBA	EQU	80H	;Basisadresse CTC
+	TITLE	'Steuerteil Geraetebedienroutine'
+	PAGE
+;****************************************************************
+;*               Steuerteil der Geraetebedienroutine            *
+;****************************************************************
+;----0010
+BRKMB:	DI
+	PUSH	IX	;Reg. retten
+	CALL	RRET
+	LD	(KS.AEATB),IX	;Adr. E/A-Tabelle
+;----0020
+	SET	0,(IX)	;Besetztbit
+;----0030
+	RES	7,(IX)	;Fehlerbit
+	LD	(IX+1),0	;Fehlerschluessel
+;----0040
+STT00:	EI
+;----0050
+;----0060
+STT01:	LD	A,(IX+2)	;Basisadresse
+	ADD	A,4
+	LD	C,A	;rel. Adr. 4
+	LD	A,31H	;Kommando reservieren ein ?
+	CP	(IX+4)
+	JP	Z,STT30	;Sprung nach reservieren ein
+;----0070
+	LD	A,41H	;Kommando reservieren aus ?
+	CP	(IX+4)
+	JP	Z,STT40	;Sprung nach reservieren aus
+;----0080
+;****************************************************************
+;*               pruefen , ob adresseiertes Geraet reserviert , *
+;*               und Anwahl einschalten                         *
+;****************************************************************
+	IN	A,(C)
+	AND	3	;ruecksetzen
+	INC	C	;rel. Adr. 5
+	IN	B,(C)
+	BIT	0,(IX+3)
+	JR	Z,STT02	;Sprung wenn LW2
+	BIT	1,A
+	JP	NZ,STF02	;Geraet nicht reserviert
+	BIT	4,B
+	JP	Z,STF03	;Geraet nicht bereit
+	SET	3,A	;Anwahl Geraet 1
+	JR	STT03
+STT02:	BIT	0,A
+	JP	NZ,STF02	;Geraet nicht reserviert
+	BIT	3,B
+	JP	Z,STF03	;Geraet nicht bereit
+	SET	2,A	;Anwahl Geraet 2
+STT03:	DEC	C	;rel. Adr. 4
+	OUT	(C),A	;einschalten Anwahl
+;----0090
+	PAGE
+;****************************************************************
+;*               Analyse Kommando                               *
+;****************************************************************
+	LD	A,(IX+4)	;Kommando
+	AND	077H	;Bit 3 ausblenden
+	CP	0	;Aufzeichnen mit/ohne RAW ?
+	JP	Z,STT10	;Sprung zum Aufzeichnungszweig
+;----0100
+	CP	02H
+	JP	Z,STT20	;Sprung zum Eingabezweig
+;----0110
+	AND	0F0H
+	CP	10H
+	JP	Z,STT60	;Block vor-/ruecksetzen
+;----0120
+	CP	20H
+	JP	Z,STT50	;umspulen
+;----0130
+	CP	50H
+	JP	Z,STT70	;schreiben einer Bandmarke
+;----0140
+	CP	60H
+	JP	Z,STT80	;schreiben einer Schlussluecke
+;----0150
+	CP	70H
+	JP	Z,STT90	;suche Bandmarke
+;----0160
+	JP	STF07	;Fehler: kein gueltiges Kommando
+;----0170
+;****************************************************************
+;*               Aufzeichnungszweig                             *
+;****************************************************************
+;----0180
+STT10:	BIT	1,(IX)
+	JR	NZ,STT06
+;----0190
+	IN	D,(C)
+	BIT	7,D	;Signal AEB
+	CALL	Z,MBAN	;MB einziehen beim Schreiben
+;----0200
+
+	PAGE
+;****************************************************************
+;*               Pufferspeicher laden                           *
+;****************************************************************
+STT06	EQU	$
+STT12:	LD	HL,KS.PUFFS	;Adr. Puffersp.
+	LD	(HL),0AAH	;Praeambel
+	INC	HL
+	EX	DE,HL
+	LD	L,(IX+7)
+	LD	H,(IX+8)	;Adresse Block
+	LD	B,(IX+9)
+	LD	C,(IX+10)
+	LDIR
+	PUSH	DE
+	LD	HL,0
+	LD	(KS.CRCZ),HL
+	LD	HL,KS.PUFFS+1
+	LD	B,0
+	LD	A,(IX+10)
+	OR	A
+	JR	NZ,$+4
+	LD	B,1
+	LD	C,A
+	CALL	CRC	;berechne CRC-Zeichen
+	POP	HL
+	LD	(HL),D	;1.Byte CRC
+	INC	HL
+	LD	(HL),E	;2.Byte CRC
+	INC	HL
+	LD	(HL),0AAH	;Postambel
+;----0220
+;****************************************************************
+;*               Arbeitsbereich laden                           *
+;****************************************************************
+	CALL	E322
+;----0230
+STTEP:	CALL	E32A	;Einsprung bei Wiederholung
+	LD	H,(IX+9)
+	LD	L,(IX+10)
+	LD	DE,4
+	ADD	HL,DE
+	LD	(KS.ZEIN),HL
+	LD	(KS.ZAUS),HL
+;----0240
+STT16:	LD	A,(IX+2)
+	ADD	A,5
+	LD	C,A	;rel. Adr. 5
+	LD	A,2
+	OUT	(C),A	;AUF=1
+	NOP
+	IN	A,(C)
+	BIT	6,A
+	JP	NZ,STF0B
+;----0250
+	INC	C	;rel. Adr. 6
+	CALL	AEBEI	;Signal AEB auf Interrupt
+;----0260
+	DEC	C
+	DEC	C	;rel. Adr. 4
+	IN	A,(C)
+;----0270
+STT17:	SET	4,A	;TRV=1
+	DI
+	OUT	(C),A	;einschalten Transport vorwaerts
+;----0280
+	LD	A,28H
+	CALL	WART
+	DEC	C
+	LD	L,0D2H
+	CALL	EINIE	;Int. Eingabekanal einschalten , R A W
+;----0320
+STT15:	DEC	C	;rel. Adr. 2
+	LD	A,83H
+	OUT	(C),A	;Int.freigabe Ausgabekanal
+;----0330
+	DEC	C
+	DEC	C	;rel. Adr. 0
+	LD	A,0AAH
+	OUT	(C),A	;Ausgabe Praeambel
+;----0340
+	CALL	STAE	;Status auf Int.
+	EI
+STT14:	BIT	0,(IX)
+	JR	NZ,STT14
+	LD	A,(KS.FEHLZ)
+	OR	A
+	JP	NZ,FEHLB
+	JP	KOMED
+
+	PAGE
+;****************************************************************
+;*               Eingabezweig                                   *
+;****************************************************************
+STT20:	BIT	1,(IX)	;Datentraegerende
+	JR	NZ,STT21
+;----0360
+	IN	A,(C)
+	BIT	7,A
+	CALL	Z,MBAN	;MB einziehen beim Lesen
+;----0370
+STT21:	CALL	E322
+;----0380
+STT22:	LD	DE,0	;Einsprung
+	LD	(KS.ZEIN),DE	;ZEIN=0
+	LD	HL,KS.PUFFS
+	LD	(KS.PZEIN),HL	;Zeiger auf Pufferanfang
+	XOR	A
+	LD	(KS.FEHLZ),A
+;----0390
+	LD	L,LOW(KT.IEL)	;L-Teil Int.-vektor Lesen
+	DEC	C	;rel. Adr. 3
+	CALL	EINIE	;Int.Eingabekanal einsch. auf Lesen
+;----0400
+	INC	C
+	INC	C
+	INC	C
+	CALL	AEBEI	;A E B  auf Int.
+;----0410
+	DEC	C
+	DEC	C	;reL. Adr. 4
+	IN	A,(C)
+	SET	4,A
+	OUT	(C),A	;TRV=1
+;----0420
+	LD	B,68
+	CALL	INITC
+STT13:	LD	A,(KS.CONTR)
+	OR	A
+	JP	NZ,STF9A
+	BIT	0,(IX)
+	JR	NZ,STT13
+	LD	A,(KS.FEHLZ)
+	BIT	5,A
+	JR	NZ,$+9	; ----
+	OR	A	;    !
+	JP	NZ,FEHLB	;    !
+	JP	KOMED	;    !
+	LD	L,17H	; <---
+	JP	STF99
+
+	PAGE
+;****************************************************************
+;*               reservieren ein                                *
+;****************************************************************
+STT30:
+	IN	A,(C)	;TOR A,(C)
+	AND	3
+	BIT	0,(IX+3)
+	JR	Z,STT31
+	RES	1,A	;Geraet 1
+	LD	D,10H
+	JR	STT32
+STT31:	RES	0,A	;Geraet 2
+	LD	D,08H
+STT32:	OUT	(C),A	;Reservierung ein
+	INC	C	;rel. Adr. 5
+	LD	E,2
+;----0440
+STT33:	LD	A,150
+	CALL	WART
+	DEC	E
+	JR	NZ,STT33
+;----0450
+	IN	A,(C)
+	AND	D
+	JR	NZ,STT34
+;----0460
+STT37:	LD	(IX),80H	;Geraet nicht bereit
+	LD	(IX+1),20H
+STT34:	JP	KOMED
+;----0470
+
+	PAGE
+;****************************************************************
+;*               reservieren ruecksetzen                        *
+;****************************************************************
+STT40:
+	IN	A,(C)
+	BIT	0,(IX+3)	;Subadresse
+	JR	Z,STT35
+	SET	1,A	;Anwahl Geraet 1
+	JR	$+4
+STT35:	SET	0,A	;Anwahl Geraet 2
+	AND	3
+	OUT	(C),A
+	JR	STT34	;KOMED
+;****************************************************************
+;*               umspulen                                       *
+;****************************************************************
+STT50:	IN	D,(C)
+	BIT	7,D
+	JR	NZ,STT52
+	SET	5,D
+	OUT	(C),D
+	LD	HL,0
+STT51:	DEC	HL
+	LD	A,H
+	OR	L
+	JR	Z,STT54
+	IN	D,(C)	;Eingabe von rel. Adr. 4,(C)
+	BIT	7,D
+	JR	Z,STT51
+;----0530
+STT52:	DI
+	LD	A,D
+	OR	30H	;TRR=TRV=1
+	OUT	(C),A	;UMS=1
+;----0540
+	LD	A,20
+	CALL	WART
+	EI
+STT53:	CALL	BERT	;Bereitsignal abfragen
+	JR	NC,STT53	;Sprung solange Geraet bereit
+;----0550
+STT54:
+	IN	A,(C)
+	AND	3
+	OUT	(C),A	;Transport und Anwahl aus
+;----0560
+	RES	1,(IX)	;Datentraegerende ruecksetzen
+;----0570
+	JP	KOMED
+;----0580
+;****************************************************************
+;*               vor-/ruecksetzen um einen Block                *
+;****************************************************************
+STT60:	LD	B,10H	;vorwaerts
+	BIT	2,(IX+4)	;vorwaerts/rueckwaerts ?
+	JR	Z,$+4
+	LD	B,20H	;rueckwaerts
+	CALL	BLVR
+;----0590
+	JP	KOMED
+;----0600
+
+	PAGE
+;****************************************************************
+;*               schreiben einer Bandmarke                      *
+;****************************************************************
+STT70:	BIT	1,(IX)	;Datentraegerende ?
+	JR	NZ,STT71
+;----0610
+	IN	D,(C)
+	BIT	7,D
+	CALL	Z,MBAN	;MB einziehen beim Schreiben
+;----0620
+STT71:	CALL	E322
+;----0630
+STT72:	CALL	E32A	;Einsprung
+	LD	DE,4
+	LD	(KS.ZEIN),DE	;Zaehler Eingabe
+	LD	(KS.ZAUS),DE	;Zaehler Ausgabe
+;----0640
+	LD	(HL),0AAH	;laden Pufferspeicher
+	INC	HL
+	LD	(HL),0
+	INC	HL
+	LD	(HL),0
+	INC	HL
+	LD	(HL),0AAH
+;----0650
+	JP	STT16
+;----0660
+;****************************************************************
+;*               schreiben einer Schlussluecke ( > 400 mm )     *
+;****************************************************************
+STT80:	LD	B,120
+	CALL	MBVZ	;MB 400 mm loeschen
+;----0670
+	DEC	C
+	DEC	C	;rel. Adr. 4
+	IN	A,(C)
+	AND	3
+	OUT	(C),A	;Anwahl aus
+;----0680
+	JP	KOMED
+;----0690
+
+	PAGE
+;****************************************************************
+;*               suche Bandmarke                                *
+;*               <C>  = rel. Adr. 4                             *
+;*               <IX> = Adresse E/A-Tabelle                     *
+;****************************************************************
+STT90:	LD	A,(IX+10)	;Anzahl Bandmarken , die zu ueberlesen sind
+	LD	(KS.Z1),A
+	BIT	2,(IX+4)
+	JR	NZ,STT98	;Sprung wenn suchen rueckwaerts
+;----0700
+	BIT	1,(IX)	;Datentraegerende ?
+	JR	NZ,STT98
+;----0710
+	IN	D,(C)
+	BIT	7,D	;AEB ?
+	CALL	Z,MBAN	;MB einziehen
+;----0720
+STT98:	DI
+	INC	C
+	INC	C	;rel. Adr. 6
+	CALL	AEBEI
+;----0730
+	EI
+	DEC	C
+	DEC	C	;rel. Adr. 4
+	CALL	STT9E	;Transport einschalten
+	SET	6,A
+	OUT	(C),A	;HGE=1
+;----0740
+	LD	A,50
+	CALL	WART
+	INC	C	;rel. Adr. 5
+	JR	STT9B
+;----0750
+STT93:	LD	DE,7100
+;****************************************************************
+;*               in folgender Schleife wird BMS 170 ms auf 1    *
+;*               getestet                                       *
+;****************************************************************
+STT91:	EI
+	DEC	DE
+	LD	A,D
+	OR	E
+	JP	Z,STT9F	;Sprung wenn Aufzeichnungsende
+	IN	B,(C)
+	BIT	5,B
+	JR	Z,STT91
+;----0760
+;****************************************************************
+;*               Eingang BMS=1                                  *
+;*               Integration des Signals BMS ueber ca. 1 ms     *
+;****************************************************************
+	DI
+	LD	D,0
+	LD	B,73	;Integration ueber ca. 1,6 ms
+STT99:
+	IN	A,(C)
+	BIT	5,A
+	JR	Z,STT92
+	INC	D
+	JR	STT92+2
+STT92:
+	IN	A,(C)
+	DJNZ	STT99
+;----0770
+	PAGE
+;****************************************************************
+;*               pruefen ob nach Bandmarke eine Blockluecke     *
+;*               (mindestens 2 mm)                              *
+;****************************************************************
+	LD	B,255	;pruefen ca. 10 mm
+STT9W:
+	IN	A,(C)
+	BIT	5,A
+;----0771
+	JR	NZ,STT9B
+	DJNZ	STT9W
+;----0780
+	LD	A,D
+	CP	15
+	JR	NC,STT94	;Sprung wenn A >=15
+	JR	STT93
+;----0790
+STT9B:
+	LD	B,0FFH	;naechste Blockluecke suchen
+	IN	A,(C)
+	BIT	5,A
+	JR	NZ,STT9B
+	DJNZ	STT9B+2
+	JR	STT93
+;----0800
+	PAGE
+;****************************************************************
+;*               Bandmarke erkannt                              *
+;****************************************************************
+STT94:	LD	HL,KS.Z1
+	DEC	(HL)	;Zaehler fuer Bandmarken
+;----0801
+	JR	NZ,STT93
+;----0810
+	DEC	C	;rel. Adr. 4
+	IN	A,(C)
+	AND	4FH
+	OUT	(C),A	;Transport aus
+;----0820
+	EI
+	LD	A,0FAH
+	CALL	WART
+	LD	A,0FAH
+	CALL	WART
+;----0830
+	LD	B,100
+	CALL	INITC	;time out wenn Bandmarke nicht gefunden
+;----0840
+	LD	A,(IX+2)
+	ADD	A,4
+	LD	C,A	;rel. Adr. 4
+	IN	A,(C)
+	SET	6,A	;HGE=1
+	OUT	(C),A
+;----0850
+	RES	6,A	;HGE=0
+	BIT	2,(IX+4)	;vorw./rueckw. ?
+	JR	Z,$+6
+	SET	4,A
+	JR	$+4
+	SET	5,A
+	OUT	(C),A	;Transport ein
+;----0860
+	LD	A,20
+	CALL	WART
+	INC	C	;rel. Adr. 5
+STT95:
+	EI
+	IN	A,(C)
+	BIT	5,A
+	JR	NZ,STT95
+STT96:	EI
+	LD	A,(KS.CONTR)
+	OR	A
+	JR	NZ,STF01
+	IN	A,(C)
+	BIT	5,A
+	JR	Z,STT96
+;----0880
+	PAGE
+;****************************************************************
+;*               BMS = 1 fuer ca. 2200 Mikrosek. ?              *
+;****************************************************************
+	DI
+	LD	B,128
+STT9X:
+	IN	A,(C)
+	BIT	5,A
+	JR	Z,STT96	;Sprung wenn Stoerung
+	DJNZ	STT9X
+
+;****************************************************************
+;*               wird BMS=0 in den naechsten 610 Mikrosek. ?    *
+;****************************************************************
+	LD	B,50
+STT9Y:
+	IN	A,(C)
+	BIT	5,A
+	JR	Z,STT9A	;Bandmarke
+	DJNZ	STT9Y
+	JR	STT95	;Datenblock
+;----0900
+STT9A:	EI
+	LD	A,3
+	OUT	(CTCBA+CTCKA),A	;CTC stoppen
+;----0910
+	CALL	BLVR1-1	;in Blockluecke fahren
+	LD	A,50
+	CALL	WART
+;----0920
+	BIT	2,(IX+4)
+	JR	Z,$+7	;Sprung wenn suchen vorwaerts
+;----0930
+	LD	B,20H
+	CALL	BLVR	;einen Block ruecksetzen
+;----0940
+	JP	STT20	;Lesen
+;----0950
+;****************************************************************
+;*               Fehler: Ende der Aufzeichnungen                *
+;****************************************************************
+STT9F:
+	DEC	C	;rel. Adr. 4
+	IN	A,(C)
+	AND	00FH
+	OUT	(C),A	;HGE=0
+	XOR	A	;A=0
+	CALL	WART	;256 ms warten
+	LD	L,16H
+	JR	STF99
+
+	PAGE
+;****************************************************************
+;*               Fehler                                         *
+;****************************************************************
+STF01:	LD	L,18H	;Subadresse 1,2
+
+STF99:	LD	(IX+1),L	;Fehlerschluessel laden
+	SET	7,(IX)	;Fehlerbit setzen
+	CALL	AUS	;Anwahl und sonst. Signale aus
+STFRS:	JP	KOMED	;Kommandoende
+
+STF02:	LD	L,11H	;Geraet nicht reserviert
+	JR	STF99
+
+STF03:	LD	L,20H	;Geraet nicht bereit ??????
+	JR	STF99
+
+STF9A:	LD	L,14H	;Fehlerschluessel
+	JR	STF99
+
+STF07:	LD	L,10H	;falsches Kommando
+	JR	STF99
+
+STF0B:	LD	L,19H	;Aufzeichnen verboten
+	JR	STF99
+;----0960
+STT9E:
+	IN	A,(C)	;Transportsignal setzen,(C)
+	BIT	2,(IX+4)
+	JR	NZ,STT9H
+	SET	4,A
+STT9G:	RET
+STT9H:	SET	5,A
+	JR	STT9G
+
+E322:	XOR	A
+	LD	HL,KS.Z1
+	LD	(HL),A
+	INC	HL
+	LD	(HL),A
+	RET
+
+E32A:	LD	A,3
+	LD	(KS.FEHLZ),A
+	LD	HL,KS.PUFFS
+	LD	(KS.PZAUS),HL
+	LD	(KS.PZEIN),HL
+	RET
+
+	TITLE	'Interruptserviceroutinen KMBG'
+	PAGE
+;****************************************************************
+;*               Interruptserviceroutinen KMBG                  *
+;****************************************************************
+;----0010        Interruptbehandlung Ausgabekanal
+KR.IAUS:
+	PUSH	IX
+	CALL	RRET
+	LD	IX,(KS.AEATB)
+;----0020
+	LD	C,(IX+2)	;Basisadresse AKB
+	LD	HL,(KS.PZAUS)
+	LD	DE,(KS.ZAUS)
+	DEC	DE
+	LD	A,D
+;----0021
+	OR	E
+	JR	Z,IAUSE	;Sprung wenn Ausgabe beendet
+;----0030
+	INC	HL
+	LD	A,(HL)
+	OUT	(C),A	;Ausgabe Zeichen
+;----0040
+	LD	(KS.PZAUS),HL
+	LD	(KS.ZAUS),DE
+	JP	ENDI
+;----0050
+IAUSE:	LD	B,3
+	INC	C
+	INC	C	;rel. Adr. 2
+	OUT	(C),B	;Int. Ausgabekanal sperren
+;----0060
+	LD	A,C
+	ADD	A,5
+	LD	C,A	;rel. Adr. 7
+	OUT	(C),B	;Int. Status sperren
+	EI
+	CALL	ENDI1	;Int. Freigabe DASY-CHAIN
+;----0070
+	LD	A,1EH
+	CALL	WART
+	DEC	C
+	DEC	C
+	DEC	C
+	IN	A,(C)
+	AND	00FH
+	OUT	(C),A
+	EI
+	LD	A,28H
+	CALL	WART
+	INC	C
+	XOR	A
+	OUT	(C),A
+	INC	C
+	LD	A,3
+	OUT	(C),A
+	DEC	C
+	DEC	C
+	DEC	C
+	OUT	(C),A
+	INC	C
+	LD	A,51H
+	CP	(IX+4)
+	JR	NZ,$+9
+	LD	B,20H
+	CALL	MBVZ
+	DEC	C
+	DEC	C
+	IN	A,(C)
+	AND	3
+	OUT	(C),A
+	RES	0,(IX+0)
+	CALL	RLAD
+	POP	IX
+	RET
+
+	PAGE
+;****************************************************************
+;*               Interruptbehandlung Eingabekanal RAW           *
+;****************************************************************
+KR.IER:
+	PUSH	IX
+	CALL	RRET
+	LD	IX,(KS.AEATB)	;Adresse E/A-Tabelle
+;----0150
+	LD	C,(IX+2)
+	INC	C	;rel. Adr. 1
+	IN	A,(C)	;Eingabe Zeichen,(C)
+;----0160
+	LD	HL,KS.FEHLZ
+	LD	D,(HL)	;<D>=FEHLZ
+	RES	0,D	;Eingabekanal angesprochen
+	LD	HL,(KS.PZEIN)
+	CP	(HL)
+	JR	Z,IER0
+;----0170
+	SET	4,D
+;----0180
+IER0:	INC	HL
+	LD	(KS.PZEIN),HL
+	LD	HL,(KS.ZEIN)	;Pufferzeiger erhoeht
+	DEC	HL
+;----0190
+	LD	(KS.ZEIN),HL	;Zaehler erniedrigt
+	LD	A,H
+	OR	L
+	JR	Z,IERE	;Sprung zur Endebeh.
+;----0200
+IER1:	LD	A,D
+	LD	(KS.FEHLZ),A
+	JP	ENDI
+;----0210
+IERE:	RES	1,D
+	JR	IER1
+;----0230        Interruptbehandlung Eingabekanal
+KR.IEL:
+	PUSH	IX
+	CALL	RRET
+	LD	IX,(KS.AEATB)
+;----0240
+	CALL	LDADR
+	LD	A,3
+	OUT	(C),A	;CTC sperren
+;----0250
+	LD	C,(IX+2)
+	INC	C	;rel. Adr. 1
+	IN	A,(C)	;Eingabe Zeichen,(C)
+;----0260
+	LD	E,A
+	AND	0FEH
+	CP	0AAH
+	JR	NZ,IEL01
+;----0270
+	LD	B,72
+IEL00:	DJNZ	IEL00	;warten 370 Mikros.
+;----0280
+	INC	C
+	INC	C
+	INC	C
+	INC	C	;rel. Adr. 5
+	IN	D,(C)
+	BIT	5,D	;BMS=1 ?
+	JR	Z,IEL02	;Sprung zur Endebeh.
+;----0290
+IEL01:	LD	HL,(KS.PZEIN)
+	LD	(HL),E	;abspeichern Zeichen
+;----0300
+	INC	HL
+	LD	(KS.PZEIN),HL	;Pufferzeiger erhoeht
+;----0310
+	LD	DE,KS.KOMDO
+	XOR	A
+	SBC	HL,DE
+	JP	Z,IELFF	;Sprung wenn Puffersp. ueberschr.
+;----0320
+	LD	HL,(KS.ZEIN)
+	INC	HL
+	LD	(KS.ZEIN),HL
+;----0330
+	JP	ENDI
+;----0340
+IEL02:	DEC	C
+	DEC	C	;rel. Adr. 3
+	LD	A,3
+	OUT	(C),A	;Int. Eingabekanal gesp.
+	LD	A,14H
+	CALL	WART
+	INC	C
+	IN	A,(C)
+	AND	00FH
+	OUT	(C),A
+	EI
+	LD	A,28H
+	CALL	WART
+;----0400
+IEL07:	LD	HL,(KS.ZEIN)	;Blocklaenge-1
+	LD	DE,3
+	XOR	A
+	SBC	HL,DE
+	JR	Z,IEL05	;Sprung wenn Steuerblock
+;----0410
+	PUSH	HL
+	POP	BC
+	LD	(IX+9),B
+	LD	(IX+10),C
+	LD	HL,KS.PUFFS+1	;Adresse Daten
+	LD	(IX+7),L
+	LD	(IX+8),H
+;----0420
+	INC	BC
+	INC	BC
+	CALL	CRC
+	LD	A,D
+	OR	E
+;----0430
+	CALL	NZ,IELF	;Fehler
+;----0431
+IEL04:	LD	A,(IX+2)
+	ADD	A,4
+	LD	C,A	;rel. Adr. 4
+	CALL	AUS
+	RES	0,(IX+0)
+	JP	ENDI
+;----0450
+IEL05:	XOR	A	;Bandmarke gelesen
+	LD	(IX+7),A
+	LD	(IX+8),A
+	LD	(IX+9),A
+	LD	(IX+10),A
+	JR	IEL04
+;----0460
+IELFF:	LD	HL,KS.FEHLZ
+	SET	5,(HL)
+	JR	$-30
+IELF:	LD	HL,KS.FEHLZ
+	SET	3,(HL)
+	RET
+
+	PAGE
+;****************************************************************
+;*               Interruptbehandlung Status                     *
+;****************************************************************
+KR.IST:
+	PUSH	IX
+	CALL	RRET
+	LD	IX,(KS.AEATB)
+	LD	A,(IX+2)
+	ADD	A,7
+	LD	C,A	;rel. Adr. 7
+	LD	HL,KS.FEHLZ	;interner Fehlerzeiger
+	SET	2,(HL)	;Statusfehler
+	LD	A,3
+	OUT	(C),A	;Int. Status sperren
+	JP	ENDI
+;****************************************************************
+;*               Interruptbehandlung AEB                        *
+;****************************************************************
+KR.IBE:
+	PUSH	AF
+	PUSH	BC
+	PUSH	IX
+	LD	IX,(KS.AEATB)
+	LD	A,(IX+2)
+	ADD	A,6
+	LD	C,A
+	LD	A,03H
+	OUT	(C),A
+	SET	1,(IX)
+	POP	IX
+	POP	BC
+	POP	AF
+	EI
+KR.IBE0:
+	RETI
+
+	TITLE	'KMBG-Unterprogramme'
+	PAGE
+;****************************************************************
+;*               Unterprogramme zur Bedienroutine KMBG          *
+;*               -----------------------------------------------*
+;*               Endebehandlung fuer normalen Interrupt         *
+;****************************************************************
+ENDI:	CALL	RLAD
+	POP	IX
+	EI
+ENDI1:	RETI
+
+;****************************************************************
+;*               Verzweigung aus Steuerteil zum Eintrittspunkt  *
+;*               des Steuerprogrammes                           *
+;****************************************************************
+KOMED:	DI
+	RES	0,(IX)
+	CALL	RLAD
+	POP	IX
+	EI
+	RET
+
+;****************************************************************
+;*               UP zur Abfrage des Bereitsignals an dem PIO    *
+;*               UP stellt Carry-Flag , C = 0 Geraet     bereit *
+;*                                      C = 1 Geraet nicht  "   *
+;*               <IX> = Anfangsadresse E/A-Tabelle              *
+;*               UP zerstoert Register AF                       *
+;****************************************************************
+BERT:	PUSH	BC
+	LD	A,(IX+2)
+	ADD	A,5
+	LD	C,A
+	IN	A,(C)
+	SCF
+	BIT	0,(IX+3)
+	JR	Z,BERT2
+	BIT	4,A
+	JR	Z,BERTE
+	CCF
+	JR	BERTE
+BERT2:	BIT	3,A
+	JR	Z,BERTE
+	CCF
+BERTE:	POP	BC
+	RET
+
+	PAGE
+;****************************************************************
+;*               Register AF , BC , DE , HL retten in SP        *
+;****************************************************************
+RRET:	EX	(SP),HL
+	PUSH	DE
+	PUSH	BC
+	PUSH	AF
+	JP	(HL)
+;****************************************************************
+;*               Register AF , BC , DE , HL laden aus SP        *
+;****************************************************************
+RLAD:	EX	(SP),HL
+	INC	SP
+	INC	SP
+	POP	AF
+	POP	BC
+	POP	DE
+	EX	(SP),HL
+	RET
+;****************************************************************
+;*               UP zum Testen BMS auf Stoerung                 *
+;*               <C> = rel. Adr. 5      BMS=1 bei Aufruf des UP *
+;*               Register  A , B , F werden zerstoert           *
+;*               Ausgang: CY = 1 Stoerung                       *
+;*                        CY = 0 BMS=1 groesser 0,2 mm Band     *
+;****************************************************************
+BMST:	LD	B,43
+BMST0:	SCF
+	IN	A,(C)
+	BIT	5,A
+	RET	Z
+	DJNZ	BMST0
+	CCF
+	RET
+;****************************************************************
+;*               Vor-/Ruecksetzen um einen Block                *
+;*               <C> = rel. Adr. 4                              *
+;*               <B> = 10H  Vorwaerts                           *
+;*               <B> = 20H  Rueckwaerts                         *
+;*               Register  A , B  werden zerstoert              *
+;****************************************************************
+BLVR:
+	DI
+	IN	A,(C)
+	SET	6,A	;HGE=1
+	OUT	(C),A
+	RES	6,A	;HGE=0
+	OR	B
+	OUT	(C),A	;Transport einschalten
+	INC	C	;rel. Adr. 5
+	LD	A,18
+	CALL	WART	;warten bis Nenngeschw.
+BLVR0:
+	IN	A,(C)	;BMS ?,(C)
+	BIT	5,A
+	JR	Z,BLVR0
+	CALL	BMST	;Test BMS auf Stoerung
+	JR	C,BLVR0	;Sprung wenn Stoerung
+	PUSH	DE
+BLVR1:
+	IN	A,(C)
+	BIT	5,A
+	JR	NZ,BLVR1	;Sprung solange BMS=1
+	PAGE
+;****************************************************************
+;*               Test auf weitere Einbrueche des Signals BMS    *
+;****************************************************************
+	LD	DE,1243
+BLVR2:
+	IN	A,(C)
+	BIT	5,A
+	JR	NZ,BLVR3
+	DEC	DE
+	LD	A,D
+	OR	E
+	JR	NZ,BLVR2
+	DEC	C
+	IN	A,(C)
+	AND	0FH
+	OUT	(C),A	;TRV=TRR=0
+	POP	DE
+	EI
+	RET
+BLVR3:	CALL	BMST
+	JR	NC,BLVR1	;keine Stoerung
+	JR	BLVR2	;Stoerung
+;****************************************************************
+;*               CRC-Zeichen berechnen                          *
+;*               <B>  = Blocklaenge , 0 = 256                   *
+;*               <HL> = Pufferadresse                           *
+;*               in  DE  nach Aufruf CRC-Zeichen                *
+;*                <D> = 1.Byte , wird zuerst gesendet           *
+;*                <E> = 2.Byte , wird danach gesendet           *
+;****************************************************************
+CRC:	LD	DE,0
+CRC0:	PUSH	BC	;Bytelaenge
+	LD	B,8
+	LD	C,(HL)
+CRC1:	LD	A,C
+	XOR	D
+	RRCA		;Ergebnis Antivalenz Wort-Byte/CRC-Byte,Bit 0
+	PUSH	AF
+	RR	E	;Verschiebung von DE um 1 Bit nach rechts
+	RR	D
+	POP	AF	;Rueckretten F
+	JR	NC,CRC2	;Sprung wenn Antivalenz 0 + 0 = 0
+	LD	A,D	;Korrektur = Umkehr Bit 13/Bit 0
+	XOR	1	;Maske fuer D
+	LD	D,A	;Korrektur  D
+	LD	A,E
+	XOR	20H	;Maske fuer E
+	LD	E,A	;Korrektur  E
+CRC2:	RRC	C	;Schieben Datenbyte
+	DJNZ	CRC1
+	POP	BC	;Byte abgearbeitet
+	DEC	BC
+	LD	A,C
+	OR	B
+	RET	Z
+	INC	HL
+	JR	CRC0
+
+	PAGE
+;****************************************************************
+;*               UP zum Einschalten des AEB-Int.                *
+;*               <C> = rel. Adr. 6                              *
+;*               <A> = wird zerstoert                           *
+;****************************************************************
+AEBEI:	LD	A,97H
+	OUT	(C),A
+	LD	A,7FH
+	OUT	(C),A
+	RET
+
+;****************************************************************
+;*               UP zum Einschalten des Statusinterrupts        *
+;*               <IX> = Anfangsadresse E/A-Tabelle              *
+;****************************************************************
+STAE:	DI
+	LD	A,(IX+2)
+	ADD	A,7
+	LD	C,A	;rel. Adr. 7
+	LD	A,0B7H
+	OUT	(C),A
+	LD	A,0BFH
+	OUT	(C),A	;Freigabe Blindinterrupt
+	RET
+
+;****************************************************************
+;*               Warten , <A> = Anzahl Millisekunden > 0        *
+;*               Register  A , B  werden zerstoert              *
+;****************************************************************
+WART:	LD	B,188
+	DJNZ	$-0
+	DEC	A
+	JR	NZ,WART
+	RET
+
+;****************************************************************
+;*               UP zum Einschalten Interrupt Eingabekanal      *
+;*               Eingang: <L> = L-Teil Int.-Adresse             *
+;*                        <C> = rel. Adr. 3                     *
+;*               Register  B  wird zerstoert                    *
+;****************************************************************
+EINIE:	OUT	(C),L
+	LD	A,97H	;Int. Freigabe
+	OUT	(C),A
+	LD	A,0FFH
+	OUT	(C),A	;Int.-Vektor RAW
+	RES	1,C	;rel. Adr. 1
+	IN	B,(C)
+	SET	1,C	;rel. Adr. 3
+	RET		;READY einschalten
+
+	PAGE
+;****************************************************************
+;*               Magnetband aus Anfangsstellung einziehen       *
+;*               <IX> = Anfangsadresse E/A-Tabelle              *
+;*               <C>  = rel. Adr. 4                             *
+;****************************************************************
+MBAN:	INC	C	;rel. Adr. 5
+	LD	A,(IX+4)
+	CP	2	;Lesen ?
+	JR	Z,MBAN0	;AUF=0
+	CP	71H	;BM suchen Vorwaerts ?
+	JR	Z,MBAN0	;AUF=0
+	LD	B,2
+	OUT	(C),B	;AUF=1
+MBAN0:	DEC	C	;rel. Adr. 4
+	IN	B,(C)
+	SET	4,B
+	OUT	(C),B	;TRV=1
+MBAN1:	IN	B,(C)
+	BIT	7,B	;AEB ?
+	JR	Z,MBAN1
+	LD	B,255
+	DJNZ	$-0	;warten 1,3 ms
+	IN	B,(C)
+	BIT	7,B
+	JR	Z,MBAN1	;Sprung wenn Stoerung
+MBAN2:	IN	B,(C)
+	BIT	7,B
+	JR	NZ,MBAN2	;Sprung solange AEB=1
+	BIT	1,A
+	JR	NZ,MBAN5
+	CP	71H
+	JR	Z,MBAN5
+	LD	A,0FAH
+	CALL	WART
+	LD	A,8CH
+	CALL	WART
+MBAN5:
+	LD	A,00AH
+	CALL	WART
+MBAN6:
+	IN	A,(C)
+	RES	4,A
+	OUT	(C),A	;TRV=0
+	LD	A,28H
+	CALL	WART
+MBAN7:
+	INC	C	;rel. Adr. 5
+	XOR	A
+	OUT	(C),A	;AUF=0
+	DEC	C	;rel. Adr. 4
+	RET
+
+	PAGE
+;****************************************************************
+;*               loesche Band von 6 oder 40 cm Laenge           *
+;*               <IX> = Anfangsadresse E/A-Tabelle              *
+;*               <B>  = Zeitkonstante fuer 38 cm*s**-1          *
+;*               <C>  = rel. Adr. 6  beim Ausgang               *
+;****************************************************************
+MBVZ:	LD	A,(IX+2)	;Basisadresse
+	ADD	A,5
+	LD	C,A	;rel. Adr. 5
+	LD	A,2
+	OUT	(C),A	;AUF=1
+	INC	C	;rel. Adr. 6
+	CALL	AEBEI	;AEB  auf Interrupt
+	DEC	C
+	DEC	C	;rel. Adr. 4
+	IN	A,(C)
+	SET	4,A
+	OUT	(C),A	;TRV=1
+	PUSH	BC
+	CALL	INITC
+	LD	A,(KS.CONTR)
+	OR	A
+	JR	Z,$-4
+MBVZ3:	POP	BC	;rel. Adr. 4
+	IN	A,(C)
+	RES	4,A
+	OUT	(C),A	;TRV=0
+	LD	A,28H
+	CALL	WART
+	INC	C	;rel. Adr. 5
+	XOR	A
+	OUT	(C),A	;AUF=0
+	INC	C	;rel. Adr. 6
+	LD	A,3
+	OUT	(C),A	;AEB  fuer Int. gesperrt
+	RET
+
+	PAGE
+;****************************************************************
+;*               UP zum Ausschalten Transport                   *
+;*               Anwahl, AEB - Int., Stat.-Int., Int. E/A-Kanal *
+;*               <IX>=Anfangsadresse E/A-Tabelle                *
+;*               Register  AF , BC , DE  werden zerstoert       *
+;****************************************************************
+AUS:	LD	C,(IX+2)	;Basisadresse
+	INC	C
+	INC	C	;rel. Adr. 2
+	LD	D,3
+	OUT	(C),D	;Ausgabekanal gesperrt
+	INC	C	;rel. Adr. 3
+	OUT	(C),D	;Eingabekanal gesperrt
+	INC	C	;rel. Adr. 4
+	IN	A,(C)
+	AND	0FH
+	OUT	(C),A	;Transport aus
+	LD	A,40
+	CALL	WART	;40 ms warten
+	IN	A,(C)
+	AND	3
+	OUT	(C),A	;Anwahl aus
+	INC	C	;rel. Adr. 5
+	LD	E,0
+	OUT	(C),E	;AUF=0
+	INC	C	;rel. Adr. 6
+	OUT	(C),D	;AEB-Int. gesperrt
+	INC	C	;rel. Adr. 7
+	OUT	(C),D	;Status-Int. gesperrt
+	RET
+
+	TITLE	'KMBG-CTC Routine'
+	PAGE
+;****************************************************************
+;*               Routine zur CTC Bedienung                      *
+;*               -----------------------------------------------*
+;*               Zeitkontrollroutine fuer Kassettenmagnetband   *
+;*               beim Aufruf des Initialisierungsteils:         *
+;*               (C)  = 0 Sprung zur Adresse Kommando           *
+;*               (C)  = 1 Kontrolle Ereignis                    *
+;*               (B)  = Zeitkonstante                           *
+;*               (HL) = Adresse                                 *
+;****************************************************************
+INITC:	DI
+	LD	(KS.KOMDO),BC	;Arbeitsbereich laden
+	XOR	A
+	LD	(KS.CONTR),A
+;      LD   HL,0F7E2H
+;      LD   (HL),L(KR.ICTC)
+;      INC  HL
+;      LD   (HL),H(KR.ICTC)
+	LD	HL,INITK	;Kanal 2 auf 10 ms Interruptfrequenz progr.
+	LD	C,LOW(CTCBA)
+	LD	B,1
+	OTIR
+	CALL	LDADR
+	LD	B,2
+	OTIR
+	EI
+	RET
+;****************************************************************
+;*               Interruptserviceroutine CTC Kanal 2            *
+;****************************************************************
+KR.ICTC:
+	PUSH	AF
+	PUSH	HL
+	LD	HL,KS.ZEITK
+	DEC	(HL)
+	POP	HL
+	JR	Z,ICTCE
+ICTCR:	POP	AF
+	EI
+	RETI
+ICTCE:	PUSH	BC
+	CALL	LDADR
+	LD	A,3	;CTC Int. sperren
+	OUT	(C),A
+	POP	BC
+	LD	A,1
+	LD	(KS.CONTR),A
+	JR	ICTCR
+;****************************************************************
+;*               UP zum Laden von Reg. C mit Adresse CTC-Kanal  *
+;****************************************************************
+LDADR:	LD	A,LOW(CTCBA)	;Basisadr. CTC
+	ADD	A,LOW(CTCKA)	;CTC-KANAL
+	LD	C,A
+	RET
+;****************************************************************
+;*               Konstanten zum Initialisieren CTC              *
+;****************************************************************
+INITK:	DB	LOW(KT.ICTC0)	;Adresse
+	DB	0A5H	;Kanalsteuerwort
+	DB	96	;Zeitkonstante
+
+	TITLE	'KMBG-Fehlerbehandlung'
+	PAGE
+;****************************************************************
+;*               Fehlerbehandlung zur Bedienroutine KMBG        *
+;****************************************************************
+;----0010
+FEHLB:	SET	0,(IX)
+	LD	A,(IX+2)
+	ADD	A,4
+	LD	C,A
+	IN	A,(C)
+	AND	3
+	SET	3,A
+	BIT	0,(IX+3)
+	JR	NZ,$+6
+	RES	3,A
+	SET	2,A
+	OUT	(C),A
+	LD	A,(KS.Z1)	;Eingabe/Ausgabe ?
+;----0011
+	LD	B,20H
+	BIT	1,(IX+4)	;Sprung wenn Ausgabe
+	JR	Z,FEHL2
+;----0020
+	CP	7
+	JR	Z,FEHL1	;Sprung wenn 7 x gelesen
+;----0030
+	INC	A
+	LD	(KS.Z1),A	;Zaehler erhoehen
+	CALL	BLVR	;einen Block ruecksetzen
+;----0050
+	LD	A,50
+	CALL	WART
+	JP	STT22	;Lesen wiederholen
+;----0060
+FEHL1:	LD	(IX+1),21H	;Fehler nach 7 x Lesen
+;----0070
+FEHLE:	SET	7,(IX)	;Fehlerbit setzen
+	JP	KOMED
+;----0080
+FEHL2:	LD	HL,KS.FEHLZ	;Fehleranzeiger
+	BIT	0,(HL)	;kein Echosignal vom Eingabekanal ?
+	JR	NZ,FEHL6
+;----0090
+	CP	7
+	JR	Z,FEHL3	;Sprung wenn 7 x geschrieben
+;----0100
+	INC	A
+	LD	(KS.Z1),A	;Zaehler
+	CALL	BLVR	;einen Block ruecksetzen
+;----0120
+	LD	A,70
+	CALL	WART
+;----0130
+FEHL5:	LD	A,(IX+4)
+	CP	51H
+	JP	Z,STT72
+;----0140
+	JP	STTEP	;Schreibwiederholung
+;----0150
+FEHL3:	BIT	7,(IX+4)
+	JR	NZ,FEHL4
+	LD	A,(KS.Z2)
+	CP	2	;Blockluecke 2 x verlaengert ?
+	JR	Z,FEHL4
+;----0160
+	INC	A
+	LD	(KS.Z2),A
+;----0170
+	CALL	BLVR	;einen Block ruecksetzen
+;----0180
+	LD	A,70
+	CALL	WART
+;----0190
+	LD	B,16
+	CALL	MBVZ	;60 mm MB loeschen
+;----0200
+	LD	A,70
+	CALL	WART
+;----0210
+	XOR	A
+	LD	(KS.Z1),A	;Z1=0
+	JR	FEHL5
+;----0220
+FEHL4:	LD	(IX+1),22H	;RAW-Fehler nach 3 x 7 Aufzeichnungsversuchen
+	JR	FEHLE
+;----0230
+FEHL6:	LD	(IX+1),23H	;kein Echosignal vom Eingabekanal bei RAW
+	JR	FEHLE
+
+	TITLE	'programmieren U855 auf AKB'
+	PAGE
+;****************************************************************
+;*               programmieren der PIO's auf der AKB            *
+;*               -----------------------------------------------*
+;*               Anschlussbedingungen:                          *
+;*                - Anfangsadresse E/A-Tabelle in IX            *
+;*                - Basisadresse AKB wird aus E/A-Tab. uebern.  *
+;*                - Register AF , BC , HL werden zerstoert      *
+;*                - nach dem Initialisieren sind beide U 855    *
+;*                  fuer Interrupt gesperrt                     *
+;****************************************************************
+INIT:
+	LD	C,(IX+2)	;Basisadresse
+	INC	C
+	INC	C	;Adresse Kommando TOR A
+	LD	B,3
+	LD	HL,INI1A
+	DI
+	OTIR
+	INC	C	;Adresse Kommando TOR B
+	LD	B,3
+	OTIR
+	INC	C
+	INC	C
+	INC	C
+	LD	B,5
+	OTIR
+	INC	C
+	LD	B,5
+	OTIR
+	EI
+	DEC	C
+	DEC	C
+	DEC	C
+	LD	A,3	;Grundzustand Steuerleitungen
+	OUT	(C),A
+	INC	C
+	XOR	A
+	OUT	(C),A
+	RET
+;****************************************************************
+;*               Steuerworte zur Initialisierung AKB            *
+;****************************************************************
+;                Steuerworte Baustein 1 TOR A - Ausgabekanal
+INI1A:
+	DB	LOW(KT.IAUS)	;Interruptvektor Ausgabekanal
+	DB	0FH	;Betriebsart: Ausgabe
+	DB	03H	;Interrupt verboten
+;                Steuerworte Baustein 1 TOR B - Eingabekanal
+INI1B:
+	DB	LOW(KT.IEL)	;Interruptvektor Eingabekanal
+	DB	4FH	;Betriebsart: Eingabe
+	DB	03H	;Interrupt verboten
+;                Steuerworte Baustein 2 TOR A
+INI2A:
+	DB	LOW(KT.IBE)	;Interruptvektor Signal AEB
+	DB	0CFH	;Betriebsart: Bit Ein/Ausg.
+	DB	80H	;I/O-Maske
+	DB	17H	;Unterbrechungssteuerung
+	DB	7FH	;Maske
+;                Steuerworte Baustein 2 TOR B
+INI2B:
+	DB	LOW(KT.IST)	;Interruptvektor Status
+	DB	0CFH	;Betriebsart: Bit Ein/Ausg.
+	DB	0FDH	;I/O-Maske
+	DB	37H	;Unterbrechungssteuerung
+	DB	0BFH	;Maske , nur Status auf Int.
+;
+;	END
+

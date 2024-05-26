@@ -1,0 +1,133 @@
+'Z80 MACRO TEST'	MACRO-80 3.44	09-Dec-81	PAGE	1
+
+
+                                	title	'Z80 MACRO TEST'
+                                
+  0000'                            	aseg
+                                	org	100h
+                                
+  0100    C3 0194               	jp	start
+                                
+                                tstr	macro	insn1,insn2,insn3,insn4,memop,riy,rix,rhl,rde,rbc,flags,acc,rsp
+                                ?lab	equ	$
+                                	db	insn1,insn2,insn3,insn4
+                                	dw	memop,riy,rix,rhl,rde,rbc
+                                	db	flags
+                                	db	acc
+                                	dw	rsp
+                                	if	$-?lab ne 20
+                                	error	'missing parameter'
+                                	endif
+                                	endm
+                                
+                                tmsg	macro	msg
+                                ?lab	equ	$
+                                	db	'msg'
+                                	if	$ ge ?lab+31
+                                	error	'message too long'
+                                	else
+                                ;	ds	?lab+30-$,'.'	; jgh: ZMAC/MAXAM don't have char parameter
+                                	endif
+                                	db	'$'
+                                	endm
+                                
+  0103    FF                    adc16:	db	0ffh		; flag mask
+                                	tstr	0edh,042h,0,0,0832ch,04f88h,0f22bh,0b339h,07e1fh,01563h,0d3h,089h,0465eh
+M 0104                    +     ?lab	equ	$
+  0104    ED 42 00 00     +     	db	0edh,042h,0,0
+  0108    832C 4F88       +     	dw	0832ch,04f88h,0f22bh,0b339h,07e1fh,01563h
+  010C    F22B B339       +     
+  0110    7E1F 1563       +     
+  0114    D3              +     	db	0d3h
+  0115    89              +     	db	089h
+  0116    465E            +     	dw	0465eh
+                                	tstr	0,038h,0,0,0,0,0,0f821h,0,0,0,0,0	; (1024 cycles)
+M 0118                    +     ?lab	equ	$
+  0118    00 38 00 00     +     	db	0,038h,0,0
+  011C    0000 0000       +     	dw	0,0,0,0f821h,0,0
+  0120    0000 F821       +     
+  0124    0000 0000       +     
+  0128    00              +     	db	0
+  0129    00              +     	db	0
+  012A    0000            +     	dw	0
+U 012C    0D              +     	error	'missing parameter'
+                                	tstr	0,0,0,0,0,0,0,-1,-1,-1,0d7h,0,-1	; (38 cycles)
+M 012D                    +     ?lab	equ	$
+  012D    00 00 00 00     +     	db	0,0,0,0
+  0131    0000 0000       +     	dw	0,0,0,-1,-1,-1
+  0135    0000 FFFF       +     
+  0139    FFFF FFFF       +     
+  013D    D7              +     	db	0d7h
+  013E    00              +     	db	0
+  013F    FFFF            +     	dw	-1
+U 0141    0D              +     	error	'missing parameter'
+  0142    D4 8A D5 19           	db	0d4h,08ah,0d5h,019h			; expected crc
+                                	tmsg	'<adc,sbc> hl,<bc,de,hl,sp>....'
+'Z80 MACRO TEST'	MACRO-80 3.44	09-Dec-81	PAGE	1-1
+
+
+M 0146                    +     ?lab	equ	$
+  0146    6D 73 67        +     	db	'msg'
+U 0149    0D              +     	error	'message too long'
+  014A    24              +     	db	'$'
+                                
+                                ; add hl,<bc,de,hl,sp> (19,456 cycles)
+  014B    FF                    add16:	db	0ffh		; flag mask
+                                	tstr	9,0,0,0,0c4a5h,0c4c7h,0d226h,0a050h,058eah,08566h,0c6h,0deh,09bc9h
+M 014C                    +     ?lab	equ	$
+  014C    09 00 00 00     +     	db	9,0,0,0
+  0150    C4A5 C4C7       +     	dw	0c4a5h,0c4c7h,0d226h,0a050h,058eah,08566h
+  0154    D226 A050       +     
+  0158    58EA 8566       +     
+  015C    C6              +     	db	0c6h
+  015D    DE              +     	db	0deh
+  015E    9BC9            +     	dw	09bc9h
+U 0160    0D              +     	error	'missing parameter'
+                                	tstr	030h,0,0,0,0,0,0,0f821h,0,0,0,0,0	; (512 cycles)
+M 0161                    +     ?lab	equ	$
+  0161    30 00 00 00     +     	db	030h,0,0,0
+  0165    0000 0000       +     	dw	0,0,0,0f821h,0,0
+  0169    0000 F821       +     
+  016D    0000 0000       +     
+  0171    00              +     	db	0
+  0172    00              +     	db	0
+  0173    0000            +     	dw	0
+U 0175    0D              +     	error	'missing parameter'
+                                	tstr	0,0,0,0,0,0,0,-1,-1,-1,0d7h,0,-1	; (38 cycles)
+M 0176                    +     ?lab	equ	$
+  0176    00 00 00 00     +     	db	0,0,0,0
+  017A    0000 0000       +     	dw	0,0,0,-1,-1,-1
+  017E    0000 FFFF       +     
+  0182    FFFF FFFF       +     
+  0186    D7              +     	db	0d7h
+  0187    00              +     	db	0
+  0188    FFFF            +     	dw	-1
+U 018A    0D              +     	error	'missing parameter'
+  018B    D9 A4 CA 05           	db	0d9h,0a4h,0cah,005h			; expected crc
+                                	tmsg	'add hl,<bc,de,hl,sp>..........'
+M 018F                    +     ?lab	equ	$
+  018F    6D 73 67        +     	db	'msg'
+U 0192    0D              +     	error	'message too long'
+  0193    24              +     	db	'$'
+                                
+                                
+  0194                          start:
+                                    end
+'Z80 MACRO TEST'	MACRO-80 3.44	09-Dec-81	PAGE	S
+
+
+Macros:
+TMSG            TSTR            
+
+Symbols:
+0104 	?LAB            0103 	ADC16           014B 	ADD16           
+0000U	ERROR           0000U	LONG            0000U	PARAMETER       
+0000U	SAGE            0000U	SING            0194 	START           
+0000U	TOO             
+
+
+
+22 Fatal error(s)
+
+
+ 

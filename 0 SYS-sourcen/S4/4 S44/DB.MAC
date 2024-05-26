@@ -1,0 +1,157 @@
+;
+;	Laufwerk A:
+;	+++++++++++
+dpblkm::defw	32		; sektoren pro spur
+	defb	3,7,0		; 1k blockung
+sizem::	defw	31		; 32k kapazitaet
+	defw	31		; 32 dir. entries
+	defb	80h,0		; 1 belegter block durch dir.
+	defw	0		; 0 dir.entries pruefen
+	defw	0		; 0 spuren durch system belegt
+
+;	Laufwerk B: , C: , D: , E: , F: , G:
+;	++++++++++++++++++++++++++++++++++++
+dpblkc::defw	16		; sektoren pro spur
+	defb	3,7,0		; 1k blockung
+	defw	175		; 176k kapazitaet
+	defw	63		; 64 dir. entries
+	defb	0c0h,0		; 2 belegte bloecke durch dir.
+	defw	16		; 16 dir.entries pruefen
+	defw	0		; 0 spuren durch system belegt
+
+ if mindk
+;	Laufwerk H: , I: , J: , K:
+;	++++++++++++++++++++++++++
+dpblkh::defw	30		; sektoren pro spur
+	defb	3,7,0		; 1k blockung
+	defw	137		; 138k kapazitaet
+	defw	63		; 64 dir. entries
+	defb	0c0h,0		; 
+	defw	16		; 16 dir.entries pruefen
+	defw	3		; 3 spuren durch system belegt
+ endif
+
+ if stadk
+;	Laufwerk L: , M:
+;	++++++++++++++++
+dpblkl::defw	0
+	defb	3,7,0
+	defw	0
+	defw	63
+	defb	0c0h,0
+	defw	16
+	defw	0
+ endif
+
+ if zst
+;	Laufwerk N:
+;	+++++++++++
+dpblkn::defw	0
+	defb	3,7,0
+	defw	0
+	defw	63
+	defb	0c0h,0
+	defw	16
+	defw	0
+ endif
+
+ if tramdk
+;	Laufwerk O:
+;	+++++++++++
+dpblko::defw	32
+	defb	3,7,0
+	defw	0
+	defw	31
+	defb	80h,0
+	defw	0
+	defw	0
+ endif
+
+ if opsdk
+;	Laufwerk P:
+;	+++++++++++
+dpblkp::defw	128
+	defb	3,7,0
+	defw	0
+	defw	31
+	defb	80h,0
+	defw	0
+	defw	0
+ endif
+;
+	page
+;
+;
+;
+allm::	defs	7		; reicht fuer  56k
+chkm::	defs	0
+
+
+allc1::	defs	22		; reicht fuer 176k
+chkc1::	defs	16
+
+allc2::	defs	22		; reicht fuer 176k
+chkc2::	defs	16
+
+
+ if anzakb gt 1
+allc3::	defs	22		; reicht fuer 176k
+chkc3::	defs	16
+
+allc4::	defs	22		; reicht fuer 176k
+chkc4::	defs	16
+ endif
+
+
+ if anzakb gt 2
+allc5::	defs	22		; reicht fuer 176k
+chkc5::	defs	16
+
+allc6::	defs	22		; reicht fuer 176k
+chkc6::	defs	16
+ endif
+
+
+ if mindk
+allm1::	defs	22
+chkm1::	defs	16
+
+allm2::	defs	22
+chkm2::	defs	16
+
+allm3::	defs	22
+chkm3::	defs	16
+
+allm4::	defs	22
+chkm4::	defs	16
+ endif
+
+
+ if stadk
+alls1::	defs	22
+chks1::	defs	16
+
+alls2::	defs	22
+chks2::	defs	16
+ endif
+
+
+ if zst
+alln::	defs	129		; reicht fuer 1M
+chkn::	defs	32		; reicht fuer 128 dir_entries
+ endif
+
+
+ if tramdk
+allo::	defs	32		; reicht fuer 256k
+chko::	defs	0
+ endif
+
+
+ if opsdk
+allp::	defs	32		; reicht fuer 256k
+chkp::	defs	0
+ endif
+
+
+

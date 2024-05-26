@@ -1,0 +1,60 @@
+''	MACRO-80 3.44	09-Dec-81	PAGE	1
+
+
+                                		TITLE	''
+                                		ORG		0A820H
+  A820'                         CAUS:	
+  A820'   E5                    		PUSH	HL
+  A821'   C5                    		PUSH	BC
+  A822'   21 A82D'              		LD		HL,AUS
+  A825'   01 0340               		LD		BC,00340H
+  A828'   ED B3                 		OTIR
+  A82A'   C1                    		POP		BC
+  A82B'   E1                    		POP		HL
+  A82C'   C9                    		RET
+  A82D'                         AUS:
+  A82D'   F0                    		DB		0F0H
+  A82E'   02                    		DB		2
+  A82F'   FF                    		DB		0FFH	
+                                ;
+  A830'                         CEIN:	
+  A830'   C5                    		PUSH	BC
+  A831'   E5                    		PUSH	HL
+  A832'   21 A849'              		LD		HL,EINHL
+  A835'   C1                    		POP		BC
+  A836'   C5                    		PUSH	BC
+  A837'   71                    		LD		(HL),C
+  A838'   23                    		INC		HL
+  A839'   70                    		LD		(HL),B
+  A83A'   21 A845'              		LD		HL,EIN
+  A83D'   01 0740               		LD		BC,00740H
+  A840'   ED B3                 		OTIR
+  A842'   E1                    		POP		HL
+  A843'   C1                    		POP		BC
+  A844'   C9                    		RET
+  A845'                         EIN:
+  A845'   F0                    		DB		0F0H
+  A846'   04                    		DB		4
+  A847'   3000                  		DW		03000H
+  A849'                         EINHL:			
+  A849'   3000                  		DW		03000H
+  A84B'   FF                    		DB		0FFH		
+                                
+                                
+                                		TITLE	''
+                                		END
+''	MACRO-80 3.44	09-Dec-81	PAGE	S
+
+
+Macros:
+
+Symbols:
+A82D'	AUS             A820'	CAUS            A830'	CEIN            
+A845'	EIN             A849'	EINHL           
+
+
+
+No Fatal error(s)
+
+
+       		DW		

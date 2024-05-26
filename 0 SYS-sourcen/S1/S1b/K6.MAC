@@ -1,0 +1,614 @@
+	TITLE	'Kopieren von MRES-Kassetten Teil 1'
+	PAGE
+;	PN	KX
+;------------------------------------------------------------------
+;
+;          KOPIEREN VON MRES-KASSETTEN       TEIL1
+;
+;----------------------------------------------------------------
+	DW	$
+	DB	'KOPI'
+	CALL	U1.KTINI
+	LD	DE,BC.TAB1
+	LD	HL,UE.BWSA+327H
+	LD	A,(HL)
+	CALL	U1.TST
+	RET	C
+	LD	(DE),A
+	INC	HL
+	XOR	33H
+	CP	(HL)
+	RET	NZ
+	XOR	30H
+	INC	DE
+	LD	(DE),A
+	LD	A,(UE.BWSA+326H)
+	CP	'J'
+	JR	Z,$+7	;BEI KOPIJ WERDEN WEITERE PARAMETER
+	INC	HL	;IGNORIERT
+	INC	HL
+	LD	A,(HL)
+	CP	20H
+	PUSH	AF
+	JR	NZ,$+14
+	CALL	U1.EIN
+	CALL	U1.KRWE
+	CALL	U1.AUS
+	CALL	U1.KRWE
+	CALL	KX.UPA
+	POP	AF
+	JR	Z,$+21
+	CP	'A'
+	JR	Z,$+12
+	CP	'L'
+	JR	NZ,$+13
+	CALL	U1.COPB
+	JP	KX.RSPFR
+	CALL	U1.COPB2
+	JR	$-3
+;-------------------------------------------------------------------
+	CALL	U1.EIN
+	CALL	U1.DSVG
+	CALL	U1.KBR4
+	CALL	U1.BREAD
+	LD	HL,UA.Z7E
+	LD	DE,3163H
+	LD	BC,31
+	LDIR
+	LD	HL,UA.GER
+	LD	DE,31EAH
+	CALL	U1.INFO
+	LD	HL,UA.KNAME+3
+	LD	DE,323AH
+	CALL	U1.INFO
+	LD	HL,UA.NR+3
+	LD	DE,328AH
+	CALL	U1.INFO
+	LD	HL,UA.KOMMT+3
+	LD	DE,32DAH
+	CALL	U1.INFO
+	LD	DE,3203H
+	LD	A,(BC.TAB1)
+	CALL	UC.CVBX+2
+	LD	DE,321BH
+	LD	A,(BC.TAB1+1)
+	CALL	UC.CVBX+2
+	LD	HL,UE.PUF+4
+	LD	DE,3253H
+	LD	B,6
+	CALL	UC.DKONV
+	LD	HL,UE.PUF+37
+	LD	DE,32A3H
+	LD	B,3
+	CALL	UC.DKONV
+	LD	DE,32F3H
+	LD	B,11
+	CALL	UC.DKONV
+	CALL	UR.KBV
+	CALL	UR.KBV
+	CALL	U1.BREAD
+	LD	A,(UE.PUF+3)
+	DEC	A
+	JP	Z,KX.ENDR
+	CALL	U1.VERIN
+	CALL	U1.AUS
+	CALL	U1.DSVG
+	CALL	U1.KBR4
+	LD	(IX+5),02H
+	CALL	UF.EXEC
+	LD	HL,UE.PUF+4
+	LD	DE,326BH
+	LD	B,6
+	CALL	UC.DKONV
+	LD	HL,UE.PUF+37
+	LD	DE,32BBH
+	LD	B,3
+	CALL	UC.DKONV
+	LD	DE,330BH
+	LD	B,11
+	CALL	UC.DKONV
+	CALL	UR.KBV
+	CALL	UR.KBV
+	LD	(IX+5),02H
+	CALL	UF.EXEC
+	CALL	U1.BILO
+	LD	DE,BC.VTABA
+	CALL	U1.VERNI
+	CALL	U1.VORST
+	JP	KY.MD
+KX.RSPFR:
+	PUSH	AF
+	INC	HL
+	INC	HL
+	LD	A,(HL)
+	OR	A
+	CP	'R'
+	JR	NZ,$+8
+	JR	$+3
+KX.ENDR:
+	PUSH	AF
+	SCF
+	JR	$+6
+	CP	'F'
+	JR	NZ,$+23
+	CALL	U1.EIN
+	CALL	C,UR.KRW
+	CALL	UR.KRA
+	CALL	U1.AUS
+	CALL	UR.KRE
+	CALL	C,UR.KRWW
+	CALL	UR.KRA
+	POP	AF
+	RET
+KX.EXEC2:
+	PUSH	AF
+	RES	7,(IX)
+	LD	(IX+1),0
+	CALL	KR.KARO
+	BIT	7,(IX)
+	JR	Z,$+12
+	LD	A,(IX+1)
+	CP	14H
+	JR	Z,$+7
+	CALL	UF.ERANZ
+	POP	AF
+	RET
+	RES	7,(IX)
+	CALL	U1.AUS
+	CALL	UR.KSL
+	POP	AF
+	LD	B,6
+	INC	SP
+	DJNZ	$-1	;STACK BERICHTIGEN
+	JR	KX.RSPFR
+KX.UPA:
+	CALL	U1.EIN
+	CALL	UR.KRE
+	LD	(IX+0),0
+	CALL	U1.AUS
+	CALL	UR.KRE
+	BIT	2,(IX)
+	JR	Z,$+7
+	POP	DE
+	LD	A,19H
+	CALL	UF.ERANZ
+	RET
+;	END
+	TITLE	'Kopieren von MRES-Kassetten Teil 2'
+	PAGE
+;	PN	KY
+;---------------------------------------------------------------------
+;
+;          KOPIEREN VON MRES-KASSETTEN           TEIL 2
+;
+;--------------------------------------------------------------------
+KY.MD:
+	CALL	U1.BILO
+	LD	HL,UA.KOPFR
+	CALL	KY.SATR
+	LD	A,13
+	LD	(UB.ZN),A
+	LD	HL,BC.VTABE+32
+	LD	IY,BC.TAB2
+	LD	(IY+0),0FFH
+	LD	A,(BC.VTABE+3)
+	LD	B,A
+	DEC	B
+;--------------------------------ABFRAGEZYKLUS------------------------
+KY.DFR:
+	PUSH	BC
+	LD	DE,UB.SATZ+26
+	LD	BC,6
+	LDIR
+	INC	DE
+	INC	DE
+	LD	BC,2
+	LDIR
+	LD	BC,24
+	ADD	HL,BC
+	PUSH	HL
+	LD	HL,UB.SATZ
+	CALL	UR.MIMO
+	CALL	C,KU.ZEIR
+	CALL	KY.JHL	;BEI KOPIJ WIRD J GESETZT
+	LD	A,(HL)
+	CP	'J'
+	CALL	NZ,KU.TAB2L
+	POP	HL
+	LD	BC,9
+	OR	A
+	SBC	HL,BC
+	LD	A,(HL)
+	LD	(IY+0),A
+	INC	IY
+	LD	(IY+0),0FFH
+	ADD	HL,BC
+	LD	A,(BC.VTABA+3)
+	CP	01H
+	JR	Z,KY.EZYK1
+	PUSH	HL
+	LD	BC,32
+	OR	A
+	SBC	HL,BC
+	EX	DE,HL
+	POP	HL
+	LD	IX,BC.VTABA
+	LD	B,A
+	DEC	B
+KY.VZVGL:
+	PUSH	BC
+	LD	BC,32
+	ADD	IX,BC
+	PUSH	IX
+	LD	B,7
+	PUSH	DE
+KY.SVGL:
+	LD	A,(DE)
+	CP	(IX+0)
+	JR	NZ,KY.NDA
+	INC	IX
+	INC	DE
+	DJNZ	KY.SVGL
+	CALL	KU.DD	;DATEI SCHON VORHANDEN
+KY.NDA:
+	POP	DE
+	POP	IX
+	POP	BC
+	DJNZ	KY.VZVGL
+KY.EZYK1:
+	POP	BC
+	DJNZ	KY.DFR
+;---------------------------------------------------------------------
+KY.ATAA:
+	LD	B,3	;WARTESCHLEIFE FUER
+	LD	HL,0FFFFH
+	DEC	HL
+	LD	A,H
+	OR	L
+	JR	NZ,$-3
+	DJNZ	$-8
+	LD	HL,UA.EABFR
+	CALL	KY.SATR
+	LD	HL,UB.SATZ
+	CALL	UR.MIMO
+	JR	C,$-6
+	CALL	KY.JHL
+	LD	A,(HL)
+	CP	'J'
+	JP	NZ,KY.MD
+;--------------------------------Labelnummern fuer Ausgabe ---------
+KY.ATAB:
+	LD	B,0
+	LD	HL,BC.TAB2
+	LD	DE,BC.TAB3
+	LD	A,(HL)
+	CP	0FFH	;KEINE DATEI KOPIEREN
+	JP	Z,KX.ENDR
+	LD	A,(BC.VTABA+1)
+KY.ATABE:
+	LD	(DE),A
+	INC	HL
+	INC	DE
+	INC	B
+	PUSH	AF
+	LD	A,(HL)
+	CP	0FFH
+	JR	Z,KY.WEI
+	POP	AF
+	INC	A
+	JR	KY.ATABE
+;------------------------------TAB:NR DER VERZ.EINTRAGUNGEN (EING.)------
+KY.WEI:
+	POP	AF
+	PUSH	BC
+	XOR	A
+	LD	D,A
+	LD	A,(BC.VTABE+3)
+	LD	B,A
+	DEC	B
+	LD	HL,BC.TAB2
+	LD	IY,BC.TAB2A
+	LD	IX,BC.VTABE+32
+KY.ZYK:
+	INC	D
+	LD	A,(HL)
+	CP	(IX+23)
+	JR	NZ,KY.NE
+	LD	A,D
+	LD	(IY+0),A
+	LD	(IY+1),0FFH
+	INC	HL
+	INC	IY
+KY.NE:
+	PUSH	BC
+	LD	BC,32
+	ADD	IX,BC
+	POP	BC
+	DJNZ	KY.ZYK
+;------------------------------------AUFBAU AUSGABEVERZ.-----
+	LD	A,(BC.VTABA+3)
+	LD	B,A
+	CP	01H
+	JR	Z,KY.EVZ
+	LD	HL,BC.VTABA
+	CALL	KU.VVOR
+	JR	KY.EVZ1
+KY.EVZ:
+	LD	HL,BC.VTABA+32
+KY.EVZ1:
+	LD	IX,BC.TAB2A
+	LD	IY,BC.TAB3
+	EX	DE,HL
+	LD	HL,BC.VTABE+32
+	LD	A,(IX+0)
+	CP	01H
+	JR	Z,KY.VSTR
+	DEC	A
+	LD	B,A
+	CALL	KU.VVOR
+KY.VSTR:
+	LD	BC,32
+	LDIR
+	LD	A,(IY+0)
+	EX	DE,HL
+	LD	BC,9
+	OR	A
+	SBC	HL,BC
+	LD	(HL),A
+	ADD	HL,BC
+	EX	DE,HL
+	LD	A,(IX+1)
+	CP	0FFH
+	JR	Z,KY.COPY
+	SUB	(IX+0)
+	DEC	A
+	LD	B,A
+	CP	00H
+	CALL	NZ,KU.VVOR
+	INC	IY
+	INC	IX
+	JR	KY.VSTR
+;------------------------------------VERZ.SCHREIBEN (NUR NEUE SAETZE)---
+KY.COPY:
+	LD	IX,UB.KTAB
+	CALL	U1.KTIN1
+	LD	(IX+10),20H
+	CALL	U1.AUS
+	LD	A,(BC.VTABA+3)
+	LD	B,A
+	CALL	UR.KBV	;AUSGABEKASSETTE
+	DEC	A
+	JR	NZ,$-4	;VORSTELLEN BIS HINTER LETZTEN ALTEN
+	LD	HL,BC.VTABA	;VERZ.SATZ
+	LD	DE,32
+	ADD	HL,DE
+	DJNZ	$-4	;AUSGABEVERZ.ZEIGER
+	POP	BC
+	LD	A,B
+	PUSH	AF
+KY.VSCHR:
+	LD	DE,UE.PUF
+	LD	BC,32
+	LDIR
+	CALL	UR.KBV
+	CALL	UR.KBR
+	LD	(IX+5),08H
+	CALL	UF.EXEC
+	DEC	A
+	JR	NZ,KY.VSCHR
+;----------------------------------------------------------------
+	LD	DE,33FAH	;''ES WIRD KOPIERT''
+	LD	HL,KY.EWK
+	LD	BC,16
+	LDIR
+;------------------------------KOPIEREN--------------------------
+	LD	HL,BC.TAB2
+	LD	DE,BC.TAB3
+	LD	IY,BC.TAB2A
+	LD	A,(DE)
+	LD	B,A
+	INC	B
+	CALL	UR.POSIK
+	LD	A,(HL)
+	LD	B,A
+	INC	B
+KY.KOPV:
+	CALL	U1.EIN
+	CALL	UR.POSIK
+KY.KOP:
+	CALL	U1.BREAD
+	LD	A,(HL)
+	CP	01H
+	CALL	Z,U1.VSX
+;------------------------ANZEIGE WELCHE DATEI KOPIERT WIRD-------------
+	PUSH	HL
+	PUSH	DE
+	LD	A,(IY+0)
+	LD	B,A
+	DEC	B
+	LD	HL,BC.VTABE+32
+	CP	01H
+	JR	Z,KY.KOPAN
+	CALL	KU.VVOR
+KY.KOPAN:
+	LD	DE,34F0H
+	LD	BC,6
+	LDIR
+	INC	DE
+	INC	DE
+	LD	BC,2
+	LDIR
+	INC	IY
+	POP	DE
+	POP	HL
+;--------------------------------------------------------------------
+	LD	A,(DE)
+	CP	01H
+	CALL	Z,U1.VS1
+	LD	(UE.PUF),A
+	CALL	U1.BWRIT
+	CALL	U1.COPB
+	INC	HL
+	LD	A,(HL)
+	CP	0FFH
+	JR	Z,KY.EOV
+	DEC	HL
+	SUB	(HL)
+	INC	HL
+	INC	DE
+	LD	B,A
+	CP	01H
+	JR	NZ,KY.KOPV
+	JR	KY.KOP
+;-------------------------------------------------------------
+KY.EOV:
+	CALL	U1.VSX
+	LD	A,(BC.VTABA+1)
+	LD	B,A
+	POP	AF
+	PUSH	AF
+	ADD	A,B
+	LD	(UE.PUF),A
+	CALL	U1.KTIN1
+	LD	(IX+10),20H
+	CALL	U1.BWRIT
+	CALL	UR.KSL
+	CALL	KX.ENDR
+	CALL	UR.KRE
+	CALL	U1.DSVG
+	POP	AF
+	PUSH	AF
+	ADD	A,C	;NEXT RECORD UND
+	LD	(UE.PUF+1),A
+	POP	AF
+	ADD	A,B	;ANZAHL VERZ.EINTR. KORRIGIEREN
+	LD	(UE.PUF+3),A
+	CALL	UR.KBR
+	LD	(IX+5),08H
+	CALL	UF.EXEC	;NEUEN DS-SATZ SCHREIBEN
+	CALL	UR.KRW
+	CALL	UR.KRA
+	RET
+;---------------------------------------------------------------
+KY.EWK:
+	DB	'Es wird kopiert:'
+;---------------------------------------------------------------
+KY.JHL:
+	LD	A,(UB.PAR2)
+	CP	'J'
+	JR	NZ,$+3
+	LD	(HL),A
+	RET
+;--------------------------------------------------------------
+KY.SATR:
+	LD	DE,UB.SATZ
+	LD	BC,54
+	LDIR
+	LD	A,(UE.BWSA+326H)
+	CP	'J'
+	CALL	Z,KY.AJ
+	LD	(UB.PAR2),A
+	RET
+KY.AJ:
+	PUSH	AF
+	XOR	A
+	LD	(UB.SATZ),A
+	POP	AF
+	RET
+;--------------------------------------------------------------
+;	END
+	TITLE	'Unterprogramme fuer KOPI'
+	PAGE
+;	PN	KU
+;------------------------------------------------------------------
+;
+;          UNTERPROGRAMME FUER KOPI
+;
+;--------------------------------------------------------
+KU.VVOR:
+	PUSH	BC
+	LD	BC,32
+	ADD	HL,BC
+	POP	BC
+	DJNZ	KU.VVOR
+	RET
+KU.TAB2L:
+	POP	DE
+	POP	HL
+	LD	A,(IY+0)
+	CP	0FFH
+	JR	Z,$+36
+	PUSH	IY
+	LD	B,00H
+	LD	A,(IY+0)
+	CP	0FFH
+	JR	NZ,$+4
+	JR	$+7
+	INC	IY
+	INC	B
+	JR	$-12
+	POP	IY
+	PUSH	IY
+	LD	A,(IY+1)
+	LD	(IY+0),A
+	INC	IY
+	DJNZ	$-8
+	POP	IY
+	POP	BC
+	DEC	B
+	LD	A,B
+	CP	00H
+	JR	Z,$+5
+	JP	KY.DFR
+	JP	KY.ATAA
+KU.ZEIR:
+	POP	DE
+	POP	HL
+	LD	A,(UB.ZN)
+	SUB	2
+	CP	13
+	JR	NC,$+6
+	POP	BC
+	JP	KY.MD
+	LD	(UB.ZN),A
+	LD	BC,41
+	OR	A
+	SBC	HL,BC
+	DEC	IY
+	LD	A,(HL)
+	CP	(IY+0)
+	CALL	Z,KU.DECIY
+	INC	IY
+	LD	BC,23
+	OR	A
+	SBC	HL,BC
+	POP	BC
+	INC	B
+	JR	$-52
+KU.DECIY:
+	DEC	IY
+	RET
+KU.DD:
+	PUSH	HL
+	LD	HL,UA.VORH
+	CALL	UR.MIMO
+	JR	C,$+25
+	LD	A,(HL)
+	CP	'J'
+	JR	Z,$+14
+	DEC	IY
+	LD	(IY+0),0FFH
+	LD	DE,80
+	OR	A
+	SBC	HL,DE
+	LD	(HL),20H
+	LD	HL,UB.ZN
+	DEC	(HL)
+	POP	HL
+	RET
+	POP	HL
+	POP	DE
+	LD	IX,UB.KTAB
+	JP	KX.ENDR
+;	END
+

@@ -1,0 +1,90 @@
+;	TITLE	'SYS3 - MEOS1521 ---> Verbindung fuer DEG2000-EMU'
+;	PAGE
+;	wird aus DEG2000 - SYS1 angesprungen
+INmem:
+	LD	BC,004C0H
+	LD	HL,memIN1
+	OTIR
+	LD	HL,0A000H	; unteren Speicher belegen
+	LD	DE,00000H
+	LD	BC,00800H
+	LDIR
+	JP	00000H		; Sprung nach unten
+	NOP
+	NOP
+memIN1:
+	DB	0F0H	; Speicher für SYS3 aktivieren
+	DB	003H
+	DB	009H
+	DB	0FFH
+	DEFS	4,0
+;
+CurAUS:
+	; PUSH	BC	; OLD !!!
+	RET
+	PUSH	HL
+	LD	HL,CurIN1
+	LD	BC,00340H
+	OTIR
+	POP	HL
+	POP	BC
+	RET
+;
+CurIN1:
+	DB	0F0H	; Cursor ausschalten
+	DB	002H
+	DB	0FFH
+;
+CurEIN:
+	; PUSH	BC	; OLD !!!
+	RET
+	PUSH	HL
+	LD	HL,0A849H
+	POP	BC
+	PUSH	BC
+	LD	(HL),C
+	INC	HL
+	LD	(HL),B
+	LD	HL,CurIN2
+	LD	BC,00740H
+	OTIR
+	POP	HL
+	POP	BC
+	RET
+;
+CurIN2:
+	DB	0F0H	; Cursor einschalten
+	DB	004H
+	DB	000H
+	DB	030H
+	DB	000H
+	DB	030H
+	DB	0FFH
+;
+	DEFS	024H,0
+	DEFS	020H,0FFH
+;
+	LD	BC,00028H	;!!! unklarer IO-Port 28H
+	LD	E,004H
+M1:
+	LD	A,008H
+	OUT	(C),A
+	LD	A,B
+	ADD	A,010H
+	LD	B,A
+	DEC	E
+	JR	NZ,M1
+	JP	00000H
+;
+	DEFS	13,0FFH
+;
+A8B0:
+	DEFS	10,0
+	POP	BC
+	POP	DE
+	POP	HL
+	POP	AF
+	RET	
+
+ENDE2 EQU $
+

@@ -1,0 +1,897 @@
+	IF gene2 AND 2
+	page
+	ENDIF
+;*******************************************************************************
+;* FLOPPY INTERFACE PAKET                           Rolf-Dieter Klein 820730   *
+;*                                                                             *
+;* DRIVES    A    B		                                                       *
+;*           C    D                                                            *
+;* MINIMAX   kombinierte Routinen fuer den Betrieb von Mini und Maxilaufwerken *
+;*                                                                             *
+;* Es wird immer der gesamte Sektor uebertragen                                *
+;* PIO nicht mehr noetig                                                       *
+;*                                                                             *
+;***** Maxi Floppy Eigenschaften *****                                         *
+; MOTOR	                                                                       *
+;*****                           *****                                         *
+; WICHTIG :  DIE PORTS 30H..34H  UND                                           *
+;                      40H..44H                                                *
+;            Duerfen im MC-Computer nicht mit anderen Baugruppen belegt weden, *
+;            da auf beide schreibend zugegriffen wird, auch wenn nur MINI- oder*
+;            MAX-Flpooy verwendet werden.                                      *
+;*                                                                             *
+; HAUPTPROGRAMM EINSPRUNG                                                      *
+; Die Interruptroutine muss durch den Monitor bereits in die entsprechenden    *
+; Zellen geschrieben worden sein.                                              *
+; Dies geschieht bei einem CP/M BOOT durch den Monitor                         *
+;*******************************************************************************
+;
+; Interruptroutine befindet sich nun mit im Monitor
+intex:
+    pop af
+    in  a,(40H) ;Maxi Floppy
+    ei
+    ret
+;
+intex1:
+    pop af
+    in  a,(30H) ;Mini Floppy
+    ei
+    ret
+;
+; Der Vektor wird dynamisch bei Anforderung an die Stelle 10H geladen 
+; um fuer alle CP/M Programme verwendbar zu sein
+; 
+iniflp:
+    ld  a,11b       ;maxi steprate
+    ld  (maxstp),a  ;Voreinstellung
+    ld  a,11b
+    ld  (minstp),a  ;mini steprate
+    ret
+;
+;   MINI
+;
+MINI:
+    ld  a,0d0h	;TERMINATE IF BUSY
+    out (040h),a	;WICHTIG UM INTERRUPT ZU
+    out (030h),a	;VERHINDERN Z.B. BEI RESET
+    ld  a,(10h)	;RETTEN SPRUNGSTELLE
+    ld  (LOC10),a
+    ld  a,0c3h
+    ld  (10h),a
+    push    hl
+    ld  hl,(11h)
+    ld  (LOC10+1),hl
+    ld  hl,INTEX1	;JP INTEX1 AUF 10H
+    ld  (11h),hl
+    pop hl
+    in a,(040h)
+    in a,(030h)
+    ei
+    call minisoft	;MINIFLP
+    di
+    push af
+    ld  a,(LOC10)
+    ld  (10h),a
+    push hl
+    ld  hl,(LOC10+1)
+    ld  (11h),hl
+    pop hl
+    pop af
+    ret
+;
+;   MAXI
+;
+MAXI:
+    LD A,0D0H	;TERMINATE IF BUSY
+    OUT (040H),A	;
+    OUT (030H),A	
+    LD A,(10H)	;RETTEN SPRUNGSTELLE
+    LD (LOC10),A
+    LD A,0C3H
+    LD (10H),A
+    PUSH HL
+    LD HL,(11H)
+    LD (LOC10+1),HL
+    LD HL,INTEX	;JP INTEX AUF 10H
+    LD (11H),HL
+    POP HL
+    IN A,(040H)	;INT LOESCHEN FALLS NOCH DA
+    IN A,(030H)	;BEIDE FLOPPYS GGF.
+    EI
+    CALL MAXISOFT
+    DI
+    PUSH AF
+    LD A,(LOC10)
+    LD (10H),A
+    PUSH HL
+    LD HL,(LOC10+1)
+    LD (11H),HL
+    POP HL
+    POP AF
+    RET
+;
+;
+;
+SETUP:		;TESTET OB HEAD DOWN UND SETZT BIT
+    IN A,(44H)	;DIREKT BIT 5 ABFRAGE IST HEADLOAD
+    AND 20H		;=1 FALLS HEAD DOWN
+    JR NZ,MSKSK
+    LD A,4		;E=1 SETZEN
+    RET
+MSKSK:
+    XOR A		;E=0
+    RET
+;
+MSETUP:		;TESTET OB HEAD DOWN UND SETZT BIT
+    IN A,(34H)	;DIREKT BIT 5 ABFRAGE IST HEADLOAD
+    AND 20H		;=1 FALLS HEAD DOWN
+    JR NZ,MSKSK
+    LD A,4		;E=1 SETZEN
+    RET
+;
+RDFLP:
+    LD A,E		;IN E SEKTOR
+    OUT (42H),A	;SEKTORSPEICHER
+    LD E,C		;IN C DRIVECODE + DENSITY
+    LD C,43H	;KANAL DATEN
+    CALL SETUP
+    ADD A,88H	;LESE BEF E=X
+    LD B,A
+    LD A,(MSIDE)	;CODE FUER DENSITY
+    OR B
+    OUT (40H),A	;CNTRL 1771 BEF
+    LD A,E
+    OUT (44H),A	;ENABLE NO AUTOWAIT BUT DENSE ETC
+..LP8:		;LAENGE UNBESTIMMT BIS INT KOMMT
+    IN A,(44H)	;4MHZ WAIT ON READY
+    RLCA		;1=READY DRQ
+    JP NC,..LP8
+    INI
+    JP ..LP8
+;
+WRFLP:		;C AUF DRIVE 1...4 HL AUF BUFFER
+    LD A,E
+    OUT (42H),A	;IN E SEKTOR
+    LD E,C		;DRIVE CODE
+    LD C,43H	;LAENGE UNBESTIMMT BIS INT KOMMT
+    CALL SETUP	;E=X
+    ADD A,0A8H
+    LD B,A
+    LD A,(MSIDE)
+    OR B
+		;SCHREIB BEF
+    OUT (40H),A
+    LD A,E
+    OUT (44H),A	;rev 821127
+..LLP:
+    IN A,(44H)
+    RLCA
+    JP NC,..LLP
+    OUTI
+    JP ..LLP	;BIS INT KOMMT
+
+WAWA:		;WARTESCHLEIFE
+    PUSH BC		;6YS.12YS/DURCHL
+    LD BC,500
+..LP17:
+    DEC BC
+    LD A,B
+    OR C
+    JP NZ,..LP17
+    POP BC
+    RET
+;
+SEEK:		;C DRIVE 1...4 D TRK E SEKTOR
+    CALL WAWA	;!!!
+    LD A,C		;+ CODING AUSGEBEN
+    OUT (44H),A
+    LD A,E
+    OUT (42H),A	;SEKTOR
+    LD A,D
+    OUT (43H),A	;SUCHEN AUSFUEHREN AUF LOGIN DRIVE
+    LD B,1CH	;BEFEHL SEEK
+    LD A,(MAXSTP)
+    OR B		;step rate dynamisch
+    OUT (40H),A	;BEFKANAL
+    HALT
+;
+RSTORE:		;RESTORE IN CASE OF ERROR
+    CALL WAWA	;!!!
+    LD A,C		;DRIVE 1,2,4,8
+    AND 0FH
+    OUT (44H),A
+    LD B,0CH
+    LD A,(MAXSTP)
+    OR B
+    OUT (40H),A
+    HALT
+;
+MRDFLP:
+    LD A,E		;IN E SEKTOR
+    OUT (32H),A	;SEKTORSPEICHER
+    LD E,C		;IN C DRIVECODE + DENSITY
+    LD C,33H	;KANAL DATEN
+    CALL MSETUP
+    ADD A,88H	;LESE BEF E=X
+    LD B,A
+    LD A,(MSIDE)	;CODE FUER DENSITY
+    OR B
+    OUT (30H),A	;CNTRL 1771 BEF
+    LD A,E
+    OUT (34H),A	;ENABLE NO AUTOWAIT BUT DENSE ETC
+..MLP8:		;LAENGE UNBESTIMMT BIS INT KOMMT
+    IN A,(34H)	;4MHZ WAIT ON READY
+    RLCA		;1=READY DRQ
+    JP NC,..MLP8
+    INI
+    JP ..MLP8
+;
+MWRFLP:		;C AUF DRIVE 1...4 HL AUF BUFFER
+    LD A,E
+    OUT (32H),A	;IN E SEKTOR
+    LD E,C		;DRIVE CODE
+    LD C,33H	;LAENGE UNBESTIMMT BIS INT KOMMT
+    CALL MSETUP	;E=X
+    ADD A,0A8H
+    LD B,A
+    LD A,(MSIDE)
+    OR B
+		;SCHREIB BEF
+    OUT (30H),A
+    LD A,E
+    OUT (34H),A	;rev 821127
+..MLLP:
+    IN A,(34H)
+    RLCA
+    JP NC,..MLLP
+    OUTI
+    JP ..MLLP	;BIS INT KOMMT
+;
+MSEEK:		;C DRIVE 1...4 D TRK E SEKTOR
+    CALL WAWA	;!!!
+    LD A,C		;+ CODING AUSGEBEN
+    OUT (34H),A
+    LD A,E
+    OUT (32H),A	;SEKTOR
+    LD A,D
+    OUT (33H),A	;SUCHEN AUSFUEHREN AUF LOGIN DRIVE
+    LD B,1CH	;BEFEHL SEEK
+    LD A,(MINSTP)
+    OR B		;step rate dynamisch
+    OUT (30H),A	;BEFKANAL
+    HALT
+;
+MRSTORE:	;RESTORE IN CASE OF ERROR
+    CALL WAWA	;!!!
+    LD A,C		;DRIVE 1,2,4,8
+    AND 0FH
+    OUT (34H),A
+    LD B,0CH
+    LD A,(MINSTP)
+    OR B
+    OUT (30H),A
+    HALT
+;
+;
+;
+MINISOFT:
+    SET 7,C
+		; B=0 dann D=Steprate voreinst ist langsamste
+		; D=0 high speed c=3 slowest rate
+    LD A,B		; C = drivecode wird ignoriert
+    OR A
+    JR NZ,XX1
+; steprate einstellen
+    LD A,D
+    AND 03H
+    LD (MINSTP),A	;kein restore mehr ausf, sonst ggf hangup
+    XOR A
+    RET
+;
+;
+;
+MAXISOFT:
+    RES 7,C		;GEMEINSAMER CODE
+		;B= COMMAND 0=RSTORE 1=READ 2=WRITE
+		;C= DRIVE + Coding
+		;HL POINTER AUF BUFFER
+		;D=TRACK
+		;E=SEKTOR
+		; UMRECHNEN
+
+		; B=0 dann D=Steprate voreinst ist langsamste
+		; D=0 high speed c=3 slowest rate
+    LD A,B		; C = drivecode wird ignoriert
+    OR A
+    JR NZ,XX1
+; steprate einstellen
+    LD A,D
+    AND 03H
+    LD (MAXSTP),A	;kein restore mehr ausf, sonst ggf hangup
+    XOR A
+    RET
+;
+;
+;
+XX1:
+
+		;B=1 lesen B=2 schreiben
+		;C=  0  1  2  3     0,2  1,3 gekoppelt
+		;
+		; =  10h,11h,12h,13h,14h,15h,16h,17h
+		;    mit sideselekt (10h, 11h) jeweils gekoppelt
+		;
+		; =  20h,21h,22h,23h,24h,25h,26h,27h
+		;    mit selekt 3 als side sel
+		;    0,1,2 normal 20h,21h jeweils gekoppelt
+		;Bit 7,6   codierung dense,mini,maxi
+		;    1= minilaufwerk(auch bei maxieinsprg)
+		;      1= double dense
+    XOR A
+    LD (FEHZA),A
+    LD (MSIDE),A	;side select = 0   std
+    LD A,C
+		;minimax,densecode
+    AND 11000000b
+    RRCA
+    RRCA
+    LD (CCODE),A	;kombinierter drive dense code
+		;codierung fuer drvcod,ccode bestimmen
+		;ccode ist c register binaerform
+		;drvcode 0..7  bit 0 ist seite des laufwerks
+    LD A,C
+    AND 00110000B	;=0 DANN FALL1
+    JR NZ,SKPV1
+		;CODE 0,1,2,3    0,2   1,3 GEKOPPELT
+    LD A,C
+    AND 00000011B	;CODING
+    EXX
+    LD HL,TABM1
+    LD E,A
+    LD D,0
+    ADD HL,DE
+    ADD HL,DE
+    LD A,(HL)	;DRVCODE
+    LD (DRVCODE),A
+    INC HL
+    LD E,(HL)	
+    LD A,(CCODE)
+    OR E
+    LD (CCODE),A	;NEUER DRIVECODE
+    EXX
+    JR FISKP
+;
+;
+;
+TABM1:
+    DEFB 0,0001B
+    DEFB 2,0010B
+    DEFB 1,0100B
+    DEFB 3,1000B
+;
+;
+;
+SKPV1:
+    LD A,C
+    AND 00110000B	
+    CP  00010000B	;BEREICH 10H..17H
+    JR NZ,SKPV2
+    LD A,C
+    AND 00000111B	;0..7 BIT 0=SEL
+    LD (DRVCODE),A	;CODING
+    RRCA		;=CARRY DANN SIDE SEL=1
+    JR NC,SKPV12
+    LD A,00000010B	;SSO = 1 SETZEN
+    LD (MSIDE),A
+SKPV12:
+    LD A,C
+    RRCA
+    AND 00000011B	;DRVCODE TABM1
+    EXX
+    LD HL,TABM1
+    LD E,A
+    LD D,0
+    ADD HL,DE
+    ADD HL,DE
+    INC HL
+    LD E,(HL)
+    LD A,(CCODE)
+    OR E
+    EXX
+    LD (CCODE),A	;CODIERUNG
+    JR FISKP
+;
+SKPV2:
+    LD A,C
+    AND 00000111B	;0..7 BIT 0=SEL
+    LD (DRVCODE),A	;CODING
+    RRCA		;=CARRY DANN SIDE SEL=1
+    JR NC,SKPV12
+    LD A,(CCODE)
+    OR 00001000B	;SELEKT SIDE
+    LD (CCODE),A
+    JR SKPV12
+;
+;
+;
+FISKP:		;DRVCODE,CCODE BESTIMMT  C REGISTER
+    LD A,C
+    BIT 7,A		;<>0 dann start
+    JP NZ,MINEXX	;minifloppy teil
+    LD A,(DRVCODE)
+    LD C,A		;code of drive 0..7  bit 0=side sel
+;
+    LD A,(DRVAT)
+    CP C		;GLEICHE DRIVE
+    JP Z,..SK2	;WEITER DANN
+ 		; hier aber immer mit abb
+		; end rev 821127
+    PUSH HL
+    PUSH BC
+    LD HL,DRVTAB	;TABELLEN INDEX BERECHNEN
+    LD A,(DRVAT)
+    CP 0FFH		;UNDEF
+    JR Z,NOD
+    RRCA		;
+    AND 00000011b
+    LD C,A
+    LD B,0
+    ADD HL,BC
+    IN A,(41H)	;ALTER TRACK
+    LD (HL),A	;RETTEN VOR RSTORE AUSFUEHRUNG NOETIG ABER
+NOD:		;UNDEF
+    POP BC
+    POP HL		;ERSTMAL ALTE DRIVE RETTEN
+    PUSH HL
+    PUSH BC
+    LD HL,DRVTAB
+    LD A,C
+    RRCA		;
+    AND 00000011b
+    LD C,A
+    LD B,0		;IN C NEUE DRIVE
+    ADD HL,BC
+    LD A,(HL)
+    OUT (41H),A	;NEUER TRACK HOLEN
+    POP BC
+    POP HL
+    LD A,C
+    LD (DRVAT),A	;NUN NEUE DRIVE
+    PUSH AF		;NEU BUG 810917
+    PUSH BC		;BETREFF HEADLOAD
+    PUSH BC		;rev 821127
+    LD BC,1000*3/12	;1MS  BEI 6MHZ AUCH
+..LPPD:
+    DEC BC
+    LD A,B
+    OR C
+    JP NZ,..LPPD	;WARTEN TUNNELERASE COMPLETED
+    POP BC		;rev 821127
+    LD A,(CCODE)	;rev 830318 vorher falsches reg
+		;NEUE DRIVE CODED 1,2,4,8
+    AND 0FH		;AUSGEBEN
+    OUT (44H),A	;OHNE AUTOWAIT
+;
+    LD BC,2917	;ca 35 MS WARTEN UNKRIT. (10MS..35MS)
+..LP4:		;WICHTIG ABER BEI SCHREIBEN NACH LESEN
+    DEC BC		;FALLS DRIVES HEADLOAD BESITZEN
+    LD A,B
+    OR C
+    JP NZ,..LP4	;DA SONST SETTLE NICHT OK
+    POP BC
+    POP AF		;END 810917
+		;rev 3.2
+    JR ..SKKK1	;bei laufwerkswechsel kann head load down
+		;sein aber laufwerk nicht ready
+		;daher immer dummy seek ausfuehren
+;
+..SK2:		;rev 3.2 ohne PIO
+    IN A,(44H)	;wenn head load vorliegt kann
+    AND 20H		;ready nicht ungueltig sein wegen reihenfolge
+    JR NZ,..OV	;fertig dann
+	
+..SKKK1:	;warte schleife seek solange bis status
+		;ein ready angibt
+    LD A,(CCODE)
+    LD C,A		;drive code internal
+    CALL SELDUM	;SELEKT DUMMY AUSFUEHREN mit seek
+
+    IN A,(40H)	;bit 7 entscheidet
+    AND 80H
+    JR NZ,..SKKK1	;bis ausgefuehrt
+		;drive wird nicht not ready ohne
+		;das headload weggeht im normal fall
+		;da nur MOTOR OFF automatik hier
+		;wesentlich ist
+
+..OV:
+    IN A,(41H)	;TRACK HOLEN
+    CP 0FFH		;AUS TRACKTABELLE
+    JR Z,..TRY1	;ERST RESTORE
+    CP D		;GLEICH DANN WEITER
+    JP Z,..SK11	;KEIN SUCHEN NOETIG
+		;SUCHEN NOETIG
+..TRY:
+    LD A,(CCODE)
+    LD C,A
+    PUSH HL
+    PUSH DE
+    PUSH BC
+    CALL SEEK
+    POP BC
+    POP DE
+    POP HL
+    AND 10010000B
+    JR Z,..SK11	;OK WEITER
+..TRY1:		;EINGANG BEI LESEFEHLER UND SCHRBFEHLER
+    LD A,(CCODE)
+    LD C,A
+		;FEHLER AUFGETRETEN
+		;RSTORE AUSFUEHREN
+    PUSH HL
+    PUSH DE
+    PUSH BC
+    CALL RSTORE
+    POP BC
+    POP DE
+    POP HL
+    LD A,(FEHZA)	;FEHLER COUNT
+    INC A
+    LD (FEHZA),A
+    CP 10
+    JR C,..TRY
+    LD A,0FFH
+    OR A
+    SCF
+    RET		;FEHLER
+;
+..SK11:		;KEIN SEEK WAR NOETIG
+    LD A,B		;BEFEH
+    CP 2
+    JP Z,..WRTEX
+    LD A,(CCODE)
+    LD C,A
+    PUSH HL
+    PUSH DE
+    PUSH BC
+    CALL RDFLP
+    POP BC
+    POP DE
+    POP HL
+    AND 10011100B
+    RET Z
+    AND 00010000b	;record not found then seek
+    JR NZ,..TRY1	;restore first
+    LD A,(FEHZA)
+    INC A
+    LD (FEHZA),A
+    CP 5
+    JR C,..SK11
+    CP 10
+    JR C,..TRY1
+    LD A,0FFH
+    OR A
+    SCF
+    RET
+;
+..WRTEX:
+    LD A,(CCODE)
+    LD C,A
+    PUSH HL
+    PUSH DE
+    PUSH BC
+    CALL WRFLP
+    POP BC
+    POP DE
+    POP HL
+    AND 11111100B
+    RET Z
+    AND 00010000b	;3.2 seek err on RNF half errcount
+    JR NZ,..TRY1	;restore seek first
+    LD A,(FEHZA)
+    INC A
+    LD (FEHZA),A
+    CP 4
+    JP C,..TRY1	;bei write gleich rstore
+    LD A,0FFH	;r/o error
+    OR A
+    SCF
+    RET
+;
+;
+;
+SELDUM:		;WIE SEEK AUSFUEHREN
+    PUSH HL
+    PUSH DE
+    PUSH BC
+    CALL SEEK	;IGNORE FEHLER
+    POP BC
+    POP DE
+    POP HL
+    RET
+;
+;
+;
+MINEXX:
+    LD A,(DRVCODE)
+    LD C,A		;code of drive 0..7  bit 0=side sel
+;
+    LD A,(MDRVAT)
+    CP C		;GLEICHE DRIVE
+    JP Z,..MSK2	;WEITER DANN
+ 		; hier aber immer mit abb
+		; end rev 821127
+    PUSH HL
+    PUSH BC
+    LD HL,MDRVTAB	;TABELLEN INDEX BERECHNEN
+    LD A,(MDRVAT)
+    CP 0FFH		;UNDEF
+    JR Z,MNOD
+    RRCA		;
+    AND 00000011b
+    LD C,A
+    LD B,0
+    ADD HL,BC
+    IN A,(31H)	;ALTER TRACK
+    LD (HL),A	;RETTEN VOR RSTORE AUSFUEHRUNG NOETIG ABER
+MNOD:		;UNDEF NICHT ZURUECK
+    POP BC
+    POP HL		;ERSTMAL ALTE DRIVE RETTEN
+    PUSH HL
+    PUSH BC
+    LD HL,MDRVTAB
+    LD A,C
+    RRCA		;
+    AND 00000011b
+    LD C,A
+    LD B,0		;IN C NEUE DRIVE
+    ADD HL,BC
+    LD A,(HL)
+    OUT (31H),A	;NEUER TRACK HOLEN
+    POP BC
+    POP HL
+    LD A,C
+    LD (MDRVAT),A	;NUN NEUE DRIVE
+    PUSH AF		;NEU BUG 810917
+    PUSH BC		;BETREFF HEADLOAD
+    PUSH BC		;rev 821127
+    LD BC,1000*3/12	;1MS  BEI 6MHZ AUCH
+..MLPPD:
+    DEC BC
+    LD A,B
+    OR C
+    JP NZ,..MLPPD	;WARTEN TUNNELERASE COMPLETED
+    POP BC		;rev 82112
+    LD A,(CCODE)	;rev 830318 vorher falscher code
+		;NEUE DRIVE CODED 1,2,4,8
+    AND 0FH		;AUSGEBEN
+    OUT (34H),A	;OHNE AUTOWAIT
+;
+    LD BC,2917	;ca 35 MS WARTEN UNKRIT. (10MS..35MS)
+..MLP4:		;WICHTIG ABER BEI SCHREIBEN NACH LESEN
+    DEC BC		;FALLS DRIVES HEADLOAD BESITZEN
+    LD A,B
+    OR C
+    JP NZ,..MLP4	;DA SONST SETTLE NICHT OK
+    POP BC
+    POP AF		;END 810917
+		;rev 3.2 830205
+    JR ..MSKKK1	;bei laufwerkswechsel kann head load
+		;down sein aber dennoch drive not ready
+		;daher immer dummy seek ausfuehren
+..MSK2:
+		;rev 3.2 ohne PIO
+    IN A,(34H)	;wenn head load vorliegt kann
+    AND 20H		;ready nicht ungueltig sein wegen reihenfolge
+    JR NZ,..MOV	;fertig dann
+	
+..MSKKK1:	;warte schleife seek solange bis status
+		;ein ready angibt
+    LD A,(CCODE)
+    LD C,A		;drive code internal
+    CALL MSELDUM	;SELEKT DUMMY AUSFUEHREN mit seek
+
+    IN A,(30H)	;bit 7 entscheidet
+    AND 80H
+    JR NZ,..MSKKK1	;bis ausgefuehrt
+		;drive wird nicht not ready ohne
+		;das headload weggeht im normal fall
+		;da nur MOTOR OFF automatik hier
+		;wesentlich ist
+..MOV:
+    IN A,(31H)	;TRACK HOLEN
+    CP 0FFH
+    JR Z,..MTRY1	;UNDEF DANN RESTORE
+    CP D		;GLEICH DANN WEITER
+    JP Z,..MSK11	;KEIN SUCHEN NOETIG
+		;SUCHEN NOETIG
+..MTRY:
+    LD A,(CCODE)
+    LD C,A
+    PUSH HL
+    PUSH DE
+    PUSH BC
+    CALL MSEEK
+    POP BC
+    POP DE
+    POP HL
+    AND 10010000B
+    JR Z,..MSK11	;OK WEITER
+..MTRY1:		;EINGANG BEI LESEFEHLER UND SCHRBFEHLER
+    LD A,(CCODE)
+    LD C,A
+		;FEHLER AUFGETRETEN
+		;RSTORE AUSFUEHREN
+    PUSH HL
+    PUSH DE
+    PUSH BC
+    CALL MRSTORE
+    POP BC
+    POP DE
+    POP HL
+    LD A,(FEHZA)	;FEHLER COUNT
+    INC A
+    LD (FEHZA),A
+    CP 10
+    JR C,..MTRY
+    LD A,0FFH
+    OR A
+    SCF
+    RET		;FEHLER
+;
+..MSK11:	;KEIN SEEK WAR NOETIG
+    LD A,B		;BEFEHL
+    CP 2
+    JP Z,..MWRTEX
+    LD A,(CCODE)
+    LD C,A
+    PUSH HL
+    PUSH DE
+    PUSH BC
+    CALL MRDFLP
+    POP BC
+    POP DE
+    POP HL
+    AND 10011100B
+    RET Z
+    AND 00010000b	;3.2 rstore seek
+    JR NZ,..MTRY1
+    LD A,(FEHZA)
+    INC A
+    LD (FEHZA),A
+    CP 5
+    JR C,..MSK11
+    CP 10
+    JR C,..MTRY1
+    LD A,0FFH
+    OR A
+    SCF
+    RET
+;
+..MWRTEX:
+    LD A,(CCODE)
+    LD C,A
+    PUSH HL
+    PUSH DE
+    PUSH BC
+    CALL MWRFLP
+    POP BC
+    POP DE
+    POP HL
+    AND 11111100B
+    RET Z
+    AND 00010000b	;3.2 restore seek
+    JR NZ,..MTRY1	;on seek error RNF no double count here
+    LD A,(FEHZA)
+    INC A
+    LD (FEHZA),A
+    CP 4
+    JP C,..MTRY1	;bei write gleich rstore
+    LD A,0FFH	;r/o error
+    OR A
+    SCF
+    RET
+;
+MSELDUM:	;WIE SEEK AUSFUEHREN
+    PUSH HL
+    PUSH DE
+    PUSH BC
+    CALL MSEEK	;IGNORE FEHLER
+    POP BC
+    POP DE
+    POP HL
+    RET
+;
+;
+;
+LOC10:   DEFB 0,0,0	;SPRUNG AUSTAUSCHSTELLE
+DRVCODE: DEFB 0		;temp phys drive code
+CCODE:   DEFB 0		;code fuer ausgabeport
+MAXSTP:  DEFB 0
+MINSTP:  DEFB 0
+MSIDE:   DEFB 0		;flags fuer adressierung etc
+FEHZA:   DEFB 0
+DRVAT:   DEFB 0FFH	;0..7 STD WERT ZWSPEICHER
+			;DANN IST RSTORE NOETIG
+
+DRVTAB:  DEFB 0FFH,0FFH,0FFH,0FFH,0FFH,0FFH,0FFH,0FFH	;TRACKWERTE FUER DRIVES 1...8
+MDRVAT:  DEFB 0FFH	;1...8 STD WERT ZWSPEICHER
+			;DANN IST RSTORE NOETIG
+
+MDRVTAB: DEFB 0FFH,0FFH,0FFH,0FFH,0FFH,0FFH,0FFH,0FFH	;TRACKWERTE FUER DRIVES 1...8
+;
+    page
+;
+;	BOOT FLOPPY HARD/SOFT/MINI
+;	boot  eines beliebigen Betriebssystems
+;
+flpmsg:
+	defb cr,lf
+	defm "EPROM-Boot = 0, 8-Zoll = 1, 5 1/4 = 2 :"
+flpl	EQU $-flpmsg
+;
+boot1:
+	call iniflp	;vektoren etc definieren
+	ld HL,flpmsg	;FALLS DA
+	ld B,flpl	;Meldung ausgeben
+	call tom	;dann Antwort abwarten
+	call ci
+	and 7FH		;ohne Paritaet
+	ld C,A
+	call co
+	cp "I"		;I-Vektor fuer Benutzerbefehl
+	jp z,iexec
+	cp 0		;Eprom-Boot
+	jp z,eprboo
+	cp "2"		;Mini Laufwerk Boot
+	jr z,m2ex
+	cp "1"		;Maxi Laufwerk Boot
+	jp z,mexc
+	jp error
+;    
+mexc:
+	call flpset
+	call maxi	;SINGLE DENSE BOOT 128 BYTES
+	jr m3ex
+;
+m2ex:
+	call flpset
+	call mini	;SINGLE DENSE BOOT 128 BYTES 
+m3ex:
+		;AUCH BEI DOUBLE DENSE MINIFLP
+		;DA TRK0 IMMER SINGLE DENSE IST
+	jp c,ERROR	;FEHLER
+	jp 80H		;UND STARTEN
+;
+;
+flpset:
+	ld hl,80H	;BOOTEN
+	ld d,0		;TRK 0
+	ld e,1		;SEKTOR 1
+	ld b,1		;LESEN
+	ld c,0		;DRIVE 0
+	ret
+;
+;********** Eprom-Boot ***********
+losepr	equ	6H	;Inside Sektor
+hisepr	equ	2H	;Sektor-Selekt
+traepr	equ	0H	;Track-Selekt
+eprfl	equ	5H	;Daten
+
+eprboo:	
+	ld	hl,0D400H	;CP/M-Beginn
+	ld	d,38H/2		;28 * 256 Bytes = 1C00H
+	ld	a,0		;Beginn bei 0 
+	out	(losepr),a	;Zaehler setzen
+	out	(hisepr),a
+	out	(traepr),a
+	ld	c,eprfl		;PORT zum Daten lesen
+eprsec:	
+	ld	b,0
+	inir		;IN (HL),(C);INC HL, DEC B <> 0
+	dec	d		;Zaehler fuer Blockanzahl
+	jp	nz,eprsec
+	jp	0EA00H		;BIOS-Kaltstart
+;
+

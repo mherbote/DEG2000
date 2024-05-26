@@ -1,0 +1,761 @@
+	TITLE	'Betriebssystemkern DEG2000 Version 1.2'
+	PAGE
+;	PN	SY01.Betriebssystem___DEG20000__Version_1.2
+;****************************************************************
+;*                  Betriebssystemkern DEG2000 Version 1.2      *
+;*  Version         --------------------------------------------*
+;*                  Programmierer: M. Herbote  K EAW  ZFT (WFT) *
+;*  V 1 . 2         --------------------------------------------*
+;*                  Stand        : 28.Januar 1985               *
+;****************************************************************
+	ORG	SD.SYSTA
+	DI
+	JP	SY.INRE1
+	NOP
+	NOP
+	JR	$+5
+SY.RST8:
+	JP	SY.INRE
+SY.SYSTB:
+	JP	SY.INSTB
+	DEFS	2,0
+SY.RST10:
+	JP	SY.INRE
+	DEFS	5,0
+SY.RST18:
+	JP	SY.INRE
+	DEFS	5,0
+SY.RST20:
+	JP	SY.INRE
+	DEFS	5,0
+SY.RST28:
+	JP	SY.INRE
+	DEFS	5,0
+SY.RST30:
+	JP	SY.INRE
+	DEFS	5,0
+SY.RST38:
+	JP	SM.RST38
+;****************************************************************
+	ORG	00058H
+			;Interrupt-Startadresse
+SY.ISRA0:
+	DW	SY.IO
+;****************************************************************
+	ORG	00066H
+			;NMI - Routine
+SY.NMI:
+	LD	HL,SY.INNMI
+	EX	(SP),HL
+	EI
+	RETN
+;****************************************************************
+          ORG	00070H
+                                ;Programm KT01
+SY.ISRA3: DW    SY.IO           ;Int. Beh. CTC- Kanal 0
+SY.ICTC1: DW    0               ;          CTC- Kanal 1
+SY.ICTC2: DW    0;48B1H         ;          CTC- Kanal 2     ;???
+SY.ICTC3: DW    0               ;          CTC- Kanal 3
+
+; SY.IAUS:  DW    0446FH     ;???
+; SY.IER:   DW    04513H     ;???
+; SY.IEL:   DW    04562H     ;???
+; SY.IST:   DW    04658H     ;???
+; SY.IBE:   DW    04673H     ;???
+; SY.IBE0:  DW    0468EH     ;???
+
+	PAGE
+;****************************************************************
+	ORG	000A0H
+                                ;Initialisierungen
+SY.INRE1:
+	LD	SP,SM.STACK
+	; LD	HL,SD.BWSA + 24*80	;- Zeichen in die 25.Zeile schreiben
+	; LD	DE,SD.BWSA + 24*80 +1
+	; LD	BC,79
+	; LD	(HL),'-'
+	; LDIR
+
+	IF	SD.GENE AND 00010000B	;DEG2000 Emulator
+	LD	BC,004C0H	;HS-Speicher auf Standard (1) umschalten
+	LD	HL,SY.OUTB1
+	OTIR
+	JR	SY.INRE2
+SY.OUTB1:
+	DB	0F0H	;Startbyte
+	DB	003H	;wahl
+	DB	004H	;SYS 1.2
+	DB	0FFH	;Endbyte
+	ENDIF
+
+SY.INRE2:
+	LD	HL,SM.EADRU	;E-/A-Tabellen loeschen
+	LD	DE,SM.EADRU+1
+	LD	BC,8FH
+	LD	(HL),0
+	LDIR
+	LD	A,0C3H	;Sprung zur RST38-Routine
+	LD	(SM.RST38),A
+	LD	HL,SY.INSTC
+	LD	(SM.RST38+1),HL
+	LD	HL,SM.PTSC	;setzen der Variablen SM.PTS
+	LD	(SM.PTS),HL
+SY.INRE:
+	CALL	SY.INI	;Initialisierung der Speicher
+	LD	HL,(TR.TINIT+1)	;Initialisierung der Tastatur
+	CALL	TA.MM1
+	CALL	TA.E0IN
+	CALL	SY.INI1	;Initialisierung der Bildanzeige
+
+	XOR	A
+	LD	(SM.KGMER),A	;Grundstellung: Grossbuchstaben
+	IF SD.GENE AND 16
+	LD	B,8
+	CALL TR.PST
+	ENDIF
+	LD	(SM.IMERK),A
+
+
+SY.ZAN MACRO  Z
+    LD    C,Z	;Zeichenausgabe
+    CALL  SY.AEIN
+    ENDM
+
+	SY.ZAN	'D'
+	SY.ZAN	'A'
+	SY.ZAN	'T'
+	SY.ZAN	'E'
+	SY.ZAN	' '
+	LD	A,11	;Systembildfenster setzen
+	LD	(SM.ZMIN),A
+	LD	(SM.ZMAX),A
+	LD	A,8
+	LD	(SM.SMIN),A
+	LD	A,15
+	LD	(SM.SMAX),A
+	CALL	SY.SETC	;Cursor setzen
+SY.ININ1	EQU	$
+
+	IF	SD.GENE AND 00000001B
+	OUT	(0C3H),A	;RESET - Sperre ein
+	ENDIF
+
+SY.ININ3:
+	LD	HL,SM.DATUM
+	CALL	S1.ANZG
+	JP	TA.TFE
+
+SY.INI:
+	XOR	A
+	LD	I,A	;I - Register laden
+
+	IF	SD.GENE AND 00000001B
+	OUT	(0C4H),A	;RESET - Sperre aus ---   S B S T
+	OUT	(0C2H),A	;SYS 1 aktivieren
+	OUT	(0C1H),A
+	OUT	(0C0H),A
+	ENDIF
+
+	IM	2		;Interrupt - Mode 2
+	EI
+	LD	A,-1
+	LD	(SM.SPMER),A
+	RET
+
+SY.INI1:
+	CALL	SY.PRUEF
+	CALL	SY.MEMLA
+SY.INI2:
+	CALL	SY.BILO
+SY.INI3:
+	LD	HL,10
+	LD	(SM.ZPOS),HL
+	CALL	SY.BILAD
+	CALL	SY.SETC
+	RET
+
+SY.INNMI:
+	CALL	SY.INI2
+	JR	SY.ININ3
+
+SY.INSTB:
+	LD	SP,SM.STACK
+	CALL	SY.INI
+	CALL	SY.INI1
+	JR	SY.ININ1
+
+SY.INSTC:
+	LD	SP,SM.STACK
+	CALL	SY.INI3
+	JR	SY.ININ3
+
+SY.INFKT:
+	LD	(SM.FKTAB+68H),HL
+	LD	HL,SY.IFKT1	;Taste: HOME
+	LD	(SM.FKTAB+74H),HL
+	LD	HL,SY.IFKT2	;Taste: CNZA
+	LD	(SM.FKTAB+76H),HL
+	LD	HL,SY.IFKT3	;Taste: 000 
+	LD	(SM.FKTAB+48H),HL
+	LD	HL,SY.IFKT4	;Taste: 00  
+	LD	(SM.FKTAB+4CH),HL
+
+	IF	SD.GENE AND 00000001B
+	LD	HL,PF.S2	;Taste: ABS	;Kommando 'S2  '
+	LD	(SM.FKTAB+24H),HL
+	LD	HL,TE.TEST+6	;Taste: DEL	;Kommando 'TEST'
+	LD	(SM.FKTAB+58H),HL
+	ENDIF
+
+	IF	SD.GENE AND 00010001B
+	LD	HL,PF.S3M	;PF1
+	LD	(SM.FKTAB+00H),HL
+	LD	HL,PF.S4	;PF2
+	LD	(SM.FKTAB+10H),HL
+	ENDIF
+
+	RET
+
+SY.IFKT1:
+	LD	HL,(SM.ZMIN)
+	LD	(SM.ZPOS),HL
+	CALL	SY.DZPOS
+	CALL	SY.DSPOS
+	RET
+
+SY.IFKT2:
+	LD	A,(SM.SMIN)
+	DEC	A
+	LD	(SM.SPOS),A
+	CALL	SY.IZPOS
+	RET
+
+SY.IFKT3:
+	CALL	SY.CPOS
+	LD	(HL),'0'
+	CALL	SY.ICPOS
+	JR	$+5
+SY.IFKT4:
+	CALL	SY.CPOS
+	LD	(HL),'0'
+	CALL	SY.ICPOS
+	LD	(HL),'0'
+	CALL	SY.ICPOS
+	RET
+
+	DW	$
+	DB	'DPTS'
+	CALL	S1.INPTR
+	INC	HL
+	CALL	S1.HBKON
+	LD	E,A
+	LD	(SM.PTS),DE
+	JP	SY.SYSTB
+
+	PAGE
+;****************************************************************
+	ORG	00280H
+
+	IF	SD.GENE AND 00001110B
+	LD	HL,00000H	;ZRE umladen
+	LD	DE,08000H
+	LD	BC,00C00H
+	LDIR
+	LD	HL,01000H	;OFS umladen
+	LD	BC,01800H
+	LDIR
+	JP	0C267H
+	ENDIF
+
+	PAGE
+;****************************************************************
+	ORG	00400H
+			;Sprung zur Tastaturroutine
+;SY.ABFR:
+;	JP	TA.TAST
+;
+;
+;
+SY.IO:
+	EI
+	RETI
+;****************************************************************
+	ORG	0048DH
+			;Bildausschrift Systemgrundzustand
+SY.BILAD:
+	LD	HL,SY.ZSY2
+SY.BILA1:
+	PUSH	HL
+	CALL	SY.MELDE
+	LD	DE,SD.BWSA+20H
+	POP	HL
+	CALL	SY.MELD
+	JR	SY.KOM2
+	DEFS	3,0
+SY.KOM:
+	LD	C,':'
+	CALL	SY.AEIN
+	CALL	SY.ISPOS
+	LD	A,(SM.SPOS)
+	INC	A
+	JR	SY.KOM1
+
+SY.SETC:
+	PUSH	AF
+	PUSH	BC
+	PUSH	HL
+	LD	A,(SM.SPOS)	;X-Koordinate
+	LD	(SY.SETC1+2),A
+	LD	A,(SM.ZPOS) ;Y-Koordinate
+	LD	(SY.SETC1+3),A
+	LD	HL,SY.SETC1
+	LD	BC,00540H
+	OTIR
+	POP	HL
+	POP	BC
+	POP	AF
+	CALL	SY.CPOS	;HL := Cursorposition
+	RET
+SY.SETC1:
+	DB	0F0H
+	DB	001H	;Cursor Ein
+	DB	0		;X
+	DB	0		;Y
+	DB	0FFH
+
+SY.SETCHL:
+	PUSH	HL
+	PUSH	BC
+	LD	(SY.SETCHL2),HL
+	LD	HL,SY.SETCHL1
+	LD	BC,00740H
+	OTIR
+	POP	BC
+	POP	HL
+	RET
+SY.SETCHL1:
+	DB	0F0H
+	DB	004H	;Cursor Ein mit HL
+	DW	SD.BWSA
+SY.SETCHL2:
+	DW	0
+	DB	0FFH
+
+SY.RESC:
+	PUSH	BC
+	PUSH	HL
+	LD	HL,SY.RESC1
+	LD	BC,00340H
+	OTIR
+	POP	HL
+	POP	BC
+	RET
+SY.RESC1:
+	DB	0F0H
+	DB	002H	;Cursor Aus
+	DB	0FFH
+
+SY.KOM1:
+	LD	(SM.SMIN),A
+	LD	A,11	;Begrenzung Bildbereich Kommandozeile
+	LD	(SM.ZMIN),A
+	LD	(SM.ZMAX),A
+	RET
+
+SY.KOM2:
+	LD	HL,SY.ZSY3
+	LD	DE,SD.BWSA+060H
+	CALL	SY.MELD
+	LD	HL,SY.ZSY4
+	LD	DE,SD.BWSA+0B0H
+	CALL	SY.MELD
+	LD	A,10
+	LD	(SM.ZPOS),A
+	JR	SY.KOM
+;****************************************************************
+;*                  Zeichenketten                               *
+;****************************************************************
+SY.ZSY1:
+	DB	LOW(SY.LZSY1)
+	DB	'DEG 2000'
+SY.LZSY1	EQU	$-SY.ZSY1-1
+SY.ZSY2:
+	DB	LOW(SY.LZSY2)
+	DB	'Betriebssystem'
+SY.LZSY2	EQU	$-SY.ZSY2-1
+SY.ZSY3:
+	DB	LOW(SY.LZSY3)
+	DB	'Version 1.2'
+SY.LZSY3	EQU	$-SY.ZSY3-1
+SY.ZSY4:
+	DB	LOW(SY.LZSY4)
+	DB	'Datum:  '
+SY.LZSY4	EQU	$-SY.ZSY4-1
+;****************************************************************
+SY.QTABL:
+	LD	HL,SM.TABZ
+	LD	(HL),SD.QTAB1
+	INC	HL
+	LD	(HL),SD.QTAB2
+	INC	HL
+	LD	(HL),SD.QTAB3
+	INC	HL
+	LD	(HL),SD.QTAB4
+	INC	HL
+	LD	(HL),-1
+	PUSH	HL
+	POP	DE
+	INC	DE
+	LD	BC,5
+	LDIR
+	LD	HL,(SM.PTS)
+	RET
+;****************************************************************
+;	ORG	00548H
+SY.BWSAF:
+	CALL	SY.POSA	;Format--BWS--Anfang
+	JR	SY.POS5
+SY.SPPOF:
+	CALL	SY.SPPOS	;Formatspaltenanfang
+SY.POS5:
+	PUSH	AF
+	LD	A,(SM.ZMIN)
+	DEC	A
+	JR	SY.POS4
+SY.ZLPOF:
+	CALL	SY.POSA
+	JR	SY.POS3
+SY.ZLPOS:
+	LD	HL,SD.BWSA	;Zeilenanfang
+	JR	SY.POS3
+SY.CPOS:
+	CALL	SY.SPPOS	;Cursorposition
+SY.POS3:
+	PUSH	AF
+	LD	A,(SM.ZPOS)
+SY.POS4:
+	CALL	SY.AMSZ
+SY.POS1:
+	POP	AF
+	RET
+SY.POSA:
+	LD	HL,(SM.SMIN)
+	DEC	L
+	JR	SY.POS7
+SY.SPPOS:
+	LD	HL,(SM.SPOS)	;Spaltenanfang
+SY.POS7:
+	LD	H,HIGH(SD.BWSA)
+	RET
+SY.BWSL:
+	PUSH	HL
+	LD	HL,0
+	CALL	SY.ADDBL
+	EX	(SP),HL
+	POP	BC	;BC=BWSL  A=0
+	RET		;HL,DE unveraendert
+SY.BWSE:
+	LD	HL,SD.BWSA-1	;HL:=BWSE
+SY.ADDBL:
+	LD	A,(SM.ZANZ)	;HL=HL+BWSL
+SY.AMSZ:
+	OR	A	;HL:=HL+A*(SPANZ)
+	RET	Z
+	PUSH	DE
+	CALL	SY.DESZ
+SY.AMSZ1:
+	ADD	HL,DE
+	DEC	A
+	JR	NZ,SY.AMSZ1
+	POP	DE
+	RET
+SY.DZPOS:
+	PUSH	BC	;Zeilennr. decrementieren
+	LD	HL,SM.ZPOS
+	LD	A,(SM.ZMAX)
+	LD	B,A
+	LD	A,(SM.ZMIN)
+	JR	SY.DEC2
+SY.DSPOS:
+	PUSH	BC	;Spaltennr. decrementieren
+	LD	HL,SM.SPOS
+	LD	A,(SM.SMAX)
+	LD	B,A
+	LD	A,(SM.SMIN)
+SY.DEC2:
+	DEC	A
+	CP	M
+	JR	Z,SY.INC3	;Z=1,CY=0 falls Uebertrag
+	DEC	M
+	JR	SY.INC4
+SY.IZPOS:
+	PUSH	BC	;Zeilennr. incrementieren
+	LD	HL,SM.ZPOS
+	LD	A,(SM.ZMIN)
+	LD	B,A
+	LD	A,(SM.ZMAX)
+	JR	SY.INC2
+SY.ISPOS:
+	PUSH	BC	;Spaltennr. incrementieren
+	LD	A,(SM.SMIN)
+	LD	B,A
+	LD	A,(SM.SMAX)
+	LD	HL,SM.SPOS
+SY.INC2:
+	LD	C,A
+	LD	A,M
+	INC	A
+	CP	C
+	JR	C,SY.INC1
+SY.INC3:
+	DEC	B
+	LD	A,B
+SY.INC1:
+	LD	M,A
+SY.INC4:
+	CALL	SY.CPOS
+	POP	BC
+	CCF
+	RET		;Z=CY=1 falls Uebertrag
+SY.ICPOS:
+	CALL	SY.ISPOS	;Schreibcursorpos. increment.
+	CALL	C,SY.IZPOS
+	RET		;Z=CY=1 falls CPOS=SD.BWSA
+SY.DCPOS:
+	CALL	SY.DSPOS	;Schreibcursorpos. decrement.
+	CALL	C,SY.DZPOS
+	RET		;Z=CY=1 falls CPOS=BWSEnde
+SY.LCPOS:
+	PUSH	HL	;HL-->ZPOS/SPOS
+	PUSH	DE
+	LD	DE,SD.BWSA
+	OR	A
+	SBC	HL,DE
+	CALL	SY.DESZ
+	XOR	A
+SY.LCP1:
+	SBC	HL,DE
+	INC	A
+	JR	NC,SY.LCP1
+	ADD	HL,DE
+	DEC	A
+	LD	(SM.ZPOS),A
+	LD	A,L
+	LD	(SM.SPOS),A
+	POP	DE
+	POP	HL
+	RET
+SY.DESZ:
+	LD	DE,(SM.SPANZ)
+	LD	D,0
+	RET
+			;Schreibcursor Operationen
+SY.CNRS:
+	CALL	SY.ICPOS	;-->
+	JR	SY.CURS
+SY.CNLS:
+	CALL	SY.DCPOS	;<--
+	JR	SY.CURS
+SY.CNUS:
+	CALL	SY.IZPOS	;Runter
+	JR	SY.CURS
+SY.CNOS:
+	CALL	SY.DZPOS	;Hoch
+SY.CURS:
+	LD	A,1
+	LD	(SM.ZSMER),A
+	RET
+			;Bild loeschen
+SY.BILO:
+	LD	HL,SD.BWSA
+	LD	DE,SD.BWSA+1
+	CALL	SY.BWSL
+	DEC	BC
+	PUSH	BC
+	LD	M,SD.SPACE
+	LDIR
+	POP	BC
+	LD	A,(SM.ZANZ)
+	CP	32
+	RET	NZ
+	INC	HL
+	INC	DE
+	LD	M,0	;SD.SW
+	LDIR
+	RET
+			;Funktionsadressen laden
+SY.FKTLA:
+	LD	HL,SM.FKTAB
+	LD	M,0
+	LD	DE,SM.FKTAB+1
+	LD	BC,SM.TK-SM.FKTAB-1
+	LDIR
+	LD	HL,SY.CNOS
+	LD	(SM.FKTAB+6),HL
+	LD	HL,SY.CNLS
+	LD	(SM.FKTAB+8),HL
+	LD	HL,SY.CNRS
+	LD	(SM.FKTAB+16H),HL
+	LD	HL,SY.CNUS
+	LD	(SM.FKTAB+18H),HL
+	LD	HL,SY.INSTB
+	JP	SY.INFKT
+	RET
+			;ArbeitsRAM und Tabellen laden
+SY.MEMLA:
+	CALL	SY.FKTLA
+	CALL	SY.RALO
+	LD	HL,SY.NL
+SY.MEML1:
+	LD	(SM.NEWL),HL
+	LD	HL,SY.AEIN
+	LD	(SM.EINA),HL
+	LD	HL,SY.DELZL
+	LD	(SM.DELZ),HL
+	RET
+			;ArbeitsRAM loeschen
+SY.RALO:
+	LD	HL,SM.ZSMER
+	LD	M,0
+	LD	DE,SM.ZSMER+1
+	JP	SY.RALO2	;LD    BC,SM.LOE-1
+SY.RALO1:
+	LDIR
+	INC	HL	;Format = volles Bild
+	LD	M,1
+	INC	HL
+	LD	M,1
+	LD	HL,(SM.ZANZ)	;H=(SPANZ) L=(ZANZ)
+	LD	(SM.ZMAX),HL	;(SMAX)=L  (ZMAX)=H
+	RET
+			;ABS K7024
+SY.PRUEF:
+	LD	HL,5018H	;H=80 L=24
+	LD	(SM.ZANZ),HL	;(SPANZ):=H (ZANZ):=L
+	RET
+
+SY.RALO2:
+	LD	BC,12
+	LDIR
+	LD	HL,SM.UMERK
+	LD	DE,SM.USCH
+	LD	BC,14
+	LD	(HL),0
+	JP	SY.RALO1
+
+	DEFS	3,0	;Adresskorrektur
+			;pruefen RAM-Bereich
+SY.RAMPR:
+	INC	HL
+	LD	A,M
+	INC	M
+	CP	M
+	LD	M,A
+	JR	NZ,SY.RAMPR
+	RET		;HL=RAMEnde+1
+SY.MELDE:
+	LD	DE,SD.BWSA+10H
+	LD	HL,SY.ZSY1
+SY.MELD:
+	LD	B,0	;Zeichenkette uebertragen
+	LD	C,M
+	INC	HL
+	LDIR
+	RET
+SY.DELZL:
+	CALL	SY.ZLPOF
+	CALL	SY.LCPOS
+	CALL	SY.SZAHL
+SY.DEL2:
+	LD	B,A
+SY.DEL1:
+	LD	M,SD.SPACE
+	INC	HL
+	DJNZ	SY.DEL1
+	RET
+SY.AEIN:
+	CALL	SY.CPOS	;<A> --> Cursorposition
+	LD	M,C
+	CALL	SY.ISPOS
+	CALL	C,SY.DSPOS
+	RET
+SY.NL:
+	CALL	SY.ZLPOS	;Startroutine (NEWLINE Taste)
+	LD	A,M
+	CP	':'
+	RET	NZ
+	CALL	SY.SZEI
+	RET	Z
+	EX	DE,HL
+SY.SUCHE:
+	LD	HL,0
+	PUSH	HL
+	PUSH	HL
+SY.SUCH2:
+	POP	BC
+	POP	HL
+SY.SUCH1:
+	LD	A,L
+	CPI
+	JP	PO,SD.SYSTA+6
+	JR	NZ,SY.SUCH1
+	LD	A,H
+	CP	M
+	JR	NZ,SY.SUCH1
+	PUSH	HL
+	PUSH	BC
+	LD	B,4	;Programmanfang suchen
+	INC	HL
+	CALL	SY.VERGL
+	JR	NZ,SY.SUCH2
+	POP	BC
+	POP	DE
+	EI
+	JP	(HL)
+SY.VERGL:
+	PUSH	DE	;DE = gegebene  ZK
+SY.VERG1:
+	LD	A,(DE)	;B  = Laenge
+	CP	M	;HL = vermutete ZK
+	JR	NZ,SY.VERG2
+	INC	DE
+	INC	HL
+	DJNZ	SY.VERG1
+SY.VERG2:
+	POP	DE	;Z=1: Kette gefunden B=0
+	RET		;HL=Kette+1  DE:=DE
+SY.SZEI:
+	LD	A,(SM.SPANZ)	;Zeichen suchen
+SY.SZEI1:
+	LD	B,A
+	DEC	B
+SY.SZEI3:
+	INC	HL
+SY.SZEI4:
+	LD	A,M
+	CP	SD.SPACE
+	RET	NZ
+SY.SZEI2:
+	DJNZ	SY.SZEI3
+	RET		;Z=0 falls kein Zeichen
+SY.SZAHL:
+	PUSH	HL
+	LD	HL,(SM.SMIN)
+SY.SZA1:
+	LD	A,(SM.SMAX)
+	JR	SY.ZAHL
+SY.ZZAHL:
+	PUSH	HL
+	LD	HL,(SM.ZMIN)
+SY.ZZA1:
+	LD	A,(SM.ZMAX)
+SY.ZAHL:
+	SUB	L
+	INC	A
+	POP	HL
+	RET		;A=Zeilen- bzw. Spaltenanzahl
+
+			;Stand: 28.Januar 85 - K EAW/wfvm..MSH
+
+;	END
+

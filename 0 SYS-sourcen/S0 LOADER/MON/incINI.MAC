@@ -1,0 +1,88 @@
+	IF gene2 AND 2
+	page
+	ENDIF
+;**************************************
+;* Init  Teil                         *
+;**************************************
+;
+msg:
+	defb	cr,lf,0,0,0,bell
+
+	defm	'monitor_______MH_-_computer_____Version 2.3',cr,lf
+	defm	'MC01-MONITOR EPR-START V3.4 ,AL = L, RDK/HE',cr,lf
+	defm	'===========================================',cr,lf
+	defm	'(C) Nov 1984             by  Marcus Herbote',cr,lf,0
+msgl	equ	$-msg
+;
+;
+begin:
+;    ------ INIT ------
+	xor	a
+	ld	(iobyt),a
+
+	IF gene2 AND 2
+	ld	c,atss2
+	ld	a,14	;Fehleranzeige aus
+	out (c),a
+	ld	a,17	;INS_MOD aus
+	out (c),a
+	ENDIF
+;
+;    ------ END INIT -------
+;
+	ld	sp,ahead-4
+	jp	memsiz+1
+	defw	ahead
+ahead:
+	ld	sp,hl
+	ex	de,hl
+	ld	bc,endx-exit
+	ld	hl,exit
+	ldir
+	ex	de,hl
+	ld	bc,-5fh
+	add	hl,bc
+	push	hl
+	ld	hl,0
+	ld	b,10			;Register
+stkit:
+	push	hl
+	djnz	stkit
+hello:
+	ld	c,0ch
+	call	co
+	ld	b,msgl
+	call	tom1
+;
+;
+;	Haupt eingabeschleife
+;
+start:
+	ld	de,start
+	push	de
+	call	crlf
+	ld	c,'>'
+	call	co
+;
+star0:
+	call	ti
+	and	7fh
+	jr	z,star0
+	sub	'A'
+	ret	m
+	cp	'Z'-'A'+1
+	ret	nc
+	add	a,a
+	ld	hl,tbl
+	add	a,l
+	ld	l,a
+	ld	a,h
+	adc	a,0
+	ld	h,a
+	ld	a,(hl)
+	inc	hl
+	ld	h,(hl)
+	ld	l,a
+	ld	c,2
+	jp	(hl)			;exec
+

@@ -1,0 +1,46 @@
+    ORG    00100H
+begin:
+    call    bsloe
+    call    bsrah
+    halt
+
+bsloe:
+	LD	HL,SD.BWSA
+	LD	DE,SD.BWSA+1
+	LD	BC,24*80 - 1	;007FFH
+	LD	(HL),' '
+	LDIR
+	RET
+
+bsrah:
+	LD	HL,SD.BWSA+0F7H ; 247          Bildrahmen erzeugen
+	LD	DE,SD.BWSA+0F9H ; 249
+	LD	BC,64
+	LD	(HL),082H
+	INC	HL
+	LD	(HL),081H
+	LDIR
+	LD	(HL),083H
+	LD	HL,SD.BWSA+647H ;1607
+	LD	DE,SD.BWSA+649H ;1609
+	LD	BC,64
+	LD	(HL),08AH
+	INC	HL
+	LD	(HL),081H
+	LDIR
+	LD	(HL),08BH
+	LD	HL,SD.BWSA+147H ; 327
+	LD	B,16
+SYS30:
+	LD	(HL),080H
+	LD	DE,65
+	ADD	HL,DE
+	LD	(HL),080H
+	LD	DE,15
+	ADD	HL,DE
+	DJNZ	SYS30
+	RET
+
+SD.BWSA EQU 03000H
+    END
+

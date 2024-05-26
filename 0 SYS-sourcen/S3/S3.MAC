@@ -1,0 +1,54 @@
+gene      equ 2     ; 1 ... AgonLight
+                    ; 2 ... DEG2000
+kass      equ 2     ; 1 ... mit  Kassettenroutine
+                    ; 2 ... ohne Kassettenroutine
+
+XQ.DRAM:  EQU 0AC00H   ;Bildschirmspeicher
+
+VB.LAZR:  EQU 0C267H   ;Aufrufschleife Betriebssystem
+
+X0.TSCL:  EQU 0C808H   ;Zeichen von Tast. in den Puffer
+X0.TSCL0: EQU 0C81BH   ; ... mit Loeschen Puffer
+X0.ANZG:  EQU 0C822H   ;Speicherinhalt anzeigen
+X0.AN1:   EQU 0C82EH   ;Zeichen auf akt. Pos. auf BS; Pos+1
+X0.J:     EQU 0C83BH   ;Anzeige / Abfrage Y/N mit Cursor
+
+TAST01:   EQU 0CED5H   ;Tastaturroutine MEOS
+
+ARET:     EQU 0F26BH   ;Retteplatz fuer A-Register
+CO.EORAM: EQU 0F011H   ;Adresse "END OF RAM", durch Anfangslader ermittelt
+
+V1.REGIN: EQU 0F222H   ;Puffer fuer Zahleneingabe
+V1.DATUM: EQU 0F234H   ;Datum: JJ/MM/TT
+V1.SIGN:  EQU 0F23DH   ;Bedienersignum
+V1.SAVSP: EQU 0F25EH   ;Retteplatz fuer Stackpointer
+V1.SAVPC: EQU 0F260H   ;Retteplatz fuer Programmcounter
+V1.IREG:  EQU 0F262H   ;I-Register
+V1.IMi:   EQU 0F263H   ;0,1,2   ... IM0,IM1,IM2
+V1.xI:    EQU 0F264H   ;"E","D" ... EI ,DI
+V1.MASKE: EQU 0F295H   ;Speicher fuer spezielle CTRL-Tasten
+
+;EQU 0F80CH   ;
+
+	; TITLE	'SYS3 - MEOS1521'
+	DEVICE ZXSPECTRUM256
+
+	INCLUDE	incANF1.MAC
+	INCLUDE	incANF2.MAC
+
+	INCLUDE	incMEOS.MAC
+
+	IF kass and 1
+		INCLUDE KR01.MAC
+		; ORG	00070H
+		INCLUDE KT01.MAC
+		ORG	0F5F4H
+		INCLUDE KS01.MAC
+	ENDIF
+
+	INCLUDE	incVERB.MAC
+
+	; TITLE ''
+	END
+	; F5F4 = KS.AEATB
+

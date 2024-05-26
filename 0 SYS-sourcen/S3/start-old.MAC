@@ -1,0 +1,64 @@
+	PAGE
+
+    ORG     0A800H
+    DA      0A800H
+    DB      'MRES'
+
+    LD      HL,0A806H
+    LD      (00C02H),HL
+    LD      HL,03000H
+    LD      DE,03001H
+    LD      BC,007FFH
+    LD      (HL),002H
+    LDIR
+    LD      LH,030F7H
+    LD      DE,030F9H
+    LD      BC,00040H
+    LD      (HL),082H
+    INC     HL
+    LD      (HL),081H
+    LDIR
+    LD      (HL),083H
+
+    LD      HL,03647H
+    LD      DE,03649H
+    LD      BC,00040H
+    LD      (HL),08AH
+    INC     HL
+    LD      (HL),081H
+    LDIR
+    LD      (HL),08BH
+
+    LD      HL,03147H
+    LD      B,010H
+ZYK1:    
+    LD      (HL),080H
+    LD      DE,00041H
+    ADD     HL,DE
+    LD      (HL),080H
+    LD      DE,0000FH
+    ADD     HL,DE
+    DJNZ    ZYK1 ;0A842H
+
+    LD      BC,00028H
+    LD      E,084H
+ZYK2:    
+    XOR     A
+    OUT     (C),A
+    LD      A,B
+    ADD     A,010H
+    LD      B,A
+    DEC     E
+    JR      NZ,ZYK2 ;0A855H
+
+    NOP
+    NOP
+    NOP
+    LD      HL,0A000H
+    LD      DE,00000H
+    LD      BC,00800H
+    LDIR
+    JP      00000H
+
+    END
+ 

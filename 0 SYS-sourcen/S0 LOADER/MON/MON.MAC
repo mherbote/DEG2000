@@ -1,0 +1,667 @@
+gene1 equ    1     ; 1 ... ohne 'incFL.MAC'
+                   ; 2 ... mit  'incFL.MAC' (Floppy Interface Paket)
+gene2 equ    2     ; 1 ... AgonLight
+                   ; 2 ... DEG2000
+
+	IF gene2 AND 1
+	DEVICE ZXSPECTRUM256
+	ENDIF
+
+	IF gene2 AND 2
+	.z80
+	title	'monitor   MH-Computer   1184  2.2'
+	page
+	ENDIF
+
+;*********************************************************
+;*  monitor   MH - computer      Stand: 30.November 1984 *
+;*  basierend auf RDK Monitor                            *
+;*                                                       *
+;*  Version  2 . 3                   by   Marcus Herbote *
+;*                                                       *
+;*                  erweitert fuer DEG2000 und AgonLight *
+;*                                Januar 2024 M. Herbote *
+;*********************************************************
+
+cr    equ	00dh
+lf    equ	00ah
+bell  equ	007h
+rub   equ	0ffh
+fil   equ	000h
+max   equ	007h
+
+rst7  equ	038h
+;
+;	im  ROM  auf Adresse 0
+;
+beginn:
+	ld	sp,0ffffh  ;DUMMY LOAD 
+	ld	a,0c9h     ;Ablage RET Befehl
+	ld	(0f000h),a ;auf Zieladresse
+	call	0f000h ;feststellen
+anf:		       ;der eigenen Adresse
+	dec	sp         ;um Start von beliebiger
+	dec	sp         ;Stelle aus zu ermoeglichen
+	pop	de         ;fuer Tests sehr gut
+	ld	hl,hauptp-anf
+	add	hl,de
+	ld	de,0f000h  ;Transport aller Zellen
+	ld	bc,00fffh  ;5K Transfer
+	ldir	       ;eigentlich zuviel aber
+;
+	IF gene2 AND 2
+	ld	hl,bws     ;BWS- Position speichern
+	ld	(bpos),hl
+	ENDIF
+;
+	jp	0f000h     ;stoert nicht weiter
+;
+hauptp:		       ;Distanz Merker
+;
+	.phase	0f000h			;Start des Monitors
+;		                    ;Code dennoch hinter Boot Bereich
+;
+; ---	Start des eigentlichen Monitors ---
+;
+;	Anfang verschiebbar
+;	der Vektor RST7 wird fuer Breakpoints gebraucht
+;
+SIOADAT	EQU	0F0H
+SIOASTS	EQU	0F1H
+SIOBDAT	EQU	0F2H
+SIOBSTS	EQU	0F3H
+;
+;
+;	Vector Table
+;	csts	0ffh in A, falls Zeichen da
+;	iochk	in A aktuelle IO-Konfiguration
+;	ioset	veraendern IO in C-Register
+;	memck	in B high in A low memory
+;	trap	Breakpoint entry
+;
+;	Start des Monitorprogramms
+	jp	begin
+	jp	ci
+	jp	ri
+	jp	co
+	jp	poo
+	jp	lo
+	jp	csts
+	jp	iobyte
+	jp	ioset
+	jp	memck
+;
+trap:
+	jp	restart1
+	jp	restart1       ;-FLOPPY EXEC VEKTOR HARD
+	jp	maxi           ; FLOPPY EXEC VEKTOR SOFT
+	jp	mini           ; FLOPPY EXEC VEKTOR MINI
+	jp	restart1       ;-IMISYS PLATTE EXEC VECTOR
+;
+	defw	tabstart   ;Tabellen Start user Bereich
+		               ;Sprungtabelle immer indirekt verwenden
+	defw	lastmon	   ;Adresse letzte belegte Zelle
+		               ;des Monitors danach patch frei
+	defw	freemem    ;ueberladeadresse hinter IO-Gebiet
+;
+;
+restart1:
+	jp	restart        ;kann kurzgeschlossen werden
+		               ;nach freemem ueberschreibung
+	include	incINI.MAC
+	include	incIO.MAC
+
+;
+;
+;	IOBYTE  assign
+;
+;	000000xx	console
+;	0000xx00	reader
+;	00xx0000	punch
+;	xx000000	lister
+;
+;	00 =		teletype cons
+;
+
+;
+	IF gene2 AND 2
+	page
+	ENDIF
+;
+;	message output routine
+;
+tom1:
+	ld	hl,msg
+tom:
+	ld	c,(hl)
+	inc	hl
+	call	co
+	djnz	tom
+	call	csts
+	or	a
+	ret	z
+;
+;	if CRTL_C abort
+;
+cchk:
+	call	ki
+	cp	3
+	ret	nz
+;
+;	error
+error:
+	call	memsiz
+	ld	de,-22
+	add	hl,de
+	ld	sp,hl
+	ld	c,7
+	call	co
+	ld	c,'*'
+	call	co
+	jp	start
+;
+;	reader input
+;		abort on carry, compare with D
+;
+riff:
+	call	ri
+	jr	c,error
+	cp	d
+	ret
+;
+;
+;
+peol:
+	ld	c,cr
+	call	poo
+	ld	c,lf
+	jp	poo
+;
+;
+; Eingabe von Hex Wertes von der Console
+;
+expr3:
+	inc	c
+	call	expr
+	call	crlf
+	pop	bc
+	pop	de
+	pop	hl
+	ret
+;
+;
+expr1:
+	ld	c,1
+;
+expr:
+	ld	hl,0
+ex0:
+	call	ti
+ex1:
+	ld	b,a
+	call	nibble
+	jr	c,lxex2
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	or	l
+	ld	l,a
+	jr	ex0
+lxex2:
+	ex	(sp),hl
+	push	hl
+	ld	a,b
+	call	qchk
+	jr	nc,lxex3
+	dec	c
+	ret	z
+lxex3:
+	jp	nz,error
+	dec	c
+	jr	nz,expr
+	ret
+exf:
+	ld	c,1
+	ld	hl,0
+	jp	ex1
+;
+;
+hilox:
+	call	hilo
+	ret	nc
+	pop	de
+	ret
+;
+hilo:
+	inc	hl
+	ld	a,h
+	or	l
+	scf
+	ret	z
+	ld	a,e
+	sub	l
+	ld	a,d
+	sbc	a,h
+	ret
+;
+;	hex math
+;
+hexn:
+	call	exlf
+	push	hl
+	add	hl,de
+	call	hlsp
+	pop	hl
+	or	a
+	sbc	hl,de
+ladr:
+	ld	a,h
+	call	lbyte
+	ld	a,l
+lbyte:
+	push	af
+	rrca
+	rrca
+	rrca
+	rrca
+	call	lxr22
+	pop	af
+lxr22:
+	call	conv
+	jp	co
+;
+;
+mark:
+	ld	bc,8ffh
+	jr	leo
+;
+;
+lead:
+	ld	bc,4800h
+leo:
+	call	poo
+	djnz	leo
+	ret
+;
+;
+ribble:
+	call	rix
+nibble:
+	sub	'0'
+	ret	c
+	cp	'G'-'0'
+	ccf
+	ret	c
+	cp	10
+	ccf
+	ret	nc
+	sub	'A'-'9'-1
+	cp	00ah
+	ret
+;
+;
+padr:
+	ld	a,h
+	call	pbyte
+	ld	a,l
+;
+pbyte:
+	push	af
+	rrca
+	rrca
+	rrca
+	rrca
+	call	conv
+	call	poo
+	pop	af
+	push	af
+	call	conv
+	call	poo
+	pop	af
+	add	a,d
+	ld	d,a
+	ret
+;
+;
+copck:
+	ld	c,'-'
+	call	co
+pchk:
+	call	ti
+qchk:
+	cp	' '
+	ret	z
+	cp	','
+	ret	z
+	cp	cr
+	scf
+	ret	z
+	ccf
+	ret
+;
+;
+;
+rix:
+	call	riff
+	and	7fh
+	ret
+;
+;
+;
+; Eingang nach einem Break-Point
+;
+	IF gene2 AND 2
+	page
+	ENDIF
+restart:
+	push	hl	
+	push	de
+	push	bc
+	push	af
+	call	memsiz
+	ex	de,hl
+	ld	hl,10
+	add	hl,sp
+	ld	b,4
+	ex	de,hl
+lxr0:
+	dec	hl
+	ld	(hl),d
+	dec	hl
+	ld	(hl),e
+	pop	de
+	djnz	lxr0
+	pop	bc
+	dec	bc
+	ld	sp,hl
+	ld	hl,tlocx
+	add	hl,sp
+	ld	a,(hl)
+	sub	c
+	inc	hl
+	jr	nz,lxr1
+	ld	a,(hl)
+	sub	b
+	jr	z,lxr3
+lxr1:
+	inc	hl
+	inc	hl
+	ld	a,(hl)
+	sub	c
+	jr	nz,lxr2
+	inc	hl
+	ld	a,(hl)
+	sub	b
+	jr	z,lxr3
+lxr2:
+	inc	bc
+lxr3:
+	ld	hl,llocx
+	add	hl,sp
+	ld	(hl),e
+	inc	hl	
+	ld	(hl),d
+	inc	hl
+	inc	hl
+	ld	(hl),c
+	inc	hl
+	ld	(hl),b
+	push	bc
+	ld	c,'@'
+	call	co
+	pop	hl
+	call	ladr
+	ld	hl,tlocx
+	add	hl,sp
+	ld	bc,200h
+lxr4:
+	ld	e,(hl)
+	ld	(hl),c
+	inc	hl
+	ld	d,(hl)
+	ld	(hl),c
+	inc	hl
+	ld	a,e
+	or	d
+	jr	z,lxr5
+	ld	a,(hl)
+	ld	(de),a
+lxr5:
+	inc	hl
+	djnz	lxr4
+	ex	AF,AF'
+	exx
+	push	hl
+	push	de
+	push	bc
+	push	af
+	push	ix
+	push	iy
+	ld	a,i
+	ld	b,a
+	ld	a,r
+	ld	c,a
+	push	bc
+	jp	start
+;
+;
+;
+ki:
+	call	ci
+	and	7fh
+	ret
+;
+ti:
+	call	ki
+	ret	z
+	inc	a
+	ret	m
+	dec	a
+	cp	cr
+	ret	z
+	cp	'N'
+	ret	z
+	cp	'n'
+	jr	z,lxt
+	push	bc
+	ld	c,a
+	call	co
+	ld	a,c
+	pop	bc
+	cp	'A'-1
+	ret	c
+	cp	'z'+1
+	ret	nc
+lxt:	and	5fh
+	ret
+;
+;
+	IF gene2 AND 2
+	page
+	ENDIF
+;
+;	io lookup table
+;
+ltbl:
+	defb	'C','T','V','B','U'
+	defb	'R','T','P','C','U'
+	defb	'P','T','P','C','U'
+	defb	'L','T','V','L','U'
+
+exit:
+	pop	bc
+	ld	a,c
+	ld	r,a
+	ld	a,b
+	ld	i,a
+	pop	iy
+	pop	ix
+	pop	af
+	pop	bc
+	pop	de
+	pop	hl
+	ex	AF,AF'
+	exx
+	pop	de
+	pop	bc
+	pop	af
+	pop	hl
+	ld	sp,hl
+	nop
+	ld	hl,0
+	jp	0
+
+	defw	0
+	defb 	0
+	defw	0
+	defb	0				;trap area
+
+endx:
+aloc	equ	15h
+bloc	equ	13h
+cloc	equ	12h
+dloc	equ	11h
+eloc	equ	10h
+floc	equ	14h
+hloc	equ	31h
+lloc	equ	30h
+ploc	equ	34h
+sloc	equ	17h
+tloc	equ	35h
+tlocx	equ	25h
+llocx	equ	20h
+
+aploc	equ	9
+bploc	equ	0bh
+cploc	equ	0ah
+dploc	equ	0dh
+eploc	equ	0ch
+fploc	equ	8
+hploc	equ	0fh
+lploc	equ	0eh
+xloc	equ	7
+yloc	equ	5
+rloc	equ	2
+iloc	equ	3
+
+	IF gene2 AND 2
+	page
+	ENDIF
+actbl:
+	defb	'A',aloc or 0
+	defb	'B',bloc or 0
+	defb	'C',cloc or 0
+	defb	'D',dloc or 0
+	defb	'E',eloc or 0
+	defb	'F',floc or 0
+	defb	'H',hloc or 0
+	defb	'L',lloc or 0
+	defb	'M',hloc or 0c0h
+	defb	'P',ploc or 080h
+	defb	'S',sloc or 080h
+	defb	'I',iloc or 0
+
+	defb	0c1h
+
+prmtb:
+	defb	'A',aploc or 0
+	defb	'B',bploc or 0
+	defb	'C',cploc or 0
+	defb	'D',dploc or 0
+	defb	'E',eploc or 0
+	defb	'F',fploc or 0
+	defb	'H',hploc or 0
+	defb	'L',lploc or 0
+	defb	'M',hploc or 0c0h
+	defb	'X',xloc or 080h
+	defb	'Y',yloc or 080h
+	defb	'R',rloc or 0
+
+	defb	0c1h
+
+tabstart:					;Tabelle Sprungvectoren
+userci:		jp	ttyin
+userri:		jp	ttyin
+userco:		jp	ttyout
+userpoo:	jp	ttyout
+userlo:		jp	ttyout
+usercsts:	jp	ttycsts
+
+iobyt:  defb  0            ;IOBYTE SPEICHER  AL = L
+oexec:  defs  3
+iexec:  defs  3
+kexec:  defs  3
+;
+	IF gene2 AND 2
+bws     equ   3000h
+atsd    equ   0a0h
+atss1   equ   atsd+1
+atss2   equ   atsd+2
+
+bpos:	defs  0
+	ENDIF
+;
+	include	incCMD.MAC
+;
+	IF gene1 AND 1
+flpmsg:
+	defb	cr,lf
+	defm	'SOFTBOOT'
+	defb	cr,lf,0
+;
+boot1:
+	ld	hl,flpmsg		;falls da
+	call	print
+	call	ci
+;
+	ld	hl,80h			;booten
+	ld	d,0			;trk	0
+	ld	e,1			;sector	1
+	ld	b,1			;lesen
+	ld	c,0			;drive	0
+	call	soft
+	jp	c,error			;fehler
+	jp	0			;und Starten   (80h)
+;
+;	print routine
+print:
+	ld	a,(hl)
+	or	a
+	ret	z
+	ld	c,a
+	call	co
+	inc	hl
+	jp	print
+;
+soft:
+	xor	a
+	ret
+;
+mini:
+maxi:
+	ret
+	ENDIF
+;	
+	IF gene1 AND 2
+	include	incFL.MAC
+	ENDIF
+;
+	IF gene2 AND 1
+	include	inc-gate.MAC
+	ENDIF
+lastmon:
+	defb	0				;last storage
+freemem	equ	$
+	IF gene2 AND 1
+	display	"DEPHASE END: ", $
+	ENDIF
+
+	.dephase
+
+	IF gene2 AND 1
+	display	"MON     END: ", $
+	savebin	"bootstrap/z80-MON.bin", beginn, $ - beginn
+	ENDIF
+	end	beginn
+
