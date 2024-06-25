@@ -395,7 +395,7 @@ Public Class IOsim
                         '2.  Button in ucKi deaktivieren, damit LW für EMU
                         '3.  Button in Kassetten (Close) auch deaktivieren
                         '4.  LW auf Bandanfang setzen
-                        Laufwerke.ShowKassette()
+                        '##                        Laufwerke.ShowKassette()
                         With ucKj
                             If .OpenCassette.Text = "Close" Then                                        '1.
                                 '1.b
@@ -412,7 +412,7 @@ Public Class IOsim
 
                                 Laufwerke.Kassetten1.Rows(Kass).Cells("CheckChangeK").Value = True      '3.
 
-                                '.Cassette_Rewind()                                                      '4.
+                                '.Cassette_Rewind()                                                     '4.
                                 Call SetStatus(ucKj, "ok", port)
                             Else
                                 '1.a Error!
@@ -446,7 +446,7 @@ Public Class IOsim
                                 .BMvor.Enabled = True
                                 .Aktiv = False
 
-                                '.Cassette_Rewind()                                                      '4.
+                                '.Cassette_Rewind()                                                     '4.
                                 Call SetStatus(ucKj, "init", port)
                             Else
                                 '1.a

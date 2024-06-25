@@ -15,37 +15,116 @@ Public Class Laufwerke
     End Sub
 
     Private Sub Laufwerke_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        'Call COMMON.initGrid(Kassetten1, Drawing.Color.LightBlue, Drawing.Color.LightBlue, Drawing.Color.Black, Drawing.Color.Black)
+        'Call COMMON.initGrid(MiniDisk, Drawing.Color.LemonChiffon, Drawing.Color.LemonChiffon, Drawing.Color.Black, Drawing.Color.Black)
+        'Call COMMON.initGrid(StandardDisk, Drawing.Color.LightYellow, Drawing.Color.LightYellow, Drawing.Color.Black, Drawing.Color.Black)
+
+        Call AddCols(Kassetten1)
+        Call AddCols(MiniDisk)
+        Call AddCols(StandardDisk)
+    End Sub
+
+
+    Private Sub AddCols(obj As Object) ', Name As String, Width As Integer) ', CTemp As CellTemplate)
+        Dim i As Int16
+
         Dim c1 As New DataGridViewDisableButtonColumn
         Dim c2 As New DataGridViewDisableButtonColumn
         Dim c3 As New DataGridViewCheckBoxColumn
         Dim c4 As New DataGridViewCheckBoxColumn
 
-        c1.HeaderText = "Change"
-        c1.Name = "ChangeK"
-        c1.Width = 70
-        c1.SortMode = DataGridViewColumnSortMode.NotSortable
-        Me.Kassetten1.Columns.Add(c1)
+        With obj
+            .Columns.Clear()
+            .ColumnHeadersDefaultCellStyle.BackColor = Drawing.SystemColors.ActiveBorder
+            .DefaultCellStyle.Alignment = Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+            .DefaultCellStyle.BackColor = Drawing.SystemColors.Control
+            .DefaultCellStyle.ForeColor = Drawing.Color.Black
 
-        c2.HeaderText = "Create"
-        c2.Name = "CreateK"
-        c2.Width = 70
-        c2.SortMode = DataGridViewColumnSortMode.NotSortable
-        Me.Kassetten1.Columns.Add(c2)
+            For i = 0 To 6
+                Select Case i
+                    Case 0
+                        .Columns.Add("Nr", "Nr")
+                        .Columns(i).Width = 20
+                    Case 1
+                        .Columns.Add("SYS4", "SYS4")
+                        .Columns(i).Width = 50
+                    Case 2
+                        .Columns.Add("DateinameK", "Host - Dateiname")
+                        .Columns(i).Width = 430
+                    Case 3
+                        c1.HeaderText = "Change"
+                        c1.Name = "ChangeK"
+                        c1.Width = 70
+                        c1.SortMode = DataGridViewColumnSortMode.NotSortable
+                        .Columns.Add(c1)
+                    Case 4
+                        c2.HeaderText = "Create"
+                        c2.Name = "CreateK"
+                        c2.Width = 70
+                        c2.SortMode = DataGridViewColumnSortMode.NotSortable
+                        .Columns.Add(c2)
+                    Case 5
+                        c3.HeaderText = "CrK"
+                        c3.Name = "CheckCreateK"
+                        c3.Width = 0
+                        c3.SortMode = DataGridViewColumnSortMode.NotSortable
+                        c3.Visible = False
+                        .Columns.Add(c3)
+                    Case 6
+                        c4.HeaderText = "ChK"
+                        c4.Name = "CheckChangeK"
+                        c4.Width = 0
+                        c4.SortMode = DataGridViewColumnSortMode.NotSortable
+                        c4.Visible = False
+                        .Columns.Add(c4)
+                End Select
 
-        c3.HeaderText = ""
-        c3.Name = "CheckChangeK"
-        c3.Width = 0
-        c3.SortMode = DataGridViewColumnSortMode.NotSortable
-        c3.Visible = False
-        Me.Kassetten1.Columns.Add(c3)
+                Select Case i
+                    Case 0, 1, 3, 4
+                        .Columns(i).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+                    Case 2
+                        .Columns(i).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft
+                End Select
 
-        c4.HeaderText = ""
-        c4.Name = "CheckCreateK"
-        c4.Width = 0
-        c4.SortMode = DataGridViewColumnSortMode.NotSortable
-        c4.Visible = False
-        Me.Kassetten1.Columns.Add(c4)
-    End Sub
+                .Columns(i).ReadOnly = True
+                .Columns(i).Resizable = False
+            Next
+        End With
+
+        Select Case UCase(obj.name)
+            Case UCase("Kassetten1")
+                Call COMMON.PrintGrid(Kassetten1, {"1", "B", "Keine Zuordnung", "Open", "Create"}, 22)
+                Call COMMON.PrintGrid(Kassetten1, {"2", "C", "Keine Zuordnung", "Open", "Create"}, 22)
+                Call COMMON.PrintGrid(Kassetten1, {"3", "D", "Keine Zuordnung", "Open", "Create"}, 22)
+                Call COMMON.PrintGrid(Kassetten1, {"4", "E", "Keine Zuordnung", "Open", "Create"}, 22)
+                Call COMMON.PrintGrid(Kassetten1, {"5", "F", "Keine Zuordnung", "Open", "Create"}, 22)
+                Call COMMON.PrintGrid(Kassetten1, {"6", "G", "Keine Zuordnung", "Open", "Create"}, 22)
+
+                Kassetten1.RowsDefaultCellStyle.BackColor = System.Drawing.Color.LightBlue
+                Kassetten1.RowsDefaultCellStyle.ForeColor = System.Drawing.Color.Black
+                Kassetten1.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.LightBlue
+                Kassetten1.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.Black
+            Case UCase("MiniDisk")
+                Call COMMON.PrintGrid(MiniDisk, {"1", "H", "Keine Zuordnung", "Open", "Create"}, 22)
+                Call COMMON.PrintGrid(MiniDisk, {"2", "I", "Keine Zuordnung", "Open", "Create"}, 22)
+                Call COMMON.PrintGrid(MiniDisk, {"3", "J", "Keine Zuordnung", "Open", "Create"}, 22)
+                Call COMMON.PrintGrid(MiniDisk, {"4", "K", "Keine Zuordnung", "Open", "Create"}, 22)
+
+                MiniDisk.RowsDefaultCellStyle.BackColor = System.Drawing.Color.LemonChiffon
+                MiniDisk.RowsDefaultCellStyle.ForeColor = System.Drawing.Color.Black
+                MiniDisk.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.LemonChiffon
+                MiniDisk.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.Black
+            Case UCase("StandardDisk")
+
+                Call COMMON.PrintGrid(StandardDisk, {"1", "L", "Keine Zuordnung", "Open", "Create"}, 22)
+                Call COMMON.PrintGrid(StandardDisk, {"2", "M", "Keine Zuordnung", "Open", "Create"}, 22)
+
+                StandardDisk.RowsDefaultCellStyle.BackColor = System.Drawing.Color.LightGoldenrodYellow
+                StandardDisk.RowsDefaultCellStyle.ForeColor = System.Drawing.Color.Black
+                StandardDisk.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.LightGoldenrodYellow
+                StandardDisk.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.Black
+        End Select
+    End Sub ' AddCols
 
     'Private Sub Kassetten1_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles Kassetten1.CellContentClick
 
@@ -58,7 +137,7 @@ Public Class Laufwerke
     'End Sub
 
     Private Sub Kassetten1_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles Kassetten1.CellClick
-        Call ShowKassette()
+        '## Call ShowKassette()
         If e.RowIndex >= 0 Then
             Select Case e.ColumnIndex
                 Case 3                                                                                      ' bestehende Kassettendatei öffnen

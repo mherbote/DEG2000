@@ -1,9 +1,9 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class Laufwerke
     Inherits System.Windows.Forms.Form
 
     'Das Formular überschreibt den Löschvorgang, um die Komponentenliste zu bereinigen.
-    <System.Diagnostics.DebuggerNonUserCode()> _
+    <System.Diagnostics.DebuggerNonUserCode()>
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
             If disposing AndAlso components IsNot Nothing Then
@@ -20,7 +20,7 @@ Partial Class Laufwerke
     'Hinweis: Die folgende Prozedur ist für den Windows Form-Designer erforderlich.
     'Das Bearbeiten ist mit dem Windows Form-Designer möglich.  
     'Das Bearbeiten mit dem Code-Editor ist nicht möglich.
-    <System.Diagnostics.DebuggerStepThrough()> _
+    <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
@@ -30,32 +30,10 @@ Partial Class Laufwerke
         Dim DataGridViewCellStyle6 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle7 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle8 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle9 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle10 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle11 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle12 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle13 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle14 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle15 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle16 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle17 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Laufwerke))
         Me.Kassetten1 = New System.Windows.Forms.DataGridView()
-        Me.Nr = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.S4 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.DateinameK = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.MiniDisk = New System.Windows.Forms.DataGridView()
-        Me.DataGridViewTextBoxColumn5 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.DataGridViewTextBoxColumn6 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.DateinameMD = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.DataGridViewButtonColumn1 = New System.Windows.Forms.DataGridViewButtonColumn()
-        Me.CreateMD = New System.Windows.Forms.DataGridViewButtonColumn()
         Me.StandardDisk = New System.Windows.Forms.DataGridView()
-        Me.DataGridViewTextBoxColumn8 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.DataGridViewTextBoxColumn9 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.DateinameSD = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.DataGridViewButtonColumn2 = New System.Windows.Forms.DataGridViewButtonColumn()
-        Me.ShowSD = New System.Windows.Forms.DataGridViewButtonColumn()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label3 = New System.Windows.Forms.Label()
@@ -88,7 +66,6 @@ Partial Class Laufwerke
         Me.Kassetten1.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle1
         Me.Kassetten1.ColumnHeadersHeight = 22
         Me.Kassetten1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
-        Me.Kassetten1.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.Nr, Me.S4, Me.DateinameK})
         Me.Kassetten1.Location = New System.Drawing.Point(1, 20)
         Me.Kassetten1.Name = "Kassetten1"
         Me.Kassetten1.RowHeadersVisible = False
@@ -97,39 +74,6 @@ Partial Class Laufwerke
         Me.Kassetten1.Size = New System.Drawing.Size(641, 154)
         Me.Kassetten1.TabIndex = 0
         '
-        'Nr
-        '
-        DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.Nr.DefaultCellStyle = DataGridViewCellStyle2
-        Me.Nr.HeaderText = "Nr"
-        Me.Nr.Name = "Nr"
-        Me.Nr.ReadOnly = True
-        Me.Nr.Resizable = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.Nr.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.Nr.Width = 20
-        '
-        'S4
-        '
-        DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.S4.DefaultCellStyle = DataGridViewCellStyle3
-        Me.S4.HeaderText = "SYS 4"
-        Me.S4.Name = "S4"
-        Me.S4.ReadOnly = True
-        Me.S4.Resizable = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.S4.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.S4.Width = 50
-        '
-        'DateinameK
-        '
-        DataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        Me.DateinameK.DefaultCellStyle = DataGridViewCellStyle4
-        Me.DateinameK.HeaderText = "Host - Dateiname"
-        Me.DateinameK.Name = "DateinameK"
-        Me.DateinameK.ReadOnly = True
-        Me.DateinameK.Resizable = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.DateinameK.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DateinameK.Width = 430
-        '
         'MiniDisk
         '
         Me.MiniDisk.AllowUserToAddRows = False
@@ -137,69 +81,22 @@ Partial Class Laufwerke
         Me.MiniDisk.AllowUserToResizeColumns = False
         Me.MiniDisk.AllowUserToResizeRows = False
         Me.MiniDisk.BackgroundColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
-        DataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control
-        DataGridViewCellStyle5.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText
-        DataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.MiniDisk.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle5
+        DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle2.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText
+        DataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.MiniDisk.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle2
         Me.MiniDisk.ColumnHeadersHeight = 22
         Me.MiniDisk.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
-        Me.MiniDisk.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn5, Me.DataGridViewTextBoxColumn6, Me.DateinameMD, Me.DataGridViewButtonColumn1, Me.CreateMD})
         Me.MiniDisk.Location = New System.Drawing.Point(1, 210)
         Me.MiniDisk.Name = "MiniDisk"
         Me.MiniDisk.RowHeadersVisible = False
         Me.MiniDisk.ScrollBars = System.Windows.Forms.ScrollBars.None
         Me.MiniDisk.Size = New System.Drawing.Size(641, 110)
         Me.MiniDisk.TabIndex = 1
-        '
-        'DataGridViewTextBoxColumn5
-        '
-        DataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.DataGridViewTextBoxColumn5.DefaultCellStyle = DataGridViewCellStyle6
-        Me.DataGridViewTextBoxColumn5.HeaderText = "Nr"
-        Me.DataGridViewTextBoxColumn5.Name = "DataGridViewTextBoxColumn5"
-        Me.DataGridViewTextBoxColumn5.ReadOnly = True
-        Me.DataGridViewTextBoxColumn5.Resizable = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.DataGridViewTextBoxColumn5.Width = 20
-        '
-        'DataGridViewTextBoxColumn6
-        '
-        DataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.DataGridViewTextBoxColumn6.DefaultCellStyle = DataGridViewCellStyle7
-        Me.DataGridViewTextBoxColumn6.HeaderText = "SYS 4"
-        Me.DataGridViewTextBoxColumn6.Name = "DataGridViewTextBoxColumn6"
-        Me.DataGridViewTextBoxColumn6.ReadOnly = True
-        Me.DataGridViewTextBoxColumn6.Resizable = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.DataGridViewTextBoxColumn6.Width = 50
-        '
-        'DateinameMD
-        '
-        DataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        Me.DateinameMD.DefaultCellStyle = DataGridViewCellStyle8
-        Me.DateinameMD.HeaderText = "Host - Dateiname"
-        Me.DateinameMD.Name = "DateinameMD"
-        Me.DateinameMD.ReadOnly = True
-        Me.DateinameMD.Resizable = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.DateinameMD.Width = 430
-        '
-        'DataGridViewButtonColumn1
-        '
-        Me.DataGridViewButtonColumn1.HeaderText = "Change"
-        Me.DataGridViewButtonColumn1.Name = "DataGridViewButtonColumn1"
-        Me.DataGridViewButtonColumn1.ReadOnly = True
-        Me.DataGridViewButtonColumn1.Resizable = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.DataGridViewButtonColumn1.Width = 70
-        '
-        'CreateMD
-        '
-        Me.CreateMD.HeaderText = "Create"
-        Me.CreateMD.Name = "CreateMD"
-        Me.CreateMD.ReadOnly = True
-        Me.CreateMD.Resizable = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.CreateMD.Width = 70
         '
         'StandardDisk
         '
@@ -208,72 +105,22 @@ Partial Class Laufwerke
         Me.StandardDisk.AllowUserToResizeColumns = False
         Me.StandardDisk.AllowUserToResizeRows = False
         Me.StandardDisk.BackgroundColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
-        DataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle9.BackColor = System.Drawing.SystemColors.Control
-        DataGridViewCellStyle9.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle9.ForeColor = System.Drawing.SystemColors.WindowText
-        DataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.StandardDisk.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle9
+        DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle3.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText
+        DataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.StandardDisk.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle3
         Me.StandardDisk.ColumnHeadersHeight = 22
         Me.StandardDisk.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
-        Me.StandardDisk.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn8, Me.DataGridViewTextBoxColumn9, Me.DateinameSD, Me.DataGridViewButtonColumn2, Me.ShowSD})
         Me.StandardDisk.Location = New System.Drawing.Point(1, 345)
         Me.StandardDisk.Name = "StandardDisk"
         Me.StandardDisk.RowHeadersVisible = False
         Me.StandardDisk.ScrollBars = System.Windows.Forms.ScrollBars.None
         Me.StandardDisk.Size = New System.Drawing.Size(641, 66)
         Me.StandardDisk.TabIndex = 2
-        '
-        'DataGridViewTextBoxColumn8
-        '
-        DataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.DataGridViewTextBoxColumn8.DefaultCellStyle = DataGridViewCellStyle10
-        Me.DataGridViewTextBoxColumn8.HeaderText = "Nr"
-        Me.DataGridViewTextBoxColumn8.Name = "DataGridViewTextBoxColumn8"
-        Me.DataGridViewTextBoxColumn8.ReadOnly = True
-        Me.DataGridViewTextBoxColumn8.Resizable = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.DataGridViewTextBoxColumn8.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn8.Width = 20
-        '
-        'DataGridViewTextBoxColumn9
-        '
-        DataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.DataGridViewTextBoxColumn9.DefaultCellStyle = DataGridViewCellStyle11
-        Me.DataGridViewTextBoxColumn9.HeaderText = "SYS 4"
-        Me.DataGridViewTextBoxColumn9.Name = "DataGridViewTextBoxColumn9"
-        Me.DataGridViewTextBoxColumn9.ReadOnly = True
-        Me.DataGridViewTextBoxColumn9.Resizable = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.DataGridViewTextBoxColumn9.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn9.Width = 50
-        '
-        'DateinameSD
-        '
-        DataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        Me.DateinameSD.DefaultCellStyle = DataGridViewCellStyle12
-        Me.DateinameSD.HeaderText = "Host - Dateiname"
-        Me.DateinameSD.Name = "DateinameSD"
-        Me.DateinameSD.ReadOnly = True
-        Me.DateinameSD.Resizable = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.DateinameSD.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DateinameSD.Width = 430
-        '
-        'DataGridViewButtonColumn2
-        '
-        Me.DataGridViewButtonColumn2.HeaderText = "Change"
-        Me.DataGridViewButtonColumn2.Name = "DataGridViewButtonColumn2"
-        Me.DataGridViewButtonColumn2.ReadOnly = True
-        Me.DataGridViewButtonColumn2.Resizable = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.DataGridViewButtonColumn2.Width = 70
-        '
-        'ShowSD
-        '
-        Me.ShowSD.HeaderText = "Show"
-        Me.ShowSD.Name = "ShowSD"
-        Me.ShowSD.ReadOnly = True
-        Me.ShowSD.Resizable = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.ShowSD.Width = 70
         '
         'Label1
         '
@@ -311,40 +158,40 @@ Partial Class Laufwerke
         '
         'DataGridViewTextBoxColumn1
         '
-        DataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.DataGridViewTextBoxColumn1.DefaultCellStyle = DataGridViewCellStyle13
+        DataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        Me.DataGridViewTextBoxColumn1.DefaultCellStyle = DataGridViewCellStyle4
         Me.DataGridViewTextBoxColumn1.HeaderText = "Art"
         Me.DataGridViewTextBoxColumn1.Name = "DataGridViewTextBoxColumn1"
         Me.DataGridViewTextBoxColumn1.Width = 20
         '
         'DataGridViewTextBoxColumn2
         '
-        DataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.DataGridViewTextBoxColumn2.DefaultCellStyle = DataGridViewCellStyle14
+        DataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        Me.DataGridViewTextBoxColumn2.DefaultCellStyle = DataGridViewCellStyle5
         Me.DataGridViewTextBoxColumn2.HeaderText = "Nr"
         Me.DataGridViewTextBoxColumn2.Name = "DataGridViewTextBoxColumn2"
         Me.DataGridViewTextBoxColumn2.Width = 50
         '
         'DataGridViewTextBoxColumn3
         '
-        DataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        Me.DataGridViewTextBoxColumn3.DefaultCellStyle = DataGridViewCellStyle15
+        DataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        Me.DataGridViewTextBoxColumn3.DefaultCellStyle = DataGridViewCellStyle6
         Me.DataGridViewTextBoxColumn3.HeaderText = "SYS 4"
         Me.DataGridViewTextBoxColumn3.Name = "DataGridViewTextBoxColumn3"
         Me.DataGridViewTextBoxColumn3.Width = 430
         '
         'DataGridViewTextBoxColumn4
         '
-        DataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.DataGridViewTextBoxColumn4.DefaultCellStyle = DataGridViewCellStyle16
+        DataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        Me.DataGridViewTextBoxColumn4.DefaultCellStyle = DataGridViewCellStyle7
         Me.DataGridViewTextBoxColumn4.HeaderText = "Zurodnung"
         Me.DataGridViewTextBoxColumn4.Name = "DataGridViewTextBoxColumn4"
         Me.DataGridViewTextBoxColumn4.Width = 70
         '
         'DataGridViewTextBoxColumn7
         '
-        DataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.DataGridViewTextBoxColumn7.DefaultCellStyle = DataGridViewCellStyle17
+        DataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        Me.DataGridViewTextBoxColumn7.DefaultCellStyle = DataGridViewCellStyle8
         Me.DataGridViewTextBoxColumn7.HeaderText = "Nr"
         Me.DataGridViewTextBoxColumn7.Name = "DataGridViewTextBoxColumn7"
         Me.DataGridViewTextBoxColumn7.Width = 20
@@ -391,17 +238,4 @@ Partial Class Laufwerke
     Friend WithEvents OpenFileDialog1 As OpenFileDialog
     Friend WithEvents DataGridViewTextBoxColumn7 As DataGridViewTextBoxColumn
     Friend WithEvents DataGridViewTextBoxColumn10 As DataGridViewTextBoxColumn
-    Friend WithEvents DataGridViewTextBoxColumn5 As DataGridViewTextBoxColumn
-    Friend WithEvents DataGridViewTextBoxColumn6 As DataGridViewTextBoxColumn
-    Friend WithEvents DateinameMD As DataGridViewTextBoxColumn
-    Friend WithEvents DataGridViewButtonColumn1 As DataGridViewButtonColumn
-    Friend WithEvents CreateMD As DataGridViewButtonColumn
-    Friend WithEvents DataGridViewTextBoxColumn8 As DataGridViewTextBoxColumn
-    Friend WithEvents DataGridViewTextBoxColumn9 As DataGridViewTextBoxColumn
-    Friend WithEvents DateinameSD As DataGridViewTextBoxColumn
-    Friend WithEvents DataGridViewButtonColumn2 As DataGridViewButtonColumn
-    Friend WithEvents ShowSD As DataGridViewButtonColumn
-    Friend WithEvents Nr As DataGridViewTextBoxColumn
-    Friend WithEvents S4 As DataGridViewTextBoxColumn
-    Friend WithEvents DateinameK As DataGridViewTextBoxColumn
 End Class

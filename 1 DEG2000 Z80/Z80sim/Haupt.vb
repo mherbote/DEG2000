@@ -272,23 +272,6 @@ Public Class Haupt
         Call KeyboardVis.PerformClick() 'KeyboardVisChange()
 
         Call LaufwerkeVis.PerformClick()
-        Call COMMON.initGrid(Laufwerke.Kassetten1, Drawing.Color.LightBlue, Drawing.Color.LightBlue, Drawing.Color.Black, Drawing.Color.Black)
-        Call COMMON.PrintGrid(Laufwerke.Kassetten1, {"1", "B", "Keine Zuordnung", "Open", "Create"}, 22)
-        Call COMMON.PrintGrid(Laufwerke.Kassetten1, {"2", "C", "Keine Zuordnung", "Open", "Create"}, 22)
-        Call COMMON.PrintGrid(Laufwerke.Kassetten1, {"3", "D", "Keine Zuordnung", "Open", "Create"}, 22)
-        Call COMMON.PrintGrid(Laufwerke.Kassetten1, {"4", "E", "Keine Zuordnung", "Open", "Create"}, 22)
-        Call COMMON.PrintGrid(Laufwerke.Kassetten1, {"5", "F", "Keine Zuordnung", "Open", "Create"}, 22)
-        Call COMMON.PrintGrid(Laufwerke.Kassetten1, {"6", "G", "Keine Zuordnung", "Open", "Create"}, 22)
-
-        Call COMMON.initGrid(Laufwerke.MiniDisk, Drawing.Color.LemonChiffon, Drawing.Color.LemonChiffon, Drawing.Color.Black, Drawing.Color.Black)
-        Call COMMON.PrintGrid(Laufwerke.MiniDisk, {"1", "H", "Keine Zuordnung", "Open", "Create"}, 22)
-        Call COMMON.PrintGrid(Laufwerke.MiniDisk, {"2", "I", "Keine Zuordnung", "Open", "Create"}, 22)
-        Call COMMON.PrintGrid(Laufwerke.MiniDisk, {"3", "J", "Keine Zuordnung", "Open", "Create"}, 22)
-        Call COMMON.PrintGrid(Laufwerke.MiniDisk, {"4", "K", "Keine Zuordnung", "Open", "Create"}, 22)
-
-        Call COMMON.initGrid(Laufwerke.StandardDisk, Drawing.Color.LightYellow, Drawing.Color.LightYellow, Drawing.Color.Black, Drawing.Color.Black)
-        Call COMMON.PrintGrid(Laufwerke.StandardDisk, {"1", "L", "Keine Zuordnung", "Open", "Create"}, 22)
-        Call COMMON.PrintGrid(Laufwerke.StandardDisk, {"2", "M", "Keine Zuordnung", "Open", "Create"}, 22)
     End Sub ' Haupt_Load
 
     Private Sub Haupt_Activated(sender As Object, e As System.EventArgs) Handles Me.Activated

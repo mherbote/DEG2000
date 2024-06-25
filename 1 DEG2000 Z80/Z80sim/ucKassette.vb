@@ -95,37 +95,41 @@ Public Class ucKassette
                                 BM.Text = ""
                                 BM.BackColor = SystemColors.Control
 
-                                Call RecordAnzeigen1()
-                                hilf = ""
-                                For i = 0 To 15
-                                    .Rows(0).Cells(i + 1).Value = COMMON.vZ80cpu.HexAnzeigeByte(Kassette.buffer.b(1).z(i))
-                                    If Kassette.buffer.b(1).z(i) > &H1F And Kassette.buffer.b(1).z(i) < &H7F Then
-                                        hilf = hilf + Chr(Kassette.buffer.b(1).z(i))
-                                    Else
-                                        hilf = hilf + "."
-                                    End If
-                                Next
-                                .Rows(0).Cells(18).Value = hilf
-                                .Refresh()
+                                Call RecordAnzeigen1(1)
+                                If Kassetten.Visible Then
+                                    hilf = ""
+                                    For i = 0 To 15
+                                        .Rows(0).Cells(i + 1).Value = COMMON.vZ80cpu.HexAnzeigeByte(Kassette.buffer.b(1).z(i))
+                                        If Kassette.buffer.b(1).z(i) > &H1F And Kassette.buffer.b(1).z(i) < &H7F Then
+                                            hilf = hilf + Chr(Kassette.buffer.b(1).z(i))
+                                        Else
+                                            hilf = hilf + "."
+                                        End If
+                                    Next
+                                    .Rows(0).Cells(18).Value = hilf
+                                    .Refresh()
+                                End If
                         End Select
                     Case 2
                         BM.Text = ""
                         BM.BackColor = SystemColors.Control
 
-                        Call RecordAnzeigen1()
+                        Call RecordAnzeigen1(2)
                         Kassette.D = 0 : Kassette.E = 0
                         For j = 1 To 2
-                            hilf = ""
-                            For i = 0 To 15
-                                .Rows(j - 1).Cells(i + 1).Value = COMMON.vZ80cpu.HexAnzeigeByte(Kassette.buffer.b(j).z(i))
-                                If Kassette.buffer.b(j).z(i) > &H1F And Kassette.buffer.b(j).z(i) < &H7F Then
-                                    hilf = hilf + Chr(Kassette.buffer.b(j).z(i))
-                                Else
-                                    hilf = hilf + "."
-                                End If
-                            Next
-                            .Rows(j - 1).Cells(18).Value = hilf
-                            .Refresh()
+                            If Kassetten.Visible Then
+                                hilf = ""
+                                For i = 0 To 15
+                                    .Rows(j - 1).Cells(i + 1).Value = COMMON.vZ80cpu.HexAnzeigeByte(Kassette.buffer.b(j).z(i))
+                                    If Kassette.buffer.b(j).z(i) > &H1F And Kassette.buffer.b(j).z(i) < &H7F Then
+                                        hilf = hilf + Chr(Kassette.buffer.b(j).z(i))
+                                    Else
+                                        hilf = hilf + "."
+                                    End If
+                                Next
+                                .Rows(j - 1).Cells(18).Value = hilf
+                                .Refresh()
+                            End If
                             Call Kassette.CRC(Kassette.buffer.b(j))
                         Next
                         'Anzeige.Rows(0).Cells(0).Value = "CRC-Satz : " + COMMON.vZ80cpu.HexAnzeigeByte(Kassette.buffer.b(0).z(14)) +
@@ -140,29 +144,31 @@ Public Class ucKassette
                         BM.Text = ""
                         BM.BackColor = SystemColors.Control
 
-                        Call RecordAnzeigen1()
+                        Call RecordAnzeigen1(8)
                         Kassette.D = 0 : Kassette.E = 0
                         For j = 1 To Anz
-                            hilf = ""
-                            For i = 0 To 15
-                                .Rows(j - 1).Cells(i + 1).Value = COMMON.vZ80cpu.HexAnzeigeByte(Kassette.buffer.b(j).z(i))
-                                If Kassette.FilePos > 5 * 16 And Kassette.FilePos < 75 * 16 Then
-                                    If COMMON.EBDC(Kassette.buffer.b(j).z(i)) > &H1F And COMMON.EBDC(Kassette.buffer.b(j).z(i)) < &H7F Then
-                                        hilf = hilf + Chr(COMMON.EBDC(Kassette.buffer.b(j).z(i)))
+                            If Kassetten.Visible Then
+                                hilf = ""
+                                For i = 0 To 15
+                                    .Rows(j - 1).Cells(i + 1).Value = COMMON.vZ80cpu.HexAnzeigeByte(Kassette.buffer.b(j).z(i))
+                                    If Kassette.FilePos > 5 * 16 And Kassette.FilePos < 75 * 16 Then
+                                        If COMMON.EBDC(Kassette.buffer.b(j).z(i)) > &H1F And COMMON.EBDC(Kassette.buffer.b(j).z(i)) < &H7F Then
+                                            hilf = hilf + Chr(COMMON.EBDC(Kassette.buffer.b(j).z(i)))
+                                        Else
+                                            hilf = hilf + "."
+                                        End If
                                     Else
-                                        hilf = hilf + "."
-                                    End If
-                                Else
-                                    If Kassette.buffer.b(j).z(i) > &H1F And Kassette.buffer.b(j).z(i) < &H7F Then
-                                        hilf = hilf + Chr(Kassette.buffer.b(j).z(i))
-                                    Else
-                                        hilf = hilf + "."
-                                    End If
+                                        If Kassette.buffer.b(j).z(i) > &H1F And Kassette.buffer.b(j).z(i) < &H7F Then
+                                            hilf = hilf + Chr(Kassette.buffer.b(j).z(i))
+                                        Else
+                                            hilf = hilf + "."
+                                        End If
 
-                                End If
-                            Next
-                            .Rows(j - 1).Cells(18).Value = hilf
-                            .Refresh()
+                                    End If
+                                Next
+                                .Rows(j - 1).Cells(18).Value = hilf
+                                .Refresh()
+                            End If
                             Call Kassette.CRC(Kassette.buffer.b(j))
                         Next
                         'Anzeige.Rows(0).Cells(0).Value = "CRC-Satz : " + COMMON.vZ80cpu.HexAnzeigeByte(Kassette.buffer.b(0).z(14)) +
@@ -203,11 +209,13 @@ Public Class ucKassette
         Catch ex As Exception
         End Try
     End Sub ' RecordAnzeigen
-    Private Sub RecordAnzeigen1()
+    Private Sub RecordAnzeigen1(Anz1 As Integer)
         Dim j As Integer
 
+        If Not Kassetten.Visible Then Exit Sub
+
         With RecordAnsicht
-            For j = 1 To Anz
+            For j = 1 To Anz1
                 .Rows.Add({"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", " ", ""})
                 .Rows(.Rows.Count - 1).Height = 20
             Next
@@ -217,13 +225,16 @@ Public Class ucKassette
 #Region "Click Routinen"
     Private Sub Rewind_Click(sender As System.Object, e As System.EventArgs) Handles Rewind.Click                   '"A"
         Call Cassette_Rewind()
+        Call ChangeFocus()
     End Sub ' Rewind_Click
 
     Private Sub BMback_Click(sender As System.Object, e As System.EventArgs) Handles BMback.Click                   '"B"
         Call Cassette_BMback()
+        Call ChangeFocus()
     End Sub ' BMback_Click
     Private Sub RecordBack_Click(sender As System.Object, e As System.EventArgs) Handles RecordBack.Click           '"R"
         Call Cassette_RecordBack()
+        Call ChangeFocus()
     End Sub ' RecordBack_Click
 
     Private Sub Verzeichnis_Click(sender As System.Object, e As System.EventArgs) Handles Verzeichnis.Click         '"D"
@@ -235,6 +246,7 @@ Public Class ucKassette
         Next
         '        End If
         Call RecordAnzeigen()
+        Call ChangeFocus()
     End Sub ' Verzeichnis_Click
     Private Sub Datei_Click(sender As System.Object, e As System.EventArgs) Handles Datei.Click                     '"d"
         If Anz = 2 Then
@@ -243,13 +255,16 @@ Public Class ucKassette
             Kassette.D1 = 0 : Kassette.E1 = 0
             Call RecordAnzeigen()
         End If
+        Call ChangeFocus()
     End Sub ' Datei_Click
 
     Private Sub RecordVor_Click(sender As System.Object, e As System.EventArgs) Handles RecordVor.Click             '"r"
         Call Cassette_RecordVor()
+        Call ChangeFocus()
     End Sub ' RecordVor_Click
     Private Sub BMvor_Click(sender As System.Object, e As System.EventArgs) Handles BMvor.Click                     '"b"
         Call Cassette_BMvor()
+        Call ChangeFocus()
     End Sub ' BMvor_Click
 
     Private Sub OpenCassette_Click(sender As System.Object, e As System.EventArgs) Handles OpenCassette.Click
@@ -274,6 +289,7 @@ Public Class ucKassette
                 Kassette.ucKi = Kassetten.ucK6
         End Select
         Call OpenKassette1(OpenCassette.Text, KNr)
+        Call ChangeFocus()
     End Sub
 
     Private Sub CreateKassette_Click(sender As Object, e As EventArgs) Handles CreateCassette.Click
@@ -298,6 +314,15 @@ Public Class ucKassette
                 Kassette.ucKi = Kassetten.ucK6
         End Select
         Call CreateKassette1(CreateCassette.Text, KNr)
+        Call ChangeFocus()
+    End Sub
+
+    Private Sub ChangeFocus()
+        If Tastatur.Visible Then
+            Tastatur.Focus()
+        ElseIf BWS.Visible Then
+            BWS.Focus()
+        End If
     End Sub
 #End Region
 
@@ -396,7 +421,7 @@ Public Class ucKassette
                 '###  Kassette schliessen
 
                 CreateCassette.Enabled = True
-                Call COMMON.initGrid(RecordAnsicht, Drawing.Color.Gainsboro, Drawing.Color.Gainsboro, Drawing.Color.Black, Drawing.Color.Black)
+                '#Call COMMON.initGrid(RecordAnsicht, Drawing.Color.Gainsboro, Drawing.Color.Gainsboro, Drawing.Color.Black, Drawing.Color.Black)
                 Kassette.Close_Kassette()
                 Call ButtonEnabled(False)
                 OpenCassette.Text = "Open"
@@ -453,7 +478,7 @@ Public Class ucKassette
         Anz = 0
         Kassette.MBtyp = &HEE
         Call RecordAnzeigen()
-        Me.Refresh()
+        '#        Me.Refresh()
     End Sub
 
     Public Sub Cassette_RecordVor()
@@ -496,6 +521,30 @@ Public Class ucKassette
         Anz = Kassette.Record_Lesen
         Call RecordAnzeigen()
     End Sub
+
+#Region "MouseHover für die Button"
+    Private Sub Rewind_MouseHover(sender As Object, e As EventArgs) Handles Rewind.MouseHover
+        If Rewind.Enabled Then ToolTip1.Show("Bandanfang", Me.Rewind)
+    End Sub
+    Private Sub BMback_MouseHover(sender As Object, e As EventArgs) Handles BMback.MouseHover
+        If BMback.Enabled Then ToolTip1.Show("vorherige Bandmarke", Me.BMback)
+    End Sub
+    Private Sub RecordBack_MouseHover(sender As Object, e As EventArgs) Handles RecordBack.MouseHover
+        If RecordBack.Enabled Then ToolTip1.Show("vorheriger Record", Me.RecordBack)
+    End Sub
+    Private Sub Verzeichnis_MouseHover(sender As Object, e As EventArgs) Handles Verzeichnis.MouseHover
+        If Verzeichnis.Enabled Then ToolTip1.Show("MRES-Directory", Me.Verzeichnis)
+    End Sub
+    Private Sub Datei_MouseHover(sender As Object, e As EventArgs) Handles Datei.MouseHover
+        If Datei.Enabled Then ToolTip1.Show("MRES-Datei", Me.Datei)
+    End Sub
+    Private Sub RecordVor_MouseHover(sender As Object, e As EventArgs) Handles RecordVor.MouseHover
+        If RecordVor.Enabled Then ToolTip1.Show("nächster Record", Me.RecordVor)
+    End Sub
+    Private Sub BMvor_MouseHover(sender As Object, e As EventArgs) Handles BMvor.MouseHover
+        If BMvor.Enabled Then ToolTip1.Show("nächste Bandmarke", Me.BMvor)
+    End Sub
+#End Region
 #End Region
 
 #End Region
