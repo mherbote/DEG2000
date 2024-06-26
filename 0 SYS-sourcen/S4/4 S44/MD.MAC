@@ -1,6 +1,6 @@
-;	routinen fuer   1. zentralstation
-;		        2.      TRAM - Disk
-;	                3. 16k - PFS - Disk
+;       routinen fuer   1. zentralstation
+;                       2.      TRAM - Disk
+;                       3. 16k - PFS - Disk
 ;	===================================
 ;
  if opsdk
@@ -219,13 +219,14 @@ wrzst::
 	call	ldpuhl
 	ld	hl,(sec)	; sec
 	call	ldpuhl
-wrz1:	call	ri1.ch		; DC2
-	call	ri1.ch		; Quittierung
-				; = 1  ...  nicht verfuegbar
-				; = 2  ...        verfuegbar
+wrz1:
+        call    ri1.ch   ; DC2
+        call    ri1.ch   ; Quittierung
+                         ; = 1  ...  nicht verfuegbar
+                         ; = 2  ...        verfuegbar
 	cp	2
 	jp	c,wrmem0
-	ld	hl,00212h	; DC2 02
+	ld	hl,00212h ; DC2 02
 	call	ldpuhl
 	ld	hl,dmma
 	ld	b,128
@@ -250,11 +251,12 @@ rdzst::
 	call	ldpuhl	
 	ld	hl,(sec)	; sec
 	call	ldpuhl
-rdz1:	call	ri1.ch		; DC3
-	call	ri1.ch		; Qittierung
-				; = 1  ...  nicht verfuegbar
-				; = 2  ...        verfuegbar; es folgen
-				;           die Daten
+rdz1:
+        call    ri1.ch   ; DC3
+        call    ri1.ch   ; Qittierung
+                         ; = 1  ...  nicht verfuegbar
+                         ; = 2  ...        verfuegbar; es folgen
+                         ;           die Daten
 	cp	2
 	jp	c,wrmem0
 	ld	hl,dmma
@@ -335,21 +337,24 @@ md.ino::
 	ret
 ;
 ;
-tdadr::	ld	a,(trk)		; trk = > trkanz
+tdadr::
+	ld	a,(trk)		; trk = > trkanz
 	ld	hl,ttanz
 	cp	(hl)
 	ccf
 	ret	c		; ja
 	inc	hl
 	ld	(hl),pdtr	; tram - adresse
-tdadr1:	sub	16
+tdadr1:
+	sub	16
 	jr	c,tdadr2
 	rept	8
 	dec	(hl)
 	endm
 	jr	tdadr1
 ;
-tdadr2:	add	a,16
+tdadr2:
+	add	a,16
 	inc	hl
 	ld	(hl),a		; ttrk
 	ld	hl,(sec)
@@ -376,7 +381,8 @@ ttrk::	defb	0		; TRAM - Track
 ;	=============================================================
 ;
  if opsdk
-wrops::	ld	a,(zsma)
+wrops::
+	ld	a,(zsma)
 	or	a
 	jp	z,wrmem0
 	call	padr
@@ -388,21 +394,24 @@ wrops::	ld	a,(zsma)
 	ldir
 	pop	hl
 	call	trka
-	jp	wro1		;----->  !
-				;        !
-wro2:	xor	a		;<-----  !
+        jp      wro1   ;----->  !
+                       ;        !
+wro2:                  ;        |
+        xor     a      ;<-----  !
 	ret
 ;
 ;
-rdops::	ld	a,(zsma)
+rdops::
+	ld	a,(zsma)
 	or	a
 	jp	z,rdmem0
 	call	padr
 	jp	c,rdmem0
 	call	trka
-	jp	rdo1		;----->  !
-				;        !
-rdo2:	ld	hl,gdma		;<-----  !
+        jp      rdo1      ;----->  !
+                          ;        !
+rdo2:                     ;        |
+	ld	hl,gdma   ;<-----  !
 	ld	de,dmma
 	ld	bc,128
 	ldir
@@ -414,12 +423,14 @@ md.inp::
 	ld	a,(zsma)
 	or	a
 	jp	z,0
-	jp	inp1		;----->  !
-				;        !
-inp2:	ret			;<-----  !
+        jp      inp1   ;----->  !
+                       ;        !
+inp2:                  ;        |
+	ret            ;<-----  !
 ;
 ;
-padr::	ld	a,(trk)
+padr::
+	ld	a,(trk)
 	ld	hl,zsma
 	cp	(hl)
 	ccf
@@ -435,7 +446,8 @@ padr::	ld	a,(trk)
 	ret
 ;
 ;
-trka:	push	bc		;Transformation TRACK ===> Datenbit SYS2-SBST
+trka:
+	push	bc		;Transformation TRACK ===> Datenbit SYS2-SBST
 	push	hl		;                trk          register A
 	ld	a,(trk)
 	ld	b,a

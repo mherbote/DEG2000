@@ -285,6 +285,9 @@ boot::
 	inc	hl
 	ld	(hl),0		; default dev.
 	call	resp0
+
+	call	dirdel	;Laufwerk A initialisieren
+
 	xor	a		; bildschirm initialisieren
 	ld	(qrmode),a
 	ld	(qroll),a
@@ -472,35 +475,35 @@ dirdel:	ld	a,str		; =============================
 ; ===	
 	pop	de
 	push	de
-	ld	hl,dirgo	;Verzeichniseintrag für 'GO.COM'
+	ld	hl,dirgo	;Verzeichniseintrag fuer 'GO.COM'
 	ld	bc,12
 	ldir
 	pop	hl
 
- if s1eq	;Verzeichniseintrag für 'S1.COM'
+ if s1eq	;Verzeichniseintrag fuer 'S1.COM'
 	ld	de,32
 	add	hl,de
 	push	hl
 	ex	de,hl
 	ld	hl,dirs1
-	ld	bc,17
+	ld	bc,dirs11-dirs1
 	ldir
 	pop	hl
  endif	
 
- if pipeq	;Verzeichniseintrag für 'PIP.SUB'
+ if pipeq	;Verzeichniseintrag fuer 'PIP.SUB'
 	ld	de,32
 	add	hl,de
 	push	hl
 	ex	de,hl
 	ld	hl,dirgo1
-	ld	bc,17
+	ld	bc,dirg11-dirgo1
 	ldir
 	pop	hl
  endif
 ; ===
 	ld	de,800h
- if s1eq	;Daten für 'S1.COM'
+ if s1eq	;Daten fuer 'S1.COM'
  	pop	hl
 	add	hl,de
 	push	hl
@@ -508,17 +511,17 @@ dirdel:	ld	a,str		; =============================
 	ld	hl,dirs11
 	ld	bc,dirs12-dirs11
 	ldir
-	ld	a,(dirs1+16)
+	ld	a,(dirs1+15)	; 16
 	ld	b,a
 	ld	hl,0
-	ld	de,80H
+	ld	de,0400H	;80H
 s1a:
 	add	hl,de
 	djnz	s1a
 	ex	de,hl
  endif
 
- if pipeq	;Daten für 'PIP.SUB'
+ if pipeq	;Daten fuer 'PIP.SUB'
 	pop	hl
 	add	hl,de
 	ex	de,hl
@@ -532,13 +535,13 @@ s1a:
 dirgo:	defb	0,'GO      ',0c3h,'OM'
 ;
  if s1eq 
-dirs1:	defb	0,'S1      COM',0,0,0,2,2
-dirs11: s1g
+dirs1:	defb	0,'S1      ',0c3h,'OM',0,0,0,1,2
+dirs11: s1com
 dirs12:
  endif
 ;
  if pipeq
-dirgo1:	defb	0,'PIP     SUB',0,0,0,2,4
+dirgo1:	defb	0,'PIP     SUB',0,0,0,2,10
 dirg11:	dirg
 dirg12:
  endif
@@ -854,28 +857,33 @@ c07:
 	ld	de,ccppuf
 	ld	c,10
 	call	5
-	ld	a,(ccppuf+1)	; laenge der eingabe
+	ld	a,(ccppuf+1) ; laenge der eingabe
 	or	a
-	jr	z,c082		; keine eingabe ---> laufwerk A nicht init.
-	ld	a,(ccppuf+2)	; eingabe = "j" bzw. "J"
+	jr	z,c082       ; keine eingabe ---> laufwerk A nicht init.
+	ld	a,(ccppuf+2) ; eingabe = "j" bzw. "J"
 	cp	'j'
-	jr	z,c081		; JA
+	jr	z,c081       ; JA
 	cp	'J'
-	jr	nz,c082		; NEIN
-c081:	call	resp0
+	jr	nz,c082      ; NEIN
+c081:
+	call	resp0
 	call	dirdel
-c082:	jp	p0
-setams:	defb	cr,lf,'Laufwerk A initialisieren {J|N} ? $'
+c082:
+	jp	p0
+setams:
+	defb	cr,lf,'Laufwerk A initialisieren {J|N} ? $'
  endif
 ;
-c09:	cp	eq.le1		; pf2?
+c09:
+	cp	eq.le1		; pf2?
 	jr	nz,c10		; ----
 	ld	ix,eatab1	; kassettenlaufwerk 1
 	ld	e,1
 	call	ldhldp
 	ld	de,dphc1
 ;
-km.le:	push	hl		; kassette laden/entladen
+km.le:
+	push	hl		; kassette laden/entladen
 	push	de
 	ld	a,(ix+gelade)
 	or	a
@@ -889,15 +897,18 @@ km.le:	push	hl		; kassette laden/entladen
 	ld	(hl),d
 	jr	km.le2
 ;
-km.le1:	call	centl		; b entladen
+km.le1:
+	call	centl		; b entladen
 	pop	de
 	pop	hl
 	ld	(hl),0		; geraet aus dph-tabelle streichen
 	inc	hl
 	ld	(hl),0
-km.le2:	jp	ci
+km.le2:
+	jp	ci
 ;
-c10:	cp	eq.le2		; pf3?
+c10:
+	cp	eq.le2		; pf3?
 	jr	nz,c11		; ----
 	ld	ix,eatab2	; kassettenlaufwerk 2
 	ld	e,2
@@ -915,7 +926,8 @@ c11:
 	ld	de,dphc3
 	jr	km.le
 ;
-c12:	cp	eq.le4		; pf5?
+c12:
+	cp	eq.le4		; pf5?
 	jr	nz,c13		; ----
 	ld	ix,eatab4	; kassettenlaufwerk 4
 	ld	e,4
@@ -934,7 +946,8 @@ c13:
 	ld	de,dphc5
 	jr	km.le
 ;
-c14:	cp	eq.le6		; pf7?
+c14:
+	cp	eq.le6		; pf7?
 	jr	nz,c17		; ----
 	ld	ix,eatab6	; kassettenlaufwerk 6
 	ld	e,6
@@ -970,13 +983,15 @@ c17:
 	jr	z,siob
 	jp	p0
 ;
-sioa:	call	ri.ata
+sioa:
+	call	ri.ata
 	ld	a,(3)
 	and	11000011b
 	or	00101000b
 	ld	(3),a
 	jp	p0
-siob:	call	ri.atb
+siob:
+	call	ri.atb
 	ld	a,(3)
 	and	11000011b
 	or	00111100b
@@ -1075,7 +1090,8 @@ c174:
 	jr	nz,c18		; -------
 	ld	b,maxz		; bildschirminhalt ausdrucken
 	ld	hl,bsanf
-c171:	push	bc
+c171:
+	push	bc
 	push	hl
 	ld	a,lf
 	ld	c,a
@@ -1085,7 +1101,8 @@ c171:	push	bc
 	call	lo.ch
 	pop	hl
 	ld	b,maxs
-c172:	push	bc
+c172:
+	push	bc
 	ld	a,(hl)
 	inc	hl
 	push	hl
@@ -1106,7 +1123,8 @@ c172:	push	bc
 	jp	ci
  endif
 ;
-c18:	ld	b,a
+c18:
+	ld	b,a
 	xor	a
 	ld	(syste),a
 	ld	a,b
@@ -1116,24 +1134,29 @@ c18:	ld	b,a
 ;----------------------------------------------------------------------
 ;
  if eq.hex ne 0
-cbit4:	push	bc
+cbit4:
+	push	bc
 	xor	a
 	ld	(sverz),a
-cbit41:	call	ciber		; warten bis taste losgelassen
+cbit41:
+	call	ciber		; warten bis taste losgelassen
 	jr	nz,cbit41
-cbit42:	call	ciber		; warten bis taste gedrueckt
+cbit42:
+	call	ciber		; warten bis taste gedrueckt
 	jr	z,cbit42
 ;
 	call	ci.ch		; zeichen uebernehmen
 	ld	b,a
-cbit43:	call	ciber		; warten bis taste losgelassen
+cbit43:
+	call	ciber		; warten bis taste losgelassen
 	jr	nz,cbit43
 	ld	a,b
 	and	7fh
 	cp	41h
 	jr	c,cbit44
 	sub	7
-cbit44:	sub	30h
+cbit44:
+	sub	30h
 	and	0fh
 	pop	bc
 	ret
@@ -1145,20 +1168,22 @@ cbit44:	sub	30h
 ;	console ausgabe
 ;	===============
 ;
-conou::				; iobyte:   00 00 00 xx
-	call	reta		;   0, 1  crt:
-	push	af		;   2     bat:
-	call	iodisp		;   3     crt: + lpt:
+conou::                ; iobyte:   00 00 00 xx
+        call    reta   ;   0, 1  crt:
+        push    af     ;   2     bat:
+	call	iodisp ;   3     crt: + lpt:
 	defb	0
 	defw	conou0
 	defw	conou1
 	defw	listx
 	defw	conou3
 conou0:
-conou1:	call	co.ch
+conou1:
+	call	co.ch
 	pop	af
 	jp	um2ee
-conou3:	call	co.ch
+conou3:
+	call	co.ch
 	call	lo.ch
 	pop	af
 	jp	um2ee
@@ -1166,7 +1191,8 @@ conou3:	call	co.ch
 ;	drucker ausgabe
 ;	===============
 ;
-listst::call	reta
+listst::
+	call	reta
 	call	iodisp
 	defb	6
 	defw	lsst0
@@ -1176,28 +1202,34 @@ listst::call	reta
 lsst0:
 lsst1:
 lsst2:
-lsst3:	xor	a		; immer bereit
-	jp	um2ee
+lsst3:
+        xor     a       ; immer bereit
+        jp      um2ee
 ;
-list::				; iobyte:  xx 00 00 00
-	call	reta		;   0			ATS-Kanal A
-	push	af		;   1        crt:
-listx:	call	iodisp		;   2	     lpt:
-	defb	6		;   3			ATS-Kanal B
+list::                  ; iobyte:  xx 00 00 00
+        call    reta    ;   0			ATS-Kanal A
+        push    af      ;   1        crt:
+listx:
+        call    iodisp  ;   2	     lpt:
+        defb    6       ;   3			ATS-Kanal B
 	defw	list0
 	defw	list1
 	defw	list2
 	defw	list3
-list0:	call	pu1.ch
+list0:
+	call	pu1.ch
 	pop	af
 	jp	um2ee
-list1:	call	co.ch
+list1:
+	call	co.ch
 	pop	af
 	jp	um2ee
-list2:	call	lo.ch
+list2:
+	call	lo.ch
 	pop	af
 	jp	um2ee
-list3:	call	pu2.ch
+list3:
+	call	pu2.ch
 	pop	af
 	jp	um2ee
 ;
@@ -1207,8 +1239,10 @@ list3:	call	pu2.ch
 ;	leser eingabe
 ;	=============
 ;
-readst::call	reta
-reads1:	call	iodisp
+readst::
+	call	reta
+reads1:
+	call	iodisp
 	defb	2
 	defw	rdst0
 	defw	rdst1
@@ -1217,50 +1251,60 @@ reads1:	call	iodisp
 rdst0:
 rdst1:
 rdst2:
-rdst3:	xor	a
+rdst3:
+	xor	a
 	dec	a
 	jp	um2ee
 ;
-reader::			; iobyte:   00 00 xx 00
-	call	reta		;   0     crt:
-reade1:	call	iodisp		;   1     ptr:
-	defb	2		;   2	  ur1:	ATS-Kanal A
-	defw	read0		;   3	  ur2:	ATS-Kanal B
+reader::               ; iobyte:   00 00 xx 00
+        call    reta   ;   0     crt:
+reade1:
+        call    iodisp ;   1     ptr:
+        defb    2      ;   2	  ur1:	ATS-Kanal A
+        defw    read0  ;   3	  ur2:	ATS-Kanal B
 	defw	read1
 	defw	read2
 	defw	read3
-read0:	call	ci.ch
+read0:
+	call	ci.ch
 	jp	um2ee
-read1:	call	ri.ch
+read1:
+	call	ri.ch
 	and	7fh
 	jp	um2ee
-read2:	call	ri1.ch
+read2:
+	call	ri1.ch
 	jp	um2ee
-read3:	call	ri2.ch
+read3:
+	call	ri2.ch
 	jp	um2ee
 
 ;	stanzer ausgabe
 ;	===============
 ;
-punch::				; iobyte:   00 xx 00 00
-	call	reta		;   0        crt:
-	push	af		;   1        ptp:
-	call	iodisp		;   2        up1:	ATS-Kanal A
-	defb	4		;   3	     up2:	ATS-Kanal B
+punch::                 ; iobyte:   00 xx 00 00
+        call    reta    ;   0        crt:
+        push    af      ;   1        ptp:
+        call    iodisp  ;   2        up1:	ATS-Kanal A
+        defb    4       ;   3	     up2:	ATS-Kanal B
 	defw	punch0
 	defw	punch1
 	defw	punch2
 	defw	punch3
-punch0:	call	co.ch
+punch0:
+	call	co.ch
 	pop	af
 	jp	um2ee
-punch1:	call	pu.ch
+punch1:
+	call	pu.ch
 	pop	af
 	jp	um2ee
-punch2:	call	pu1.ch
+punch2:
+	call	pu1.ch
 	pop	af
 	jp	um2ee
-punch3:	call	pu2.ch
+punch3:
+	call	pu2.ch
 	pop	af
 	jp	um2ee
 ;
@@ -1380,7 +1424,7 @@ fl.kalt:
 fl.warm:
 	ret
 ;
-endif
+ endif
 
  if zst or tramdk or opsdk
 	include	MD.MAC

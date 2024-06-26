@@ -1,5 +1,5 @@
-	PAGE
-;	PN	CC05
+         PAGE
+;        PN      CC05
 ;****************************************************************
 ;*               S  Y  S  4    --- Bedienungsprozessor  (C C P) *
 ;*                                 console command processor    *
@@ -8,1023 +8,1450 @@
 ;*               reassembliert: M. Herbote --- K EAW  ZFT (WFT) *
 ;*  V 4 . 1      -----------------------------------------------*
 ;*               Stand        : 19. Juni 1984                   *
+;*  V 4 . 2      -----------------------------------------------*
+;*               Geaenderte Label und eingefuegte Kommentare    *
+;*               Stand        : 07. Juni 2024                   *
 ;****************************************************************
-	.PHASE	0DE00H
-CCP	EQU	$
-D055:	JP	J170
-	JP	J165
 
-D060:	DB	07FH
-D065:	DB	0
-D070	EQU	$
-SIG:	DB	'DEG/SYS4'
-
-	DEFB	120	;ORG D055+88H
-
-D075:	DW	SIG
-D080:	DW	0
-
-C015:	LD	E,A	;Konsolenausgabe
-	LD	C,2
-	JP	BDENT
-
-C020:	PUSH	BC
-	CALL	C015
-D085:	POP	BC
-	RET
-
-C025:	LD	A,00DH
-	CALL	C020
-	LD	A,00AH
-	JP	C020
-
-C030:	LD	A,020H
-	JP	C020
-
-C035:	PUSH	BC
-	CALL	C025
-	POP	HL
-C040:	LD	A,M
-	OR	A
-	RET	Z
-	INC	HL
-	PUSH	HL
-	CALL	C015
-	POP	HL
-	JP	C040
-
-C045:	LD	C,13	;"Disketten"system zuruecksetzen
-	JP	BDENT
-
-C050:	LD	E,A	;Bezugslaufwerk
-	LD	C,14	;Bezugslaufwerk festlegen
-	JP	BDENT
-
-J005:	CALL	BDENT
-	LD	(D220),A
-	INC	A
-	RET
-
-C055:	LD	C,15	;Datei eroeffnen
-	JP	J005
-
-C060:	XOR	A
-	LD	(D215),A
-	LD	DE,D195
-	JP	C055
-
-C065:	LD	C,16	;Datei schliessen
-	JP	J005
-
-J010:	LD	C,17	;den ersten    Eintrag suchen
-	JP	J005
-
-C070:	LD	C,18	;den folgenden Eintrag suchen
-	JP	J005
-
-C075:	LD	DE,D195
-	JP	J010
-
-C080:	LD	C,19	;Datei(en) loeschen
-	JP	BDENT
-
-J015:	CALL	BDENT
-	OR	A
-	RET
-
-C085:	LD	C,20	;Aufzeichnung lesen
-	JP	J015
-
-C090:	LD	DE,D195
-	JP	C085
-
-C095:	LD	C,21	;Aufzeichnung schreiben
-	JP	J015
-
-C100:	LD	C,22	;Datei erzeugen
-	JP	J005
-
-C105:	LD	C,23	;Datei umbenennen
-	JP	BDENT
-
-C110:	LD	E,-1
-C115:	LD	C,32	;Benutzernummer verwalten
-	JP	BDENT
-
-C120:	CALL	C110
-D090:	ADD	A,A
-	ADD	A,A
-	ADD	A,A
-	ADD	A,A
-	LD	HL,D225
-	OR	(HL)
-	LD	(D005),A
-	RET
-
-C125:	LD	A,(D225)
-	LD	(000004H),A
-	RET
-
-C130:	CP	'a'	;Klein-  ===> Grossbuchstaben
-	RET	C
-	CP	'{'
-	RET	NC
-	AND	05FH
-	RET
-
-C135:	LD	A,(D170)
-	OR	A
-	JP	Z,J020
-	LD	A,(D225)
-	OR	A
-	LD	A,0
-	CALL	NZ,C050
-	LD	DE,D175
-	CALL	C055
-	JP	Z,J020
-	LD	A,(D185)
-	DEC	A
-	LD	(D190),A
-	LD	DE,D175
-	CALL	C085
-	JP	NZ,J020
-	LD	DE,D065
-	LD	HL,DBUF
-	LD	B,080H
-	CALL	C225
-	LD	HL,D180
-	LD	M,000H
-	INC	HL
-	DEC	M
-	LD	DE,D175
-	CALL	C065
-	JP	Z,J020
-	LD	A,(D225)
-	OR	A
-	CALL	NZ,C050
-	LD	HL,D070
-	CALL	C040
-	CALL	C140
-	JP	Z,J025
-	CALL	C160
-	JP	J175
-
-J020:	CALL	C160
-	CALL	C120
-	LD	C,00AH
-	LD	DE,D060
-	CALL	BDENT
-D095:	CALL	C125
-J025:	LD	HL,D065
-	LD	B,M
-J030:	INC	HL
-	LD	A,B
-	OR	A
-	JP	Z,J035
-	LD	A,M
-	CALL	C130
-	LD	M,A
-	DEC	B
-	JP	J030
-
-J035:	LD	M,A
-	LD	HL,D070
-	LD	(D075),HL
-	RET
-
-C140:	LD	C,11	;Konsolenstatus abfragen
-	CALL	BDENT
-	OR	A
-	RET	Z
-	LD	C,1	;Konsoleneingabe
-	CALL	BDENT
-	OR	A
-	RET
-
-C145:	LD	C,25	;Bezugslaufwerk ermitteln
-	JP	BDENT
-
-C150:	LD	DE,DBUF
-C155:	LD	C,26	;Datenpuffer festlegen
-	JP	BDENT
-
-C160:	LD	HL,D170
-	LD	A,M
-	OR	A
-	RET	Z
-	LD	M,000H
-	XOR	A
-	CALL	C050
-	LD	DE,D175
-	CALL	C080
-	LD	A,(D225)
-	JP	C050
-
-C165:	LD	DE,D100
-	LD	HL,BDOS
-	LD	B,006H
-J040:	LD	A,(DE)
-	CP	M
-	JP	NZ,J185
-	INC	DE
-	INC	HL
-	DEC	B
-	JP	NZ,J040
-	RET
-
-C170:	CALL	C025
-	LD	HL,(D080)
-J045:	LD	A,M
-	CP	' '
-	JP	Z,J050
-	OR	A
-	JP	Z,J050
-	PUSH	HL
-	CALL	C015
-	POP	HL
-	INC	HL
-	JP	J045
-
-J050:	LD	A,03FH
-	CALL	C015
-	CALL	C025
-	CALL	C160
-	JP	J175
-
-C175:	LD	A,(DE)
-	OR	A
-	RET	Z
-	CP	' '
-	JP	C,C170
-	RET	Z
-	CP	'='
-	RET	Z
-	CP	'_'
-	RET	Z
-	CP	'.'
-	RET	Z
-	CP	':'
-	RET	Z
-	CP	';'
-	RET	Z
-	CP	'<'
-	RET	Z
-	CP	'>'
-	RET	Z
-	RET
-
-C180:	LD	A,(DE)
-	OR	A
-	RET	Z
-	CP	020H
-	RET	NZ
-	INC	DE
-	JP	C180
-
-C185:	ADD	A,L
-	LD	L,A
-	RET	NC
-	INC	H
-	RET
-
-C190:	LD	A,000H
-C195:	LD	HL,D195
-	CALL	C185
-	PUSH	HL
-	PUSH	HL
-	XOR	A
-	LD	(D230),A
-	LD	HL,(D075)
-	EX	DE,HL
-	CALL	C180
-	EX	DE,HL
-	LD	(D080),HL
-	EX	DE,HL
-	POP	HL
-	LD	A,(DE)
-	OR	A
-	JP	Z,J055
-	SBC	A,040H
-	LD	B,A
-	INC	DE
-	LD	A,(DE)
-	CP	03AH
-	JP	Z,J060
-	DEC	DE
-J055:	LD	A,(D225)
-	LD	M,A
-	JP	J065
-
-J060:	LD	A,B
-	LD	(D230),A
-	LD	M,B
-	INC	DE
-J065:	LD	B,008H
-J070:	CALL	C175
-	JP	Z,J090
-	INC	HL
-	CP	02AH
-	JP	NZ,J075
-	LD	M,03FH
-	JP	J080
-
-J075:	LD	M,A
-	INC	DE
-J080:	DEC	B
-	JP	NZ,J070
-J085:	CALL	C175
-	JP	Z,J095
-	INC	DE
-	JP	J085
-
-J090:	INC	HL
-	LD	M,020H
-	DEC	B
-	JP	NZ,J090
-J095:	LD	B,003H
-	CP	02EH
-	JP	NZ,J120
-	INC	DE
-J100:	CALL	C175
-	JP	Z,J120
-	INC	HL
-	CP	02AH
-	JP	NZ,J105
-	LD	M,03FH
-	JP	J110
-
-J105:	LD	M,A
-	INC	DE
-J110:	DEC	B
-	JP	NZ,J100
-J115:	CALL	C175
-	JP	Z,J125
-	INC	DE
-	JP	J115
-
-J120:	INC	HL
-	LD	M,020H
-	DEC	B
-	JP	NZ,J120
-J125:	LD	B,003H
-J130:	INC	HL
-	LD	M,000H
-	DEC	B
-	JP	NZ,J130
-	EX	DE,HL
-	LD	(D075),HL
-	POP	HL
-	LD	BC,D010
-J135:	INC	HL
-	LD	A,M
-	CP	03FH
-	JP	NZ,J140
-	INC	B
-J140:	DEC	C
-	JP	NZ,J135
-	LD	A,B
-	OR	A
-	RET
-
-D099:	DB	'DIR ERA TYPESAVEREN USER'
-D100:	DW	01600H
-	DW	0
-	DW	0A500H
-
-C200:	LD	HL,D099
-	LD	C,000H
-J145:	LD	A,C
-	CP	006H
-	RET	NC
-	LD	DE,D200
-	LD	B,004H
-J150:	LD	A,(DE)
-	CP	M
-	JP	NZ,J155
-	INC	DE
-	INC	HL
-	DEC	B
-	JP	NZ,J150
-	LD	A,(DE)
-	CP	020H
-	JP	NZ,J160
-	LD	A,C
-	RET
-
-J155:	INC	HL
-	DEC	B
-	JP	NZ,J155
-J160:	INC	C
-	JP	J145
-
-J165:	XOR	A
-	LD	(D065),A
-J170:	LD	SP,D170
-	PUSH	BC
-	LD	A,C
-	RRA
-	RRA
-	RRA
-	RRA
-	AND	00FH
-	LD	E,A
-	CALL	C115
-	CALL	C045
-	LD	(D170),A
-	POP	BC
-	LD	A,C
-	AND	00FH
-	LD	(D225),A
-	CALL	C050
-	LD	A,(D065)
-	OR	A
-	JP	NZ,J180
-J175:	LD	SP,D170
-	CALL	C025
-	CALL	C145
-	ADD	A,041H
-	CALL	C015
-	LD	A,03EH
-	CALL	C015
-	CALL	C135
-J180:	LD	DE,DBUF
-	CALL	C155
-	CALL	C145
-	LD	(D225),A
-	CALL	C190
-	CALL	NZ,C170
-	LD	A,(D230)
-	OR	A
-	JP	NZ,J325
-	CALL	C200
-	LD	HL,D105
-	LD	E,A
-	LD	D,000H
-	ADD	HL,DE
-	ADD	HL,DE
-	LD	A,M
-	INC	HL
-	LD	H,M
-	LD	L,A
-	JP	(HL)
-
-D105:	DW	D115	;D I R
-	DW	D120	;E R A
-	DW	D130	;T Y P E
-	DW	D135	;S A V E
-	DW	D145	;R E N
-	DW	D155	;U S E R
-	DW	J325
-
-J185:	LD	HL,076F3H	; DI , HALT
-	LD	(D055),HL
-	LD	HL,D055
-	JP	(HL)
-
-C205:	LD	BC,D110
-	JP	C035
-
-D110:	DB	'READ ERROR'
-	DB	0
-
-C210:	LD	BC,D111
-	JP	C035
-
-D111:	DB	'NO FILE'
-	DB	0
-
-C215:	CALL	C190
-	LD	A,(D230)
-	OR	A
-	JP	NZ,C170
-	LD	HL,D200
-	LD	BC,D010
-J190:	LD	A,M
-	CP	' '
-	JP	Z,J195
-	INC	HL
-	SUB	030H
-	CP	00AH
-	JP	NC,C170
-	LD	D,A
-	LD	A,B
-	AND	0E0H
-	JP	NZ,C170
-	LD	A,B
-	RLCA
-	RLCA
-	RLCA
-	ADD	A,B
-	JP	C,C170
-	ADD	A,B
-	JP	C,C170
-	ADD	A,D
-	JP	C,C170
-	LD	B,A
-	DEC	C
-	JP	NZ,J190
-	RET
-
-J195:	LD	A,M
-	CP	' '
-	JP	NZ,C170
-	INC	HL
-	DEC	C
-	JP	NZ,J195
-	LD	A,B
-	RET
-
-C220:	LD	B,003H
-C225:	LD	A,M
-	LD	(DE),A
-	INC	HL
-	INC	DE
-	DEC	B
-	JP	NZ,C225
-	RET
-
-C230:	LD	HL,DBUF
-	ADD	A,C
-	CALL	C185
-	LD	A,M
-	RET
-
-C235:	XOR	A
-	LD	(D195),A
-	LD	A,(D230)
-	OR	A
-	RET	Z
-	DEC	A
-	LD	HL,D225
-	CP	M
-	RET	Z
-	JP	C050
-
-C240:	LD	A,(D230)
-	OR	A
-	RET	Z
-	DEC	A
-	LD	HL,D225
-	CP	M
-	RET	Z
-	LD	A,(D225)
-	JP	C050
-
-	PAGE
+;
+;   Set memory limit here
+;   This is the amount of contigeous ram starting from 0000
+;   CP/M will reside at the end of this space
+;
+;MEM      EQU     62                    ;for a 62k system (TS802 TEST - WORKS OK)
+;
+IOBYTE   EQU     3                     ;i/o definition byte
+TDRIVE   EQU     4                     ;current drive name and user number
+ENTRY    EQU     5                     ;entry point for the cp/m bdos
+TFCB     EQU     0005CH                ;default file control block
+TBUFF    EQU     00080H                ;i/o buffer and command line storage
+TBASE    EQU     00100H                ;transiant program storage area
+
+
+D010	EQU	0000BH
+
+
+;  Dies sind Equates für die verschiedenen ASCII-Zeichen
+BELL     EQU     07h
+BS       EQU     08h                   ;Backspace
+TAB      EQU     09h
+LF       EQU     0Ah
+CR       EQU     0Dh                   ;Carriage return
+FF       EQU     0FH                   ;Form Feed
+CTRLC    EQU     03h                   ;Dies ist CTRL-C
+CTRLE    EQU     05h                   ;Dies ist CTRL-E
+CTRLP    EQU     10h                   ;Dies ist CTRL-P
+CTRLR    EQU     12h                   ;Dies ist CTRL-R
+CTRLS    EQU     13h                   ;Dies ist CTRL-S
+CTRLU    EQU     15h                   ;Dies ist CTRL-U
+CTRLX    EQU     18h                   ;Dies ist CTRL-X
+CTRLZ    EQU     1Ah                   ;Dies ist CTRL-Z or EOF
+BLANK    EQU     ' '                   ;Leerzeichen
+PROMPT   EQU     '>'                   ;CCP Promptzeichen
+DEL      EQU     7Fh                   ;Delete  Code
+
+
+;
+;   Set origin for CP/M
+;
+;	ORG	(MEM-7)*1024   ==> 0DC00H
+         .PHASE  0DE00H
+CCP      EQU     $
+;
+CBASE:
+;
+;  Dies ist der normale Einsprung zum CCP nach einem Warmstart.
+;  Falls jedoch ein AUTO-Befehl definiert ist, 
+;  sollte nur nach dem Kaltstart hierhin gesprungen werden
+;
+;  I:  C  -  Usernummer  *  16  +  Disknummer
+         JP      COMMAND
+;  Einsprung  zum CCP ohne Ausführung eines AUTO-Befehls
+;  I:  C  -  Usernummer  *  16  +  Disknummer
+         JP      CLEARBUF
+
+INBUFF:
+         DB      127                   ;length of input buffer
+         DB      0                     ;current length of contents
+
+         DB      'DEG/SYS4'
+         DEFB    120                   ;ORG CBASE+88H
+
+        ;  DEFB    'Copyright 1979 (c) by Digital Research      '
+        ;  DEFB	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        ;  DEFB	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        ;  DEFB	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        ;  DEFB	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+INPOINT: DW      INBUFF+2              ;input line pointer
+NAMEPNT: DW      0                     ;input line pointer used for error message
+                                       ;Points to start of name in error
+         PAGE 
+;
+;   Routine to print (A) on the console. All registers used
+;
+PRINT:
+         LD      E,A                   ;setup bdos call
+         LD      C,2
+         JP      ENTRY
+
+;
+;   Routine to print (A) on the console and to save (BC)
+;
+PRINTB:
+         PUSH	BC
+         CALL	PRINT
+         POP	BC
+         RET
+
+;
+;   Routine to send a carriage return, line feed combination to the console
+;
+CRLF:
+         LD      A,CR
+         CALL    PRINTB
+         LD      A,LF
+         JP      PRINTB
+
+;
+;   Routine to send one space to the console and save (BC)
+;
+SPACE:
+         LD      A,BLANK
+         JP      PRINTB
+
+;
+;   Routine to print character string pointed to be (BC) on the console
+;   It must terminate with a null byte
+;
+PLINE:
+         PUSH    BC
+         CALL    CRLF
+         POP     HL
+PLINE2:
+         LD      A,(HL)
+         OR      A
+         RET     Z
+         INC     HL
+         PUSH    HL
+         CALL    PRINT
+         POP     HL
+         JP      PLINE2
+
+;
+;   Routine to reset the disk system
+;
+RESDSK:
+         LD      C,13
+         JP      ENTRY
+
+;
+;   Routine to select disk (A)
+;
+DSKSEL:
+         LD      E,A	               ;Bezugslaufwerk
+         LD      C,14	               ;Bezugslaufwerk festlegen
+         JP      ENTRY
+
+;
+;   Routine to call bdos and save the return code 
+;   The zero flag is set on a return of 0ffh
+;
+ENTRY1:
+         CALL    ENTRY
+         LD      (RTNCODE),A           ;save return code
+         INC     A                     ;set zero if 0ffh returned
+         RET
+
+;
+;   Routine to open a file. (DE) must point to the FCB
+;
+OPEN:
+         LD      C,15                  ;Datei eroeffnen
+         JP      ENTRY1
+
+;
+;   Routine to open file at (FCB)
+;
+OPENFCB:
+         XOR     A                     ;clear the record number byte at fcb+32
+         LD      (FCB+32),A
+         LD      DE,FCB
+         JP      OPEN
+
+;
+;   Routine to close a file. (DE) points to FCB
+;
+CLOSE:
+         LD      C,16                  ;Datei schliessen
+         JP      ENTRY1
+
+;
+;   Routine to search for the first file with ambigueous name (DE)
+;
+SRCHFST:
+         LD      C,17                  ;den ersten    Eintrag suchen
+         JP      ENTRY1
+
+;
+;   Search for the next ambigeous file name
+;
+SRCHNXT:
+         LD      C,18                  ;den folgenden Eintrag suchen
+         JP      ENTRY1
+
+;
+;   Search for file at (FCB).
+;
+SRCHFCB:
+         LD      DE,FCB
+         JP      SRCHFST
+
+;
+;   Routine to delete a file pointed to by (DE)
+;
+DELETE:
+         LD      C,19                  ;Datei(en) loeschen
+         JP      ENTRY
+
+;
+;   Routine to call the bdos and set the zero flag if a zero status is returned
+;
+ENTRY2:
+         CALL    ENTRY
+         OR      A                     ;set zero flag if appropriate.
+         RET
+
+;
+;   Routine to read the next record from a sequential file
+;   (DE) points to the FCB
+;
+RDREC:
+         LD      C,20                  ;Aufzeichnung lesen
+         JP      ENTRY2
+
+;
+;   Routine to read file at (FCB)
+;
+READFCB:
+         LD      DE,FCB
+         JP      RDREC
+
+;
+;   Routine to write the next record of a sequential file
+;   (DE) points to the FCB.
+;
+WRTREC:
+         LD      C,21                  ;Aufzeichnung schreiben
+         JP      ENTRY2
+
+;
+;   Routine to create the file pointed to by (DE)
+;
+CREATE:
+         LD      C,22                  ;Datei erzeugen
+         JP      ENTRY1
+
+;
+;   Routine to rename the file pointed to by (DE)
+;   Note that the new name starts at (DE+16)
+;
+RENAM:
+         LD      C,23                  ;Datei umbenennen
+         JP      ENTRY
+
+;
+;   Get the current user code.
+;
+GETUSR:
+         LD      E,0FFH
+;
+;   Routne to get or set the current user code
+;   If (E) is FF then this is a GET, else it is a SET
+;
+GETSETUC:
+         LD      C,32                  ;Benutzernummer verwalten
+         JP      ENTRY
+
+;
+;   Routine to set the current drive byte at (TDRIVE)
+;
+SETCDRV:
+         CALL	GETUSR                 ;get user number
+         ADD	A,A                    ;and shift into the upper 4 bits
+         ADD	A,A
+         ADD	A,A
+         ADD	A,A
+         LD     HL,CDRIVE              ;now add in the current drive number
+         OR     (HL)
+         LD     (TDRIVE),A             ;and save
+         RET
+
+;
+;   Move currently active drive down to (TDRIVE)
+;
+MOVECD:
+         LD      A,(CDRIVE)
+         LD	     (TDRIVE),A
+         RET
+
+;
+;   Routine to convert (A) into upper case ascii; Only letters are affected
+;
+UPPER:                                 ;Klein-  ===> Grossbuchstaben
+         CP      'a'                   ;check for letters in the range of 'a' to 'z'
+         RET     C
+         CP      '{'
+         RET     NC
+         AND     05FH
+         RET
+
+         PAGE
+;
+;   Routine to get a line of input
+;   We must check to see if the user is in (BATCH) mode
+;   If so, then read the input from file ($$$.SUB). At the end, reset to console input.
+;
+GETINP:
+         LD      A,(BATCH)             ;if =0, then use console input
+         OR      A
+         JP      Z,GETINP1
+;
+;   Use the submit file ($$$.sub) which is prepared by a SUBMIT run
+;   It must be on drive (A) and it will be deleted if and error occures (like eof)
+;
+         LD      A,(CDRIVE)            ;select drive 0 if need be
+         OR      A
+         LD      A,0                   ;always use drive A for submit
+         CALL    NZ,DSKSEL             ;select it if required
+         LD      DE,BATCHFCB
+         CALL    OPEN                  ;look for it
+         JP      Z,GETINP1             ;if not there, use normal input
+         LD      A,(BATCHFCB+15)       ;get last record number+1
+         DEC     A
+         LD      (BATCHFCB+32),A
+         LD      DE,BATCHFCB
+         CALL    RDREC                 ;read last record
+         JP      NZ,GETINP1
+;
+;   Move this record into input buffer
+;
+         LD      DE,INBUFF+1
+         LD      HL,TBUFF              ;data was read into buffer here
+         LD      B,128                 ;all 128 characters may be used
+         CALL    HL2DE                 ;(HL) to (DE), (B) bytes
+         LD      HL,BATCHFCB+14
+         LD      (HL),0                ;zero out the 's2' byte
+         INC     HL                    ;and decrement the record count
+         DEC     (HL)
+         LD      DE,BATCHFCB           ;close the batch file now
+         CALL    CLOSE
+         JP      Z,GETINP1             ;quit on an error
+         LD      A,(CDRIVE)            ;re-select previous drive if need be
+         OR      A
+         CALL    NZ,DSKSEL             ;don't do needless selects
+;
+;   Print line just read on console
+;
+         LD      HL,INBUFF+2
+         CALL    PLINE2
+         CALL    CHKCON                ;check console, quit on a key
+         JP      Z,GETINP2             ;jump if no key is pressed
+;
+;   Terminate the submit job on any keyboard input. 
+;   Delete this file such that it is not re-started and jump to normal keyboard input section
+;
+         CALL    DELBATCH              ;delete the batch file
+         JP      CMMND1                ;and restart command input
+
+;
+;   Get here for normal keyboard input
+;   Delete the submit file incase there was one
+;
+GETINP1:
+         CALL    DELBATCH              ;delete file ($$$.sub)
+         CALL    SETCDRV               ;reset active disk
+         LD      C,10                  ;get line from console device
+         LD      DE,INBUFF
+         CALL    ENTRY
+         CALL    MOVECD                ;reset current drive (again)
+;
+;   Convert input line to upper case.
+;
+GETINP2:
+         LD      HL,INBUFF+1
+         LD      B,(HL)                ;(B)=character counter
+GETINP3:
+         INC     HL
+         LD      A,B                   ;end of the line?
+         OR      A
+         JP      Z,GETINP4
+         LD      A,(HL)                ;convert to upper case
+         CALL    UPPER
+         LD      (HL),A
+         DEC     B                     ;adjust character count
+         JP      GETINP3
+
+GETINP4:
+         LD      (HL),A                ;add trailing null
+         LD      HL,INBUFF+2
+         LD      (INPOINT),HL          ;reset input line pointer
+         RET
+
+         PAGE
+;
+;   Routine to check the console for a key pressed
+;   The zero flag is set is none, else the character is returned in (A)
+;
+CHKCON:
+         LD      C,11                  ;check console
+         CALL    ENTRY
+         OR      A
+         RET     Z                     ;return if nothing
+         LD      C,1                   ;else get character
+         CALL    ENTRY
+         OR      A
+         RET
+
+;
+;   Routine to get the currently active drive number
+;
+GETDSK:
+         LD      C,25                  ;Bezugslaufwerk ermitteln
+         JP      ENTRY
+
+;
+;   Set the stabdard dma address
+;
+STDDMA:
+         LD      DE,TBUFF
+;
+;   Routine to set the dma address to (DE)
+;
+DMASET:
+         LD      C,26                  ;Datenpuffer festlegen
+         JP      ENTRY
+
+;
+;  Delete the batch file created by SUBMIT
+;
+DELBATCH:
+         LD      HL,BATCH              ;is batch active?
+         LD      A,(HL)
+         OR      A
+         RET     Z
+         LD      (HL),0                ;yes, de-activate it
+         XOR     A
+         CALL    DSKSEL                ;select drive 0 for sure
+         LD      DE,BATCHFCB           ;and delete this file
+         CALL    DELETE
+         LD      A,(CDRIVE)            ;reset current drive
+         JP      DSKSEL
+
+;
+;   Check to two strings at (PATTRN1) and (PATTRN2)
+;   They must be the same or we halt....
+;
+VERIFY:
+         LD      DE,PATTRN1            ;these are the serial number bytes
+         LD      HL,PATTRN2            ;ditto, but how could they be different?
+         LD      B,6                   ;6 bytes each
+VERIFY1:
+         LD      A,(DE)
+         CP      (HL)
+         JP      NZ,HALT               ;jump to halt routine
+         INC     DE
+         INC     HL
+         DEC     B
+         JP      NZ,VERIFY1
+         RET
+
+;
+;   Print back file name with a '?' to indicate a syntax error
+;
+SYNERR:
+         CALL    CRLF                  ;end current line
+         LD      HL,(NAMEPNT)          ;this points to name in error
+SYNERR1:
+         LD      A,(HL)                ;print it until a space or null is found
+         CP      ' '
+         JP      Z,SYNERR2
+         OR      A
+         JP      Z,SYNERR2
+         PUSH    HL
+         CALL    PRINT
+         POP     HL
+         INC     HL
+         JP      SYNERR1
+
+SYNERR2:
+         LD      A,'?'                 ;add trailing '?'
+         CALL    PRINT
+         CALL    CRLF
+         CALL    DELBATCH              ;delete any batch file
+         JP      CMMND1                ;and restart from console input
+
+;
+;   Check character at (DE) for legal command input
+;   Note that the zero flag is set if the character is a delimiter
+;
+CHECK:
+         LD      A,(DE)
+         OR      A
+         RET     Z
+         CP      ' '                   ;control characters are not legal here
+         JP      C,SYNERR
+         RET     Z                     ;check for valid delimiter
+         CP      '='
+         RET     Z
+         CP      '_'
+         RET     Z
+         CP      '.'
+         RET     Z
+         CP      ':'
+         RET     Z
+         CP      ';'
+         RET     Z
+         CP      '<'
+         RET     Z
+         CP      '>'
+         RET     Z
+         RET
+
+         PAGE
+;
+;   Get the next non-blank character from (DE)
+;
+NONBLANK:
+         LD      A,(DE)
+         OR      A                     ;string ends with a null
+         RET     Z
+         CP      BLANK
+         RET     NZ
+         INC     DE
+         JP      NONBLANK
+
+;
+;   Add (HL)=(HL)+(A)
+;
+ADDHL:
+         ADD     A,L
+         LD      L,A
+         RET     NC                    ;take care of any carry
+         INC     H
+         RET
+
+;
+;   Convert the first name in (FCB)
+;
+CONVFST:
+         LD      A,0
+;
+;   Format a file name (convert * to '?', etc.)
+;   On return, (A)=0 is an unambigeous name was specified
+;   Enter with (A) equal to the position within the fcb for the name (either 0 or 16)
+;
+CONVERT:
+         LD      HL,FCB
+         CALL    ADDHL
+         PUSH    HL
+         PUSH    HL
+         XOR     A
+         LD      (CHGDRV),A            ;initialize drive change flag
+         LD      HL,(INPOINT)          ;set (HL) as pointer into input line
+         EX      DE,HL
+         CALL    NONBLANK              ;get next non-blank character
+         EX      DE,HL
+         LD      (NAMEPNT),HL          ;save pointer here for any error message
+         EX      DE,HL
+         POP     HL
+         LD      A,(DE)                ;get first character
+         OR      A
+         JP      Z,CONVRT1
+         SBC     A,'A'-1               ;might be a drive name, convert to binary
+         LD      B,A                   ;and save
+         INC     DE                    ;check next character for a ':'
+         LD      A,(DE)
+         CP      ':'
+         JP      Z,CONVRT2
+         DEC     DE                    ;nope, move pointer back to the start of the line
+CONVRT1:
+         LD      A,(CDRIVE)
+         LD      (HL),A
+         JP      CONVRT3
+
+CONVRT2:
+         LD      A,B
+         LD      (CHGDRV),A            ;set change in drives flag
+         LD      (HL),B
+         INC     DE
+;
+;   Convert the basic file name
+;
+CONVRT3:
+         LD      B,008H
+CONVRT4:
+         CALL    CHECK
+         JP      Z,CONVRT8
+         INC     HL
+         CP      '*'                   ;note that an '*' will fill the remaining
+         JP      NZ,CONVRT5            ;field with '?'
+         LD      (HL),'?'
+         JP      CONVRT6
+CONVRT5:
+         LD      (HL),A
+         INC     DE
+CONVRT6:
+         DEC     B
+         JP      NZ,CONVRT4
+CONVRT7:
+         CALL    CHECK                 ;get next delimiter
+         JP      Z,GETEXT
+         INC     DE
+         JP      CONVRT7
+
+CONVRT8:
+         INC     HL                    ;blank fill the file name
+         LD      (HL),BLANK
+         DEC     B
+         JP      NZ,CONVRT8
+
+;
+;   Get the extension and convert it
+;
+GETEXT:
+         LD      B,003H
+         CP      '.'
+         JP      NZ,GETEXT5
+         INC     DE
+GETEXT1:
+         CALL    CHECK
+         JP      Z,GETEXT5
+         INC     HL
+         CP      '*'
+         JP      NZ,GETEXT2
+         LD      (HL),'?'
+         JP      GETEXT3
+
+GETEXT2:
+         LD      (HL),A
+         INC     DE
+GETEXT3:
+         DEC     B
+         JP      NZ,GETEXT1
+GETEXT4:
+         CALL    CHECK
+         JP      Z,GETEXT6
+         INC     DE
+         JP      GETEXT4
+
+GETEXT5:
+         INC     HL
+         LD      (HL),BLANK
+         DEC     B
+         JP      NZ,GETEXT5
+GETEXT6:
+         LD      B,3
+GETEXT7:
+         INC     HL
+         LD      (HL),0
+         DEC     B
+         JP      NZ,GETEXT7
+         EX      DE,HL
+         LD      (INPOINT),HL          ;save input line pointer
+         POP     HL
+;
+;   Check to see if this is an ambigeous file name specification
+;   Set the (A) register to non zero if it is
+;
+         LD      BC,11                 ;set name length
+GETEXT8:
+         INC     HL
+         LD      A,(HL)
+         CP      '?'                   ;any question marks?
+         JP      NZ,GETEXT9
+         INC     B                     ;count them
+GETEXT9:
+         DEC     C
+         JP      NZ,GETEXT8
+         LD      A,B
+         OR      A
+         RET
+
+         PAGE
+;
+;   CP/M command table. Note commands can be either 3 or 4 characters long
+;
+NUMCMDS  EQU     6                     ;number of commands
+CMDTBL:  DB      'DIR '
+         DB      'ERA '
+         DB      'TYPE'
+         DB      'SAVE'
+         DB      'REN '
+         DB      'USER'
+;
+;   The following six bytes must agree with those at (PATTRN2) or cp/m will HALT. Why?
+;
+;PATTRN1:DEFB	0,22,0,0,0,0	;(* serial number bytes *)
+ PATTRN1:
+         DEFS    6,0
+;
+;   Search the command table for a match with what has just been entered
+;   If a match is found, then we jump to the proper section
+;   Else jump to (UNKNOWN)
+;   On return, the (C) register is set to the command number that matched (or NUMCMDS+1 if no match)
+;
+SEARCH:
+         LD      HL,CMDTBL
+         LD      C,0
+SEARCH1:
+         LD      A,C
+         CP      NUMCMDS               ;this commands exists
+         RET     NC
+         LD      DE,FCB+1              ;check this one
+         LD      B,4                   ;max command length
+SEARCH2:
+         LD      A,(DE)
+         CP      (HL)
+         JP      NZ,SEARCH3            ;not a match
+         INC     DE
+         INC     HL
+         DEC     B
+         JP      NZ,SEARCH2
+         LD      A,(DE)                ;allow a 3 character command to match
+         CP      BLANK
+         JP      NZ,SEARCH4
+         LD      A,C                   ;set return register for this command
+         RET
+
+SEARCH3:
+         INC     HL
+         DEC     B
+         JP      NZ,SEARCH3
+SEARCH4:
+         INC     C
+         JP      SEARCH1
+
+         PAGE
+;
+;   Set the input buffer to empty and then start the command processor (ccp)
+;
+CLEARBUF:
+         XOR	A
+         LD	(INBUFF+1),A               ;second byte is actual length
+
+;****************************************************************
+;* C C P  -   C o n s o l e   C o m m a n d   P r o c e s s o r *
+;****************************************************************
+COMMAND:
+         LD      SP,CCPSTACK           ;setup stack area
+         PUSH    BC                    ;note that (C) should be equal to:
+         LD      A,C                   ;(uuuudddd) where 'uuuu' is the user number
+         RRA                           ;             and 'dddd' is the drive numer
+         RRA
+         RRA
+         RRA
+         AND	00FH                   ;isolate the user number
+         LD     E,A
+         CALL   GETSETUC               ;and set it
+         CALL   RESDSK                 ;reset the disk system
+         LD     (BATCH),A              ;clear batch mode flag
+         POP    BC
+         LD     A,C
+         AND    00FH                   ;isolate the drive number
+         LD     (CDRIVE),A             ;and save
+         CALL   DSKSEL                 ;... and select
+         LD     A,(INBUFF+1)
+         OR     A                      ;anything in input buffer alread ?
+         JP     NZ,CMMND2              ;yes, we just process it
+;
+;   Entry point to get a command line from the console
+;
+CMMND1:
+         LD     SP,CCPSTACK            ;set stack straight
+         CALL   CRLF                   ;start a new line on the screen
+         CALL   GETDSK                 ;get current drive
+         ADD    A,'A'
+         CALL   PRINT                  ;print current drive
+         LD     A,PROMPT
+         CALL   PRINT                  ;and add prompt
+         CALL   GETINP                 ;get line from user
+;
+;   Process command line here
+;
+CMMND2:
+         LD      DE,TBUFF
+         CALL    DMASET                ;set standard dma address
+         CALL    GETDSK
+         LD      (CDRIVE),A            ;set current drive
+         CALL    CONVFST               ;convert name typed in
+         CALL    NZ,SYNERR             ;wild cards are not allowed
+         LD      A,(CHGDRV)            ;if a change in drives was indicated
+         OR      A                     ;then treat this as an unknown command
+         JP      NZ,UNKNOWN            ;which gets executed
+         CALL    SEARCH                ;else search command table for a match
+;
+;   Note that an unknown command returns with (A) pointing to the last address
+;   in our table which is (UNKNOWN)
+;
+         LD      HL,CMDADR             ;now, look thru our address table for command (A)
+         LD      E,A                   ;set (DE) to command number
+         LD      D,000H
+         ADD     HL,DE
+         ADD     HL,DE                 ;(HL)=(CMDADR)+2*(command number)
+         LD      A,(HL)                ;now pick out this address
+         INC     HL
+         LD      H,(HL)
+         LD      L,A
+         JP      (HL)                  ;now execute it
+;
+;   CP/M command address table
+;
+CMDADR:
+         DW      DIRECT                ;D I R
+         DW      ERASE                 ;E R A
+         DW      TYPE                  ;T Y P E
+         DW      SAVE                  ;S A V E
+         DW      RENAME                ;R E N
+         DW      USER                  ;U S E R
+         DW      UNKNOWN
+
+;
+;   Halt the system. Reason for this is unknown at present
+;
+HALT:
+         LD      HL,076F3H             ;'DI HLT' instructions
+         LD      (CBASE),HL
+         LD      HL,CBASE
+         JP      (HL)
+
+;
+;   Read error while TYPEing a file.
+;
+RDERROR:
+         LD      BC,RDERR
+         JP      PLINE
+
+RDERR:   DB	'READ ERROR',0
+
+;
+;   Required file was not located.
+;
+NONE:
+         LD      BC,NONE1
+         JP      PLINE
+
+NONE1:   DB      'NO FILE',0
+
+;
+;   Decode a command of the form 'A>filename number{ filename}
+;   Note that a drive specifier is not allowed on the first file name
+;   On return, the number is in register (A)
+;   Any error causes 'filename?' to be printed and the command is aborted
+;
+DECODE:
+         CALL    CONVFST               ;convert filename
+         LD      A,(CHGDRV)            ;do not allow a drive to be specified
+         OR      A
+         JP      NZ,SYNERR
+         LD      HL,FCB+1              ;convert number now
+         LD      BC,11                 ;(B)=sum register, (C)=max digit count
+DECODE1:
+         LD      A,(HL)
+         CP      BLANK                 ;a space terminates the numeral
+         JP      Z,DECODE3
+         INC     HL
+         SUB     '0'                   ;make binary from ascii
+         CP      10                    ;legal digit?
+         JP      NC,SYNERR
+         LD      D,A                   ;yes, save it in (D)
+         LD      A,B                   ;compute (B)=(B)*10 and check for overflow
+         AND     0E0H
+         JP      NZ,SYNERR
+         LD      A,B
+         RLCA
+         RLCA
+         RLCA                          ;(A)=(B)*8
+         ADD     A,B                   ;.......*9
+         JP      C,SYNERR
+         ADD     A,B                   ;.......*10
+         JP      C,SYNERR
+         ADD     A,D                   ;add in new digit now
+DECODE2:
+         JP      C,SYNERR
+         LD      B,A                   ;and save result
+         DEC     C                     ;only look at 11 digits
+         JP      NZ,DECODE1
+         RET
+DECODE3:
+         LD      A,(HL)                ;spaces must follow (why?)
+         CP      BLANK
+         JP      NZ,SYNERR
+         INC     HL
+DECODE4:
+         DEC     C
+         JP      NZ,DECODE3
+         LD      A,B                   ;set (A)=the numeric value entered
+         RET
+
+;
+;   Move 3 bytes from (HL) to (DE)
+;   Note that there is only one reference to this at (A2D5h)
+;
+MOVE3:
+         LD      B,3
+;
+;   Move (B) bytes from (HL) to (DE)
+;
+HL2DE:
+         LD      A,(HL)
+         LD      (DE),A
+         INC     HL
+         INC     DE
+         DEC     B
+         JP      NZ,HL2DE
+         RET
+
+;
+;   Compute (HL)=(TBUFF)+(A)+(C) and get the byte that's here
+;
+EXTRACT:
+         LD      HL,TBUFF
+         ADD     A,C
+         CALL    ADDHL
+         LD      A,(HL)
+         RET
+
+;
+;   Check drive specified. If it means a change, then the new drive will be selected
+;   In any case, the drive byte of the fcb will be set to null (means use current drive)
+;
+DSELECT:
+         XOR     A                     ;null out first byte of fcb
+         LD      (FCB),A
+         LD      A,(CHGDRV)            ;a drive change indicated?
+         OR      A
+         RET     Z
+         DEC     A                     ;yes, is it the same as the current drive?
+         LD      HL,CDRIVE
+         CP      (HL)
+         RET     Z
+         JP      DSKSEL                ;no. Select it then
+
+;
+;   Check the drive selection and reset it to the previous drive if it was changed for the preceeding command
+;
+RESETDR:
+         LD      A,(CHGDRV)            ;drive change indicated?
+         OR      A
+         RET     Z
+         DEC     A                     ;drive change indicated?
+         LD      HL,CDRIVE
+         CP      (HL)
+         RET     Z
+         LD      A,(CDRIVE)            ;yes, re-select our old drive
+         JP      DSKSEL
+
+		 TITLE 'C C P - Funktion:   D I R'
+         PAGE
 ;****************************************************************
 ;*               C C P - Funktion:   D I R                      *
 ;****************************************************************
-D115:	CALL	C190
-	CALL	C235
-	LD	HL,D200
-	LD	A,M
-	CP	020H
-	JP	NZ,J205
-	LD	B,00BH
-J200:	LD	M,'?'
-	INC	HL
-	DEC	B
-	JP	NZ,J200
-J205:	LD	E,000H
-	PUSH	DE
-	CALL	C075
-	CALL	Z,C210
-J210:	JP	Z,J250
-	LD	A,(D220)
-	RRCA
-	RRCA
-	RRCA
-	AND	060H
-	LD	C,A
-	LD	A,00AH
-	CALL	C230
-	RLA
-	JP	C,J245
-	POP	DE
-	LD	A,E
-	INC	E
-	PUSH	DE
-	AND	003H
-	PUSH	AF
-	JP	NZ,J215
-	CALL	C025
-	PUSH	BC
-	CALL	C145
-	POP	BC
-	ADD	A,041H
-	CALL	C020
-	LD	A,03AH
-	CALL	C020
-	JP	J220
+DIRECT:
+         CALL    CONVFST               ;convert file name
+         CALL    DSELECT               ;select indicated drive
+         LD      HL,FCB+1              ;was any file indicated?
+         LD      A,(HL)
+         CP      BLANK
+         JP      NZ,DIRECT2
+         LD      B,11                  ;no. Fill field with '?' - same as *.*
+DIRECT1:
+         LD      (HL),'?'
+         INC     HL
+         DEC     B
+         JP      NZ,DIRECT1
+DIRECT2:
+         LD      E,0                   ;set initial cursor position
+         PUSH    DE
+         CALL    SRCHFCB               ;get first file name
+         CALL    Z,NONE                ;none found at all?
+DIRECT3:
+         JP      Z,DIRECT9             ;terminate if no more names
+         LD      A,(RTNCODE)           ;get file's position in segment (0-3)
+         RRCA
+         RRCA
+         RRCA
+         AND     060H                  ;(A)=position*32
+         LD      C,A
+         LD      A,10
+         CALL    EXTRACT               ;extract the tenth entry in fcb
+         RLA                           ;check system file status bit
+         JP      C,DIRECT8             ;we don't list them
+         POP     DE
+         LD      A,E                   ;bump name count
+         INC     E
+         PUSH    DE
+         AND     003H                  ;at end of line?
+         PUSH    AF
+         JP      NZ,DIRECT4
+         CALL    CRLF                  ;yes, end this line and start another
+         PUSH    BC
+         CALL    GETDSK                ;start line with ('A:')
+         POP     BC
+         ADD     A,'A'
+         CALL    PRINTB
+         LD      A,':'
+         CALL    PRINTB
+         JP      DIRECT5
 
-J215:	CALL	C030
-	LD	A,03AH
-	CALL	C020
-J220:	CALL	C030
-	LD	B,001H
-J225:	LD	A,B
-	CALL	C230
-	AND	07FH
-	CP	' '
-	JP	NZ,J235
-	POP	AF
-	PUSH	AF
-	CP	003H
-	JP	NZ,J230
-	LD	A,009H
-	CALL	C230
-	AND	07FH
-	CP	' '
-	JP	Z,J240
-J230:	LD	A,' '
-J235:	CALL	C020
-	INC	B
-	LD	A,B
-	CP	00CH
-	JP	NC,J240
-	CP	009H
-	JP	NZ,J225
-	CALL	C030
-	JP	J225
+DIRECT4:
+         CALL    SPACE                 ;add seperator between file names
+         LD      A,':'
+         CALL    PRINTB
+DIRECT5:
+         CALL    SPACE
+         LD      B,1                   ;'extract' each file name character at a time
+DIRECT6:
+         LD      A,B
+         CALL    EXTRACT
+         AND     07FH                  ;strip bit 7 (status bit)
+         CP      BLANK                 ;are we at the end of the name?
+         JP      NZ,DRECT65
+         POP     AF                    ;yes, don't print spaces at the end of a line
+         PUSH    AF
+         CP      3
+         JP      NZ,DRECT63
+         LD      A,9                   ;first check for no extension
+         CALL    EXTRACT
+         AND     07FH
+         CP      BLANK
+         JP      Z,DIRECT7             ;don't print spaces
+DRECT63:
+         LD      A,BLANK               ;else print them
+DRECT65:
+         CALL    PRINTB
+         INC     B                     ;bump to next character psoition
+         LD      A,B
+         CP      12                    ;end of the name?
+         JP      NC,DIRECT7
+         CP      9                     ;nope, starting extension?
+         JP      NZ,DIRECT6
+         CALL    SPACE                 ;yes, add seperating space
+         JP      DIRECT6
 
-J240:	POP	AF
-J245:	CALL	C140
-	JP	NZ,J250
-	CALL	C070
-	JP	J210
+DIRECT7:
+         POP     AF                    ;get the next file name
+DIRECT8:
+         CALL    CHKCON                ;first check console, quit on anything
+         JP      NZ,DIRECT9
+         CALL    SRCHNXT               ;get next name
+         JP      DIRECT3               ;and continue with our list
 
-J250:	POP	DE
-	JP	J375
+DIRECT9:
+         POP     DE                    ;restore the stack and return to command level
+         JP      GETBACK
 
-	PAGE
+		 TITLE 'C C P - Funktion:   E R A'
+         PAGE
 ;****************************************************************
 ;*               C C P - Funktion:   E R A                      *
 ;****************************************************************
-D120:	CALL	C190
-	CP	00BH
-	JP	NZ,J255
-	LD	BC,D125
-	CALL	C035
-	CALL	C135
-	LD	HL,D065
-	DEC	M
-	JP	NZ,J175
-	INC	HL
-	LD	A,M
-	CP	059H
-	JP	NZ,J175
-	INC	HL
-	LD	(D075),HL
-J255:	CALL	C235
-	LD	DE,D195
-	CALL	C080
-	INC	A
-	CALL	Z,C210
-	JP	J375
+ERASE:
+         CALL    CONVFST               ;convert file name
+         CP      11                    ;was '*.*' entered?
+         JP      NZ,ERASE1
+         LD      BC,YESNO              ;yes, ask for confirmation
+         CALL    PLINE
+         CALL    GETINP
+         LD      HL,INBUFF+1
+         DEC     (HL)                  ;must be exactly 'y'
+         JP      NZ,CMMND1
+         INC     HL
+         LD      A,(HL)
+         CP      'Y'
+         JP      NZ,CMMND1
+         INC     HL
+         LD      (INPOINT),HL          ;save input line pointer
+ERASE1:
+         CALL    DSELECT               ;select desired disk
+         LD      DE,FCB
+         CALL    DELETE                ;delete the file
+         INC     A
+         CALL    Z,NONE                ;not there?
+         JP      GETBACK               ;return to command level now
 
-D125:	DB	'ALL (Y/N)?'
-	NOP
+YESNO:   DB      'ALL (Y/N)?',0
 
-	PAGE
+		 TITLE 'C C P - Funktion:   T Y P E'
+         PAGE
 ;****************************************************************
 ;*               C C P - Funktion:   T Y P E                    *
 ;****************************************************************
-D130:	CALL	C190
-	JP	NZ,C170
-	CALL	C235
-	CALL	C060
-	JP	Z,J275
-	CALL	C025
-	LD	HL,D235
-	LD	M,0FFH
-J260:	LD	HL,D235
-	LD	A,M
-	CP	080H
-	JP	C,J265
-	PUSH	HL
-	CALL	C090
-	POP	HL
-	JP	NZ,J270
-	XOR	A
-	LD	M,A
-J265:	INC	M
-	LD	HL,DBUF
-	CALL	C185
-	LD	A,M
-	CP	01AH
-	JP	Z,J375
-	CALL	C015
-	CALL	C140
-	JP	NZ,J375
-	JP	J260
+TYPE:
+         CALL    CONVFST               ;convert file name
+         JP      NZ,SYNERR             ;wild cards not allowed
+         CALL    DSELECT               ;select indicated drive
+         CALL    OPENFCB               ;open the file
+         JP      Z,TYPE5               ;not there?
+         CALL    CRLF                  ;ok, start a new line on the screen
+         LD      HL,NBYTES               ;initialize byte counter
+         LD      (HL),0FFH             ;set to read first sector
+TYPE1:
+         LD      HL,NBYTES
+TYPE2:
+         LD      A,(HL)                ;have we written the entire sector?
+         CP      128
+         JP      C,TYPE3
+         PUSH    HL                    ;yes, read in the next one
+         CALL    READFCB
+         POP     HL
+         JP      NZ,TYPE4              ;end or error?
+         XOR     A                     ;ok, clear byte counter
+         LD      (HL),A
+TYPE3:
+         INC     (HL)                  ;count this byte
+         LD      HL,TBUFF              ;and get the (A)th one from the buffer (TBUFF)
+         CALL    ADDHL
+         LD      A,(HL)
+         CP      CTRLZ                 ;end of file mark?
+         JP      Z,GETBACK
+         CALL    PRINT                 ;no, print it
+         CALL    CHKCON                ;check console, quit if anything ready
+         JP      NZ,GETBACK
+         JP      TYPE1
+;
+;   Get here on an end of file or read error
+;
+TYPE4:
+         DEC     A                     ;read error?
+         JP      Z,GETBACK
+         CALL    RDERROR               ;yes, print message
+TYPE5:
+         CALL    RESETDR               ;and reset proper drive
+         JP      SYNERR                ;now print file name with problem
 
-J270:	DEC	A
-	JP	Z,J375
-	CALL	C205
-J275:	CALL	C240
-	JP	C170
-
-	PAGE
+		 TITLE 'C C P - Funktion:   S A V E'
+         PAGE
 ;****************************************************************
 ;*               C C P - Funktion:   S A V E                    *
 ;****************************************************************
-D135:	CALL	C215
-	PUSH	AF
-	CALL	C190
-	JP	NZ,C170
-	CALL	C235
-	LD	DE,D195
-	PUSH	DE
-	CALL	C080
-	POP	DE
-	CALL	C100
-	JP	Z,J290
-	XOR	A
-	LD	(D215),A
-	POP	AF
-	LD	L,A
-	LD	H,000H
-	ADD	HL,HL
-	LD	DE,TPA
-J280:	LD	A,H
-	OR	L
-	JP	Z,J285
-	DEC	HL
-	PUSH	HL
-	LD	HL,DBUF
-	ADD	HL,DE
-	PUSH	HL
-	CALL	C155
-	LD	DE,D195
-	CALL	C095
-	POP	DE
-	POP	HL
-	JP	NZ,J290
-	JP	J280
+SAVE:
+         CALL    DECODE                ;get numeric number that follows SAVE
+         PUSH    AF                    ;save number of pages to write
+         CALL    CONVFST               ;convert file name
+         JP      NZ,SYNERR             ;wild cards not allowed
+         CALL    DSELECT               ;select specified drive
+         LD      DE,FCB                ;now delete this file
+         PUSH    DE
+         CALL    DELETE
+         POP     DE
+         CALL    CREATE                ;and create it again
+         JP      Z,SAVE3               ;can't create?
+         XOR     A                     ;clear record number byte
+         LD      (FCB+32),A
+         POP     AF                    ;convert pages to sectors
+         LD      L,A
+         LD      H,0
+         ADD     HL,HL                 ;(HL)=number of sectors to write
+         LD      DE,TBASE              ;and we start from here
+SAVE1:
+         LD      A,H                   ;done yet?
+         OR      L
+         JP      Z,SAVE2
+         DEC     HL                    ;nope, count this and compute the start
+         PUSH    HL                    ;of the next 128 byte sector
+         LD      HL,128
+         ADD     HL,DE
+         PUSH    HL                    ;save it and set the transfer address
+         CALL    DMASET
+         LD      DE,FCB                ;write out this sector now
+         CALL    WRTREC
+         POP     DE                    ;reset (DE) to the start of the last sector
+         POP     HL                    ;restore sector count
+         JP      NZ,SAVE3              ;write error?
+         JP      SAVE1
+;
+;   Get here after writing all of the file.
+;
+SAVE2:
+         LD      DE,FCB                ;now close the file
+         CALL    CLOSE
+         INC     A                     ;did it close ok?
+         JP      NZ,SAVE4
+;
+;   Print out error message (no space).
+;
+SAVE3:
+         LD      BC,NOSPACE
+         CALL    PLINE
+SAVE4:
+         CALL    STDDMA                ;reset the standard dma address
+         JP      GETBACK
 
-J285:	LD	DE,D195
-	CALL	C065
-	INC	A
-	JP	NZ,J295
-J290:	LD	BC,D140
-	CALL	C035
-J295:	CALL	C150
-	JP	J375
+NOSPACE: DB      'NO SPACE',0
 
-D140:	DB	'NO SPACE'
-	NOP
-
-	PAGE
+		 TITLE 'C C P - Funktion:   R E N'
+         PAGE
 ;****************************************************************
 ;*               C C P - Funktion:   R E N                      *
 ;****************************************************************
-D145:	CALL	C190
-	JP	NZ,C170
-	LD	A,(D230)
-	PUSH	AF
-	CALL	C235
-	CALL	C075
-	JP	NZ,J320
-	LD	HL,D195
-	LD	DE,D210
-	LD	B,010H
-	CALL	C225
-	LD	HL,(D075)
-	EX	DE,HL
-	CALL	C180
-	CP	'='
-	JP	Z,J300
-	CP	'_'
-	JP	NZ,J315
-J300:	EX	DE,HL
-	INC	HL
-	LD	(D075),HL
-	CALL	C190
-	JP	NZ,J315
-	POP	AF
-	LD	B,A
-	LD	HL,D230
-	LD	A,M
-	OR	A
-	JP	Z,J305
-	CP	B
-	LD	M,B
-	JP	NZ,J315
-J305:	LD	M,B
-	XOR	A
-	LD	(D195),A
-	CALL	C075
-	JP	Z,J310
-	LD	DE,D195
-	CALL	C105
-	JP	J375
+RENAME:
+         CALL    CONVFST               ;convert first file name
+         JP      NZ,SYNERR             ;wild cards not allowed
+         LD      A,(CHGDRV)            ;remember any change in drives specified
+         PUSH    AF
+         CALL    DSELECT               ;and select this drive
+         CALL    SRCHFCB               ;is this file present?
+         JP      NZ,RENAME6            ;yes, print error message
+         LD      HL,FCB                ;yes, move this name into second slot
+         LD      DE,FCB+16
+         LD      B,16
+         CALL    HL2DE
+         LD      HL,(INPOINT)          ;get input pointer
+         EX      DE,HL
+         CALL    NONBLANK              ;get next non blank character
+         CP      '='                   ;only allow an '=' or '_' seperator
+         JP      Z,RENAME1
+         CP      '_'
+         JP      NZ,RENAME5
+RENAME1:
+         EX      DE,HL
+         INC     HL                    ;ok, skip seperator
+         LD      (INPOINT),HL          ;save input line pointer
+         CALL    CONVFST               ;convert this second file name now
+         JP      NZ,RENAME5            ;again, no wild cards
+         POP     AF                    ;if a drive was specified, then it
+         LD      B,A                   ;must be the same as before
+         LD      HL,CHGDRV
+         LD      A,(HL)
+         OR      A
+         JP      Z,RENAME2
+         CP      B
+         LD      (HL),B
+         JP      NZ,RENAME5            ;they were different, error
+RENAME2:
+         LD      (HL),B                ;reset as per the first file specification
+         XOR     A
+         LD      (FCB),A               ;clear the drive byte of the fcb
+RENAME3:
+         CALL    SRCHFCB               ;and go look for second file
+         JP      Z,RENAME4             ;doesn't exist?
+         LD      DE,FCB
+         CALL    RENAM                 ;ok, rename the file
+         JP      GETBACK
+;
+;   Process rename errors here.
+;
+RENAME4:
+         CALL    NONE                  ;file not there
+         JP      GETBACK
+RENAME5:
+         CALL    RESETDR               ;bad command format
+         JP      SYNERR
+RENAME6:
+         LD      BC,EXISTS             ;destination file already exists
+         CALL    PLINE
+         JP      GETBACK
 
-J310:	CALL	C210
-	JP	J375
+EXISTS:  DB      'FILE EXISTS',0
 
-J315:	CALL	C240
-	JP	C170
-
-J320:	LD	BC,D150
-	CALL	C035
-	JP	J375
-
-D150:	DB	'FILE EXISTS'
-	NOP
-
-	PAGE
+		 TITLE 'C C P - Funktion:   U S E R'
+         PAGE
 ;****************************************************************
 ;*               C C P - Funktion:   U S E R                    *
 ;****************************************************************
-D155:	CALL	C215
-	CP	010H
-	JP	NC,C170
-	LD	E,A
-	LD	A,(D200)
-	CP	020H
-	JP	Z,C170
-	CALL	C115
-	JP	J380
+USER:
+         CALL    DECODE                ;get numeric value following command
+         CP      16                    ;legal user number?
+         JP      NC,SYNERR
+         LD      E,A                   ;yes but is there anything else?
+         LD      A,(FCB+1)
+         CP      BLANK
+         JP      Z,SYNERR              ;yes, that is not allowed
+         CALL    GETSETUC              ;ok, set user code
+         JP      GETBACK1
 
-J325:	CALL	C165
-	LD	A,(D200)
-	CP	020H
-	JP	NZ,J330
-	LD	A,(D230)
-	OR	A
-	JP	Z,J380
-	DEC	A
-	LD	(D225),A
-	CALL	C125
-	CALL	C050
-	JP	J380
+		 TITLE 'TRANSIANT PROGRAM COMMAND'
+         PAGE
+;**************************************************************
+;*        T R A N S I A N T   P R O G R A M   C O M M A N D   *
+;**************************************************************
+UNKNOWN:
+         CALL    VERIFY                ;check for valid system (why?)
+         LD      A,(FCB+1)             ;anything to execute?
+         CP      BLANK
+         JP      NZ,UNKWN1
+         LD      A,(CHGDRV)            ;nope, only a drive change?
+         OR      A
+         JP      Z,GETBACK1            ;neither?
+         DEC     A
+         LD      (CDRIVE),A            ;ok, store new drive
+         CALL    MOVECD                ;set (TDRIVE) also
+         CALL    DSKSEL                ;and select this drive
+         JP      GETBACK1              ;then return
+;
+;   Here a file name was typed. Prepare to execute it.
+;
+UNKWN1:
+         LD      DE,FCB+9              ;an extension specified?
+         LD      A,(DE)
+         CP      BLANK
+         JP      NZ,SYNERR             ;yes, not allowed
+UNKWN2:
+         PUSH    DE
+         CALL    DSELECT               ;select specified drive
+         POP     DE
+         LD      HL,COMFILE            ;set the extension to 'COM'
+         CALL    MOVE3
+         CALL    OPENFCB               ;and open this file
+         JP      Z,UNKWN9              ;not present?
+;
+;   Load in the program
+;
+         LD      HL,TBASE              ;store the program starting here
+UNKWN3:
+         PUSH    HL
+         EX      DE,HL
+         CALL    DMASET                ;set transfer address
+         LD      DE,FCB                ;and read the next record
+         CALL    RDREC
+         JP      NZ,UNKWN4             ;end of file or read error?
+         POP     HL                    ;nope, bump pointer for next sector
+         LD      DE,128
+         ADD     HL,DE
+         LD      DE,CBASE              ;enough room for the whole file?
+         LD      A,L
+         SUB     E
+         LD      A,H
+         SBC     A,D
+         JP      NC,UNKWN0             ;no, it can't fit
+         JP      UNKWN3
+;
+;   Get here after finished reading.
+;
+UNKWN4:
+         POP     HL
+         DEC     A                     ;normal end of file?
+         JP      NZ,UNKWN0
+         CALL    RESETDR               ;yes, reset previous drive
+         CALL    CONVFST               ;convert the first file name that follows
+         LD      HL,CHGDRV             ;command name
+         PUSH    HL
+         LD      A,(HL)                ;set drive code in default fcb
+         LD      (FCB),A
+         LD      A,16                  ;put second name 16 bytes later
+         CALL    CONVERT               ;convert second file name
+         POP     HL
+         LD      A,(HL)                ;and set the drive for this second file
+         LD      (FCB+16),A
+         XOR     A                     ;clear record byte in fcb
+         LD      (FCB+32),A
+         LD      DE,TFCB               ;move it into place at(005Ch)
+         LD      HL,FCB
+         LD      B,33
+         CALL    HL2DE
+         LD      HL,INBUFF+2           ;now move the remainder of the input
+UNKWN5:
+         LD      A,(HL)                ;line down to (0080h). Look for a non blank
+         OR      A                     ;or a null
+         JP      Z,UNKWN6
+         CP      BLANK
+         JP      Z,UNKWN6
+         INC     HL
+         JP      UNKWN5
+;
+;   Do the line move now. It ends in a null byte.
+;
+UNKWN6:
+         LD      B,0                   ;keep a character count
+         LD      DE,TBUFF+1            ;data gets put here
+UNKWN7:
+         LD      A,(HL)                ;move it now
+         LD      (DE),A
+         OR      A
+         JP      Z,UNKWN8
+         INC     B
+         INC     HL
+         INC     DE
+         JP      UNKWN7
+UNKWN8:
+         LD      A,B                   ;now store the character count
+         LD      (TBUFF),A
+         CALL    CRLF                  ;clean up the screen
+         CALL    STDDMA                ;set standard transfer address
+         CALL    SETCDRV               ;reset current drive
+         CALL    TBASE                 ;and execute the program
+;
+;   Transiant programs return here (or reboot).
+;
+         LD      SP,BATCH              ;set stack first off
+         CALL    MOVECD                ;move current drive into place (TDRIVE)
+         CALL    DSKSEL                ;and reselect it
+         JP      CMMND1                ;back to comand mode
+;
+;   Get here if some error occured.
+;
+UNKWN9:
+         CALL    RESETDR               ;inproper format
+         JP      SYNERR
+UNKWN0:
+         LD      BC,BADLOAD            ;read error or won't fit
+         CALL    PLINE
+         JP      GETBACK
 
-J330:	LD	DE,D205
-	LD	A,(DE)
-	CP	020H
-	JP	NZ,C170
-	PUSH	DE
-	CALL	C235
-	POP	DE
-	LD	HL,D165
-	CALL	C220
-	CALL	C060
-	JP	Z,J365
-	LD	HL,TPA
-J335:	PUSH	HL
-	EX	DE,HL
-	CALL	C155
-	LD	DE,D195
-	CALL	C085
-	JP	NZ,J340
-	POP	HL
-	LD	DE,DBUF
-	ADD	HL,DE
-	LD	DE,D055
-	LD	A,L
-	SUB	E
-	LD	A,H
-	SBC	A,D
-	JP	NC,J370
-	JP	J335
+BADLOAD: DB      'BAD LOAD',0
+COMFILE: DB      'COM'                 ;command file extension
 
-J340:	POP	HL
-	DEC	A
-	JP	NZ,J370
-	CALL	C240
-	CALL	C190
-	LD	HL,D230
-	PUSH	HL
-	LD	A,M
-	LD	(D195),A
-	LD	A,010H
-	CALL	C195
-	POP	HL
-	LD	A,M
-	LD	(D210),A
-	XOR	A
-	LD	(D215),A
-	LD	DE,FCB1
-	LD	HL,D195
-	LD	B,021H
-	CALL	C225
-	LD	HL,D070
-J345:	LD	A,M
-	OR	A
-	JP	Z,J350
-	CP	020H
-	JP	Z,J350
-	INC	HL
-	JP	J345
-
-J350:	LD	B,0
-	LD	DE,DBUF+1
-J355:	LD	A,M
-	LD	(DE),A
-	OR	A
-	JP	Z,J360
-	INC	B
-	INC	HL
-	INC	DE
-	JP	J355
-
-J360:	LD	A,B
-	LD	(DBUF),A
-	CALL	C025
-	CALL	C150
-	CALL	C120
-	CALL	TPA
-	LD	SP,D170
-	CALL	C125
-	CALL	C050
-	JP	J175
-
-J365:	CALL	C240
-	JP	C170
-
-J370:	LD	BC,D160
-	CALL	C035
-	JP	J375
-
-D160:	DB	'BAD LOAD'
-	DB	0
-
-D165:	DB	'COM'
-
-J375:	CALL	C240
-J380:	CALL	C190
-	LD	A,(D200)
-	SUB	020H
-	LD	HL,D230
-	OR	M
-	JP	NZ,C170
-	JP	J175
+;
+;   Get here to return to command level
+;   We will reset the previous active drive and then either return to command
+;   level directly or print error message and then return
+;
+GETBACK:
+         CALL    RESETDR               ;reset previous drive
+GETBACK1:
+         CALL    CONVFST               ;convert first name in (FCB)
+         LD      A,(FCB+1)             ;if this was just a drive change request
+         SUB     BLANK                 ;make sure it was valid
+         LD      HL,CHGDRV
+         OR      (HL)
+         JP      NZ,SYNERR
+         JP      CMMND1                ;ok, return to command level
 
 	TITLE	'Variablen-Bereiche'
 	PAGE
-	DW	0
-	DW	0
-	DW	0
-	DW	0
-	DW	D085
-	DW	D090
-	DW	D095
-	DW	J180
-D170:	DB	0
-D175:	DB	0
-	DB	'$$$     SUB'
-	DW	0
-D180:	DB	0	;BA
-D185:	DW	0	;BB
-	DW	0	;BD
-	DW	0	;BF
-	DW	0	;C1
-	DW	0	;C3
-	DW	0	;C5
-	DW	0	;C7
-	DW	0	;C9
-	DB	0	;CB
-D190:	DB	0	;CC
-D195:	DB	0	;CD
-D200:	DW	0	;CE
-	DW	0	;D0
-	DW	0	;D2
-	DW	0	;D4
-D205:	DW	0	;D6
-	DW	0	;D8
-	DW	0	;DA
-	DB	0	;DC
-D210:	DW	0	;DD
-	DW	0	;DF
-	DW	0	;E1
-	DW	0	;E3
-	DW	0	;E5
-	DW	0	;E7
-	DW	0	;E9
-	DW	0	;EB
-D215:	DB	0	;ED
-D220:	DB	0	;EE
-D225:	DB	0	;EF
-D230:	DB	0	;F0
-D235:	DW	0	;F1
-	DW	0	;F3
-	DW	0	;F5
-	DW	0	;F7
-	DW	0	;F9
-	DW	0	;FB
-	DW	0	;FD
-	DB	0	;FF
-	
-BDOS	EQU	0E600H	;Anfangsadresse vom  B D O S
+;
+;   ccp stack area.
+;
+         DEFB    0,0,0,0,0,0,0,0
+         DEFB    0,0,0,0,0,0,0,0
+CCPSTACK EQU     $                     ;end of ccp stack area
+;
+;   Batch (or SUBMIT) processing information storage.
+;
+BATCH:
+         DB      0                     ;batch mode flag (0=not active)
+BATCHFCB:
+         DB      0,'$$$     SUB',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+;
+;   File control block setup by the CCP.
+;
+FCB:     DB      0,'           ',0,0,0,0,0,'           ',0,0,0,0,00
+RTNCODE: DB      0                     ;status returned from bdos call
+CDRIVE:  DB      0                     ;currently active drive
+CHGDRV:  DB      0                     ;change in drives flag (0=no change)
+NBYTES:  DW      0                     ;byte counter used by TYPE
+;
+;   Room for expansion?
+;
+         DEFS    132,0
+;
+;   Note that the following six bytes must match those at
+;   (PATTRN1) or cp/m will HALT. Why?
+;
+;PATTRN2:DEFB	0,22,0,0,0,0	;(* serial number bytes *)
+PATTRN2  EQU     $                     ;Anfangsadresse vom  B D O S
 
-
-BDENT	EQU	00005H
-TPA	EQU	00100H
-
-D005	EQU	00004H
-D010	EQU	0000BH
-FCB1	EQU	0005CH
-DBUF	EQU	00080H
 	.DEPHASE
 
 

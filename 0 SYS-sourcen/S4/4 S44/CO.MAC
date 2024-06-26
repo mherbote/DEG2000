@@ -19,7 +19,8 @@
 ;  1b '1'    SRMOD setzt speziellen Rollmodus
 ;  1b '0'    RRMOD setzt normalen   Rollmodus
 ;
-co.ch::	call	setp0
+co.ch::
+	call	setp0
 	call	rescur
 	push	bc		; zeichen in c muss erhalten bleiben
 	ld	a,c
@@ -29,11 +30,14 @@ co.ch::	call	setp0
 	cp	esc		; beginnt steuerfolge?
 	jp	nz,co.c10		; -> nein
 	set	qesc0,(hl)	; es beginnt steuerfolge
-co.c1:	res	qesc1,(hl)	;                              "set       /BCU"
+co.c1:
+	res	qesc1,(hl)	;                              "set       /BCU"
 	jp	co.c16		;                              "   co.c3+3/BCU"
 ;
-co.c2:	bit	qesc1,(hl)	; ist steuerzeichen schon eingetroffen?
-co.c3:	jp	nz,co.c4	; -> ja, es folgt r oder c     "jp        /BCU"
+co.c2:
+	bit	qesc1,(hl)	; ist steuerzeichen schon eingetroffen?
+co.c3:
+	jp	nz,co.c4	; -> ja, es folgt r oder c     "jp        /BCU"
 	cp	'='		; nein, es folgt steuerzeichen "res 2,(hl)/BCU"
 	jp	z,co.c9		; -> 1b '=' rc                 "jp co.c16 /BCU"
 	call	evtrol		; evtl. verzoegertes rollen ausfuehren
@@ -66,26 +70,33 @@ co.c3:	jp	nz,co.c4	; -> ja, es folgt r oder c     "jp        /BCU"
 	jp	z,nroll
 	jp	co.c12		; -> nicht auswertbares steuerzeichen
 ;
-co.c4:	bit	qesc2,(hl)	; 1b '=' r c
+co.c4:
+	bit	qesc2,(hl)	; 1b '=' r c
 	set	qesc2,(hl)
 	jr	nz,co.c6	; -> es ist c eingetroffen
-co.c5:	sub	20h		;                              "nop       /BCU"
+co.c5:
+	sub	20h		;                              "nop       /BCU"
 	jr	c,co.c7		; -> zeile war <= 1fh
 	ld	(zeil),a
 	jr	co.c8
-co.c6:	sub	20h		;                              "nop       /BCU"
+co.c6:
+	sub	20h		;                              "nop       /BCU"
 	jr	c,co.c7		; -> spalte war <= 1fh
 	ld	(spalt),a
-co.c7:	res	qesc0,(hl)	; bearbeitung ist beendet
-co.c8:	call	bsadr
+co.c7:
+	res	qesc0,(hl)	; bearbeitung ist beendet
+co.c8:
+	call	bsadr
 	jp	co.c15
 ;
-co.c9:	set	qesc1,(hl)
+co.c9:
+	set	qesc1,(hl)
 	res	qesc2,(hl)	; es wird r erwartet
 	jp	co.c15
 ;
 ;
-co.c10:	call	evtrol		; evtl. verzoegertes rollen ausfuehren
+co.c10:
+	call	evtrol		; evtl. verzoegertes rollen ausfuehren
 	cp	7		; bell
 	jp	z,co.bel
 	cp	8		; backspace
@@ -96,15 +107,19 @@ co.c10:	call	evtrol		; evtl. verzoegertes rollen ausfuehren
 	jp	z,co.cr
 	cp	tab
 	jr	z,co.tb
-co.c11:	cp	1ah		; clear                        "   0ch    /BCU"
+co.c11:
+	cp	1ah		; clear                        "   0ch    /BCU"
 	jp	z,co.cle
-co.c12:	ld	hl,(bsaddr)
+co.c12:
+	ld	hl,(bsaddr)
 	ld	(hl),a		; zeichen auf bildschirm schreiben
 	call	incad		; schreiben in letzte pos. rollt nicht!!
 	jp	co.c16
 ;
-co.c13:	ld	hl,(bsaddr)	; eos ab cursorposition
-co.c14:	ld	(hl),20h
+co.c13:
+	ld	hl,(bsaddr)	; eos ab cursorposition
+co.c14:
+	ld	(hl),20h
 	inc	hl
 	ld	a,h
 	cp	high (bsanf+maxz*maxs)
@@ -112,9 +127,11 @@ co.c14:	ld	(hl),20h
 	ld	a,l
 	cp	low (bsanf+maxz*maxs)
 	jr	nz,co.c14
-co.c15:	xor	a
+co.c15:
+	xor	a
 	ld	(qroll),a
-co.c16:	pop	bc
+co.c16:
+	pop	bc
 	call	setcur
 	call	resp0
 	ret
@@ -122,34 +139,41 @@ co.c16:	pop	bc
 ;
 ;
 	page
-co.lf:	ld	hl,zeil		; lf
+co.lf:
+	ld	hl,zeil		; lf
 	inc	(hl)
-colf1:	call	bsadr		; evtl. rollen ausfuehren
+colf1:
+	call	bsadr		; evtl. rollen ausfuehren
 	call	evtrol
 	jp	co.c16
 ;
 ;
-co.cr:	xor	a		; cr
+co.cr:
+	xor	a		; cr
 	ld	(spalt),a
 	jr	colf1
 ;
 ;
-co.nl:	ld	hl,zeil		; nl
+co.nl:
+	ld	hl,zeil		; nl
 	inc	(hl)
 	jr	co.cr
 ;
 ;
-co.bel:	call	ci.bell
+co.bel:
+	call	ci.bell
 	jp	co.c16
 ;
 ;
-co.hom:	xor	a		; home
+co.hom:
+	xor	a		; home
 	ld	(zeil),a
 	ld	(spalt),a
 	jr	colf1
 ;
 ;
-co.tb:	ld	hl,(bsaddr)	; tab
+co.tb:
+	ld	hl,(bsaddr)	; tab
 	ld	(hl),20h
 	call	incad
 	ld	a,(spalt)
@@ -159,17 +183,20 @@ co.tb:	ld	hl,(bsaddr)	; tab
 	jr	co.tb
 ;
 ;
-co.bs:	ld	a,(spalt)	; backspace
+co.bs:
+	ld	a,(spalt)	; backspace
 	or	a
 	jr	z,cobs2
 	dec	a
 	ld	(spalt),a
-cobs1:	ld	hl,(bsaddr)
+cobs1:
+	ld	hl,(bsaddr)
 	dec	hl
 	ld	(bsaddr),hl
 	jp	co.c15
 ;
-cobs2:	ld	a,(zeil)
+cobs2:
+	ld	a,(zeil)
 	or	a
 	jp	z,co.c15	; -> bs nicht ausfuehrbar, da homeposition
 	dec	a
@@ -179,43 +206,51 @@ cobs2:	ld	a,(zeil)
 	jr	cobs1
 ;
 ;
-co.cle:	xor	a		; clear
+co.cle:
+	xor	a		; clear
 	ld	(zeil),a
 	ld	(spalt),a
 	call	bsadr
 	jp	co.c13
 ;
 ;
-co.up:	ld	hl,zeil		; up
+co.up:
+	ld	hl,zeil		; up
 	ld	a,(hl)
 	or	a
 	jr	nz,coup1	; -> cursor stand nicht in 1. zeile
 	ld	(hl),maxz
-coup1:	dec	(hl)
+coup1:
+	dec	(hl)
 	jp	colf1
 ;
 ;
-co.rg:	ld	a,(spalt)	; right zyklisch in zeile
+co.rg:
+	ld	a,(spalt)	; right zyklisch in zeile
 	inc	a
 	cp	maxs
 	jr	nz,corg1
 	xor	a
-corg1:	ld	(spalt),a
+corg1:
+	ld	(spalt),a
 	jp	colf1
 ;
 ;
-eol:	ld	hl,spalt	; EOL
+eol:
+	ld	hl,spalt	; EOL
 	ld	a,maxs
 	sub	(hl)
 	ld	b,a
 	ld	hl,(bsaddr)
-eol1:	ld	(hl),20h
+eol1:
+	ld	(hl),20h
 	inc	hl
 	djnz	eol1
 	jp	co.c15
 ;
 ;
-insl:	xor	a		; INS LINE
+insl:
+	xor	a		; INS LINE
 	ld	(spalt),a
 	call	bsadr
 	ld	hl,zeil
@@ -226,7 +261,8 @@ insl:	xor	a		; INS LINE
 	ld	b,a
 	ld	hl,0
 	ld	de,maxs
-insl1:	add	hl,de		; anzahl der zeilen bestimmen, die nach
+insl1:
+	add	hl,de		; anzahl der zeilen bestimmen, die nach
 	djnz	insl1		; unten gerollt werden muessen
 	ld	b,h
 	ld	c,l
@@ -236,7 +272,8 @@ insl1:	add	hl,de		; anzahl der zeilen bestimmen, die nach
 	jr	eol		; -> zeile loeschen, in der cursor steht
 ;
 ;
-dell:	xor	a		; DEL LINE
+dell:
+	xor	a		; DEL LINE
 	ld	(spalt),a
 	call	bsadr
 	ld	hl,zeil
@@ -247,7 +284,8 @@ dell:	xor	a		; DEL LINE
 	ld	b,a
 	ld	hl,0
 	ld	de,maxs
-dell1:	add	hl,de		; anzahl der zeilen bestimmen, die nach
+dell1:
+	add	hl,de		; anzahl der zeilen bestimmen, die nach
 	djnz	dell1		; oben gerollt werden muessen
 	ld	b,h
 	ld	c,l
@@ -255,31 +293,38 @@ dell1:	add	hl,de		; anzahl der zeilen bestimmen, die nach
 	ex	de,hl
 	add	hl,de
 	ldir
-dell2:	ld	hl,bsanf+maxz*maxs-maxs ; letzte zeile loeschen
+dell2:
+	ld	hl,bsanf+maxz*maxs-maxs ; letzte zeile loeschen
 	ld	de,bsanf+maxz*maxs-maxs+1
 	ld	bc,maxs-1
-dell3:	ld	(hl),20h
+dell3:
+	ld	(hl),20h
 	ldir
 	jp	co.c15
 ;
 ;
-eos:	ld	hl,bsanf	; eos, cursor bleibt unveraendert
+eos:
+	ld	hl,bsanf	; eos, cursor bleibt unveraendert
 	ld	de,bsanf+1
 	ld	bc,maxz*maxs-1
 	jr	dell3
 ;
 ;
-sroll:	ld	a,1		; spezieller rollmodus an
-sroll1:	ld	(qrmode),a
+sroll:
+	ld	a,1		; spezieller rollmodus an
+sroll1:
+	ld	(qrmode),a
 	jp	co.c16
 ;
-nroll:	xor	a		; normaler   rollmodus an
+nroll:
+	xor	a		; normaler   rollmodus an
 	jr	sroll1
 ;
 ;
 ;
 	page
-incad:	ld	hl,spalt
+incad:
+	ld	hl,spalt
 	inc	(hl)
 	ld	a,(hl)
 	cp	maxs
@@ -295,30 +340,37 @@ incad:	ld	hl,spalt
 ; in letzter position verzoegern, statt dessen qroll stellen, damit vor
 ; der naechsten ausgabe oder setcur gerollt werden kann
 ;
-bsadr:	push	af
+bsadr:
+	push	af
 	push	bc
 	push	de
 	ld	a,(zeil)
-bsad1:	cp	maxz
+bsad1:
+	cp	maxz
 	jr	c,bsad4
 	jr	z,bsad3		; -> es koennte letzte position gewesen sein
-bsad2:	call	bsrol
+bsad2:
+	call	bsrol
 	jr	bsad1
-bsad3:	ld	a,(spalt)	; ist spalte = 0?
+bsad3:
+	ld	a,(spalt)	; ist spalte = 0?
 	or	a
 	ld	a,maxz
 	jr	nz,bsad2	; -> nein, rollen
 	dec	a
 	ld	hl,qroll	; rollmerker setzen
 	ld	(hl),1
-bsad4:	ld	b,a		; physische adresse berechnen
+bsad4:
+	ld	b,a		; physische adresse berechnen
 	ld	hl,0
 	ld	de,maxs
 	or	a
 	jr	z,bsad6
-bsad5:	add	hl,de
+bsad5:
+	add	hl,de
 	djnz	bsad5
-bsad6:	ld	a,(spalt)
+bsad6:
+	ld	a,(spalt)
 	ld	c,a
 	ld	b,0
 	add	hl,bc
@@ -331,7 +383,8 @@ bsad6:	ld	a,(spalt)
 	ret
 ;
 ;
-bsrol:	ld	de,bsanf	; bild hochschieben
+bsrol:
+	ld	de,bsanf	; bild hochschieben
 	ld	hl,bsanf+maxs
 	ld	bc,maxs*(maxz-1)
 	ldir
@@ -347,7 +400,8 @@ bsrol:	ld	de,bsanf	; bild hochschieben
 	ret
 ;
 ;
-evtrol:	push	hl
+evtrol:
+	push	hl
 	ld	hl,qroll
 	bit	0,(hl)
 	res	0,(hl)
@@ -365,7 +419,8 @@ evtrol:	push	hl
 	ret
 ;
 ;
-setcur:	push	hl
+setcur:
+	push	hl
 	ld	hl,qrmode
 	bit	0,(hl)
 	call	z,evtrol	; evtl. verzoegertes rollen ausfuehren
@@ -412,7 +467,8 @@ co.scp:
 ;
 ;
 ;
-co.bcu:	ld	a,0ceh		;set 1,(hl)
+co.bcu:
+	ld	a,0ceh		;set 1,(hl)
 	ld	(co.c1+1),a
 	ld	hl,co.c3+3
 	ld	(co.c1+3),hl
@@ -434,7 +490,8 @@ co.bcu:	ld	a,0ceh		;set 1,(hl)
 ;
 ;
 ;
-co.deg:	ld	a,08eh		;res 1,(hl)
+co.deg:
+	ld	a,08eh		;res 1,(hl)
 	ld	(co.c1+1),a
 	ld	hl,co.c16
 	ld	(co.c1+3),hl

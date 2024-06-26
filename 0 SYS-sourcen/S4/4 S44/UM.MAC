@@ -54,8 +54,10 @@ um21:
 	DB	0FFH	;Endbyte
 ;
 ;
-um2e:	call	um2
-um2er:	ld	sp,(s1ret)
+um2e:
+	call	um2
+um2er:
+	ld	sp,(s1ret)
 	ret
 	endm
 ;
@@ -180,7 +182,7 @@ resla1:
 	; out	(sbst+3),a	; RESET-Sperre ein
 	; pop	de
 	; pop	bc
-	ret
+	; ret
 ;
 ;reslp::
 	; push	af
@@ -201,53 +203,46 @@ resla1:
 	; ld	sp,(s2ret)	; SP alt laden
 	; push	hl		; HL ==> Stack
 	; ld	hl,(hlret)	; HL wieder herstellen
-	ret
+	; ret
 ;
 ;
 setp0::
- if orig eq 0
 	push	bc
 	push	hl
 	ld	bc,005C0h
 	ld	hl,setp1
 	otir
-	jr	setp2
+	pop	hl
+	pop	bc
+	ret
 setp1:
 	DB	0F0H	;Startbyte
 	DB	001H	;wahl
 	DB	000H	;Bereich
 	DB	004H	;BereichNr		"Anwender"
 	DB	0FFH	;Endbyte
-setp2:
-	pop	hl
-	pop	bc
- endif
-	ret
 ;
 resp0::
- if orig eq 0
 	push	bc
 	push	hl
 	ld	bc,005C0h
 	ld	hl,resp1
 	otir
-	jr	resp2
+	pop	hl
+	pop	bc
+	ret
 resp1:
 	DB	0F0H	;Startbyte
 	DB	001H	;wahl
 	DB	000H	;Bereich
 	DB	000H	;BereichNr		"System"	001H?
 	DB	0FFH	;Endbyte
-resp2:
-	pop	hl
-	pop	bc
- endif
-	ret
 ;
 ;
 ;
 	page
-um11:	ld	a,0c3h
+um11:
+	ld	a,0c3h
 	ld	(um1r3),a
 	ld	hl,resp0
 	ld	(um1r3+1),hl
@@ -263,7 +258,8 @@ um11:	ld	a,0c3h
 	ld	(um1r2+1),hl
 	ret
 ;
-um12:	xor	a
+um12:
+	xor	a
 	ld	(um1r3+0),a
 	ld	(um1r3+1),a
 	ld	(um1r3+2),a
@@ -303,12 +299,12 @@ gosys1	macro
 	push	bc
 	push	hl
 	ld	bc,004C0h
-	ld	hl,gosy2
+	ld	hl,$+10
 	otir
 	pop	hl
 	pop	bc
 	jp	0
-gosy2:
+;
 	DB	0F0H	;Startbyte
 	DB	003H	;wahl
 	DB	003H	;GoSys1

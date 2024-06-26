@@ -16,16 +16,19 @@ ta	macro	up
 	endm
 ;
 ;
-tinit::	ta	ttinit
+tinit::
+	ta	ttinit
 	ret
 ;
 ;
-ta1::	ta	tta1
+ta1::
+	ta	tta1
 	ld	(umerk),a
 	ret
 ;
 ;
-ta2::	ta	tta2
+ta2::
+	ta	tta2
 	push	bc
 	ld	b,a
  if not talt
@@ -53,18 +56,23 @@ ta2::	ta	tta2
  endif
 	jr	ta22
 ;
-ta23:	ld	a,0eeh
-ta22:	ld	b,a
-ta21:	ld	a,b
+ta23:
+	ld	a,0eeh
+ta22:
+	ld	b,a
+ta21:
+	ld	a,b
 	pop	bc
 	ret
 ;
 ;
-tfe::	ta	ttfe
+tfe::
+	ta	ttfe
 	ret
 ;
 ;
-tbel::	ta	ttbel
+tbel::
+	ta	ttbel
 	ret
 ;
 ;
@@ -91,24 +99,29 @@ ci.ch::
 	add	hl,bc
 	ld	a,(hl)
 	jr	ci5
-ci1:	push	af
+ci1:
+	push	af
 	ld	a,(umerk)
 	bit	2,a
 	pop	bc
 	ld	a,b
 	jr	z,ci5
-ci2:	cp	41h		; gross- / kleinumwandlung
+ci2:
+	cp	41h		; gross- / kleinumwandlung
 	jr	c,ci3
 	cp	5bh
 	jr	c,ci4
-ci3:	cp	61h
+ci3:
+	cp	61h
 	jr	c,ci5
 	cp	7bh
 	jr	nc,ci5
-ci4:	ld	b,a
+ci4:
+	ld	b,a
 	ld	a,(umsch)	; maske fuer umwandlung
 	xor	b
-ci5:	ld	b,a
+ci5:
+	ld	b,a
 	ret
 ;
 ;
@@ -119,11 +132,13 @@ ci.bell::
 ;	umschluesseltabelle
 ;	===================
 ;
-degtab:	defb	01eh,0f0h,0f1h,0cfh,0f2h,0f3h
+degtab:
+	defb	01eh,0f0h,0f1h,0cfh,0f2h,0f3h
 	defb	0f4h,0f5h,0f6h,0f7h,0f8h,0f9h
 	defb	0eeh,0fah,0fbh,0b0h,0cch
 degend:
-cpmtab:	defb	00dh,016h,07fh,013h,00eh,019h
+cpmtab:
+	defb	00dh,016h,07fh,013h,00eh,019h
 	defb	017h,005h,012h,008h,00ch,004h
 	defb	01eh,01ah,018h,003h,012h
 ;

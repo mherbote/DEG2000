@@ -105,7 +105,7 @@ s1eq	equ	true		; generierung der datei "S1.COM"
 pipeq	equ	true		; generierung der datei "A:PIP.SUB"
 ;
  if s1eq
- s1g	macro
+ s1com	macro
  ;					;	.phase 0000H
 	ld	hl,0116H	; LD	HL,MEM1
 	ld	bc,005C0H	; LD	BC,005C0H
@@ -168,7 +168,7 @@ eq.cap	equ	0ffh		; PTAS / STAS
 eq.hex	equ	0feh		; hexadezimale eingabe eines zeichens
 eq.lr0	equ	0fdh		; druckerreset
 eq.lw	equ	0fch		; A := neue laufwerksnummer
-eq.gra	equ	080h		; groesse des geraetes A festlegen
+eq.gra	equ	000h		; groesse des geraetes A festlegen  ;080h
 eq.le1	equ	081h		; laden/entladen kassettenlw 1
 eq.le2	equ	082h		; laden/entladen kassettenlw 2
  if anzakb gt 1
