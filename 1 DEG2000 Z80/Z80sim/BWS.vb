@@ -165,7 +165,9 @@ Public Class BWS
 #Region "Init-Teil"
     Public Sub New()
         InitializeComponent()
+    End Sub
 
+    Public Sub Init(ByVal x1 As Integer, ByVal y1 As Integer, FontdateiName As String)
         ' Add any initialization after the InitializeComponent() call.
         IsCursor = False                                'Cursor
         IsCursorActiv = False
@@ -187,9 +189,7 @@ Public Class BWS
         testbildWahl = 1
 
         Uhrzeit.Enabled = True
-    End Sub
 
-    Public Sub Init(ByVal x1 As Integer, ByVal y1 As Integer, FontdateiName As String)
         If Not Font1.LoadBwsFont(FontdateiName) Then
             End
         End If
@@ -312,14 +312,20 @@ Public Class BWS
         Try
             Select Case pX
                 Case 1
-                    Me.Height = PIy * Zy * BWSy + 39
                     Me.Width = PIx * Zx * BWSx + 2 + 14
                 Case 2
-                    Me.Height = PIy * Zy * BWSy + 39
                     Me.Width = PIx * Zx * BWSx + 2 + 14
                 Case 3
-                    Me.Height = PIy * Zy * BWSy + 39
                     Me.Width = PIx * Zx * BWSx + 2 + 14
+            End Select
+
+            Select Case pY
+                Case 1
+                    Me.Height = PIy * Zy * BWSy + 39
+                Case 2
+                    Me.Height = PIy * Zy * BWSy + 39
+                Case 3
+                    Me.Height = PIy * Zy * BWSy + 39
             End Select
 
             Call changeBWS()
