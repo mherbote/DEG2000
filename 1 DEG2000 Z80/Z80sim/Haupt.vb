@@ -967,6 +967,9 @@ Public Class Haupt
     End Sub
 
     Private Sub KassetteAnzeigen_Click(sender As System.Object, e As System.EventArgs) Handles KassetteAnzeigen.Click
+        Call KassetteAnzeigenChange()
+    End Sub ' KassetteAnzeigen_Click
+    Public Sub KassetteAnzeigenChange()
         Select Case KassetteAnzeigen.Checked
             Case False
                 KassetteAnzeigen.Checked = False
@@ -985,7 +988,7 @@ Public Class Haupt
                     .Left = Me.Left + Me.Width - 14
                 End With
         End Select
-    End Sub ' KassetteAnzeigen_Click
+    End Sub
 
     Private Sub FensterToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles FensterToolStripMenuItem.Click
         FensterToolStripMenuItem.Checked = Not FensterToolStripMenuItem.Checked

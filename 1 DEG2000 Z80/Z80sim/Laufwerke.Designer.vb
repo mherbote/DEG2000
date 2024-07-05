@@ -44,6 +44,7 @@ Partial Class Laufwerke
         Me.DataGridViewTextBoxColumn4 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DataGridViewTextBoxColumn7 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DataGridViewTextBoxColumn10 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.AnzeigeKassetten = New System.Windows.Forms.Button()
         CType(Me.Kassetten1, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.MiniDisk, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.StandardDisk, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -202,12 +203,23 @@ Partial Class Laufwerke
         Me.DataGridViewTextBoxColumn10.Name = "DataGridViewTextBoxColumn10"
         Me.DataGridViewTextBoxColumn10.Width = 70
         '
+        'AnzeigeKassetten
+        '
+        Me.AnzeigeKassetten.BackColor = System.Drawing.Color.FromArgb(CType(CType(192, Byte), Integer), CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.AnzeigeKassetten.Location = New System.Drawing.Point(574, 0)
+        Me.AnzeigeKassetten.Name = "AnzeigeKassetten"
+        Me.AnzeigeKassetten.Size = New System.Drawing.Size(70, 20)
+        Me.AnzeigeKassetten.TabIndex = 6
+        Me.AnzeigeKassetten.Text = "An"
+        Me.AnzeigeKassetten.UseVisualStyleBackColor = False
+        '
         'Laufwerke
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(644, 413)
         Me.ControlBox = False
+        Me.Controls.Add(Me.AnzeigeKassetten)
         Me.Controls.Add(Me.Label3)
         Me.Controls.Add(Me.Label2)
         Me.Controls.Add(Me.Label1)
@@ -238,4 +250,5 @@ Partial Class Laufwerke
     Friend WithEvents OpenFileDialog1 As OpenFileDialog
     Friend WithEvents DataGridViewTextBoxColumn7 As DataGridViewTextBoxColumn
     Friend WithEvents DataGridViewTextBoxColumn10 As DataGridViewTextBoxColumn
+    Friend WithEvents AnzeigeKassetten As Button
 End Class

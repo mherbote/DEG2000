@@ -136,6 +136,16 @@ Public Class Laufwerke
     '    End Select
     'End Sub
 
+    Private Sub Click_AnzeigeKassetten(sender As Object, e As EventArgs) Handles AnzeigeKassetten.Click
+        Haupt.KassetteAnzeigen.Checked = Not Haupt.KassetteAnzeigen.Checked
+        Call Haupt.KassetteAnzeigenChange()
+        If Haupt.KassetteAnzeigen.Checked Then
+            AnzeigeKassetten.Text = "Aus"
+        Else
+            AnzeigeKassetten.Text = "An"
+        End If
+    End Sub
+
     Private Sub Kassetten1_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles Kassetten1.CellClick
         '## Call ShowKassette()
         If e.RowIndex >= 0 Then
