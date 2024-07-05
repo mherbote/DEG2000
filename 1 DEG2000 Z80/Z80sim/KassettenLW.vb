@@ -43,51 +43,51 @@ Public Class KassettenLW
     Private Anz As Byte
     Public D, E, D1, E1 As Byte
 
-    Public Function Open_Kassette(ByVal Dateiname As String) As Boolean
+    Public Function OpenKassette(ByVal Dateiname As String) As Boolean
         Try
             fi = New FileInfo(Dateiname)
             RO = fi.IsReadOnly
             '           fs = fi.Open(FileMode.Open, FileAccess.ReadWrite)
             fs = fi.OpenRead
             KassettenDateiname = Dateiname
-            Open_Kassette = True
+            OpenKassette = True
             FilePos = 0
             Record = 0
         Catch ex As Exception
             MsgBox("KassettenLW.Open_Kassette: " + "can't open file " + Dateiname)
             KassettenDateiname = ""
-            Open_Kassette = False
+            OpenKassette = False
             FilePos = -1
         End Try
     End Function
 
-    Public Function Create_Kassette(ByVal Dateiname As String) As Boolean
+    Public Function CreateKassette(ByVal Dateiname As String) As Boolean
         Try
             fi = New FileInfo(Dateiname)
             fs = fi.Create
             FilePos = 0
             Record = 0
             KassettenDateiname = Dateiname
-            SpezialRecord_Schreiben("B", &H10, True)
-            SpezialRecord_Schreiben("S", &H10)
+            SpezialRecordSchreiben("B", &H10, True)
+            SpezialRecordSchreiben("S", &H10)
             'fs.Close()
             'fs = fi.OpenRead
-            Create_Kassette = True
+            CreateKassette = True
         Catch ex As Exception
-            Create_Kassette = False
+            CreateKassette = False
             FilePos = -1
         End Try
     End Function
 
-    Public Function Close_Kassette() As Boolean
+    Public Function CloseKassette() As Boolean
         If Not IsNothing(fs) Then
             fs.Close()
         End If
-        Close_Kassette = True
+        CloseKassette = True
         FilePos = -1
-    End Function ' Close_Kassette
+    End Function ' CloseKassette
 
-    Public Function Record_Lesen() As Byte
+    Public Function RecordLesen() As Byte
         Dim i As Byte
 
         Try
@@ -96,7 +96,7 @@ Public Class KassettenLW
                 If Chr(buffer.b(0).z(0)) <> "V" Then
                     Call ErrorRecord()
                     'fs.Close()
-                    Record_Lesen = 0
+                    RecordLesen = 0
                     Exit Function
                 End If
                 '
@@ -126,22 +126,22 @@ Public Class KassettenLW
                 If Chr(buffer.b(0).z(0)) <> "N" Then
                     Call ErrorRecord()
                     'fs.Close()
-                    Record_Lesen = 0
+                    RecordLesen = 0
                     Exit Function
                 End If
-                Record_Lesen = Anz
+                RecordLesen = Anz
             Else
-                Record_Lesen = 0
+                RecordLesen = 0
             End If
         Catch ex As Exception
-            Record_Lesen = 0
+            RecordLesen = 0
             MsgBox("KassettenLW.Lesen_Record: " + ex.Message,, "Kassette lesen")
         End Try
         FilePos = fs.Position
         Record = Record + 1
-    End Function ' Lesen_Record
+    End Function ' LesenRecord
 
-    Public Sub Record_Next()
+    Public Sub RecordNext()
         fs.Read(buffer.b(0).z, 0, 16)
         If Chr(buffer.b(0).z(0)) <> "V" Then
             Call ErrorRecord()
@@ -160,9 +160,9 @@ Public Class KassettenLW
         End If
         FilePos = fs.Position
         Record = Record + 1
-    End Sub ' Next_Record
+    End Sub ' NextRecord
 
-    Public Function Record_Back() As Byte
+    Public Function RecordBack() As Byte
         Dim i As Integer
 
         Try
@@ -173,7 +173,7 @@ Public Class KassettenLW
                 If Chr(buffer.b(0).z(0)) <> "N" Then
                     Call ErrorRecord()
                     'fs.Close()
-                    Record_Back = 0
+                    RecordBack = 0
                     Exit Function
                 End If
                 '
@@ -189,47 +189,47 @@ Public Class KassettenLW
                 If Chr(buffer.b(0).z(0)) <> "V" Then
                     Call ErrorRecord()
                     'fs.Close()
-                    Record_Back = 0
+                    RecordBack = 0
                     Exit Function
                 End If
                 fs.Position = fs.Position - 1 * 16
-                Record_Back = Anz
+                RecordBack = Anz
             Else
-                Record_Back = 0
+                RecordBack = 0
             End If
         Catch ex As Exception
-            Record_Back = 0
+            RecordBack = 0
         End Try
         FilePos = fs.Position
         Record = Record - 1
-    End Function ' Back_Record
+    End Function ' BackRecord
 
-    Public Function Next_BM() As Byte
+    Public Function NextBM() As Byte
         Do
-            Anz = Record_Lesen()
+            Anz = RecordLesen()
         Loop Until Anz = 1 And (Chr(buffer.b(1).z(0)) = "B" Or fs.Position = fs.Length)
-        Next_BM = Anz
+        NextBM = Anz
         FilePos = fs.Position
-    End Function ' Next_BM
+    End Function ' NextBM
 
-    Public Function Previous_BM() As Byte
+    Public Function PreviousBM() As Byte
         Do
-            Anz = Record_Back()
+            Anz = RecordBack()
         Loop Until Anz = 1 And Chr(buffer.b(1).z(0)) = "B"
-        Previous_BM = Anz
+        PreviousBM = Anz
         FilePos = fs.Position
-    End Function ' Previous_BM
+    End Function ' PreviousBM
 
-    Public Function BM_nr(ByVal nr As Byte) As Byte
+    Public Function BMnr(ByVal nr As Byte) As Byte
         Dim i As Byte
         For i = 1 To nr
             Do
-                Anz = Record_Lesen()
+                Anz = RecordLesen()
             Loop Until Anz = 1 And (Chr(buffer.b(1).z(0)) = "B" Or fs.Position = fs.Length)
         Next
-        BM_nr = Anz
+        BMnr = Anz
         FilePos = fs.Position
-    End Function ' BM_nr
+    End Function ' BMnr
 
     Public Sub Rewind()
         fs.Position = 0
@@ -237,7 +237,7 @@ Public Class KassettenLW
         Record = 0
     End Sub ' Rewind
 
-    Public Sub SpezialBlock_Schreiben(ByVal s As String, ByVal Laenge As Byte, Optional ByVal FirstBM As Boolean = False)
+    Public Sub SpezialBlockSchreiben(ByVal s As String, ByVal Laenge As Byte, Optional ByVal FirstBM As Boolean = False)
         Dim i As Byte
 
         Try
@@ -256,8 +256,8 @@ Public Class KassettenLW
         Catch ex As Exception
             MsgBox("KassettenLW.Schreiben_Block ('" + s + "'): " + ex.Message)
         End Try
-    End Sub ' Schreiben_Block
-    Public Sub SpezialRecord_Schreiben(ByVal Kennung As String, ByVal Laenge As Byte, Optional ByVal FirstBM As Boolean = False)
+    End Sub ' SpezialBlockSchreiben
+    Public Sub SpezialRecordSchreiben(ByVal Kennung As String, ByVal Laenge As Byte, Optional ByVal FirstBM As Boolean = False)
         '                                                                                           
         '                                                                                           
         Try
@@ -265,9 +265,9 @@ Public Class KassettenLW
             FilePosOut = FilePos
             fs_out = fi.OpenWrite()
             fs_out.Position = FilePosOut
-            Call SpezialBlock_Schreiben("V", Laenge, FirstBM)
-            Call SpezialBlock_Schreiben(Kennung, Laenge, FirstBM)
-            Call SpezialBlock_Schreiben("N", Laenge, FirstBM)
+            Call SpezialBlockSchreiben("V", Laenge, FirstBM)
+            Call SpezialBlockSchreiben(Kennung, Laenge, FirstBM)
+            Call SpezialBlockSchreiben("N", Laenge, FirstBM)
 
             fs_out.Flush()
             fs_out.Close()
@@ -275,26 +275,26 @@ Public Class KassettenLW
             fs = fi.OpenRead()
             fs.Position = FilePos
 
-            Call Record_Lesen()
+            Call RecordLesen()
         Catch ex As Exception
             MsgBox("KassettenLW.SpezialRecord_Schreiben: " + ex.Message)
         End Try
-    End Sub ' SpezialBlock_Schreiben
+    End Sub ' SpezialRecordSchreiben
 
-    Public Sub Record_Schreiben(ByVal Laenge As Byte)
+    Public Sub RecordSchreiben(ByVal Laenge As Byte)
         Try
             fs.Close()
             FilePosOut = FilePos
             fs_out = fi.OpenWrite()
             fs_out.Position = FilePosOut
-            Call SpezialBlock_Schreiben("V", Laenge)
+            Call SpezialBlockSchreiben("V", Laenge)
 
             Anz = Laenge \ 16
             For i = 1 To Anz
                 fs_out.Write(buffer.b(i).z, 0, 16)
             Next
 
-            Call SpezialBlock_Schreiben("N", Laenge)
+            Call SpezialBlockSchreiben("N", Laenge)
 
             fs_out.Flush()
             fs_out.Close()
@@ -302,11 +302,11 @@ Public Class KassettenLW
             fs = fi.OpenRead()
             fs.Position = FilePos
 
-            Call Record_Lesen()
+            Call RecordLesen()
         Catch ex As Exception
             MsgBox("KassettenLW.Record_Schreiben: " + ex.Message)
         End Try
-    End Sub
+    End Sub ' RecordSchreiben
     Public Sub CRC(buf As zeile)
         Dim B1, B2, A, C As Byte
         Dim CY, CY1, CY2 As Byte

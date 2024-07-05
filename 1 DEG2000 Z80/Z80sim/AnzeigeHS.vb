@@ -363,7 +363,7 @@ Class NumericUpDownEditingControl
     Implements IDataGridViewEditingControl
 
     Private dataGridViewControl As DataGridView
-    Private valueIsChanged As Boolean = False
+    Private valueIsChanged As Boolean
     Private rowIndexNum As Integer
 
     Public Sub New()

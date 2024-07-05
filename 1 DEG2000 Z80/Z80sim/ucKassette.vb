@@ -9,6 +9,7 @@ Public Class ucKassette
     Public RIndex As Integer
     Public Aktiv As Boolean                                                                             ' True wenn Reservieren EIN
     Public Anz As Byte
+
     Private KNr As Byte
 
 #Region "Private Routinen"
@@ -224,16 +225,16 @@ Public Class ucKassette
 
 #Region "Click Routinen"
     Private Sub Rewind_Click(sender As System.Object, e As System.EventArgs) Handles Rewind.Click                   '"A"
-        Call Cassette_Rewind()
+        Call CassetteRewind()
         Call ChangeFocus()
     End Sub ' Rewind_Click
 
     Private Sub BMback_Click(sender As System.Object, e As System.EventArgs) Handles BMback.Click                   '"B"
-        Call Cassette_BMback()
+        Call CassetteBMback()
         Call ChangeFocus()
     End Sub ' BMback_Click
     Private Sub RecordBack_Click(sender As System.Object, e As System.EventArgs) Handles RecordBack.Click           '"R"
-        Call Cassette_RecordBack()
+        Call CassetteRecordBack()
         Call ChangeFocus()
     End Sub ' RecordBack_Click
 
@@ -242,7 +243,7 @@ Public Class ucKassette
         '        If Kassette.FilePos > 462 * 16 Then
         Call Kassette.Rewind()
         For i = 1 To 2 + 3 + 3
-            Anz = Kassette.Record_Lesen
+            Anz = Kassette.RecordLesen
         Next
         '        End If
         Call RecordAnzeigen()
@@ -250,8 +251,8 @@ Public Class ucKassette
     End Sub ' Verzeichnis_Click
     Private Sub Datei_Click(sender As System.Object, e As System.EventArgs) Handles Datei.Click                     '"d"
         If Anz = 2 Then
-            Anz = Kassette.BM_nr(Kassette.buffer.b(2).z(7))                     ' (2).(7) = Dateinummer
-            Anz = Kassette.Record_Lesen
+            Anz = Kassette.BMnr(Kassette.buffer.b(2).z(7))                     ' (2).(7) = Dateinummer
+            Anz = Kassette.RecordLesen
             Kassette.D1 = 0 : Kassette.E1 = 0
             Call RecordAnzeigen()
         End If
@@ -259,11 +260,11 @@ Public Class ucKassette
     End Sub ' Datei_Click
 
     Private Sub RecordVor_Click(sender As System.Object, e As System.EventArgs) Handles RecordVor.Click             '"r"
-        Call Cassette_RecordVor()
+        Call CassetteRecordVor()
         Call ChangeFocus()
     End Sub ' RecordVor_Click
     Private Sub BMvor_Click(sender As System.Object, e As System.EventArgs) Handles BMvor.Click                     '"b"
-        Call Cassette_BMvor()
+        Call CassetteBMvor()
         Call ChangeFocus()
     End Sub ' BMvor_Click
 
@@ -338,7 +339,7 @@ Public Class ucKassette
                 OpenFileDialog1.FileName = "*.CAS"
                 If OpenFileDialog1.ShowDialog() = Windows.Forms.DialogResult.OK Then
                     CreateCassette.Enabled = False
-                    Kassette.Open_Kassette(OpenFileDialog1.FileName)
+                    Kassette.OpenKassette(OpenFileDialog1.FileName)
                     Select Case Kassette.FilePos
                         Case -1
                         Case Else
@@ -366,7 +367,7 @@ Public Class ucKassette
             Else                                                                      ' Close
                 CreateCassette.Enabled = True
                 Call COMMON.initGrid(RecordAnsicht, Drawing.Color.Gainsboro, Drawing.Color.Gainsboro, Drawing.Color.Black, Drawing.Color.Black)
-                Kassette.Close_Kassette()
+                Kassette.CloseKassette()
                 Call ButtonEnabled(False)
                 OpenCassette.Text = "Open"
                 crcRecord.Text = ""
@@ -399,15 +400,15 @@ Public Class ucKassette
                 SaveFileDialog1.FileName = "*.CAS"
                 If SaveFileDialog1.ShowDialog() = Windows.Forms.DialogResult.OK Then
                     CreateCassette.Enabled = False
-                    Kassette.Create_Kassette(SaveFileDialog1.FileName)
+                    Kassette.CreateKassette(SaveFileDialog1.FileName)
                     Select Case Kassette.FilePos
                         Case -1
                         Case Else
                             FilePos.Text = Kassette.FilePos
                             Call ButtonEnabled(True)
                             OpenCassette.Text = "Close"
-                            Call Kassette.Record_Back()
-                            Anz = Kassette.Record_Lesen()
+                            Call Kassette.RecordBack()
+                            Anz = Kassette.RecordLesen()
                             Call RecordAnzeigen()
                             With Laufwerke.Kassetten1
                                 .Rows(RowIndex).Cells("DateinameK").Style.BackColor = Drawing.Color.Aquamarine
@@ -422,7 +423,7 @@ Public Class ucKassette
 
                 CreateCassette.Enabled = True
                 '#Call COMMON.initGrid(RecordAnsicht, Drawing.Color.Gainsboro, Drawing.Color.Gainsboro, Drawing.Color.Black, Drawing.Color.Black)
-                Kassette.Close_Kassette()
+                Kassette.CloseKassette()
                 Call ButtonEnabled(False)
                 OpenCassette.Text = "Open"
                 crcRecord.Text = ""
@@ -452,19 +453,19 @@ Public Class ucKassette
         Try
             Name = Name + ".CAS"
             NameOld = Laufwerke.Kassetten1.Rows(RowIndex).Cells("DateinameK").Value
-            Kassette.Close_Kassette()                                                               ' Kassette schließen
+            Kassette.CloseKassette()                                                                ' Kassette schließen
 
             My.Computer.FileSystem.RenameFile(NameOld, Name)                                        ' Kassette umbenennen
 
             NameOld = Path.GetDirectoryName(NameOld) + "\"
 
-            Kassette.Open_Kassette(NameOld + Name)
+            Kassette.OpenKassette(NameOld + Name)
             Laufwerke.Kassetten1.Rows(RowIndex).Cells("DateinameK").Value = NameOld + Name
 
-            Kassette.Record_Lesen()                                                                 ' BM       lesen
-            Kassette.Record_Lesen()                                                                 ' 1. Block lesen
-            Kassette.Record_Lesen()                                                                 ' 2. Block lesen
-            Cassette_ReadBlock()                                                                    ' 3. Block lesen und anzeigen
+            Kassette.RecordLesen()                                                                  ' BM       lesen
+            Kassette.RecordLesen()                                                                  ' 1. Block lesen
+            Kassette.RecordLesen()                                                                  ' 2. Block lesen
+            CassetteReadBlock()                                                                     ' 3. Block lesen und anzeigen
         Catch ex As Exception
             MsgBox("ucKassette.RenameKassette: ", ex.Message)
         End Try
@@ -472,7 +473,7 @@ Public Class ucKassette
 #End Region
 
 #Region "öffentliche Kassetten-Routinen"
-    Public Sub Cassette_Rewind()
+    Public Sub CassetteRewind()
         Call Kassette.Rewind()
         '# Anz = Kassette.Record_Lesen
         Anz = 0
@@ -481,68 +482,68 @@ Public Class ucKassette
         '#        Me.Refresh()
     End Sub
 
-    Public Sub Cassette_RecordVor()
+    Public Sub CassetteRecordVor()
         'Call Kassette.Next_Record()
-        Anz = Kassette.Record_Lesen
+        Anz = Kassette.RecordLesen
         Call RecordAnzeigen()
     End Sub
-    Public Sub Cassette_RecordBack()
-        Call Kassette.Record_Back()
-        Call Kassette.Record_Back()
-        Anz = Kassette.Record_Lesen
+    Public Sub CassetteRecordBack()
+        Call Kassette.RecordBack()
+        Call Kassette.RecordBack()
+        Anz = Kassette.RecordLesen
         Call RecordAnzeigen()
     End Sub
 
-    Public Sub Cassette_BMvor()
-        Anz = Kassette.Next_BM
+    Public Sub CassetteBMvor()
+        Anz = Kassette.NextBM
         Call RecordAnzeigen()
     End Sub
-    Public Sub Cassette_BMback()
-        Anz = Kassette.Previous_BM
+    Public Sub CassetteBMback()
+        Anz = Kassette.PreviousBM
         Call RecordAnzeigen()
         If Kassette.Record = 0 Then
-            Call Cassette_RecordVor()
+            Call CassetteRecordVor()
         End If
     End Sub
-    Public Sub Cassette_ReadBlock()
-        Anz = Kassette.Record_Lesen
+    Public Sub CassetteReadBlock()
+        Anz = Kassette.RecordLesen
         Call RecordAnzeigen()
     End Sub
-    Public Sub Cassette_WriteRecord(ByVal Laenge As Byte)
-        Call Kassette.Record_Schreiben(Laenge)
-        Call Cassette_DisplayAfterWrite()
+    Public Sub CassetteWriteRecord(ByVal Laenge As Byte)
+        Call Kassette.RecordSchreiben(Laenge)
+        Call CassetteDisplayAfterWrite()
     End Sub
-    Public Sub Cassette_WriteSpezialRecord(ByVal Kennung As String, ByVal Laenge As Byte, Optional ByVal FirstBM As Boolean = False)
-        Call Kassette.SpezialRecord_Schreiben(Kennung, Laenge, FirstBM)
-        Call Cassette_DisplayAfterWrite()
+    Public Sub CassetteWriteSpezialRecord(ByVal Kennung As String, ByVal Laenge As Byte, Optional ByVal FirstBM As Boolean = False)
+        Call Kassette.SpezialRecordSchreiben(Kennung, Laenge, FirstBM)
+        Call CassetteDisplayAfterWrite()
     End Sub
-    Private Sub Cassette_DisplayAfterWrite()
-        Call Kassette.Record_Back()
-        Anz = Kassette.Record_Lesen
+    Private Sub CassetteDisplayAfterWrite()
+        Call Kassette.RecordBack()
+        Anz = Kassette.RecordLesen
         Call RecordAnzeigen()
     End Sub
 
 #Region "MouseHover für die Button"
     Private Sub Rewind_MouseHover(sender As Object, e As EventArgs) Handles Rewind.MouseHover
-        If Rewind.Enabled Then ToolTip1.Show("Bandanfang", Me.Rewind)
+        If Rewind.Enabled Then ToolTip1.Show("     Bandanfang", Me.Rewind)
     End Sub
     Private Sub BMback_MouseHover(sender As Object, e As EventArgs) Handles BMback.MouseHover
-        If BMback.Enabled Then ToolTip1.Show("vorherige Bandmarke", Me.BMback)
+        If BMback.Enabled Then ToolTip1.Show("     vorherige Bandmarke", Me.BMback)
     End Sub
     Private Sub RecordBack_MouseHover(sender As Object, e As EventArgs) Handles RecordBack.MouseHover
-        If RecordBack.Enabled Then ToolTip1.Show("vorheriger Record", Me.RecordBack)
+        If RecordBack.Enabled Then ToolTip1.Show("     vorheriger Record", Me.RecordBack)
     End Sub
     Private Sub Verzeichnis_MouseHover(sender As Object, e As EventArgs) Handles Verzeichnis.MouseHover
-        If Verzeichnis.Enabled Then ToolTip1.Show("MRES-Directory", Me.Verzeichnis)
+        If Verzeichnis.Enabled Then ToolTip1.Show("     MRES-Directory", Me.Verzeichnis)
     End Sub
     Private Sub Datei_MouseHover(sender As Object, e As EventArgs) Handles Datei.MouseHover
-        If Datei.Enabled Then ToolTip1.Show("MRES-Datei", Me.Datei)
+        If Datei.Enabled Then ToolTip1.Show("     MRES-Datei", Me.Datei)
     End Sub
     Private Sub RecordVor_MouseHover(sender As Object, e As EventArgs) Handles RecordVor.MouseHover
-        If RecordVor.Enabled Then ToolTip1.Show("nächster Record", Me.RecordVor)
+        If RecordVor.Enabled Then ToolTip1.Show("     nächster Record", Me.RecordVor)
     End Sub
     Private Sub BMvor_MouseHover(sender As Object, e As EventArgs) Handles BMvor.MouseHover
-        If BMvor.Enabled Then ToolTip1.Show("nächste Bandmarke", Me.BMvor)
+        If BMvor.Enabled Then ToolTip1.Show("     nächste Bandmarke", Me.BMvor)
     End Sub
 #End Region
 #End Region

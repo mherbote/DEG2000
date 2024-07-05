@@ -47,7 +47,7 @@ Public Class IOsim
     '                                                                                                   '6 ... Kommando
 
 
-    Private MEMswitch(4, 16) As Byte
+    'Private MEMswitch(4, 16) As Byte
     Private Date_buffer(3) As Byte
     Private Time_buffer(8) As Byte
 #End Region
@@ -157,6 +157,7 @@ Public Class IOsim
     End Function
     Private Function AKBiA_in(ByVal port As Byte, ByVal Data As Byte) As Byte
         Try
+            AKBiA_in = Nothing
             Kassette_Status(0) = Kassette_Status(0) + 1
             If Kassette_Status(0) < 7 Then
                 AKBiA_in = Kassette_Status(Kassette_Status(0))
@@ -164,6 +165,7 @@ Public Class IOsim
         Catch ex As Exception
             MsgBox("IOsim.AKBiA_in (" + Format(port, "0") + "): " + ex.Message)
         End Try
+        Return AKBiA_in
     End Function
 #End Region
 
@@ -224,6 +226,7 @@ Public Class IOsim
         '   7.Byte:       L-Teil Pufferadresse
         '   8.Byte:    FF Endemarkierung
         Try
+            AKBiA_out = Nothing
 #Region "Kassette_buffer(i) übernehmen"
             If Data = &HF0 Then                                                                         ' Kommando-Startbyte
                 Kassette_buffer(0) = 0
@@ -354,6 +357,7 @@ Public Class IOsim
             If weiter Then
 #Region "Kommando von Kassette_buffer ausführen"
 #Region "Init für Kassette I"
+                ucKj = Nothing
                 Select Case port
                     Case &H30
                         Select Case Kassette_buffer(3)
@@ -383,6 +387,11 @@ Public Class IOsim
                                 Kass = 5
                         End Select
                 End Select
+                If IsDBNull(ucKj) Then
+                    MsgBox("IOsim.AKBiA_out: ucKj darf nicht NULL sein!")
+                    Exit Function
+                End If
+
                 Call SetStatus(ucKj, "Init", port)
 #End Region
                 Select Case Kassette_buffer(2)
@@ -458,7 +467,7 @@ Public Class IOsim
                     Case &H21                                                                           'Rewind
                         With ucKj
                             If .Aktiv Then
-                                .Cassette_Rewind()
+                                .CassetteRewind()
                                 Call SetStatus(ucKj, "init", port)
                                 Call SetStatus(ucKj, "ok", port)
                             Else
@@ -473,7 +482,7 @@ Public Class IOsim
                                 If .BM.Text = "S c h l u s s l ü c k e" Then
                                     Call SetStatus(ucKj, "Bandende", port)
                                 Else
-                                    .Cassette_RecordVor()
+                                    .CassetteRecordVor()
                                     Call SetStatus(ucKj, "ok", port)
                                 End If
                             Else
@@ -485,12 +494,12 @@ Public Class IOsim
                         With ucKj
                             If .Aktiv Then
                                 If .Kassette.Record = 1 Then
-                                    .Cassette_Rewind()
+                                    .CassetteRewind()
                                     Call SetStatus(ucKj, "init", port)
                                     Call SetStatus(ucKj, "ok", port)
                                     'Call SetStatus(ucKj, "Bandende", port)
                                 Else
-                                    .Cassette_RecordBack()
+                                    .CassetteRecordBack()
                                     Call SetStatus(ucKj, "ok", port)
                                 End If
                             Else
@@ -508,7 +517,7 @@ Public Class IOsim
                                         Call SetStatus(ucKj, "BM not", port)
                                         Exit For
                                     Else
-                                        .Cassette_BMvor()
+                                        .CassetteBMvor()
                                     End If
                                     Call SetStatus(ucKj, "ok", port)
                                 Next i
@@ -524,7 +533,7 @@ Public Class IOsim
                                         Call SetStatus(ucKj, "BM not", port)
                                         Exit For
                                     Else
-                                        .Cassette_BMback()
+                                        .CassetteBMback()
                                     End If
                                     Call SetStatus(ucKj, "ok", port)
                                 Next i
@@ -540,7 +549,7 @@ Public Class IOsim
                                 If .Kassette.RO Then
                                     Call SetStatus(ucKj, "RO", port)
                                 Else
-                                    Call .Cassette_WriteSpezialRecord("B", &H10)
+                                    Call .CassetteWriteSpezialRecord("B", &H10)
                                     Call SetStatus(ucKj, "ok", port)
                                 End If
                             Else
@@ -553,7 +562,7 @@ Public Class IOsim
                                 If .Kassette.RO Then
                                     Call SetStatus(ucKj, "RO", port)
                                 Else
-                                    Call .Cassette_WriteSpezialRecord("S", &H10)
+                                    Call .CassetteWriteSpezialRecord("S", &H10)
                                     Call SetStatus(ucKj, "ok", port)
                                 End If
                             Else
@@ -565,7 +574,7 @@ Public Class IOsim
                     Case &H2                                                                            'nächsten Record einlesen
                         With ucKj
                             If .Aktiv Then
-                                .Cassette_ReadBlock()
+                                .CassetteReadBlock()
                                 Anz = ucKj.Anz * 16
                                 If Anz > &H80 Then
                                     Call SetStatus(ucKj, "to long", port)
@@ -636,7 +645,7 @@ Public Class IOsim
                                         Next i
                                         Call ucKj.Kassette.CRC(ucKj.Kassette.buffer.b(j))
                                     Next j
-                                    Call .Cassette_WriteRecord(Kassette_buffer(4))
+                                    Call .CassetteWriteRecord(Kassette_buffer(4))
                                     Call SetStatus(ucKj, "ok", port)
                                     Kassette_Status(3) = Kassette_buffer(4)
                                 End If
@@ -699,8 +708,14 @@ Public Class IOsim
         End Try
 
         AKBiA_out = 0
+        Return AKBiA_out
     End Function
     Private Sub SetStatus(ucKj As ucKassette, ByVal Command As String, ByVal port As Byte)
+        If IsDBNull(ucKj) Then
+            MsgBox("IOsim.SetStatus: ucKj darf nicht NULL sein!")
+            Exit Sub
+        End If
+
         Select Case Command
             Case "Init"
                 Kassette_Status(0) = 0                                                                  'Index für Kassette_Status
@@ -776,6 +791,7 @@ Public Class IOsim
         Dim NextChar As System.Windows.Forms.Keys
 
         NextChar = GetChar()
+        Tast_in_d = Nothing
         If NextChar = -99999 Then
             'Tast_in_d = &HFF
         Else
@@ -791,7 +807,7 @@ Public Class IOsim
     End Function
 
     Private Function GetStat() As Byte
-        Dim i, j As Integer
+        Dim i As Integer
         GetStat = &H8
 
         If KeyProc Then
@@ -1206,6 +1222,7 @@ Public Class IOsim
 
 #Region "Date/Time"
     Private Function Date_in()
+        Date_in = Nothing
         Try
             If Date_buffer(0) = 0 Then
                 Date_buffer(1) = Now.Day
@@ -1227,6 +1244,7 @@ Public Class IOsim
     End Function
     Private Function Time_in()
         Dim Time_str As String
+        Time_in = Nothing
         Try
             If Time_buffer(0) = 0 Then
                 Time_str = Format$(Now, "hh:mm:ss")

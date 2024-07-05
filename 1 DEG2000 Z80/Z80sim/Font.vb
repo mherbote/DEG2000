@@ -27,9 +27,6 @@
     End Property
 #End Region
 
-    Public Sub Font()
-    End Sub
-
     Public Function LoadBwsFont(ByVal FontDateiname As String)
         Dim value As Byte()
         Dim i, _pZ, _pY1 As UInteger

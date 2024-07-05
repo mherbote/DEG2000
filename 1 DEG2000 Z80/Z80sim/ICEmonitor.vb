@@ -130,10 +130,8 @@ cont:
     End Sub ' dogo
 
     Private Sub dodump()
-        Dim i, j As Integer
-        Dim byte1 As Byte
-
-
+        'Dim i, j As Integer
+        'Dim byte1 As Byte
     End Sub ' dodump
 
     Private Sub dolist()
@@ -347,7 +345,7 @@ ende:
     Private Function MostekLaden(ByVal cm As String) As Integer
         Dim err As Integer
         Dim fb(0 To &H28) As Byte
-        Dim BINfile As String
+        'Dim BINfile As String
 
         err = 0
         cm = "\" + cm + ".bin"

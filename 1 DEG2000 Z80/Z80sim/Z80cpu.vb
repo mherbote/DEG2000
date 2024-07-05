@@ -283,9 +283,8 @@
             End If
         End If
     End Sub
-    Public Sub Speicher_schreiben_Byte2(ByVal Adresse As UShort, ByVal B As Byte, ByVal Farbe As Byte)
-
-    End Sub ' Speicher_schreiben_Byte1
+    'Public Sub Speicher_schreiben_Byte2(ByVal Adresse As UShort, ByVal B As Byte, ByVal Farbe As Byte)
+    'End Sub ' Speicher_schreiben_Byte1
     Public Sub Speicher_schreiben_Word(ByVal Adresse As UShort, ByVal W As UShort)
         Dim SegAdr As Byte
 
@@ -493,7 +492,7 @@
     End Sub ' bus_front
 #End Region
 
-    Public Sub fgets(ByVal cmd As String)
+    Public Sub fgets()  '(ByVal cmd As String)
     End Sub ' fgets
 
     Public Sub inton()

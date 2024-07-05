@@ -33,6 +33,10 @@ Public Class Laufwerke
         Dim c3 As New DataGridViewCheckBoxColumn
         Dim c4 As New DataGridViewCheckBoxColumn
 
+        c1.Dispose()
+        c2.Dispose()
+        c3.Dispose()
+        c4.Dispose()
         With obj
             .Columns.Clear()
             .ColumnHeadersDefaultCellStyle.BackColor = Drawing.SystemColors.ActiveBorder
@@ -202,23 +206,29 @@ Public Class Laufwerke
         End If
     End Sub
 
-    Public Sub Kassetten1_CellValueChanged(sender As Object, e As DataGridViewCellEventArgs) Handles Kassetten1.CellValueChanged
-        If Kassetten1.Columns(e.ColumnIndex).Name = "CheckCreateK" Then
-            Dim buttonCell As DataGridViewDisableButtonCell = CType(Kassetten1.Rows(e.RowIndex).Cells("CreateK"), DataGridViewDisableButtonCell)
-            Dim checkCell As DataGridViewCheckBoxCell = CType(Kassetten1.Rows(e.RowIndex).Cells("CheckCreateK"), DataGridViewCheckBoxCell)
+    Private Sub Kassetten1_CellValueChanged(sender As Object, e As DataGridViewCellEventArgs) Handles Kassetten1.CellValueChanged
+        Try
+            If Not IsDBNull(e) Then
+                If Kassetten1.Columns(e.ColumnIndex).Name = "CheckCreateK" Then
+                    Dim buttonCell As DataGridViewDisableButtonCell = CType(Kassetten1.Rows(e.RowIndex).Cells("CreateK"), DataGridViewDisableButtonCell)
+                    Dim checkCell As DataGridViewCheckBoxCell = CType(Kassetten1.Rows(e.RowIndex).Cells("CheckCreateK"), DataGridViewCheckBoxCell)
 
-            buttonCell.Enabled = Not CType(checkCell.Value, [Boolean])
+                    buttonCell.Enabled = Not CType(checkCell.Value, [Boolean])
 
-            Kassetten1.Invalidate()
-        End If
-        If Kassetten1.Columns(e.ColumnIndex).Name = "CheckChangeK" Then
-            Dim buttonCell As DataGridViewDisableButtonCell = CType(Kassetten1.Rows(e.RowIndex).Cells("ChangeK"), DataGridViewDisableButtonCell)
-            Dim checkCell As DataGridViewCheckBoxCell = CType(Kassetten1.Rows(e.RowIndex).Cells("CheckChangeK"), DataGridViewCheckBoxCell)
+                    Kassetten1.Invalidate()
+                End If
+                If Kassetten1.Columns(e.ColumnIndex).Name = "CheckChangeK" Then
+                    Dim buttonCell As DataGridViewDisableButtonCell = CType(Kassetten1.Rows(e.RowIndex).Cells("ChangeK"), DataGridViewDisableButtonCell)
+                    Dim checkCell As DataGridViewCheckBoxCell = CType(Kassetten1.Rows(e.RowIndex).Cells("CheckChangeK"), DataGridViewCheckBoxCell)
 
-            buttonCell.Enabled = Not CType(checkCell.Value, [Boolean])
+                    buttonCell.Enabled = Not CType(checkCell.Value, [Boolean])
 
-            Kassetten1.Invalidate()
-        End If
+                    Kassetten1.Invalidate()
+                End If
+            End If
+        Catch ex As Exception
+            MsgBox("Laufwerke.Kassetten1_CellValueChanged: Parameter e is Nothing!")
+        End Try
     End Sub
 
     Public Sub ShowKassette()
@@ -282,31 +292,35 @@ Public Class DataGridViewDisableButtonCell
                                   ByVal cellStyle As DataGridViewCellStyle,
                                   ByVal advancedBorderStyle As DataGridViewAdvancedBorderStyle,
                                   ByVal paintParts As DataGridViewPaintParts)
-        If Not Me.enabledValue Then
-            If (paintParts And DataGridViewPaintParts.Background) = DataGridViewPaintParts.Background Then
-                Dim cellBackground As SolidBrush = New SolidBrush(cellStyle.BackColor)
-                graphics.FillRectangle(cellBackground, cellBounds)
-                cellBackground.Dispose()
-            End If
+        Try
+            If Not Me.enabledValue Then
+                If (paintParts And DataGridViewPaintParts.Background) = DataGridViewPaintParts.Background Then
+                    Dim cellBackground As SolidBrush = New SolidBrush(cellStyle.BackColor)
+                    graphics.FillRectangle(cellBackground, cellBounds)
+                    cellBackground.Dispose()
+                End If
 
-            If (paintParts And DataGridViewPaintParts.Border) = DataGridViewPaintParts.Border Then
-                PaintBorder(graphics, clipBounds, cellBounds, cellStyle, advancedBorderStyle)
-            End If
+                If (paintParts And DataGridViewPaintParts.Border) = DataGridViewPaintParts.Border Then
+                    PaintBorder(graphics, clipBounds, cellBounds, cellStyle, advancedBorderStyle)
+                End If
 
-            Dim buttonArea As Rectangle = cellBounds
-            Dim buttonAdjustment As Rectangle = Me.BorderWidths(advancedBorderStyle)
-            buttonArea.X += buttonAdjustment.X
-            buttonArea.Y += buttonAdjustment.Y
-            buttonArea.Height -= buttonAdjustment.Height
-            buttonArea.Width -= buttonAdjustment.Width
-            ButtonRenderer.DrawButton(graphics, buttonArea, PushButtonState.Disabled)
-            If TypeOf Me.FormattedValue Is String Then
-                TextRenderer.DrawText(graphics, CStr(Me.FormattedValue), Me.DataGridView.Font, buttonArea, SystemColors.GrayText)
-            End If
-        Else
-            MyBase.Paint(graphics, clipBounds, cellBounds, rowIndex, elementState, value,
+                Dim buttonArea As Rectangle = cellBounds
+                Dim buttonAdjustment As Rectangle = Me.BorderWidths(advancedBorderStyle)
+                buttonArea.X += buttonAdjustment.X
+                buttonArea.Y += buttonAdjustment.Y
+                buttonArea.Height -= buttonAdjustment.Height
+                buttonArea.Width -= buttonAdjustment.Width
+                ButtonRenderer.DrawButton(graphics, buttonArea, PushButtonState.Disabled)
+                If TypeOf Me.FormattedValue Is String Then
+                    TextRenderer.DrawText(graphics, CStr(Me.FormattedValue), Me.DataGridView.Font, buttonArea, SystemColors.GrayText)
+                End If
+            Else
+                MyBase.Paint(graphics, clipBounds, cellBounds, rowIndex, elementState, value,
                          formattedValue, errorText, cellStyle, advancedBorderStyle, paintParts)
-        End If
+            End If
+        Catch ex As Exception
+
+        End Try
     End Sub
 
 End Class

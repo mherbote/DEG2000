@@ -220,7 +220,6 @@ Public Class BWS
     Private Sub changeBWS()
         Dim x, y As UInteger
         Dim PB As PictureBox
-        Dim C As Byte
 
         Try
             Font1.BwsFont2zeichenTemplate()
@@ -398,7 +397,6 @@ Public Class BWS
 
 #Region "Testbilder"
     Public Sub TestBild(Optional ByVal bildwahl As Integer = -1)
-        Dim test As String
         Dim _pZ, _pX1, _pY1 As Integer
         Dim bColor As Color
 
@@ -598,7 +596,7 @@ Public Class BWS
         tCursor.Enabled = True
         tCursor.Interval = cCursorTime
     End Sub
-    Public Sub ResetCursor()
+    Public Overrides Sub ResetCursor()
         Dim PB As PictureBox
         Dim Zeichen1 As Zeichen
 
@@ -693,19 +691,27 @@ Public Class BWS
     End Sub
     Public Sub TextToControlArray(ByVal Text As String, ByVal Zeile As Integer, ByVal Spalte As Integer)
         Dim B, i As Byte
-        For i = 0 To Len(Text) - 1
-            B = Asc(Text.Substring(i, 1))
-            Call BWS_Zeichen(Spalte + i, Zeile - 1, B, _BWSbcControlArray, _BWSfcControlArray, cCursor)
-        Next i
+        If String.IsNullOrEmpty(Text) Then
+            MsgBox("BWS:TextToControlArray: Text darf nicht Leer oder Null sein!")
+        Else
+            For i = 0 To Len(Text) - 1
+                B = Asc(Text.Substring(i, 1))
+                Call BWS_Zeichen(Spalte + i, Zeile - 1, B, _BWSbcControlArray, _BWSfcControlArray, cCursor)
+            Next i
+        End If
     End Sub
     Public Sub ErrorToControlArray(ByVal Text As String, ByVal Zeile As Integer, ByVal Spalte As Integer, ByVal BackColor As Color, ByVal ForeColor As Color, ByVal TimerValue As Integer)
         Dim B, i As Byte
-        For i = 0 To Len(Text) - 1
-            B = Asc(Text.Substring(i, 1))
-            Call BWS_Zeichen(Spalte + i, Zeile - 1, B, BackColor, ForeColor, cCursor)
-        Next i
-        tError.Interval = TimerValue
-        tError.Enabled = True
+        If String.IsNullOrEmpty(Text) Then
+            MsgBox("BWS:ErrorToControlArray: Text darf nicht Leer oder Null sein!")
+        Else
+            For i = 0 To Len(Text) - 1
+                B = Asc(Text.Substring(i, 1))
+                Call BWS_Zeichen(Spalte + i, Zeile - 1, B, BackColor, ForeColor, cCursor)
+            Next i
+            tError.Interval = TimerValue
+            tError.Enabled = True
+        End If
     End Sub
     Private Sub tError_Tick(sender As Object, e As EventArgs) Handles tError.Tick
         Call ResetControlArray(_BWSbcControlArray, _BWSfcControlArray)
@@ -716,24 +722,11 @@ Public Class BWS
 #Region "Timer für Uhrzeitanzeige"
     Private Sub Uhr_Tick(sender As Object, e As EventArgs) Handles Uhrzeit.Tick
         Dim Time_str As String
-        Dim i, B As Byte
-        Dim Adresse As UShort
 
         If Not Me.Visible Then Exit Sub
         If BWSy < 32 Then Exit Sub
         Time_str = Format$(Now, "HH:mm:ss")
         Call TextToControlArray(Time_str, 32, 36)
-        'Adresse = &H3000 + 31 * 80 + 36
-
-        'For i = 0 To Len(Time_str) - 1
-        '    B = Asc(Time_str.Substring(i, 1))
-        '    Try
-        '        COMMON.vZ80cpu.Speicher_schreiben_Byte1(Adresse, B, 1)
-        '    Catch ex As Exception
-        '        MsgBox("BWS.Uhr_Tick: ", ex.Message)
-        '    End Try
-        '    Adresse = Adresse + 1
-        'Next i
     End Sub
 #End Region
 

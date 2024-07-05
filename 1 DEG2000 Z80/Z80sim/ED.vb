@@ -160,7 +160,6 @@ Module ED
         Try
             Call COMMON.vZ80cpu.busfront(COMMON.CPU_OUT)
             Call Haupt.IOsim.io_out(COMMON.vZ80cpu.C, par1)
-            out = 12
         Catch ex As Exception
             MsgBox("ED.out: " + ex.Message & vbCrLf &
                    "PC=" + COMMON.HexAnzeige_WordByte(COMMON.vZ80cpu.PC, "B") & vbCrLf &
@@ -169,6 +168,7 @@ Module ED
                    "BC=" + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.B) + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.C)
                   )
         End Try
+        out = 12
     End Function ' out
 #End Region
 
@@ -480,7 +480,7 @@ Module ED
         op_ini = 16
     End Function 'A2    'op_ini
     Private Function op_outi() As Integer                                       '&HA3         'OUTI
-        Dim i As Integer
+        'Dim i As Integer
         Call COMMON.vZ80cpu.busfront(COMMON.CPU_WO Or COMMON.CPU_MEMR)
         Haupt.IOsim.io_out(COMMON.vZ80cpu.C, COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.H * 256 + COMMON.vZ80cpu.L))
         Call COMMON.vZ80cpu.busfront(COMMON.CPU_OUT)

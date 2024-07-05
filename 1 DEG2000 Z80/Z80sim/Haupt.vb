@@ -11,41 +11,13 @@ Public Class Haupt
 
     Private LocationSet As Boolean
 
-    Private wrk_ram As ULong
+    'Private wrk_ram As ULong
 
 #Region "Init"
     Public Sub New()
         ' This call is required by the designer.
         InitializeComponent()
 
-        ''Init LogFile
-        'My.Application.Log.DefaultFileLogWriter.BaseFileName = System.IO.Path.Combine(Application.StartupPath, "DEG200-LOG")
-        'My.Application.Log.DefaultFileLogWriter.Append = False
-        'My.Application.Log.DefaultFileLogWriter.AutoFlush = True
-        'My.Application.Log.WriteEntry("")
-        'My.Application.Log.WriteEntry("=================================================================", TraceEventType.Information, 1)
-        'My.Application.Log.WriteEntry("DEG200 gestartet", TraceEventType.Information, 1)
-
-        ' Add any initialization after the InitializeComponent() call.
-        regHistorieColors(0, 0) = System.Drawing.Color.AliceBlue                             ' PC
-        regHistorieColors(0, 1) = System.Drawing.Color.Black
-        regHistorieColors(1, 0) = System.Drawing.Color.FromArgb(192, 255, 255)               ' A
-        regHistorieColors(1, 1) = System.Drawing.Color.Black
-        regHistorieColors(2, 0) = System.Drawing.Color.FromArgb(192, 255, 192)               ' flag's
-        regHistorieColors(2, 1) = System.Drawing.Color.Black
-        regHistorieColors(3, 0) = System.Drawing.Color.FromArgb(155, 192, 192)               ' I, IFF
-        regHistorieColors(3, 1) = System.Drawing.Color.Black
-        regHistorieColors(4, 0) = System.Drawing.Color.FromArgb(192, 255, 255)               '      BC, DE, HL
-        regHistorieColors(4, 1) = System.Drawing.Color.Black
-        regHistorieColors(5, 0) = System.Drawing.Color.FromArgb(192, 192, 255)               ' AF', BC', DE', HL'
-        regHistorieColors(5, 1) = System.Drawing.Color.Black
-        regHistorieColors(6, 0) = System.Drawing.Color.FromArgb(255, 255, 192)               ' IX, IY
-        regHistorieColors(6, 1) = System.Drawing.Color.Black
-        regHistorieColors(7, 0) = System.Drawing.Color.FromArgb(255, 192, 255)               ' SP
-        regHistorieColors(7, 1) = System.Drawing.Color.Black
-
-        Call SetPixelGroesse(COMMON.const_cPIx)
-        Call RegisterAnzeigenChange()
     End Sub
 
     Public Sub InitTastBuffer()
@@ -145,6 +117,35 @@ Public Class Haupt
     Private Sub Haupt_Load(sender As System.Object, e As System.EventArgs) Handles MyBase.Load
         Dim ParamStr As String()
 
+        ''Init LogFile
+        'My.Application.Log.DefaultFileLogWriter.BaseFileName = System.IO.Path.Combine(Application.StartupPath, "DEG200-LOG")
+        'My.Application.Log.DefaultFileLogWriter.Append = False
+        'My.Application.Log.DefaultFileLogWriter.AutoFlush = True
+        'My.Application.Log.WriteEntry("")
+        'My.Application.Log.WriteEntry("=================================================================", TraceEventType.Information, 1)
+        'My.Application.Log.WriteEntry("DEG200 gestartet", TraceEventType.Information, 1)
+
+        ' Add any initialization after the InitializeComponent() call.
+        regHistorieColors(0, 0) = System.Drawing.Color.AliceBlue                             ' PC
+        regHistorieColors(0, 1) = System.Drawing.Color.Black
+        regHistorieColors(1, 0) = System.Drawing.Color.FromArgb(192, 255, 255)               ' A
+        regHistorieColors(1, 1) = System.Drawing.Color.Black
+        regHistorieColors(2, 0) = System.Drawing.Color.FromArgb(192, 255, 192)               ' flag's
+        regHistorieColors(2, 1) = System.Drawing.Color.Black
+        regHistorieColors(3, 0) = System.Drawing.Color.FromArgb(155, 192, 192)               ' I, IFF
+        regHistorieColors(3, 1) = System.Drawing.Color.Black
+        regHistorieColors(4, 0) = System.Drawing.Color.FromArgb(192, 255, 255)               '      BC, DE, HL
+        regHistorieColors(4, 1) = System.Drawing.Color.Black
+        regHistorieColors(5, 0) = System.Drawing.Color.FromArgb(192, 192, 255)               ' AF', BC', DE', HL'
+        regHistorieColors(5, 1) = System.Drawing.Color.Black
+        regHistorieColors(6, 0) = System.Drawing.Color.FromArgb(255, 255, 192)               ' IX, IY
+        regHistorieColors(6, 1) = System.Drawing.Color.Black
+        regHistorieColors(7, 0) = System.Drawing.Color.FromArgb(255, 192, 255)               ' SP
+        regHistorieColors(7, 1) = System.Drawing.Color.Black
+
+        Call SetPixelGroesse(COMMON.const_cPIx)
+        Call RegisterAnzeigenChange()
+
         start = True
 
         AddHandler Me.CMDliste.MouseWheel, AddressOf CMDliste_MouseWheel
@@ -153,7 +154,7 @@ Public Class Haupt
         COMMON.USR_REL = System.String.Format("{0}.{1:00}", My.Application.Info.Version.Major, My.Application.Info.Version.Minor)
 
         ParamStr = Environment.GetCommandLineArgs()
-        If ParamStr.Count > 1 Then
+        If ParamStr.Length > 1 Then
             ProgVerz = ParamStr(1)
         Else
             ProgVerz = System.Windows.Forms.Application.StartupPath + "\"
@@ -648,7 +649,7 @@ Public Class Haupt
         End If
         Call AnzeigeHSrefresh()
     End Sub ' SpeicherLaden_Click
-    Private Function SpeicherLaden1() As Integer
+    Private Sub SpeicherLaden1()
         Dim bb As Byte
         Dim w As UInteger
         Dim fb(0) As Byte
@@ -668,7 +669,7 @@ Public Class Haupt
         Catch ex As Exception
 
         End Try
-    End Function ' SpeicherLaden
+    End Sub ' SpeicherLaden
 #End Region
 
 #Region "gesamten Speicher abspeichern"
@@ -1172,9 +1173,9 @@ Public Class Haupt
         Dim ToolStripLCTRL As String
         Dim ToolStripLALT As String
 
-        Dim ToolStripRS As String
-        Dim ToolStripRCTRL As String
-        Dim ToolStripRALT As String
+        'Dim ToolStripRS As String
+        'Dim ToolStripRCTRL As String
+        'Dim ToolStripRALT As String
 
         Dim ToolStripText As String
 

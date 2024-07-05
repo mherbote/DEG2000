@@ -6,7 +6,7 @@ Imports System.Windows.Media
 
 Public Class Tastatur
 
-    Dim sprites As Object = My.Resources.ResourceManager
+    'Dim sprites As Object = My.Resources.ResourceManager
 
     Private Declare Sub keybd_event Lib "user32" (ByVal bVk As Byte, ByVal bScan As Byte, ByVal dwFlags As Integer, ByVal dwExtraInfo As Integer)
     Private Const VK_CAPITAL As Integer = &H14

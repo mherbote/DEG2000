@@ -1287,7 +1287,6 @@ Public Class CPU1
             Call COMMON.vZ80cpu.FlagSflag1((COMMON.vZ80cpu.Speicher_lesen_Byte(p) And &H80))
             Call COMMON.vZ80cpu.FlagZflag2(COMMON.vZ80cpu.Speicher_lesen_Byte(p) <> 0)
             Call COMMON.vZ80cpu.FlagNflag2()
-            op_incihl = 11
         Catch ex As Exception
             MsgBox("CPU1.op_incihl: " + ex.Message & vbCrLf &
                    "PC=" + COMMON.HexAnzeige_WordByte(COMMON.vZ80cpu.PC, "B ") & vbCrLf &
@@ -1296,6 +1295,7 @@ Public Class CPU1
                    "BC=" + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.B) + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.C)
                   )
         End Try
+        op_incihl = 11
     End Function '34    'op_incihl
     Private Function op_inca() As Integer                                       ' INC A                     '3C
         Call inc(COMMON.vZ80cpu.A)
@@ -1355,7 +1355,6 @@ Public Class CPU1
             Call COMMON.vZ80cpu.FlagSflag1((COMMON.vZ80cpu.Speicher_lesen_Byte(p) And &H80))
             Call COMMON.vZ80cpu.FlagZflag2(COMMON.vZ80cpu.Speicher_lesen_Byte(p) <> 0)
             Call COMMON.vZ80cpu.FlagNflag1()
-            op_decihl = 11
         Catch ex As Exception
             MsgBox("CPU1.op_decihl: " + ex.Message & vbCrLf &
                    "PC=" + COMMON.HexAnzeige_WordByte(COMMON.vZ80cpu.PC, "B ") & vbCrLf &
@@ -1366,6 +1365,7 @@ Public Class CPU1
                    "p =" & p)
                   )
         End Try
+        op_decihl = 11
     End Function '35    'op_decihl
     Private Function op_deca() As Integer                                       ' DEC A                     '3D
         Call dec(COMMON.vZ80cpu.A)

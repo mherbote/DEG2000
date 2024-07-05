@@ -1,6 +1,5 @@
 ﻿Imports System.Drawing
 
-
 Public Class Zeichen
     Public Image As Bitmap = New Bitmap(10 * 30, 10 * 30, System.Drawing.Imaging.PixelFormat.Format32bppArgb)
 
