@@ -838,10 +838,18 @@ Public Class Haupt
                 If BWS.Visible Then
                     .Top = .Top + BWS.Height - 7
                 End If
-                If Laufwerke.Visible Then
-                    .Top = .Top + Laufwerke.Height
-                End If
-                .Left = BWS.Left
+                Select Case anzahl
+                    Case 1, 2
+                        If Laufwerke.Visible Then
+                            .Top = .Top + Laufwerke.Height
+                        End If
+                        .Left = BWS.Left
+                    Case 3
+                        .Left = BWS.Left
+                        If Laufwerke.Visible Then
+                            .Left = .Left + Laufwerke.Width
+                        End If
+                End Select
                 .Show()
             End With
         End If
