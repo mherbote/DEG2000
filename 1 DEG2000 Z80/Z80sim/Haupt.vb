@@ -789,6 +789,14 @@ Public Class Haupt
     End Sub
 
     Public Sub SetPixelGroesse(anzahl As Int32)
+        Dim LaufwerkeV, KassettenV As Boolean                                                                           'Merker, ob Fenster visible
+
+        LaufwerkeV = Laufwerke.Visible
+        KassettenV = Kassetten.Visible
+
+        If KassettenV Then Kassetten.Hide()
+        If LaufwerkeV Then Laufwerke.Hide()
+
         Select Case anzahl
             Case 1
                 If Not ToolStripMenuItem3.Checked Then
@@ -813,6 +821,30 @@ Public Class Haupt
                 End If
             Case Else
         End Select
+
+        If LaufwerkeV Then
+            With Laufwerke
+                .Top = Me.Top
+                If BWS.Visible Then
+                    .Top = .Top + BWS.Height - 7
+                End If
+                .Left = BWS.Left + 7
+                .Show()
+            End With
+        End If
+        If KassettenV Then
+            With Kassetten
+                .Top = Me.Top
+                If BWS.Visible Then
+                    .Top = .Top + BWS.Height - 7
+                End If
+                If Laufwerke.Visible Then
+                    .Top = .Top + Laufwerke.Height
+                End If
+                .Left = BWS.Left
+                .Show()
+            End With
+        End If
     End Sub
 #End Region
 
