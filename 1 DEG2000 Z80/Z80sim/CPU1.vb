@@ -1907,6 +1907,7 @@ Public Class CPU1
 #If WANT_SPC0 = 1 Then
         If COMMON.vZ80cpu.STACK >= 65536 Then COMMON.vZ80cpu.STACK = 0
 #End If
+        If i = -1 Then i = &HFFFF
         COMMON.vZ80cpu.PC = i
     End Sub ' ret1
 #End Region
@@ -2136,6 +2137,7 @@ Public Class CPU1
 
         Catch ex As Exception
             MsgBox("CPU1.CPU: " + ex.Message & vbCrLf &
+                   "SP=" + COMMON.HexAnzeige_WordByte(COMMON.vZ80cpu.STACK, "B") & vbCrLf &
                    "PC=" + COMMON.HexAnzeige_WordByte(COMMON.vZ80cpu.PC, "B") & vbCrLf &
                    "HL=" + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.H) + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.L) & vbCrLf &
                    "DE=" + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.D) + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.E) & vbCrLf &
