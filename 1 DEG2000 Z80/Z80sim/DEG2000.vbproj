@@ -238,6 +238,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AnzeigeHS.resx">
       <DependentUpon>AnzeigeHS.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="BWS.resx">
       <DependentUpon>BWS.vb</DependentUpon>
