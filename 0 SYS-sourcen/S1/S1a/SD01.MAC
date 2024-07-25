@@ -22,6 +22,7 @@ SD.ZEIT2   EQU  16            ;    ''      ''   ''
 SD.CTCK0   EQU  080H          ;CTC-Adresse Kanal 0
 SD.CTCKA   EQU  2             ;CTC-Kanal 2 (fuer KMBG Robotron)
 SD.AMB     EQU  04FH          ;Ausgabeadresse der   A M B
+SD.SPST    EQU  028H          ;Adresse der Speicherblocksteuerung
 
 ;DEFINITIONEN ZUM EDITOR
 
@@ -35,7 +36,7 @@ SD.DEAT    EQU  00F70H        ;Dynamische  E/A-Tabelle (RAM)
 SD.TPA     EQU  08830H        ;Anf.adr. Textpuffer
 SD.TPE     EQU  0FBFFH        ;Endeadr. Textpuffer
 SD.BPA     EQU  SD.BWSA-400H  ;Anf.adr. Bildpuffer
-SD.PSANZ   EQU  28            ;Anzahl programm. PF-Tasten
+SD.PSANZ   EQU  48            ;Anzahl programm. PF-Tasten  ; 28 alt
 SD.TABZA   EQU  10            ;Tabulatorenzahl
 SD.QTAB1   EQU  0             ;1. Tabulator
 SD.QTAB2   EQU  9             ;2.    ''

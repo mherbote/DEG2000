@@ -243,15 +243,6 @@ SY.IFKT4:
 	CALL	SY.ICPOS
 	RET
 
-	DW	$
-	DB	'DPTS'
-	CALL	S1.INPTR
-	INC	HL
-	CALL	S1.HBKON
-	LD	E,A
-	LD	(SM.PTS),DE
-	JP	SY.SYSTB
-
 	PAGE
 ;****************************************************************
 	ORG	00280H

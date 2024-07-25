@@ -37,10 +37,10 @@ KM.ANF:
 	LD	HL,KM.EINA	;alphanum. Tasten
 	LD	(KM.TEINA),HL
 
-	LD	HL,KM.UP13
-	LD	DE,KM.RAM
-	LD	BC,KM.UPEND-KM.UP13
-	LDIR
+	; LD	HL,KM.UP13
+	; LD	DE,KM.RAM
+	; LD	BC,KM.UPEND-KM.UP13
+	; LDIR
 
 	LD	IX,KM.KMTAB
 KM.CO:
@@ -90,19 +90,19 @@ KM.CNZA:
 	LD	A,(KM.TX2-KM.UP13+KM.RAM)
 	CP	'l'
 	JR	Z,KM.CNZA1
-	LD	(IX+9),0
-	LD	(IX+10),1
+	LD	(IX+7),0
+	LD	(IX+8),1
 KM.CNZA1:
 	LD	A,71H
-	OR	(IX+4)
-	LD	(IX+4),A
+	OR	(IX+5)
+	LD	(IX+5),A
 	CALL	KM.UP5
-	LD	A,(IX+4)
+	LD	A,(IX+5)
 	CALL	KM.UP1
 	DB	2
 	CALL	KM.UP2
 	DB	15H
-	LD	(IX+4),A
+	LD	(IX+5),A
 	JP	KM.UP4-KM.UP13+KM.RAM
 ;****************************************************************
 ;*                  Routine fuer die Taste   E T 1              *
@@ -112,7 +112,7 @@ KM.NEWL:
 	RET	NZ
 	LD	HL,KM.PUFF
 	LD	(KM.KMTAB+0DFH),HL	;2BE0
-	LD	A,(IX+10)
+	LD	A,(IX+8)
 	DEC	A
 	AND	0F0H
 	RLCA
@@ -169,7 +169,7 @@ KM.EINA7:
 	RET	Z
 	CP	3
 	RET	NC
-	LD	(IX+3),A
+	LD	(IX+4),A
 	CALL	KM.UP20
 	JR	KM.EINA6
 
@@ -185,14 +185,14 @@ KM.EINA9:
 	LD	E,A
 	LD	D,0
 	LD	H,D
-	LD	L,(IX+10)
+	LD	L,(IX+8)
 	ADD	HL,HL
 	ADD	HL,HL
 	ADD	HL,HL
 	ADD	HL,HL
 	ADD	HL,DE
-	LD	(IX+9),H
-	LD	(IX+10),L
+	LD	(IX+7),H
+	LD	(IX+8),L
 	JR	KM.EINA6
 
 KM.EINAA:
@@ -202,19 +202,19 @@ KM.EINAB:
 	CALL	KM.UP2
 	DB	8
 	LD	HL,0
-	LD	(SM.TABU),HL	;??? 00DA8H
+	LD	(SM.TABU),HL	;00DA8H
 	RET
 
 KM.EINAC:
-	LD	(IX+13),0
-	LD	(IX+14),0
+;	LD	(IX+13),0	;???
+;	LD	(IX+14),0	;???
 KM.EINAD:
 	CALL	KM.UP1
 	DB	2
-	LD	A,(IX+9)
-	OR	(IX+10)
+	LD	A,(IX+7)
+	OR	(IX+8)
 	JR	Z,KM.EINAE
-	INC	(IX+13)
+;	INC	(IX+13)	;???
 	CALL	KM.EINAE
 	JR	KM.EINAD
 
@@ -228,8 +228,8 @@ KM.EINAE:
 	RET
 
 KM.UP20:
-	LD	C,(IX+2)
-	INC	C
+	LD	C,(IX+3)
+	INC	C	;???
 	INC	C
 	INC	C
 	INC	C
@@ -342,13 +342,13 @@ KM.UP3:
 	PUSH	AF
 	LD	A,(HL)
 	INC	HL
-	LD	(IX+4),A
+	LD	(IX+5),A
 	POP	AF
 	EX	(SP),HL
 KM.UP5:
 	CALL	KM.KARO
-	LD	HL,05C01H			;? ? ?
-	LD	(SM.FKTAB+8EH),HL	;? ? ?
+	LD	HL,FD.DASU	;05C01H
+	LD	(SM.FKTAB+8EH),HL	;SM.ZSMER , SM.ZSTC
 	JP	KM.UP4-KM.UP13+KM.RAM
 
 KM.LOE1:
@@ -386,10 +386,10 @@ KM.UP12:
 
 KM.UP41:
 	LD	DE,SD.BWSA
-	LD	A,(IX+10)
+	LD	A,(IX+8)
 	OR	A
 	JR	NZ,KM.UP42
-	BIT	0,(IX+9)
+	BIT	0,(IX+7)
 	RET	Z
 	PUSH	AF
 	CALL	KM.MANZ
@@ -424,7 +424,7 @@ KM.UP44:
 	PAGE
 ;	ORG	00300H
 
-KM.UP13:	LD	(KM.UP15-KM.UP13+KM.RAM-1),A
+KM.UP13:	LD	(KM.UP15-KM.UP13+KM.RAM-1),A	;???
 	LD	A,(IX+1)	;<<<
 KM.UP15:
 	EX	DE,HL
@@ -447,13 +447,15 @@ KM.UP14:
 KM.UP4:
 	PUSH	AF
 	CALL	KM.LOE2
-	LD	A,(IX+3)
+	LD	A,(IX+4)
 	ADD	A,30H
 	LD	(KM.TX1-KM.UP13+KM.RAM),A
 	LD	DE,SD.BWSA + 18*80 ;5A0H
 	CALL	KM.UP10
 KM.TX2:
-	DB	'g  ('	;<<<
+	DB	'g '
+	DB	004H
+	DB	'('	;<<<
 KM.TX1:
 	DB	'2)'	;<<<
 	DB	3AH+80H	;":"
@@ -476,7 +478,7 @@ KM.TX1:
 	INC	HL
 	CALL	KM.UP15-KM.UP13+KM.RAM
 	INC	DE
-	LD	B,(IX+10)
+	LD	B,(IX+8)
 	PUSH	HL
 	INC	HL
 	DJNZ	$-1
@@ -514,15 +516,15 @@ KM.MHOME  EQU	02060H
 KM.MINSL  EQU	023BAH
 ;ATACO    EQU	024F8H
 
-KM.KMTAB  EQU	02B01H
-          DEFS  17,0
+KM.KMTAB  EQU	UB.KTAB
+;         DEFS  17,0
 ;SD.BWSA  EQU	03000H
 
-KM.KARO   EQU	05A93H
+KM.KARO   EQU	KR.KARO   ;05A93H
 
 ;DRUZ     EQU	07C00H
 
-KM.RAM    EQU	0FF80H
+KM.RAM    EQU	KM.UP13   ;0FF80H
 
 			;(C) Rainer Sieber     A d W
 

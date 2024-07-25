@@ -5793,43 +5793,43 @@
   7336'                  C      KM.ANF:
   7336'   7336'          C      	DW	$
   7338'   4B 6D 62 67    C      	DB	'Kmbg'
-  733C'   21 7536'       C      	LD	HL,KM.DEL	;Taste:   D E L
+  733C'   21 7520'       C      	LD	HL,KM.DEL	;Taste:   D E L
   733F'   22 0D58        C      	LD	(SM.FKTAB+58H),HL
-  7342'   21 74F4'       C      	LD	HL,KM.ABS	;Taste:   A B S
+  7342'   21 74DE'       C      	LD	HL,KM.ABS	;Taste:   A B S
   7345'   22 0D24        C      	LD	(SM.FKTAB+24H),HL
-  7348'   21 739F'       C      	LD	HL,KM.HOME	;Taste:   H O M E
+  7348'   21 7394'       C      	LD	HL,KM.HOME	;Taste:   H O M E
   734B'   22 0D74        C      	LD	(SM.FKTAB+74H),HL
-  734E'   21 73A9'       C      	LD	HL,KM.SL	;Taste:   SCH_LINKS
+  734E'   21 739E'       C      	LD	HL,KM.SL	;Taste:   SCH_LINKS
   7351'   22 0D26        C      	LD	(SM.FKTAB+26H),HL
-  7354'   21 73B6'       C      	LD	HL,KM.SR	;Taste:   SCH_RECHTS
+  7354'   21 73AB'       C      	LD	HL,KM.SR	;Taste:   SCH_RECHTS
   7357'   22 0D36        C      	LD	(SM.FKTAB+36H),HL
-  735A'   21 7393'       C      	LD	HL,KM.CO	;Taste:   C_HOCH
+  735A'   21 7388'       C      	LD	HL,KM.CO	;Taste:   C_HOCH
   735D'   22 0D06        C      	LD	(SM.FKTAB+06H),HL
-  7360'   21 73BB'       C      	LD	HL,KM.CR	;Taste:   C_RECHTS
+  7360'   21 73B0'       C      	LD	HL,KM.CR	;Taste:   C_RECHTS
   7363'   22 0D16        C      	LD	(SM.FKTAB+16H),HL
-  7366'   21 73A4'       C      	LD	HL,KM.CU	;Taste:   C_RUNTER
+  7366'   21 7399'       C      	LD	HL,KM.CU	;Taste:   C_RUNTER
   7369'   22 0D18        C      	LD	(SM.FKTAB+18H),HL
-  736C'   21 73B1'       C      	LD	HL,KM.CL	;Taste:   C_LINKS
+  736C'   21 73A6'       C      	LD	HL,KM.CL	;Taste:   C_LINKS
   736F'   22 0D08        C      	LD	(SM.FKTAB+08H),HL
-  7372'   21 73C0'       C      	LD	HL,KM.CNZA	;Taste:   C N Z A
+  7372'   21 73B5'       C      	LD	HL,KM.CNZA	;Taste:   C N Z A
   7375'   22 0D76        C      	LD	(SM.FKTAB+76H),HL
-  7378'   21 73F0'       C      	LD	HL,KM.NEWL	;Taste:   E T 1
+  7378'   21 73E5'       C      	LD	HL,KM.NEWL	;Taste:   E T 1
   737B'   22 0DAE        C      	LD	(KM.TNEWL),HL
-  737E'   21 7415'       C      	LD	HL,KM.EINA	;alphanum. Tasten
+  737E'   21 740A'       C      	LD	HL,KM.EINA	;alphanum. Tasten
   7381'   22 0DB0        C      	LD	(KM.TEINA),HL
                          C      
-  7384'   21 75C2'       C      	LD	HL,KM.UP13
-  7387'   11 FF80        C      	LD	DE,KM.RAM
-  738A'   01 007E        C      	LD	BC,KM.UPEND-KM.UP13
-  738D'   ED B0          C      	LDIR
+                         C      	; LD	HL,KM.UP13
+                         C      	; LD	DE,KM.RAM
+                         C      	; LD	BC,KM.UPEND-KM.UP13
+                         C      	; LDIR
                          C      
-  738F'   DD 21 2B01     C      	LD	IX,KM.KMTAB
-  7393'                  C      KM.CO:
-  7393'   DD CB 00 7E    C      	BIT	7,(IX)
-  7397'   C2 FF9C        C      	JP	NZ,KM.UP4-KM.UP13+KM.RAM
-  739A'   CD 7544'       C      	CALL	KM.UP2	;KMBG Reservieren EIN
-  739D'   31             C      	DB	31H
-  739E'   C9             C      	RET
+  7384'   DD 21 2B01'    C      	LD	IX,KM.KMTAB
+  7388'                  C      KM.CO:
+  7388'   DD CB 00 7E    C      	BIT	7,(IX)
+  738C'   C2 75C8'       C      	JP	NZ,KM.UP4-KM.UP13+KM.RAM
+  738F'   CD 752E'       C      	CALL	KM.UP2	;KMBG Reservieren EIN
+  7392'   31             C      	DB	31H
+  7393'   C9             C      	RET
                          C      
                          C      	PAGE
 'Kmbg'	MACRO-80 3.44	09-Dec-81	PAGE	1-85
@@ -5839,77 +5839,77 @@
                          C      ;****************************************************************
                          C      ;*                  Auswertung der Cursor-Tasten                *
                          C      ;****************************************************************
-  739F'                  C      KM.HOME:
-  739F'   CD 7541'       C      	CALL	KM.UP1	;KMBG Kassette zurueckspulen
-  73A2'   21             C      	DB	21H
-  73A3'   C9             C      	RET
+  7394'                  C      KM.HOME:
+  7394'   CD 752B'       C      	CALL	KM.UP1	;KMBG Kassette zurueckspulen
+  7397'   21             C      	DB	21H
+  7398'   C9             C      	RET
                          C      
-  73A4'                  C      KM.CU:
-  73A4'   CD 7544'       C      	CALL	KM.UP2	;KMBG Reservieren AUS
-  73A7'   41             C      	DB	41H
-  73A8'   C9             C      	RET
+  7399'                  C      KM.CU:
+  7399'   CD 752E'       C      	CALL	KM.UP2	;KMBG Reservieren AUS
+  739C'   41             C      	DB	41H
+  739D'   C9             C      	RET
                          C      
-  73A9'                  C      KM.SL:
-  73A9'   CD 7544'       C      	CALL	KM.UP2	;KMBG vorh.  Datensatz anzeigen
-  73AC'   15             C      	DB	15H
-  73AD'   CD 7541'       C      	CALL	KM.UP1
-  73B0'   02             C      	DB	2
-  73B1'                  C      KM.CL:
-  73B1'   CD 7544'       C      	CALL	KM.UP2	;KMBG einen  Datensatz zuruecksetzen
-  73B4'   15             C      	DB	15H
-  73B5'   C9             C      	RET
+  739E'                  C      KM.SL:
+  739E'   CD 752E'       C      	CALL	KM.UP2	;KMBG vorh.  Datensatz anzeigen
+  73A1'   15             C      	DB	15H
+  73A2'   CD 752B'       C      	CALL	KM.UP1
+  73A5'   02             C      	DB	2
+  73A6'                  C      KM.CL:
+  73A6'   CD 752E'       C      	CALL	KM.UP2	;KMBG einen  Datensatz zuruecksetzen
+  73A9'   15             C      	DB	15H
+  73AA'   C9             C      	RET
                          C      
-  73B6'                  C      KM.SR:
-  73B6'   CD 7541'       C      	CALL	KM.UP1	;KMBG nachf. Datensatz anzeigen
-  73B9'   02             C      	DB	2
-  73BA'   C9             C      	RET
+  73AB'                  C      KM.SR:
+  73AB'   CD 752B'       C      	CALL	KM.UP1	;KMBG nachf. Datensatz anzeigen
+  73AE'   02             C      	DB	2
+  73AF'   C9             C      	RET
                          C      
-  73BB'                  C      KM.CR:
-  73BB'   CD 7544'       C      	CALL	KM.UP2	;KMBG einen  Datensatz vorsetzen
-  73BE'   11             C      	DB	11H
-  73BF'   C9             C      	RET
+  73B0'                  C      KM.CR:
+  73B0'   CD 752E'       C      	CALL	KM.UP2	;KMBG einen  Datensatz vorsetzen
+  73B3'   11             C      	DB	11H
+  73B4'   C9             C      	RET
                          C      
-  73C0'                  C      KM.CNZA:
-  73C0'   DD CB 00 7E    C      	BIT	7,(IX)
-  73C4'   C0             C      	RET	NZ
-  73C5'   3A FFAE        C      	LD	A,(KM.TX2-KM.UP13+KM.RAM)
-  73C8'   FE 6C          C      	CP	'l'
-  73CA'   28 08          C      	JR	Z,KM.CNZA1
-  73CC'   DD 36 09 00    C      	LD	(IX+9),0
-  73D0'   DD 36 0A 01    C      	LD	(IX+10),1
-  73D4'                  C      KM.CNZA1:
-  73D4'   3E 71          C      	LD	A,71H
-  73D6'   DD B6 04       C      	OR	(IX+4)
-  73D9'   DD 77 04       C      	LD	(IX+4),A
-  73DC'   CD 7555'       C      	CALL	KM.UP5
-  73DF'   DD 7E 04       C      	LD	A,(IX+4)
-  73E2'   CD 7541'       C      	CALL	KM.UP1
-  73E5'   02             C      	DB	2
-  73E6'   CD 7544'       C      	CALL	KM.UP2
-  73E9'   15             C      	DB	15H
-  73EA'   DD 77 04       C      	LD	(IX+4),A
-  73ED'   C3 FF9C        C      	JP	KM.UP4-KM.UP13+KM.RAM
+  73B5'                  C      KM.CNZA:
+  73B5'   DD CB 00 7E    C      	BIT	7,(IX)
+  73B9'   C0             C      	RET	NZ
+  73BA'   3A 75DA'       C      	LD	A,(KM.TX2-KM.UP13+KM.RAM)
+  73BD'   FE 6C          C      	CP	'l'
+  73BF'   28 08          C      	JR	Z,KM.CNZA1
+  73C1'   DD 36 07 00    C      	LD	(IX+7),0
+  73C5'   DD 36 08 01    C      	LD	(IX+8),1
+  73C9'                  C      KM.CNZA1:
+  73C9'   3E 71          C      	LD	A,71H
+  73CB'   DD B6 05       C      	OR	(IX+5)
+  73CE'   DD 77 05       C      	LD	(IX+5),A
+  73D1'   CD 753F'       C      	CALL	KM.UP5
+  73D4'   DD 7E 05       C      	LD	A,(IX+5)
+  73D7'   CD 752B'       C      	CALL	KM.UP1
+  73DA'   02             C      	DB	2
+  73DB'   CD 752E'       C      	CALL	KM.UP2
+  73DE'   15             C      	DB	15H
+  73DF'   DD 77 05       C      	LD	(IX+5),A
+  73E2'   C3 75C8'       C      	JP	KM.UP4-KM.UP13+KM.RAM
                          C      ;****************************************************************
                          C      ;*                  Routine fuer die Taste   E T 1              *
                          C      ;****************************************************************
-  73F0'                  C      KM.NEWL:
-  73F0'   DD CB 00 7E    C      	BIT	7,(IX)
-  73F4'   C0             C      	RET	NZ
-  73F5'   21 0E66        C      	LD	HL,KM.PUFF
-  73F8'   22 2BE0        C      	LD	(KM.KMTAB+0DFH),HL	;2BE0
-  73FB'   DD 7E 0A       C      	LD	A,(IX+10)
-  73FE'   3D             C      	DEC	A
-  73FF'   E6 F0          C      	AND	0F0H
-  7401'   07             C      	RLCA
-  7402'   07             C      	RLCA
-  7403'   07             C      	RLCA
-  7404'   07             C      	RLCA
-  7405'   3C             C      	INC	A
-  7406'   32 2BEB        C      	LD	(KM.KMTAB+0EAH),A	;2BEB
-  7409'   CD 2060        C      	CALL	KM.MHOME
-  740C'   CD 23BA        C      	CALL	KM.MINSL
-  740F'   CD 21EF        C      	CALL	ATACO
-  7412'   C3 FF9C        C      	JP	KM.UP4-KM.UP13+KM.RAM
+  73E5'                  C      KM.NEWL:
+  73E5'   DD CB 00 7E    C      	BIT	7,(IX)
+  73E9'   C0             C      	RET	NZ
+  73EA'   21 0E66        C      	LD	HL,KM.PUFF
+  73ED'   22 2BE0'       C      	LD	(KM.KMTAB+0DFH),HL	;2BE0
+  73F0'   DD 7E 08       C      	LD	A,(IX+8)
+  73F3'   3D             C      	DEC	A
+  73F4'   E6 F0          C      	AND	0F0H
+  73F6'   07             C      	RLCA
+  73F7'   07             C      	RLCA
+  73F8'   07             C      	RLCA
+  73F9'   07             C      	RLCA
+  73FA'   3C             C      	INC	A
+  73FB'   32 2BEB'       C      	LD	(KM.KMTAB+0EAH),A	;2BEB
+  73FE'   CD 2060        C      	CALL	KM.MHOME
+  7401'   CD 23BA        C      	CALL	KM.MINSL
+  7404'   CD 21EF        C      	CALL	ATACO
+  7407'   C3 75C8'       C      	JP	KM.UP4-KM.UP13+KM.RAM
                          C      
                          C      	PAGE
 'Kmbg'	MACRO-80 3.44	09-Dec-81	PAGE	1-86
@@ -5919,208 +5919,208 @@
                          C      ;****************************************************************
                          C      ;*                  Auswertung der alphanumerischen Tasten      *
                          C      ;****************************************************************
-  7415'                  C      KM.EINA:
-  7415'   79             C      	LD	A,C
-  7416'   21 0000        C      	LD	HL,0
-  7419'   FE 72          C      	CP	'r'
-  741B'   20 03          C      	JR	NZ,KM.EINA1
-  741D'   21 747F'       C      	LD	HL,KM.EINAB
-  7420'                  C      KM.EINA1:
-  7420'   FE 7A          C      	CP	'z'
-  7422'   20 03          C      	JR	NZ,KM.EINA2
-  7424'   21 748A'       C      	LD	HL,KM.EINAC
-  7427'                  C      KM.EINA2:
-  7427'   FE 70          C      	CP	'p'
-  7429'   20 03          C      	JR	NZ,KM.EINA3
-  742B'   21 0000        C      	LD	HL,0
-  742E'                  C      KM.EINA3:
-  742E'   FE 63          C      	CP	'c'
-  7430'   20 03          C      	JR	NZ,KM.EINA4
-  7432'   21 0000        C      	LD	HL,0
-  7435'                  C      KM.EINA4:
-  7435'   22 0DA8        C      	LD	(KM.TTABU),HL
-  7438'   FE 30          C      	CP	'0'
-  743A'   38 04          C      	JR	C,KM.EINA5
-  743C'   FE 47          C      	CP	'G'
-  743E'   38 06          C      	JR	C,KM.EINA7
-  7440'                  C      KM.EINA5:
-  7440'   32 FFAE        C      	LD	(KM.TX2-KM.UP13+KM.RAM),A
-  7443'                  C      KM.EINA6:
-  7443'   C3 FF9C        C      	JP	KM.UP4-KM.UP13+KM.RAM
+  740A'                  C      KM.EINA:
+  740A'   79             C      	LD	A,C
+  740B'   21 0000        C      	LD	HL,0
+  740E'   FE 72          C      	CP	'r'
+  7410'   20 03          C      	JR	NZ,KM.EINA1
+  7412'   21 7474'       C      	LD	HL,KM.EINAB
+  7415'                  C      KM.EINA1:
+  7415'   FE 7A          C      	CP	'z'
+  7417'   20 03          C      	JR	NZ,KM.EINA2
+  7419'   21 747F'       C      	LD	HL,KM.EINAC
+  741C'                  C      KM.EINA2:
+  741C'   FE 70          C      	CP	'p'
+  741E'   20 03          C      	JR	NZ,KM.EINA3
+  7420'   21 0000        C      	LD	HL,0
+  7423'                  C      KM.EINA3:
+  7423'   FE 63          C      	CP	'c'
+  7425'   20 03          C      	JR	NZ,KM.EINA4
+  7427'   21 0000        C      	LD	HL,0
+  742A'                  C      KM.EINA4:
+  742A'   22 0DA8        C      	LD	(KM.TTABU),HL
+  742D'   FE 30          C      	CP	'0'
+  742F'   38 04          C      	JR	C,KM.EINA5
+  7431'   FE 47          C      	CP	'G'
+  7433'   38 06          C      	JR	C,KM.EINA7
+  7435'                  C      KM.EINA5:
+  7435'   32 75DA'       C      	LD	(KM.TX2-KM.UP13+KM.RAM),A
+  7438'                  C      KM.EINA6:
+  7438'   C3 75C8'       C      	JP	KM.UP4-KM.UP13+KM.RAM
                          C      
-  7446'                  C      KM.EINA7:
-  7446'   3A FFAE        C      	LD	A,(KM.TX2-KM.UP13+KM.RAM)
-  7449'   FE 67          C      	CP	'g'
-  744B'   20 10          C      	JR	NZ,KM.EINA8
-  744D'   79             C      	LD	A,C
-  744E'   D6 30          C      	SUB	30H
-  7450'   D8             C      	RET	C
-  7451'   C8             C      	RET	Z
-  7452'   FE 03          C      	CP	3
-  7454'   D0             C      	RET	NC
-  7455'   DD 77 03       C      	LD	(IX+3),A
-  7458'   CD 74B5'       C      	CALL	KM.UP20
-  745B'   18 E6          C      	JR	KM.EINA6
+  743B'                  C      KM.EINA7:
+  743B'   3A 75DA'       C      	LD	A,(KM.TX2-KM.UP13+KM.RAM)
+  743E'   FE 67          C      	CP	'g'
+  7440'   20 10          C      	JR	NZ,KM.EINA8
+  7442'   79             C      	LD	A,C
+  7443'   D6 30          C      	SUB	30H
+  7445'   D8             C      	RET	C
+  7446'   C8             C      	RET	Z
+  7447'   FE 03          C      	CP	3
+  7449'   D0             C      	RET	NC
+  744A'   DD 77 04       C      	LD	(IX+4),A
+  744D'   CD 749F'       C      	CALL	KM.UP20
+  7450'   18 E6          C      	JR	KM.EINA6
                          C      
-  745D'                  C      KM.EINA8:
-  745D'   FE 6C          C      	CP	'l'
-  745F'   20 1D          C      	JR	NZ,KM.EINAA
-  7461'   79             C      	LD	A,C
-  7462'   D6 30          C      	SUB	30H
-  7464'   FE 0A          C      	CP	00AH
-  7466'   38 02          C      	JR	C,KM.EINA9
-  7468'   D6 07          C      	SUB	7
-  746A'                  C      KM.EINA9:
-  746A'   5F             C      	LD	E,A
-  746B'   16 00          C      	LD	D,0
-  746D'   62             C      	LD	H,D
-  746E'   DD 6E 0A       C      	LD	L,(IX+10)
-  7471'   29             C      	ADD	HL,HL
-  7472'   29             C      	ADD	HL,HL
-  7473'   29             C      	ADD	HL,HL
-  7474'   29             C      	ADD	HL,HL
-  7475'   19             C      	ADD	HL,DE
-  7476'   DD 74 09       C      	LD	(IX+9),H
-  7479'   DD 75 0A       C      	LD	(IX+10),L
-  747C'   18 C5          C      	JR	KM.EINA6
+  7452'                  C      KM.EINA8:
+  7452'   FE 6C          C      	CP	'l'
+  7454'   20 1D          C      	JR	NZ,KM.EINAA
+  7456'   79             C      	LD	A,C
+  7457'   D6 30          C      	SUB	30H
+  7459'   FE 0A          C      	CP	00AH
+  745B'   38 02          C      	JR	C,KM.EINA9
+  745D'   D6 07          C      	SUB	7
+  745F'                  C      KM.EINA9:
+  745F'   5F             C      	LD	E,A
+  7460'   16 00          C      	LD	D,0
+  7462'   62             C      	LD	H,D
+  7463'   DD 6E 08       C      	LD	L,(IX+8)
+  7466'   29             C      	ADD	HL,HL
+  7467'   29             C      	ADD	HL,HL
+  7468'   29             C      	ADD	HL,HL
+  7469'   29             C      	ADD	HL,HL
+  746A'   19             C      	ADD	HL,DE
+  746B'   DD 74 07       C      	LD	(IX+7),H
+  746E'   DD 75 08       C      	LD	(IX+8),L
+  7471'   18 C5          C      	JR	KM.EINA6
                          C      
-  747E'                  C      KM.EINAA:
+  7473'                  C      KM.EINAA:
+  7473'   C9             C      	RET
+                         C      
+  7474'                  C      KM.EINAB:
+  7474'   CD 752E'       C      	CALL	KM.UP2
+  7477'   08             C      	DB	8
+  7478'   21 0000        C      	LD	HL,0
+  747B'   22 0DA8        C      	LD	(SM.TABU),HL	;00DA8H
   747E'   C9             C      	RET
                          C      
-  747F'                  C      KM.EINAB:
-  747F'   CD 7544'       C      	CALL	KM.UP2
-  7482'   08             C      	DB	8
-  7483'   21 0000        C      	LD	HL,0
-  7486'   22 0DA8        C      	LD	(SM.TABU),HL	;??? 00DA8H
-  7489'   C9             C      	RET
-                         C      
-  748A'                  C      KM.EINAC:
-  748A'   DD 36 0D 00    C      	LD	(IX+13),0
-  748E'   DD 36 0E 00    C      	LD	(IX+14),0
+  747F'                  C      KM.EINAC:
+                         C      ;	LD	(IX+13),0	;???
+                         C      ;	LD	(IX+14),0	;???
 'Kmbg'	MACRO-80 3.44	09-Dec-81	PAGE	1-87
 
 
-  7492'                  C      KM.EINAD:
-  7492'   CD 7541'       C      	CALL	KM.UP1
-  7495'   02             C      	DB	2
-  7496'   DD 7E 09       C      	LD	A,(IX+9)
-  7499'   DD B6 0A       C      	OR	(IX+10)
-  749C'   28 08          C      	JR	Z,KM.EINAE
-  749E'   DD 34 0D       C      	INC	(IX+13)
-  74A1'   CD 74A6'       C      	CALL	KM.EINAE
-  74A4'   18 EC          C      	JR	KM.EINAD
+  747F'                  C      KM.EINAD:
+  747F'   CD 752B'       C      	CALL	KM.UP1
+  7482'   02             C      	DB	2
+  7483'   DD 7E 07       C      	LD	A,(IX+7)
+  7486'   DD B6 08       C      	OR	(IX+8)
+  7489'   28 05          C      	JR	Z,KM.EINAE
+                         C      ;	INC	(IX+13)	;???
+  748B'   CD 7490'       C      	CALL	KM.EINAE
+  748E'   18 EF          C      	JR	KM.EINAD
                          C      
-  74A6'                  C      KM.EINAE:
-  74A6'   CD FF9C        C      	CALL	KM.UP4-KM.UP13+KM.RAM
-  74A9'   11 35E0        C      	LD	DE,SD.BWSA + 18*80 + 64	;5E0H
-  74AC'   CD 7579'       C      	CALL	KM.UP10
-  74AF'   62 7A 3A       C      	DB	'bz:'
-  74B2'   0D             C      	DB	00DH
-  74B3'   A0             C      	DB	20H+80H
-  74B4'   C9             C      	RET
+  7490'                  C      KM.EINAE:
+  7490'   CD 75C8'       C      	CALL	KM.UP4-KM.UP13+KM.RAM
+  7493'   11 35E0        C      	LD	DE,SD.BWSA + 18*80 + 64	;5E0H
+  7496'   CD 7563'       C      	CALL	KM.UP10
+  7499'   62 7A 3A       C      	DB	'bz:'
+  749C'   0D             C      	DB	00DH
+  749D'   A0             C      	DB	20H+80H
+  749E'   C9             C      	RET
                          C      
-  74B5'                  C      KM.UP20:
-  74B5'   DD 4E 02       C      	LD	C,(IX+2)
-  74B8'   0C             C      	INC	C
-  74B9'   0C             C      	INC	C
-  74BA'   0C             C      	INC	C
-  74BB'   0C             C      	INC	C
-  74BC'   ED 40          C      	IN	B,(C)
-  74BE'   FE 01          C      	CP	1
-  74C0'   20 04          C      	JR	NZ,KM.UP21
-  74C2'   CB 48          C      	BIT	1,B
-  74C4'   20 29          C      	JR	NZ,KM.UP25
-  74C6'                  C      KM.UP21:
-  74C6'   CB D8          C      	SET	3,B
-  74C8'   18 06          C      	JR	KM.UP22
-  74CA'   CB 40          C      	BIT	0,B
-  74CC'   20 21          C      	JR	NZ,KM.UP25
-  74CE'   CB D0          C      	SET	2,B
-  74D0'                  C      KM.UP22:
-  74D0'   ED 41          C      	OUT	(C),B
-  74D2'   0C             C      	INC	C
-  74D3'   ED 50          C      	IN	D,(C)
-  74D5'   0D             C      	DEC	C
-  74D6'   CB 90          C      	RES	2,B
-  74D8'   CB 98          C      	RES	3,B
-  74DA'   ED 41          C      	OUT	(C),B
-  74DC'   FE 01          C      	CP	1
-  74DE'   20 04          C      	JR	NZ,KM.UP23
-  74E0'   CB 62          C      	BIT	4,D
-  74E2'   18 02          C      	JR	KM.UP24
+  749F'                  C      KM.UP20:
+  749F'   DD 4E 03       C      	LD	C,(IX+3)
+  74A2'   0C             C      	INC	C	;???
+  74A3'   0C             C      	INC	C
+  74A4'   0C             C      	INC	C
+  74A5'   0C             C      	INC	C
+  74A6'   ED 40          C      	IN	B,(C)
+  74A8'   FE 01          C      	CP	1
+  74AA'   20 04          C      	JR	NZ,KM.UP21
+  74AC'   CB 48          C      	BIT	1,B
+  74AE'   20 29          C      	JR	NZ,KM.UP25
+  74B0'                  C      KM.UP21:
+  74B0'   CB D8          C      	SET	3,B
+  74B2'   18 06          C      	JR	KM.UP22
+  74B4'   CB 40          C      	BIT	0,B
+  74B6'   20 21          C      	JR	NZ,KM.UP25
+  74B8'   CB D0          C      	SET	2,B
+  74BA'                  C      KM.UP22:
+  74BA'   ED 41          C      	OUT	(C),B
+  74BC'   0C             C      	INC	C
+  74BD'   ED 50          C      	IN	D,(C)
+  74BF'   0D             C      	DEC	C
+  74C0'   CB 90          C      	RES	2,B
+  74C2'   CB 98          C      	RES	3,B
+  74C4'   ED 41          C      	OUT	(C),B
+  74C6'   FE 01          C      	CP	1
+  74C8'   20 04          C      	JR	NZ,KM.UP23
+  74CA'   CB 62          C      	BIT	4,D
+  74CC'   18 02          C      	JR	KM.UP24
                          C      
-  74E4'                  C      KM.UP23:
-  74E4'   CB 5A          C      	BIT	3,D
-  74E6'                  C      KM.UP24:
-  74E6'   28 07          C      	JR	Z,KM.UP25
-  74E8'   DD 36 00 00    C      	LD	(IX+0),0
-  74EC'   C3 7393'       C      	JP	KM.CO
+  74CE'                  C      KM.UP23:
+  74CE'   CB 5A          C      	BIT	3,D
+  74D0'                  C      KM.UP24:
+  74D0'   28 07          C      	JR	Z,KM.UP25
+  74D2'   DD 36 00 00    C      	LD	(IX+0),0
+  74D6'   C3 7388'       C      	JP	KM.CO
                          C      
-  74EF'                  C      KM.UP25:
-  74EF'   DD CB 00 FE    C      	SET	7,(IX+0)
-  74F3'   C9             C      	RET
+  74D9'                  C      KM.UP25:
+  74D9'   DD CB 00 FE    C      	SET	7,(IX+0)
+  74DD'   C9             C      	RET
                          C      
                          C      	PAGE
 'Kmbg'	MACRO-80 3.44	09-Dec-81	PAGE	1-88
 
 
                          C      
-  74F4'                  C      KM.ABS:
-  74F4'   21 3000        C      	LD	HL,SD.BWSA
-  74F7'   06 11          C      	LD	B,17
-  74F9'                  C      KM.ABS1:
-  74F9'   C5             C      	PUSH	BC
-  74FA'   CD 7503'       C      	CALL	KM.UP30
-  74FD'   C1             C      	POP	BC
-  74FE'   10 F9          C      	DJNZ	KM.ABS1
-  7500'   C3 7516'       C      	JP	KM.UP36
+  74DE'                  C      KM.ABS:
+  74DE'   21 3000        C      	LD	HL,SD.BWSA
+  74E1'   06 11          C      	LD	B,17
+  74E3'                  C      KM.ABS1:
+  74E3'   C5             C      	PUSH	BC
+  74E4'   CD 74ED'       C      	CALL	KM.UP30
+  74E7'   C1             C      	POP	BC
+  74E8'   10 F9          C      	DJNZ	KM.ABS1
+  74EA'   C3 7500'       C      	JP	KM.UP36
                          C      
-  7503'                  C      KM.UP30:
-  7503'   CD 7522'       C      	CALL	KM.UP34
-  7506'   A0             C      	DB	0A0H
-  7507'   28 15          C      	JR	Z,KM.UP33
-  7509'   CD 7522'       C      	CALL	KM.UP34
-  750C'   50             C      	DB	050H
-  750D'   28 0C          C      	JR	Z,KM.UP32
-  750F'                  C      KM.UP31:
-  750F'   7E             C      	LD	A,(HL)
-  7510'   23             C      	INC	HL
-  7511'   CD 4040        C      	CALL	PRINT
-  7514'   10 F9          C      	DJNZ	KM.UP31
-  7516'                  C      KM.UP36:
-  7516'   3E 1E          C      	LD	A,1EH
-  7518'   C3 4040        C      	JP	PRINT
+  74ED'                  C      KM.UP30:
+  74ED'   CD 750C'       C      	CALL	KM.UP34
+  74F0'   A0             C      	DB	0A0H
+  74F1'   28 15          C      	JR	Z,KM.UP33
+  74F3'   CD 750C'       C      	CALL	KM.UP34
+  74F6'   50             C      	DB	050H
+  74F7'   28 0C          C      	JR	Z,KM.UP32
+  74F9'                  C      KM.UP31:
+  74F9'   7E             C      	LD	A,(HL)
+  74FA'   23             C      	INC	HL
+  74FB'   CD 4040        C      	CALL	PRINT
+  74FE'   10 F9          C      	DJNZ	KM.UP31
+  7500'                  C      KM.UP36:
+  7500'   3E 1E          C      	LD	A,1EH
+  7502'   C3 4040        C      	JP	PRINT
                          C      
-  751B'                  C      KM.UP32:
-  751B'   CD 7516'       C      	CALL	KM.UP36
-  751E'                  C      KM.UP33:
-  751E'   23             C      	INC	HL
-  751F'   10 FD          C      	DJNZ	KM.UP33
-  7521'   C9             C      	RET
+  7505'                  C      KM.UP32:
+  7505'   CD 7500'       C      	CALL	KM.UP36
+  7508'                  C      KM.UP33:
+  7508'   23             C      	INC	HL
+  7509'   10 FD          C      	DJNZ	KM.UP33
+  750B'   C9             C      	RET
                          C      
-  7522'                  C      KM.UP34:
-  7522'   E3             C      	EX	(SP),HL
-  7523'   46             C      	LD	B,(HL)
-  7524'   23             C      	INC	HL
-  7525'   E3             C      	EX	(SP),HL
-  7526'   E5             C      	PUSH	HL
-  7527'   CD 752E'       C      	CALL	KM.UP35
-  752A'   E1             C      	POP	HL
-  752B'   06 50          C      	LD	B,80
-  752D'   C9             C      	RET
+  750C'                  C      KM.UP34:
+  750C'   E3             C      	EX	(SP),HL
+  750D'   46             C      	LD	B,(HL)
+  750E'   23             C      	INC	HL
+  750F'   E3             C      	EX	(SP),HL
+  7510'   E5             C      	PUSH	HL
+  7511'   CD 7518'       C      	CALL	KM.UP35
+  7514'   E1             C      	POP	HL
+  7515'   06 50          C      	LD	B,80
+  7517'   C9             C      	RET
                          C      
-  752E'                  C      KM.UP35:
-  752E'   3E 20          C      	LD	A,' '
-  7530'   BE             C      	CP	(HL)
-  7531'   23             C      	INC	HL
-  7532'   C0             C      	RET	NZ
-  7533'   10 F9          C      	DJNZ	KM.UP35
-  7535'   C9             C      	RET
+  7518'                  C      KM.UP35:
+  7518'   3E 20          C      	LD	A,' '
+  751A'   BE             C      	CP	(HL)
+  751B'   23             C      	INC	HL
+  751C'   C0             C      	RET	NZ
+  751D'   10 F9          C      	DJNZ	KM.UP35
+  751F'   C9             C      	RET
                          C      
-  7536'                  C      KM.DEL:
-  7536'   DD CB 00 BE    C      	RES	7,(IX+0)
-  753A'   DD 36 01 00    C      	LD	(IX+1),0
-  753E'   C3 FF9C        C      	JP	KM.UP4-KM.UP13+KM.RAM
+  7520'                  C      KM.DEL:
+  7520'   DD CB 00 BE    C      	RES	7,(IX+0)
+  7524'   DD 36 01 00    C      	LD	(IX+1),0
+  7528'   C3 75C8'       C      	JP	KM.UP4-KM.UP13+KM.RAM
                          C      
                          C      	PAGE
 'Kmbg'	MACRO-80 3.44	09-Dec-81	PAGE	1-89
@@ -6130,99 +6130,99 @@
                          C      ;****************************************************************
                          C      ;*                  Unterprogramme                              *
                          C      ;****************************************************************
-  7541'                  C      KM.UP1:
-  7541'   CD 7561'       C      	CALL	KM.LOE1
-  7544'                  C      KM.UP2:
-  7544'   DD CB 00 7E    C      	BIT	7,(IX)
-  7548'   28 02          C      	JR	Z,KM.UP3
-  754A'   E1             C      	POP	HL
-  754B'   C0             C      	RET	NZ
-  754C'                  C      KM.UP3:
-  754C'   E3             C      	EX	(SP),HL
-  754D'   F5             C      	PUSH	AF
-  754E'   7E             C      	LD	A,(HL)
-  754F'   23             C      	INC	HL
-  7550'   DD 77 04       C      	LD	(IX+4),A
-  7553'   F1             C      	POP	AF
-  7554'   E3             C      	EX	(SP),HL
-  7555'                  C      KM.UP5:
-  7555'   CD 5A93        C      	CALL	KM.KARO
-  7558'   21 5C01        C      	LD	HL,05C01H			;? ? ?
-  755B'   22 0D8E        C      	LD	(SM.FKTAB+8EH),HL	;? ? ?
-  755E'   C3 FF9C        C      	JP	KM.UP4-KM.UP13+KM.RAM
+  752B'                  C      KM.UP1:
+  752B'   CD 754B'       C      	CALL	KM.LOE1
+  752E'                  C      KM.UP2:
+  752E'   DD CB 00 7E    C      	BIT	7,(IX)
+  7532'   28 02          C      	JR	Z,KM.UP3
+  7534'   E1             C      	POP	HL
+  7535'   C0             C      	RET	NZ
+  7536'                  C      KM.UP3:
+  7536'   E3             C      	EX	(SP),HL
+  7537'   F5             C      	PUSH	AF
+  7538'   7E             C      	LD	A,(HL)
+  7539'   23             C      	INC	HL
+  753A'   DD 77 05       C      	LD	(IX+5),A
+  753D'   F1             C      	POP	AF
+  753E'   E3             C      	EX	(SP),HL
+  753F'                  C      KM.UP5:
+  753F'   CD 55D5'       C      	CALL	KM.KARO
+  7542'   21 5F63'       C      	LD	HL,FD.DASU	;05C01H
+  7545'   22 0D8E        C      	LD	(SM.FKTAB+8EH),HL	;SM.ZSMER , SM.ZSTC
+  7548'   C3 75C8'       C      	JP	KM.UP4-KM.UP13+KM.RAM
                          C      
-  7561'                  C      KM.LOE1:
-  7561'   21 0E65        C      	LD	HL,KM.PUFF-1
-  7564'   36 00          C      	LD	(HL),0
-  7566'   01 0103        C      	LD	BC,103H
-  7569'   18 08          C      	JR	KM.LOE3
-  756B'                  C      KM.LOE2:
-  756B'   21 3000        C      	LD	HL,SD.BWSA
-  756E'   01 077F        C      	LD	BC,24*80 -1 ;007FFH ??? (25*80-1 = 07CFH; 07FFH-07CFH=30H=48)
-  7571'   36 20          C      	LD	(HL),' '
-  7573'                  C      KM.LOE3:
-  7573'   E5             C      	PUSH	HL
-  7574'   D1             C      	POP	DE
-  7575'   13             C      	INC	DE
-  7576'   ED B0          C      	LDIR
-  7578'   C9             C      	RET
+  754B'                  C      KM.LOE1:
+  754B'   21 0E65        C      	LD	HL,KM.PUFF-1
+  754E'   36 00          C      	LD	(HL),0
+  7550'   01 0103        C      	LD	BC,103H
+  7553'   18 08          C      	JR	KM.LOE3
+  7555'                  C      KM.LOE2:
+  7555'   21 3000        C      	LD	HL,SD.BWSA
+  7558'   01 077F        C      	LD	BC,24*80 -1 ;007FFH ??? (25*80-1 = 07CFH; 07FFH-07CFH=30H=48)
+  755B'   36 20          C      	LD	(HL),' '
+  755D'                  C      KM.LOE3:
+  755D'   E5             C      	PUSH	HL
+  755E'   D1             C      	POP	DE
+  755F'   13             C      	INC	DE
+  7560'   ED B0          C      	LDIR
+  7562'   C9             C      	RET
                          C      
-  7579'                  C      KM.UP10:
-  7579'   E3             C      	EX	(SP),HL
-  757A'                  C      KM.UP11:
-  757A'   7E             C      	LD	A,(HL)
-  757B'   E6 7F          C      	AND	07FH
-  757D'   FE 20          C      	CP	' '
-  757F'   38 02          C      	JR	C,KM.UP12
-  7581'   12             C      	LD	(DE),A
-  7582'   13             C      	INC	DE
-  7583'                  C      KM.UP12:
-  7583'   DC FF80        C      	CALL	C,KM.UP13-KM.UP13+KM.RAM
-  7586'   CB 7E          C      	BIT	7,(HL)
-  7588'   23             C      	INC	HL
-  7589'   28 EF          C      	JR	Z,KM.UP11
-  758B'   E3             C      	EX	(SP),HL
-  758C'   C9             C      	RET
+  7563'                  C      KM.UP10:
+  7563'   E3             C      	EX	(SP),HL
+  7564'                  C      KM.UP11:
+  7564'   7E             C      	LD	A,(HL)
+  7565'   E6 7F          C      	AND	07FH
+  7567'   FE 20          C      	CP	' '
+  7569'   38 02          C      	JR	C,KM.UP12
+  756B'   12             C      	LD	(DE),A
+  756C'   13             C      	INC	DE
+  756D'                  C      KM.UP12:
+  756D'   DC 75AC'       C      	CALL	C,KM.UP13-KM.UP13+KM.RAM
+  7570'   CB 7E          C      	BIT	7,(HL)
+  7572'   23             C      	INC	HL
+  7573'   28 EF          C      	JR	Z,KM.UP11
+  7575'   E3             C      	EX	(SP),HL
+  7576'   C9             C      	RET
                          C      
-  758D'                  C      KM.UP41:
-  758D'   11 3000        C      	LD	DE,SD.BWSA
-  7590'   DD 7E 0A       C      	LD	A,(IX+10)
-  7593'   B7             C      	OR	A
-  7594'   20 0C          C      	JR	NZ,KM.UP42
-  7596'   DD CB 09 46    C      	BIT	0,(IX+9)
-  759A'   C8             C      	RET	Z
-  759B'   F5             C      	PUSH	AF
-  759C'   CD 201D        C      	CALL	KM.MANZ
-  759F'   F1             C      	POP	AF
-  75A0'   D6 10          C      	SUB	10H
-  75A2'                  C      KM.UP42:
-  75A2'   F5             C      	PUSH	AF
-  75A3'   CD 201D        C      	CALL	KM.MANZ
-  75A6'   F1             C      	POP	AF
-  75A7'   D6 10          C      	SUB	10H
-  75A9'   C8             C      	RET	Z
-  75AA'   D8             C      	RET	C
-  75AB'   18 F5          C      	JR	KM.UP42
+  7577'                  C      KM.UP41:
+  7577'   11 3000        C      	LD	DE,SD.BWSA
+  757A'   DD 7E 08       C      	LD	A,(IX+8)
+  757D'   B7             C      	OR	A
+  757E'   20 0C          C      	JR	NZ,KM.UP42
+  7580'   DD CB 07 46    C      	BIT	0,(IX+7)
+  7584'   C8             C      	RET	Z
+  7585'   F5             C      	PUSH	AF
+  7586'   CD 201D        C      	CALL	KM.MANZ
+  7589'   F1             C      	POP	AF
+  758A'   D6 10          C      	SUB	10H
+  758C'                  C      KM.UP42:
+  758C'   F5             C      	PUSH	AF
+  758D'   CD 201D        C      	CALL	KM.MANZ
+  7590'   F1             C      	POP	AF
+  7591'   D6 10          C      	SUB	10H
+  7593'   C8             C      	RET	Z
+  7594'   D8             C      	RET	C
+  7595'   18 F5          C      	JR	KM.UP42
                          C      
-  75AD'                  C      KM.UP43:
-  75AD'   FE 1E          C      	CP	01EH
-  75AF'   C8             C      	RET	Z
-  75B0'   FE 0A          C      	CP	00AH
+  7597'                  C      KM.UP43:
+  7597'   FE 1E          C      	CP	01EH
+  7599'   C8             C      	RET	Z
+  759A'   FE 0A          C      	CP	00AH
 'Kmbg'	MACRO-80 3.44	09-Dec-81	PAGE	1-90
 
 
-  75B2'   C8             C      	RET	Z
-  75B3'   FE 0D          C      	CP	00DH
-  75B5'   C8             C      	RET	Z
-  75B6'   B7             C      	OR	A
-  75B7'   C8             C      	RET	Z
-  75B8'   FE 20          C      	CP	' '
-  75BA'   38 03          C      	JR	C,KM.UP44
-  75BC'   FE 80          C      	CP	080H
-  75BE'   D8             C      	RET	C
-  75BF'                  C      KM.UP44:
-  75BF'   3E 7F          C      	LD	A,07FH
-  75C1'   C9             C      	RET
+  759C'   C8             C      	RET	Z
+  759D'   FE 0D          C      	CP	00DH
+  759F'   C8             C      	RET	Z
+  75A0'   B7             C      	OR	A
+  75A1'   C8             C      	RET	Z
+  75A2'   FE 20          C      	CP	' '
+  75A4'   38 03          C      	JR	C,KM.UP44
+  75A6'   FE 80          C      	CP	080H
+  75A8'   D8             C      	RET	C
+  75A9'                  C      KM.UP44:
+  75A9'   3E 7F          C      	LD	A,07FH
+  75AB'   C9             C      	RET
                          C      
                          C      	PAGE
 'Kmbg'	MACRO-80 3.44	09-Dec-81	PAGE	1-91
@@ -6231,88 +6231,90 @@
                          C      
                          C      ;	ORG	00300H
                          C      
-  75C2'   32 FF85        C      KM.UP13:	LD	(KM.UP15-KM.UP13+KM.RAM-1),A
-  75C5'   DD 7E 01       C      	LD	A,(IX+1)	;<<<
-  75C8'                  C      KM.UP15:
-  75C8'   EB             C      	EX	DE,HL
-  75C9'   77             C      	LD	(HL),A
-  75CA'   3E 33          C      	LD	A,33H
-  75CC'   ED 67          C      	RRD
-  75CE'   EB             C      	EX	DE,HL
-  75CF'   F5             C      	PUSH	AF
-  75D0'   1A             C      	LD	A,(DE)
-  75D1'   CD FF93        C      	CALL	KM.UP14-KM.UP13+KM.RAM
-  75D4'   F1             C      	POP	AF
-  75D5'                  C      KM.UP14:
-  75D5'   FE 3A          C      	CP	03AH
-  75D7'   38 02          C      	JR	C,$+4	;---!
-  75D9'   C6 07          C      	ADD	A,7	;   !
-  75DB'   12             C      	LD	(DE),A	;<--!
-  75DC'   13             C      	INC	DE
-  75DD'   C9             C      	RET
+  75AC'   32 75B1'       C      KM.UP13:	LD	(KM.UP15-KM.UP13+KM.RAM-1),A	;???
+  75AF'   DD 7E 01       C      	LD	A,(IX+1)	;<<<
+  75B2'                  C      KM.UP15:
+  75B2'   EB             C      	EX	DE,HL
+  75B3'   77             C      	LD	(HL),A
+  75B4'   3E 33          C      	LD	A,33H
+  75B6'   ED 67          C      	RRD
+  75B8'   EB             C      	EX	DE,HL
+  75B9'   F5             C      	PUSH	AF
+  75BA'   1A             C      	LD	A,(DE)
+  75BB'   CD 75BF'       C      	CALL	KM.UP14-KM.UP13+KM.RAM
+  75BE'   F1             C      	POP	AF
+  75BF'                  C      KM.UP14:
+  75BF'   FE 3A          C      	CP	03AH
+  75C1'   38 02          C      	JR	C,$+4	;---!
+  75C3'   C6 07          C      	ADD	A,7	;   !
+  75C5'   12             C      	LD	(DE),A	;<--!
+  75C6'   13             C      	INC	DE
+  75C7'   C9             C      	RET
                          C      
-  75DE'                  C      KM.UP4:
-  75DE'   F5             C      	PUSH	AF
-  75DF'   CD 756B'       C      	CALL	KM.LOE2
-  75E2'   DD 7E 03       C      	LD	A,(IX+3)
-  75E5'   C6 30          C      	ADD	A,30H
-  75E7'   32 FFB2        C      	LD	(KM.TX1-KM.UP13+KM.RAM),A
-  75EA'   11 35A0        C      	LD	DE,SD.BWSA + 18*80 ;5A0H
-  75ED'   CD 7579'       C      	CALL	KM.UP10
-  75F0'                  C      KM.TX2:
-  75F0'   67 20 20 28    C      	DB	'g  ('	;<<<
-  75F4'                  C      KM.TX1:
-  75F4'   32 29          C      	DB	'2)'	;<<<
-  75F6'   BA             C      	DB	3AH+80H	;":"
-  75F7'   11 35AE        C      	LD	DE,SD.BWSA + 18*80 + 14 ;5AEH	;18*80 +20	;5B4H
-  75FA'   CD 7579'       C      	CALL	KM.UP10
-  75FD'   6C 3A          C      	DB	'l:'
-  75FF'   09             C      	DB	9
-  7600'   0A             C      	DB	10
-  7601'   20 73 3A       C      	DB	' s:'
-  7604'   00             C      	DB	0
-  7605'   2F             C      	DB	'/'
-  7606'   01             C      	DB	1
-  7607'   20 20 20 20    C      	DB	'      '
-  760B'   20 20          C      
-  760D'   AD             C      	DB	2DH+80H	;"-"
-  760E'   1B             C      	DEC	DE
-  760F'   1B             C      	DEC	DE
-  7610'   1B             C      	DEC	DE
-  7611'   21 0E65        C      	LD	HL,KM.PUFF-1
-  7614'   7E             C      	LD	A,(HL)
-  7615'   23             C      	INC	HL
-  7616'   CD FF86        C      	CALL	KM.UP15-KM.UP13+KM.RAM
-  7619'   13             C      	INC	DE
-  761A'   DD 46 0A       C      	LD	B,(IX+10)
-  761D'   E5             C      	PUSH	HL
-  761E'   23             C      	INC	HL
-  761F'   10 FD          C      	DJNZ	$-1
-  7621'   7E             C      	LD	A,(HL)
-  7622'   CD FF86        C      	CALL	KM.UP15-KM.UP13+KM.RAM
-  7625'   23             C      	INC	HL
-  7626'   7E             C      	LD	A,(HL)
-  7627'   CD FF86        C      	CALL	KM.UP15-KM.UP13+KM.RAM
-  762A'   E1             C      	POP	HL
-  762B'   E5             C      	PUSH	HL
-  762C'   11 3640        C      	LD	DE,SD.BWSA + 20*80	;640H
-  762F'   06 00          C      	LD	B,0
-  7631'   7E             C      	LD	A,(HL)
-  7632'   CD 75AD'       C      	CALL	KM.UP43
-  7635'   12             C      	LD	(DE),A
-  7636'   23             C      	INC	HL
-  7637'   13             C      	INC	DE
-  7638'   10 F7          C      	DJNZ	$-7
-  763A'   E1             C      	POP	HL
-  763B'                  C      KM.UP40:
-  763B'   CD 758D'       C      	CALL	KM.UP41
-  763E'   F1             C      	POP	AF
-  763F'   C9             C      	RET
-                         C      
-  7640'                  C      KM.UPEND	EQU	$
+  75C8'                  C      KM.UP4:
+  75C8'   F5             C      	PUSH	AF
+  75C9'   CD 7555'       C      	CALL	KM.LOE2
+  75CC'   DD 7E 04       C      	LD	A,(IX+4)
+  75CF'   C6 30          C      	ADD	A,30H
+  75D1'   32 75DE'       C      	LD	(KM.TX1-KM.UP13+KM.RAM),A
+  75D4'   11 35A0        C      	LD	DE,SD.BWSA + 18*80 ;5A0H
+  75D7'   CD 7563'       C      	CALL	KM.UP10
+  75DA'                  C      KM.TX2:
+  75DA'   67 20          C      	DB	'g '
+  75DC'   04             C      	DB	004H
+  75DD'   28             C      	DB	'('	;<<<
+  75DE'                  C      KM.TX1:
+  75DE'   32 29          C      	DB	'2)'	;<<<
+  75E0'   BA             C      	DB	3AH+80H	;":"
+  75E1'   11 35AE        C      	LD	DE,SD.BWSA + 18*80 + 14 ;5AEH	;18*80 +20	;5B4H
+  75E4'   CD 7563'       C      	CALL	KM.UP10
+  75E7'   6C 3A          C      	DB	'l:'
+  75E9'   09             C      	DB	9
+  75EA'   0A             C      	DB	10
+  75EB'   20 73 3A       C      	DB	' s:'
+  75EE'   00             C      	DB	0
+  75EF'   2F             C      	DB	'/'
+  75F0'   01             C      	DB	1
+  75F1'   20 20 20 20    C      	DB	'      '
+  75F5'   20 20          C      
+  75F7'   AD             C      	DB	2DH+80H	;"-"
+  75F8'   1B             C      	DEC	DE
+  75F9'   1B             C      	DEC	DE
+  75FA'   1B             C      	DEC	DE
+  75FB'   21 0E65        C      	LD	HL,KM.PUFF-1
+  75FE'   7E             C      	LD	A,(HL)
+  75FF'   23             C      	INC	HL
+  7600'   CD 75B2'       C      	CALL	KM.UP15-KM.UP13+KM.RAM
+  7603'   13             C      	INC	DE
+  7604'   DD 46 08       C      	LD	B,(IX+8)
+  7607'   E5             C      	PUSH	HL
+  7608'   23             C      	INC	HL
+  7609'   10 FD          C      	DJNZ	$-1
+  760B'   7E             C      	LD	A,(HL)
+  760C'   CD 75B2'       C      	CALL	KM.UP15-KM.UP13+KM.RAM
+  760F'   23             C      	INC	HL
+  7610'   7E             C      	LD	A,(HL)
+  7611'   CD 75B2'       C      	CALL	KM.UP15-KM.UP13+KM.RAM
+  7614'   E1             C      	POP	HL
+  7615'   E5             C      	PUSH	HL
+  7616'   11 3640        C      	LD	DE,SD.BWSA + 20*80	;640H
+  7619'   06 00          C      	LD	B,0
+  761B'   7E             C      	LD	A,(HL)
+  761C'   CD 7597'       C      	CALL	KM.UP43
+  761F'   12             C      	LD	(DE),A
+  7620'   23             C      	INC	HL
+  7621'   13             C      	INC	DE
+  7622'   10 F7          C      	DJNZ	$-7
+  7624'   E1             C      	POP	HL
+  7625'                  C      KM.UP40:
+  7625'   CD 7577'       C      	CALL	KM.UP41
+  7628'   F1             C      	POP	AF
+  7629'   C9             C      	RET
 'Kmbg'	MACRO-80 3.44	09-Dec-81	PAGE	1-92
 
 
+                         C      
+  762A'                  C      KM.UPEND	EQU	$
                          C      
                          C      ;SM.FKTAB	EQU	00D00H
   0DA8                   C      KM.TTABU  EQU	00DA8H
@@ -6325,15 +6327,15 @@
   23BA                   C      KM.MINSL  EQU	023BAH
                          C      ;ATACO    EQU	024F8H
                          C      
-  2B01                   C      KM.KMTAB  EQU	02B01H
-  7640'                  C                DEFS  17,0
+  2B01'                  C      KM.KMTAB  EQU	UB.KTAB
+                         C      ;         DEFS  17,0
                          C      ;SD.BWSA  EQU	03000H
                          C      
-  5A93                   C      KM.KARO   EQU	05A93H
+  55D5'                  C      KM.KARO   EQU	KR.KARO   ;05A93H
                          C      
                          C      ;DRUZ     EQU	07C00H
                          C      
-  FF80                   C      KM.RAM    EQU	0FF80H
+  75AC'                  C      KM.RAM    EQU	KM.UP13   ;0FF80H
                          C      
                          C      			;(C) Rainer Sieber     A d W
                          C      
@@ -6384,32 +6386,32 @@ EC82 	BC.VTABE        7158'	CP.COMPR        71BB'	CP.INIT
 5E54'	KH.SYSRT        5E50'	KH.WBM          5E4E'	KH.WREC         
 5E52'	KH.WSL          5A6B'	KI.KM           5A2C'	KI.KN           
 5AD2'	KI.KO03         5A4F'	KI.NMR          5ADD'	KI.RENA         
-5AFA'	KI.RENA9        5AB4'	KI.VERZ         74F4'	KM.ABS          
-74F9'	KM.ABS1         7336'	KM.ANF          73B1'	KM.CL           
-73C0'	KM.CNZA         73D4'	KM.CNZA1        7393'	KM.CO           
-73BB'	KM.CR           73A4'	KM.CU           7536'	KM.DEL          
-7415'	KM.EINA         7420'	KM.EINA1        7427'	KM.EINA2        
-742E'	KM.EINA3        7435'	KM.EINA4        7440'	KM.EINA5        
-7443'	KM.EINA6        7446'	KM.EINA7        745D'	KM.EINA8        
-746A'	KM.EINA9        747E'	KM.EINAA        747F'	KM.EINAB        
-748A'	KM.EINAC        7492'	KM.EINAD        74A6'	KM.EINAE        
-739F'	KM.HOME         5A93 	KM.KARO         2B01 	KM.KMTAB        
-7561'	KM.LOE1         756B'	KM.LOE2         7573'	KM.LOE3         
+5AFA'	KI.RENA9        5AB4'	KI.VERZ         74DE'	KM.ABS          
+74E3'	KM.ABS1         7336'	KM.ANF          73A6'	KM.CL           
+73B5'	KM.CNZA         73C9'	KM.CNZA1        7388'	KM.CO           
+73B0'	KM.CR           7399'	KM.CU           7520'	KM.DEL          
+740A'	KM.EINA         7415'	KM.EINA1        741C'	KM.EINA2        
+7423'	KM.EINA3        742A'	KM.EINA4        7435'	KM.EINA5        
+7438'	KM.EINA6        743B'	KM.EINA7        7452'	KM.EINA8        
+745F'	KM.EINA9        7473'	KM.EINAA        7474'	KM.EINAB        
+747F'	KM.EINAC        747F'	KM.EINAD        7490'	KM.EINAE        
+7394'	KM.HOME         55D5'	KM.KARO         2B01'	KM.KMTAB        
+754B'	KM.LOE1         7555'	KM.LOE2         755D'	KM.LOE3         
 201D 	KM.MANZ         2060 	KM.MHOME        23BA 	KM.MINSL        
-73F0'	KM.NEWL         0E66 	KM.PUFF         FF80 	KM.RAM          
-73A9'	KM.SL           73B6'	KM.SR           0DB0 	KM.TEINA        
-0DAE 	KM.TNEWL        0DA8 	KM.TTABU        75F4'	KM.TX1          
-75F0'	KM.TX2          7541'	KM.UP1          7579'	KM.UP10         
-757A'	KM.UP11         7583'	KM.UP12         75C2'	KM.UP13         
-75D5'	KM.UP14         75C8'	KM.UP15         7544'	KM.UP2          
-74B5'	KM.UP20         74C6'	KM.UP21         74D0'	KM.UP22         
-74E4'	KM.UP23         74E6'	KM.UP24         74EF'	KM.UP25         
-754C'	KM.UP3          7503'	KM.UP30         750F'	KM.UP31         
-751B'	KM.UP32         751E'	KM.UP33         7522'	KM.UP34         
-752E'	KM.UP35         7516'	KM.UP36         75DE'	KM.UP4          
-763B'	KM.UP40         758D'	KM.UP41         75A2'	KM.UP42         
-75AD'	KM.UP43         75BF'	KM.UP44         7555'	KM.UP5          
-7640'	KM.UPEND        54EA'	KOMED           55D1'	KR.CKRA         
+73E5'	KM.NEWL         0E66 	KM.PUFF         75AC'	KM.RAM          
+739E'	KM.SL           73AB'	KM.SR           0DB0 	KM.TEINA        
+0DAE 	KM.TNEWL        0DA8 	KM.TTABU        75DE'	KM.TX1          
+75DA'	KM.TX2          752B'	KM.UP1          7563'	KM.UP10         
+7564'	KM.UP11         756D'	KM.UP12         75AC'	KM.UP13         
+75BF'	KM.UP14         75B2'	KM.UP15         752E'	KM.UP2          
+749F'	KM.UP20         74B0'	KM.UP21         74BA'	KM.UP22         
+74CE'	KM.UP23         74D0'	KM.UP24         74D9'	KM.UP25         
+7536'	KM.UP3          74ED'	KM.UP30         74F9'	KM.UP31         
+7505'	KM.UP32         7508'	KM.UP33         750C'	KM.UP34         
+7518'	KM.UP35         7500'	KM.UP36         75C8'	KM.UP4          
+7625'	KM.UP40         7577'	KM.UP41         758C'	KM.UP42         
+7597'	KM.UP43         75A9'	KM.UP44         753F'	KM.UP5          
+762A'	KM.UPEND        54EA'	KOMED           55D1'	KR.CKRA         
 5520'	KR.GR1          552A'	KR.GR2          552C'	KR.GR3          
 55D5'	KR.KARO         565D'	KR.TYPT         55D9'	KR.VORSP        
 6A86'	KU.DD           6A83'	KU.DECIY        6A1E'	KU.TAB2L        
@@ -6539,4 +6541,4 @@ No Fatal error(s)
 
     
 6C0A'	UR.TCR          6C1B'	UR.TCRN         6C25'	UR.TQUIT        
-6C1D'	UR.TSYS         6BA8'
+6C1D'	UR.TSYS
