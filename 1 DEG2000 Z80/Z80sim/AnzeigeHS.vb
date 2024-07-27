@@ -28,7 +28,7 @@ Public Class AnzeigeHS
                 .Rows(.Rows.Count - 1).Height = 20
             Next
             AddHandler .MouseWheel, AddressOf HSanzeige_MouseWheel
-            .Columns(18).DefaultCellStyle.Font = New System.Drawing.Font("DEG", 12, System.Drawing.FontStyle.Regular)
+            .Columns(18).DefaultCellStyle.Font = New System.Drawing.Font("Courier New", 12, System.Drawing.FontStyle.Regular)
         End With
 
         c.HeaderText = "Bereich"

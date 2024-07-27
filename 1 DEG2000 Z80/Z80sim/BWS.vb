@@ -291,14 +291,11 @@ Public Class BWS
 
     Public Sub ChangeFont(FontdateiName As String)
         Try
-
             If Not Font1.LoadBwsFont(FontdateiName) Then                                                                ' neuen Font laden
                 End
             End If
             Zx = Font1.PixelanzX
             Zy = Font1.PixelanzY
-
-            Call changeBWS()
         Catch ex As Exception
 
         End Try
@@ -308,8 +305,11 @@ Public Class BWS
         PIx = pX
         PIy = pY
 
+        Call ChangePixel1()
+    End Sub
+    Public Sub ChangePixel1()
         Try
-            Select Case pX
+            Select Case PIx
                 Case 1
                     Me.Width = PIx * Zx * BWSx + 2 + 14
                 Case 2
@@ -318,7 +318,7 @@ Public Class BWS
                     Me.Width = PIx * Zx * BWSx + 2 + 14
             End Select
 
-            Select Case pY
+            Select Case PIy
                 Case 1
                     Me.Height = PIy * Zy * BWSy + 39
                 Case 2

@@ -8,6 +8,7 @@ Public Class Haupt
     Public IOsim As New IOsim
 
     Public start As Boolean
+    Public LaufwerkeV, KassettenV As Boolean                                                                             'Merker, ob Fenster visible
 
     Private LocationSet As Boolean
 
@@ -770,11 +771,16 @@ Public Class Haupt
             If OpenFileDialog1.ShowDialog() = Windows.Forms.DialogResult.OK Then
                 COMMON.FontDateiname = OpenFileDialog1.FileName
 
+                Call FensterAus()
+
                 Call BWS.ChangeFont(COMMON.FontDateiname)
+                Call BWS.ChangePixel1()
             End If
         Catch ex As Exception
 
         End Try
+
+        Call FensterEin(1)
     End Sub ' ChangeFont_Click
 
 #Region "PixelGröße"
@@ -787,41 +793,14 @@ Public Class Haupt
     Private Sub ToolStripMenuItem5_Click(sender As Object, e As EventArgs) Handles ToolStripMenuItem5.Click             '3
         Call SetPixelGroesse(3)
     End Sub
-
-    Public Sub SetPixelGroesse(anzahl As Int32)
-        Dim LaufwerkeV, KassettenV As Boolean                                                                           'Merker, ob Fenster visible
-
+    Private Sub FensterAus()
         LaufwerkeV = Laufwerke.Visible
         KassettenV = Kassetten.Visible
 
         If KassettenV Then Kassetten.Hide()
         If LaufwerkeV Then Laufwerke.Hide()
-
-        Select Case anzahl
-            Case 1
-                If Not ToolStripMenuItem3.Checked Then
-                    ToolStripMenuItem3.Checked = True
-                    ToolStripMenuItem4.Checked = False
-                    ToolStripMenuItem5.Checked = False
-                End If
-                BWS.ChangePixel(1, 1)
-            Case 2
-                If Not ToolStripMenuItem4.Checked Then
-                    ToolStripMenuItem3.Checked = False
-                    ToolStripMenuItem4.Checked = True
-                    ToolStripMenuItem5.Checked = False
-                    BWS.ChangePixel(2, 2)
-                End If
-            Case 3
-                If Not ToolStripMenuItem5.Checked Then
-                    ToolStripMenuItem3.Checked = False
-                    ToolStripMenuItem4.Checked = False
-                    ToolStripMenuItem5.Checked = True
-                    BWS.ChangePixel(3, 3)
-                End If
-            Case Else
-        End Select
-
+    End Sub
+    Private Sub FensterEin(anzahl As Int32)
         If LaufwerkeV Then
             With Laufwerke
                 .Top = Me.Top
@@ -853,6 +832,37 @@ Public Class Haupt
                 .Show()
             End With
         End If
+    End Sub
+
+    Public Sub SetPixelGroesse(anzahl As Int32)
+        Call FensterAus()
+
+        Select Case anzahl
+            Case 1
+                If Not ToolStripMenuItem3.Checked Then
+                    ToolStripMenuItem3.Checked = True
+                    ToolStripMenuItem4.Checked = False
+                    ToolStripMenuItem5.Checked = False
+                End If
+                Call BWS.ChangePixel(1, 1)
+            Case 2
+                If Not ToolStripMenuItem4.Checked Then
+                    ToolStripMenuItem3.Checked = False
+                    ToolStripMenuItem4.Checked = True
+                    ToolStripMenuItem5.Checked = False
+                    Call BWS.ChangePixel(2, 2)
+                End If
+            Case 3
+                If Not ToolStripMenuItem5.Checked Then
+                    ToolStripMenuItem3.Checked = False
+                    ToolStripMenuItem4.Checked = False
+                    ToolStripMenuItem5.Checked = True
+                    Call BWS.ChangePixel(3, 3)
+                End If
+            Case Else
+        End Select
+
+        Call FensterEin(anzahl)
     End Sub
 #End Region
 
