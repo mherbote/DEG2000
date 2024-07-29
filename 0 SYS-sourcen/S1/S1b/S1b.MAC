@@ -1,3 +1,5 @@
+	TITLE 'EQUAL - Anweisungen fuer Assembler'
+	PAGE	87
 SY.SYSTB  EQU	0000BH
 SM.FKTAB  EQU	00D00H
 SM.TABU   EQU   00DA8H
@@ -10,7 +12,7 @@ PRINT     EQU	04040H
 PUF.KASS  EQU	04070H
 
 	INCLUDE K0.MAC	;EQUAL - Anweisungen fuer Assembler
-;	
+;
 	ORG	05400H
 	INCLUDE K1.MAC	;BAMOS/Emulator  ---  Kassettenmagnetband
 ;
@@ -27,14 +29,14 @@ PUF.KASS  EQU	04070H
 ;	INCLUDE RL.MAC	;Relativloader fuer O-Dateien
 ;	INCLUDE SV.MAC	;Retten von Maschinencodeprogrammen als MRES - P-Datei
 	INCLUDE K3.MAC	;MRES Routinen
-;	
+;
 ;	INCLUDE	KX.MAC	;Kopieren von MRES-Kassetten Teil 1
 ;	INCLUDE	KY.MAC	;Kopieren von MRES-Kassetten Teil 2
 ;	INCLUDE	KU.MAC	;Unterprogramme fuer KOPI
 	INCLUDE K6.MAC	;Kopieren MRES
-;	
+;
 	INCLUDE K7.MAC	;Routinen fuer Kassette,Monitor UND Tastatur (UR.ASM)
-;	
+;
 ;	INCLUDE	U1.MAC	;Allgemeine Unterprogramme
 ;	INCLUDE	XY.MAC	;Handling f. IX/IY-adressierte Bereiche
 ;	INCLUDE	UC.MAC	;Konvertierungen
@@ -45,6 +47,6 @@ PUF.KASS  EQU	04070H
 ;
 	INCLUDE KM.MAC
 
-	TITLE ''
+	TITLE 'Symbolliste S1b'
 	END
 

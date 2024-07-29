@@ -8,7 +8,7 @@
 ;----------------------------------------------------------------------
 	DW	$
 	DB	'INIT'
-	LD	HL,PUF.KASS	;Puffer für Umbenennung Kassette löschen
+	LD	HL,PUF.KASS	;Puffer fuer Umbenennung Kassette loeschen
 	LD	DE,PUF.KASS+1
 	LD	BC,15
 	LD	(HL),020H
@@ -19,9 +19,9 @@
 	PUSH	AF
 	CALL	U1.KTINI
 	POP	AF
-	LD	(IX+4),A	;GERAETEADR. -->TAB
+	LD	(IX+3),A	;GERAETEADR. -->TAB
 	CALL	UR.KRE	;RES. EIN
-	BIT	2,(IX)
+	BIT	2,(IX+0)
 	JR	Z,$+7
 	LD	A,19H
 	CALL	UF.ERANZ
@@ -34,8 +34,8 @@
 	LD	A,00H
 	LD	B,48
 	CALL	U1.TR
-	LD	(IX+2),80H
-	LD	(IX+5),08H	;CMD SCHREIBEN
+	LD	(IX+10),80H	;Blocklaenge
+	LD	(IX+4),08H	;CMD SCHREIBEN
 	CALL	UF.EXEC
 	CALL	KI.KO03
 KI.KN:
@@ -45,6 +45,7 @@ KI.KN:
 	LD	HL,UA.KNAME	;ABFRAGE KASS.NAME
 	CALL	UR.MIMO
 	RET	C
+;??? ---\
 	PUSH	HL
 	PUSH	BC
 	LD	DE,PUF.KASS
@@ -52,6 +53,7 @@ KI.KN:
 	LDIR
 	POP	BC
 	POP	HL
+;??? ---/
 	LD	B,6
 	LD	DE,UE.PUF+4	;NAME IN PUFFER
 	CALL	UC.KONV	;MIT KONVERTIERUNG IN DKOI-CODE
@@ -59,6 +61,7 @@ KI.NMR:
 	LD	HL,UA.NR	;ABFR. KASS.NUMMER
 	CALL	UR.MIMO
 	JR	C,KI.KN	;BEI SYS-TASTE ZU VORHERIGER
+;??? ---\
 	PUSH	HL
 	PUSH	BC
 	LD	DE,PUF.KASS+6
@@ -66,6 +69,7 @@ KI.NMR:
 	LDIR
 	POP	BC
 	POP	HL
+;??? ---/
 	LD	B,3
 	LD	DE,UE.PUF+37
 	CALL	UC.KONV
@@ -77,14 +81,14 @@ KI.KM:
 	LD	DE,UE.PUF+40
 	CALL	UC.KONV
 	CALL	UF.EXEC	;3.BLOCK SCHREIBEN
-	CALL	KI.RENA	;Kassette umbenennen
+	CALL	KI.RENA	;Kassette umbenennen	;???
 	CALL	UR.KBM	;BM , 1.LABEL BEENDET
 	LD	HL,UA.ALTR
 	LD	DE,UE.PUF
 	LD	BC,20H
 	LDIR		;AUSGLEICH LFWSTLNZ->PUFFER
-	LD	(IX+2),20H	;NEUE BLOCKLAENGE
-	LD	(IX+5),08H
+	LD	(IX+10),20H	;NEUE BLOCKLAENGE
+	LD	(IX+4),08H
 	CALL	UF.EXEC	;SCHREIBEN
 	LD	HL,UA.DS
 	LD	DE,UE.PUF
@@ -103,7 +107,7 @@ KI.VERZ:
 	DJNZ	KI.VERZ
 	CALL	UR.KBM
 	CALL	U1.VS1	;1.DATEIVORSATZ -->PUFFER
-	LD	(IX+5),08H
+	LD	(IX+4),08H
 	CALL	UF.EXEC
 	CALL	UR.KSL	;SCHLUSSLUECKE SCHREIBEN
 	CALL	UR.KRW
@@ -126,7 +130,7 @@ KI.RENA:	;Kassettendateiname umbenennen
 	LD	HL,PUF.KASS+10
 	LD	(HL),0	;Abschluß neuer Name
 	LD	HL,KI.RENA9+2
-	LD	A,(IX+4)	;SubAdresse
+	LD	A,(IX+3)	;SubAdresse
 	LD	(HL),A
 	LD	HL,KI.RENA9
 	LD	BC,00730H	;AKB-Adresse + Länge Parameterbereich
@@ -160,7 +164,7 @@ KI.RENA9:
 	CALL	U1.TST
 	RET	C
 	CALL	U1.KTINI
-	LD	(IX+4),A
+	LD	(IX+3),A
 	CALL	U1.BILO
 	CALL	UR.KRE
 	CALL	UR.KRWW
@@ -168,10 +172,10 @@ KI.RENA9:
 	PUSH	BC
 ;----------------------------------------------------------------------
 	CALL	U1.KBR4	;KASS.NAME,NR.,KOMMENTAR ANZEIGEN
-	LD	(IX+5),02H
+	LD	(IX+4),02H
 	CALL	UF.EXEC
 	LD	HL,UE.PUF+4
-	LD	DE,3240H	;=8.ZEILE,16.SPALTE
+	LD	DE,UE.BWSA + 7*80 + 16	;3240H	;=8.ZEILE,16.SPALTE
 	LD	B,6
 	CALL	UC.DKONV
 	LD	HL,UE.PUF+37
@@ -183,7 +187,7 @@ KI.RENA9:
 	INC	DE
 	LD	B,11
 	CALL	UC.DKONV
-	LD	HL,3290H
+	LD	HL,UE.BWSA + 8*80 + 16	;3290H
 	LD	A,'='
 	LD	(HL),A
 	PUSH	HL
@@ -387,7 +391,7 @@ KV.AUSG:
 	CALL	UR.KBR
 	CALL	UR.KBR
 	CALL	UR.KBV
-	LD	(IX+5),08H
+	LD	(IX+4),08H
 	CALL	UF.EXEC	;und schreiben
 	LD	B,A
 	DEC	B
@@ -404,7 +408,7 @@ KV.AUSG:
 	LDIR
 	CALL	UR.KBV
 	CALL	UR.KBR
-	LD	(IX+5),08H	;OHNE RAW
+	LD	(IX+4),08H	;OHNE RAW
 	CALL	UF.EXEC
 	POP	BC
 	DJNZ	$-23
@@ -554,7 +558,7 @@ KV.SBC:
 	SBC	HL,BC
 	LD	A,(HL)
 	CP	00H
-	RET	
+	RET
 ;---------------------------------------------------------------------
 KV.ANZ:
 	PUSH	BC
@@ -598,19 +602,19 @@ KH.RDSTA:
 	CALL	U1.KTINI	;Initialisierung E/A-Tab.
 	LD	A,(UE.BWSA + 10*80 + 5)	;325H i von KRDi
 	AND	0FH
-	LD	(IX+4),A	;Subadresse eintragen
+	LD	(IX+3),A	;Subadresse eintragen
 KH.RES:
 KH.KSRE:
 	CALL	UR.KRE	;Reservieren
 KH.RD1:
 KH.KSRW:
-	LD	(IX+5),021H	;umspulen (rewind)
+	LD	(IX+4),021H	;umspulen (rewind)
 	CALL	UF.EXEC
-	JR		KH.RDBA
+	JP		KH.RDBA
 ;
 ;	Z Y K L U S  über Tastatureingaben
 KH.RD3:	;Zyklus
-	LD	(IX+8),0	;Anzahl Bandmarken
+	LD	(IX+10),0	;Anzahl Bandmarken
 	CALL	UR.TAREP	;Tastaturabfrage
 	CP	080H
 	JR	Z,KH.KSRE	;---> P 01	Reservieren EIN
@@ -624,7 +628,7 @@ KH.RD3:	;Zyklus
 	CP	085H
 	JR	Z,KH.KSRM	;---> P 06	R-; R-; read; display
 
-	LD	(IX+8),1	;Anzahl Bandmarken
+	LD	(IX+10),1	;Anzahl Bandmarken
 	CP	086H
 	JR	Z,KH.BMP	;---> P07	BM+
 	CP	088H
@@ -644,7 +648,7 @@ KH.RD3:	;Zyklus
 
 ;	P 03	Reservieren AUS
 KH.KSRA:
-	LD	(IX+5),021H	;umspulen (rewind)
+	LD	(IX+4),021H	;umspulen (rewind)
 	CALL	UF.EXEC
 	CALL	UR.KRA
 	JR		KH.RDBA
@@ -654,9 +658,9 @@ KH.KSRM:
 	CALL	KH.RD2
 ;	P 04	        read; display
 KH.KSRP:
- 	LD	(IX+5),002H	;naechst Record lesen
+ 	LD	(IX+4),002H	;naechst Record lesen
 	CALL	UF.EXEC
-	LD	A,(IX+2)	;Lade die Laenge des Blockes
+	LD	A,(IX+28)	;Lade die Laenge des Blockes
 	CP	1	;Laenge = 1, dann BandMarke
 	JR	Z,KH.RDBM
 	CP	2	;Laenge = 2, dann Schlussluecke
@@ -676,9 +680,9 @@ KH.BMM:
 
 ;	P 10	write Record
 KH.WREC:
-	; LD	(IX+5),08H
-	; CALL	UF.EXEC
-	; CALL	UR.KBR
+	LD	(IX+4),08H
+	CALL	UF.EXEC
+	CALL	UR.KBR
 	JR	KH.RD3
 
 ;	P 11	write BM
@@ -731,7 +735,7 @@ KH.ANZB2:
 	JR	NZ,KH.ANZB3
 	LD	B,8	; 8 Zeilen anzeigen
 	JR	KH.ANZB4
-KH.ANZB3:	
+KH.ANZB3:
 	LD	B,24	; 24 Zeilen anzeigen
 KH.ANZB4:
 	CALL	KH.AZBLD	;Bild anzeigen (24 Zeilen)
@@ -842,7 +846,7 @@ KH.BLEV2:
 
 ;----------------------------------------------------
 KH.BILO:
-	LD	HL,3000H
+	LD	HL,UE.BWSA
 	LD	BC,24*80 -1	;800H
 	LD	(HL),20H
 	PUSH	HL
@@ -879,7 +883,8 @@ FD.POSK:
 	CALL	UF.ERANZ
 	RET
 ;
-FD.KO01:	LD	(IX+5),2	;FUER FD19
+FD.KO01:	;???
+	LD	(IX+4),2	;FUER FD19
 	JP	UF.EXEC
 ;----------------------------------------------------------------------
 ;      Datei im Verzeichnis suchen
@@ -1076,7 +1081,7 @@ FD.FDOW4:
 	JR	FD.FDOW1
 FD.FDOW3:
 	POP	HL
-	XOR	A	;Endekennzeichen 00H 
+	XOR	A	;Endekennzeichen 00H
 	CALL	UK.PUTK
 	CALL	UK.KBA
 	CALL	FD.DECBZ
@@ -1091,7 +1096,7 @@ FD.DECBZ:
 	RET
 FD.FDUP:
 	CALL	UK.KBW
-	LD	A,(IX+2)	;Laenge = 1, dann BM
+	LD	A,(IX+10)	;Laenge = 1, dann BM
 	CP	1
 	JP	Z,FD.BMGF
 	CALL	UR.KBR
@@ -1135,7 +1140,7 @@ FD.FSTRT:
 	LD	A,(UE.BWSA+326H)
 	CALL	U1.TST
 	JP	C,FD.STRT1
-	LD	(IX+4),A
+	LD	(IX+3),A
 	CALL	UR.KRE
 	CALL	UR.KRWW
 	CALL	U1.DSVG
@@ -1218,7 +1223,7 @@ FD.FOUT1:
 	INC	A
 	LD	(UE.PUF),A
 	PUSH	AF
-	LD	(IX+5),08H
+	LD	(IX+4),08H
 	CALL	UF.EXEC
 	CALL	UR.KRWW
 	CALL	U1.DSVG
@@ -1228,15 +1233,15 @@ FD.FOUT1:
 	LD	A,B
 	INC	A
 	LD	(UE.PUF+3),A
-	LD	(IX+5),08H
+	LD	(IX+4),08H
 	CALL	UF.EXEC
-	LD	(IX+5),02H
+	LD	(IX+4),02H
 	CALL	UF.EXEC
 	DJNZ	$-3
 	CALL	UR.KBR
 	POP	HL
 	LD	(UE.PUF+25),HL
-	LD	(IX+5),08H
+	LD	(IX+4),08H
 	CALL	UF.EXEC
 FD.END:
 	CALL	UR.KRW
@@ -1292,7 +1297,7 @@ FD.DSPBG:
 	JR	$-16
 FD.RDEND:
 	CALL	UK.KBW
-	LD	A,(IX+2)	;Laenge = 1, dann BM
+	LD	A,(IX+10)	;Laenge = 1, dann BM
 	CP	1
 	RET	Z
 	JR	FD.RDEND
@@ -1318,7 +1323,7 @@ FD.BMGF:
 	CALL	U1.TST
 	RET	C
 	CALL	U1.KTINI
-	LD	(IX+4),A
+	LD	(IX+3),A
 	CALL	U1.BILO
 	LD	A,13
 	LD	(UB.ZN),A
@@ -1639,7 +1644,7 @@ RL.FMELD:
 	CALL	U1.TST
 	RET	C
 	CALL	U1.KTINI
-	LD	(IX+4),A
+	LD	(IX+3),A
 	XOR	A
 	LD	(UB.PAR1+1),A
 	CALL	U1.BILO	;BS LOESCHEN
@@ -1744,7 +1749,7 @@ SV.SAVE4:
 	INC	(HL)	;ANZ.VERZ.EINTR.+1
 SV.SAVE6:
 	CALL	UR.KBR
-	LD	(IX+5),08H	;NEUEN DS-SATZ AUSGEBEN
+	LD	(IX+4),08H	;NEUEN DS-SATZ AUSGEBEN
 	CALL	UF.EXEC
 SV.SAVE5:
 	CALL	UK.KBW
@@ -1752,7 +1757,7 @@ SV.SAVE5:
 	CALL	UR.KBR
 	LD	HL,(UB.PAR5)
 	LD	(UE.PUF+25),HL	;DATEILAENGE EINTRAGEN
-	LD	(IX+5),08H
+	LD	(IX+4),08H
 	CALL	UF.EXEC
 	CALL	UR.KRW
 	CALL	UR.KRA
@@ -1773,7 +1778,7 @@ SV.DATS1:
 	LD	A,(UB.PAR1)	;NEXT RECORD
 	INC	A
 	LD	(HL),A
-	LD	(IX+5),08H
+	LD	(IX+4),08H
 	CALL	UF.EXEC
 	RET
 SV.SAVE:

@@ -10,36 +10,36 @@
 ;   1.     KASSETTE
 ;----------------------------------------------------------------------
 UR.KRE:
-	LD	(IX+5),31H
+	LD	(IX+4),31H
 UR.KRE1:
 	CALL	UF.EXEC
 	RET
 UR.KRW:
-	LD	(IX+5),21H
+	LD	(IX+4),21H
 	JR	UR.KRE1	;Umspulen
 UR.KRWW:
 	CALL	UR.KRW
 	RET
 UR.KRA:
-	LD	(IX+5),41H
+	LD	(IX+4),41H
 	JR	UR.KRE1	;Reservieren aus
 UR.KLV:
-	LD	(IX+5),71H
+	LD	(IX+4),71H
 	JR	UR.KRE1	;Label vorsetzen
 UR.KLR:
-	LD	(IX+5),75H
+	LD	(IX+4),75H
 	JR	UR.KRE1	;LABEL RUECKSETZEN
 UR.KBM:
-	LD	(IX+5),51H
+	LD	(IX+4),51H
 	JR	UR.KRE1	;BANDMARKE SCHREIBEN
 UR.KSL:
-	LD	(IX+5),61H
+	LD	(IX+4),61H
 	JR	UR.KRE1	;SCHLUSSLUECKE SCHREIBEN
 UR.KBV:
-	LD	(IX+5),11H
+	LD	(IX+4),11H
 	JR	UR.KRE1	;Block vorsetzen
 UR.KBR:
-	LD	(IX+5),15H
+	LD	(IX+4),15H
 	JR	UR.KRE1
 ;--------------------------------------------------------------------
 UR.RPOS:
@@ -62,9 +62,9 @@ POSIK1:
 	LD	B,0
 	LD	DE,0
 UR.LES:
-	LD	(IX+5),02H
+	LD	(IX+4),02H
 	CALL	UF.EXEC	;BLOCK LESEN
-	LD	A,(IX+2)
+	LD	A,(IX+10)
 	CP	1	;BANDMARKE?
 	JR	Z,UR.BM
 	INC	B	;ANZAHL BLOECKE
@@ -96,16 +96,16 @@ UR.OK:
 	XOR	A
 	OR	C
 	JR	Z,$+10
-	LD	(IX+8),B
+	LD	(IX+10),B
 	CALL	UR.KLR
 	JR	UR.RSP
-	LD	(IX+5),15H
+	LD	(IX+4),15H
 	CALL	UF.EXEC
 	DJNZ	$-7
 	POP	BC
 	DEC	B
 	JR	Z,UR.RSP
-	LD	(IX+8),B
+	LD	(IX+10),B
 	CALL	UR.KLV
 UR.RSP:
 	POP	AF

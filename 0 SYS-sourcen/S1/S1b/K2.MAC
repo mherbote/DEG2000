@@ -23,7 +23,7 @@ KR.GR2:
 	LD	A,02H
 KR.GR3:
 	CALL	U1.KTINI
-	LD	(IX+4),A
+	LD	(IX+3),A
 	CALL	UR.KRE
 	RET
 ;-------------------------------------------------------------------
@@ -35,9 +35,9 @@ KR.GR3:
 	DW	$
 	DB	'K2L+'
 	CALL	KR.GR2
-	LD	HL,1	; IX + 8 := 1 / Anzahl BM
+	LD	HL,1	; IX + 10 := 1 / Anzahl BM
 	CALL	XY.STDX
-	DB	8
+	DB	9
 	CALL	UR.KLV
 	RET
 ;---------------------------------------------------------------------
@@ -49,9 +49,9 @@ KR.GR3:
 	DW	$
 	DB	'K2L-'
 	CALL	KR.GR2
-	LD	HL,1	; IX + 8 := 1 / Anzahl BM
+	LD	HL,1	; IX + 10 := 1 / Anzahl BM
 	CALL	XY.STDX
-	DB	8
+	DB	9
 	CALL	UR.KLR
 	RET
 ;---------------------------------------------------------------------
@@ -131,30 +131,33 @@ KR.VORSP:
 	DW	$
 	DB	'YKA1'
 	CALL	KR.GR1
-	JR	$+11
+	JR	KR.YKA1	;$+11
 ;
 	DW	$
 	DB	'YKA2'
 	CALL	KR.GR2
+KR.YKA1:
 	CALL	UR.KRE
 	LD	DE,UE.BWSA+327H
 	CALL	UC.CVDB
 	DEC	L
-	JR	Z,$+11
+	JR	Z,KR.YKA2	;$+11
 	LD	(IX+10),L
 	CALL	KR.TYPT
 	CALL	UR.KLV
+KR.YKA2:
 	CALL	FD.FDOUT
 	RET
 ;---------------------------------------------------------------------------
 	DW	$
 	DB	'K1CL'
 	CALL	KR.GR1
-	JR	$+11
+	JR	KR.KCL	;$+11
 ;
 	DW	$
 	DB	'K2CL'
 	CALL	KR.GR2
+KR.KCL:
 	CALL	UR.KBM
 	CALL	UR.KSL
 	CALL	UR.KRW
@@ -190,15 +193,18 @@ UF.EXEC:
 	PUSH	AF
 	RES	7,(IX)
 	LD	(IX+1),0
-	LD	(IX+6),1	;HS-Bereich
-	LD	A,(IX+5)	;Kommando
+	;JP	KO.KO05
+
+	LD	A,1
+	LD	(K0.HSB),A	;HS-Bereich
+	LD	A,(IX+4)	;Kommando
 	CP	071H
 	JR	Z,UF.EXEC2
 	CP	075H
 	JR	Z,UF.EXEC2
 	LD	(IX+7),HIGH(UE.PUF)
 	LD	(IX+8),LOW(UE.PUF)
-UF.EXEC2:	
+UF.EXEC2:
 	CALL	KR.KARO
 UF.EXEC1:
 	BIT	7,(IX)	;Status
@@ -234,7 +240,7 @@ UF.ERANZ:
 	JP	Z,UF.FL14
 	CP	16H
 	JP	Z,UF.FL16
-	JP	UF.RET
+	JP	UF.RET		;??? 22H 21H nicht übernommen!
 ;----------------------------------------------------------------------
 UF.SYS:
 	LD	A,(IX+1)
@@ -249,29 +255,29 @@ UF.SYS1:
 ;----------------------------------------------------------
 UF.AZVB:
 	RES	2,(IX)	;Aufzeichnen verboten
-	LD	(IX+5),41H
+	LD	(IX+4),41H
 	CALL	KR.KARO
 	BIT	7,(IX)
 	JR	NZ,UF.SYS
 	LD	HL,UA.FRZ
 	CALL	UR.MIMO
 	JR	C,UF.SYS1
-	LD	(IX+5),31H
+	LD	(IX+4),31H
 	CALL	KR.KARO
-	BIT	4,(IX)
+	BIT	4,(IX+0)
 	JR	NZ,UF.SYS
-	BIT	7,(IX)
+	BIT	7,(IX+0)
 	JR	NZ,UF.SYS
-	BIT	2,(IX)
+	BIT	2,(IX+0)
 	JR	NZ,UF.SYS
-	JP	UF.BEHB1
+	JP	UF.BEHB1	;??? KO.KO04
 ;----------------------------------------------------------
 UF.BEHB:
 	LD	HL,UA.FRZ
 	CALL	UR.MIMO
 	JR	C,UF.SYS1
 UF.BEHB1:
-	LD	(IX+5),C	;??? Inhalt von C
+	LD	(IX+4),C	;??? Inhalt von C
 	JP	UF.EXEC+4
 ;---------------------------------------
 UF.FL18:
@@ -440,7 +446,7 @@ UA.ZKBM:
 	DB	'Bandmarke'
 UA.ZKSL:
 	DB	'Schlussluecke'
-UA.ZKEE:	
+UA.ZKEE:
 ;----------------------------------------------------------------------
 UA.LD:
 	DB	38

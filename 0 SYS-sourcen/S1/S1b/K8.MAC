@@ -54,12 +54,12 @@ U1.WAIT:
 ;--------------------------------------------------------------------
 U1.BREAD:
 	CALL	U1.EIN	;BLOCK LESEN VON EINGABE
-	LD	(IX+5),02H
+	LD	(IX+4),02H
 	CALL	UF.EXEC
 	RET
 U1.BWRIT:
 	CALL	U1.AUS	;BLOCK SCHREIBEN AUF AUSGABE
-	LD	(IX+5),08H
+	LD	(IX+4),08H
 	CALL	UF.EXEC
 	RET
 U1.COPB2:
@@ -70,12 +70,12 @@ U1.COPB:
 	PUSH	AF
 	OR	A
 	CALL	U1.EIN
-	LD	(IX+5),02H
+	LD	(IX+4),02H
 	CALL	C,KX.EXEC2
 	CALL	NC,UF.EXEC
 	PUSH	AF
 	CALL	U1.AUS
-	LD	A,(IX+9)
+	LD	A,(IX+9)	;??? ändern =!
 	OR	(IX+10)
 	JR	Z,$+10
 	CALL	U1.BWRIT
@@ -89,13 +89,13 @@ U1.COPB:
 U1.EIN:
 	PUSH	AF
 	LD	A,(BC.TAB1)
-	LD	(IX+3),A
+	LD	(IX+3),A	;???
 	POP	AF
 	RET
 U1.AUS:
 	PUSH	AF
 	LD	A,(BC.TAB1+1)
-	LD	(IX+3),A
+	LD	(IX+3),A	;???
 	POP	AF
 	RET
 ;----------------------------------------------------------------------
@@ -141,6 +141,7 @@ U1.DSVG:
 	POP	DE
 	POP	HL
 	RET
+
 	POP	AF
 	POP	DE
 	POP	HL
@@ -167,6 +168,7 @@ U1.NMVGL:
 	POP	DE
 	POP	BC
 	RET
+
 	OR	A
 	JR	$-5
 ;----------------------------------------------------------------------
@@ -181,15 +183,15 @@ U1.KTINI:
 	XOR	A
 	LD	B,27
 	CALL	U1.TR	;TAB. AUF 00 LOESCHEN
-	LD	(IX+3),30H
+	LD	(IX+2),30H	;??? AKB Adresse
 ;	CALL	UE.KINI
 	JR	$+5
 U1.KTIN1:
 	PUSH	HL
 	PUSH	BC
 	PUSH	AF
-;	LD	(IX+11),7	;ANZAHL LESE/SCHREIBWDHLGNN
-;	LD	(IX+12),4	;ANZAHL
+	LD	(IX+11),7	;ANZAHL LESE/SCHREIBWDHLGNN
+	LD	(IX+12),4	;ANZAHL
 	LD	HL,UE.PUF
 	CALL	XY.STIDX
 	DB	7	;SYSTEMPUFFERADR.-->TAB
@@ -232,7 +234,7 @@ U1.VORST:
 	JR	$+3
 U1.VORS1:
 	PUSH	BC
-	LD	(IX+5),02H
+	LD	(IX+4),02H
 	CALL	UF.EXEC
 	DJNZ	$-3
 	POP	BC
@@ -279,7 +281,7 @@ U1.VZS:
 	LD	HL,32
 	CALL	XY.STIDX
 	DB	9
-	LD	(IX+5),08H
+	LD	(IX+4),08H
 	CALL	UF.EXEC
 	POP	AF
 	POP	HL
@@ -1339,7 +1341,7 @@ DC.INIT:
 UK.GETK:
 	CALL	U1.RSAVE
 	CALL	XY.LIDX	;HL:= Blocklaenge
-	DB	7
+	DB	9
 	PUSH	HL
 	CALL	XY.LDDX
 	DB	23
@@ -1390,9 +1392,9 @@ UK.GETK4:
 UK.KLPFB:
 	CALL	U1.RSAVE
 	CALL	U1.KTIN1
-	LD	HL,100H	;max. Blocklaenge Kassette
+	LD	HL,100H	;max. Blocklaenge Kassette	;??? zentral definieren!!!
 	CALL	XY.STIDX	;max. Blocklaenge initialisieren
-	DB	7
+	DB	9
 	PUSH	HL
 	POP	BC	;BC:= Blocklaenge
 	CALL	XY.STDX	;Pufferzaehler "Leer"
@@ -1416,9 +1418,9 @@ UK.KLPFB:
 UK.KBW:
 	CALL	U1.RSAVE
 	CALL	UK.KLPFB
-	LD	(IX+5),02H
+	LD	(IX+4),02H
 	CALL	UF.EXEC
-	LD	A,(IX+9)
+	LD	A,(IX+9)	;??? EOF anders ermitteln !!!
 	OR	(IX+10)
 	JR	Z,UK.KBW1	;EOF
 	CALL	XY.LDDX	;HL:= Blockadresse
@@ -1486,7 +1488,7 @@ UK.KSPFB:
 	CALL	U1.RSAVE
 	CALL	U1.KTIN1
 	CALL	XY.LIDX
-	DB	7
+	DB	9
 	PUSH	HL
 	POP	BC	;BC:= Blocklaenge
 	LD	HL,0
@@ -1540,7 +1542,7 @@ UK.KBA:
 	EX	DE,HL	;HL:= aktuelle Pufferadresse
 	CALL	XY.STDX	;Pufferzeiger setzen
 	DB	21
-	LD	(IX+5),08H
+	LD	(IX+4),08H
 	CALL	UF.EXEC	;physische Blockausgabe
 	PUSH	AF
 	CALL	XY.INCDX	;Blockzaehler erhoehen

@@ -38,13 +38,19 @@ Public Class IOsim
     Private Cursor_buffer(7) As Byte
 
     Private Kassette_buffer(9) As Byte
-    Private Kassette_Status(6) As Byte                                                                  '0 ... Position für Input Status/Fehlerschlüssel
-    '                                                                                                   '1 ... Status
-    '                                                                                                   '2 ... Fehlerschlüssel
-    '                                                                                                   '3 ... Länge der Daten im Puffer
-    '                                                                                                   '4 ... Basisadresse der AKB  (30H, 38H, 58H)
-    '                                                                                                   '5 ... Subadresse            (1, 2)
-    '                                                                                                   '6 ... Kommando
+    Private Kassette_Status(4) As Byte                                                                  '0 ... Position für Input Status/Fehlerschlüssel
+    '                                                                                                   '1 ... HS-Bereich
+    '                                                                                                   '2 ... Länge der Daten  im Puffer
+    '                                                                                                   '3 ... Status
+    '                                                                                                   '4 ... Fehlerschlüssel
+
+    'Private Kassette_Status(6) As Byte                                                                  '0 ... Position für Input Status/Fehlerschlüssel
+    ''                                                                                                   '1 ... Status
+    ''                                                                                                   '2 ... Fehlerschlüssel
+    ''                                                                                                   '3 ... Länge der Daten im Puffer
+    ''                                                                                                   '4 ... Basisadresse der AKB  (30H, 38H, 58H)
+    ''                                                                                                   '5 ... Subadresse            (1, 2)
+    ''                                                                                                   '6 ... Kommando
 
 
     'Private MEMswitch(4, 16) As Byte
@@ -159,7 +165,7 @@ Public Class IOsim
         Try
             AKBiA_in = Nothing
             Kassette_Status(0) = Kassette_Status(0) + 1
-            If Kassette_Status(0) < 7 Then
+            If Kassette_Status(0) < 5 Then
                 AKBiA_in = Kassette_Status(Kassette_Status(0))
             End If
         Catch ex As Exception
@@ -608,16 +614,16 @@ Public Class IOsim
                                         Case 1
                                             Select Case Chr(ucKj.Kassette.buffer.b(1).z(0))
                                                 Case "B"
-                                                    Kassette_Status(3) = 1
+                                                    Kassette_Status(2) = 1
                                                 Case "S"
-                                                    Kassette_Status(3) = 2
+                                                    Kassette_Status(2) = 2
                                                 Case Else
-                                                    Kassette_Status(3) = &H10
+                                                    Kassette_Status(2) = &H10
                                             End Select
                                         Case 2
-                                            Kassette_Status(3) = &H20
+                                            Kassette_Status(2) = &H20
                                         Case 8
-                                            Kassette_Status(3) = &H80
+                                            Kassette_Status(2) = &H80
                                     End Select
                                 End If
                             Else
@@ -647,7 +653,7 @@ Public Class IOsim
                                     Next j
                                     Call .CassetteWriteRecord(Kassette_buffer(4))
                                     Call SetStatus(ucKj, "ok", port)
-                                    Kassette_Status(3) = Kassette_buffer(4)
+                                    Kassette_Status(2) = Kassette_buffer(4)
                                 End If
                             Else
                                 Call SetStatus(ucKj, "kein RE", port)
@@ -719,34 +725,33 @@ Public Class IOsim
         Select Case Command
             Case "Init"
                 Kassette_Status(0) = 0                                                                  'Index für Kassette_Status
-                Kassette_Status(1) = 0                                                                  'Status
-                Kassette_Status(2) = 0                                                                  'Fehlerschlüssel
-                'Kassette_Status(3) = 0                                                                  'Länge der Daten im Puffer nach Lesen
-                Kassette_Status(4) = port                                                               'Basisadresse AKB
-                Kassette_Status(5) = Kassette_buffer(3)                                                 'Subadresse (1 oder 2)
-                Kassette_Status(6) = Kassette_buffer(2)                                                 'Kommando
+                Kassette_Status(1) = 1                                                                  'HS-Bereich
+                Kassette_Status(2) = 0                                                                  'Länge der Daten im Puffer nach Lesen
+                Kassette_Status(3) = 0                                                                  'Status
+                Kassette_Status(4) = 0                                                                  'Fehlerschlüssel
+
             Case "ok"
-                Kassette_Status(1) = Kassette_Status(1) + &H1                                           'Bit 0 ... Gerät besetzt
+                Kassette_Status(3) = Kassette_Status(3) + &H1                                           'Bit 0 ... Gerät besetzt
                 If ucKj.Kassette.RO Then
-                    Kassette_Status(1) = Kassette_Status(1) + &H4                                       'Bit 2 ... Aufzeichnen verboten
+                    Kassette_Status(3) = Kassette_Status(3) + &H4                                       'Bit 2 ... Aufzeichnen verboten
                 End If
-                Kassette_Status(1) = Kassette_Status(1) + &H20                                          'Bit 5 ... Gerät reserviert
-                Kassette_Status(2) = 0                                                                  'kein Fehler
+                Kassette_Status(3) = Kassette_Status(3) + &H20                                          'Bit 5 ... Gerät reserviert
+                Kassette_Status(4) = 0                                                                  'kein Fehler
             Case "kein RE"
-                Kassette_Status(1) = Kassette_Status(1) + &H80                                          'Bit 7 ... Fehler
-                Kassette_Status(2) = &H11                                                               'angewähltes Gerät nicht reserviert
+                Kassette_Status(3) = Kassette_Status(3) + &H80                                          'Bit 7 ... Fehler
+                Kassette_Status(4) = &H11                                                               'angewähltes Gerät nicht reserviert
             Case "Bandende"
-                Kassette_Status(1) = Kassette_Status(1) + &H80                                          'Bit 7 ... Fehler
-                Kassette_Status(2) = &H14                                                               'Ende der Aufzeichnungen
+                Kassette_Status(3) = Kassette_Status(3) + &H80                                          'Bit 7 ... Fehler
+                Kassette_Status(4) = &H14                                                               'Ende der Aufzeichnungen
             Case "BM not"
-                Kassette_Status(1) = Kassette_Status(1) + &H80                                          'Bit 7 ... Fehler
-                Kassette_Status(2) = &H18                                                               'Bandmarke nicht gefunden
+                Kassette_Status(3) = Kassette_Status(3) + &H80                                          'Bit 7 ... Fehler
+                Kassette_Status(4) = &H18                                                               'Bandmarke nicht gefunden
             Case "to long"
-                Kassette_Status(1) = Kassette_Status(1) + &H80                                          'Bit 7 ... Fehler
-                Kassette_Status(2) = &H13                                                               'Puffer-/Record- Länge
+                Kassette_Status(3) = Kassette_Status(3) + &H80                                          'Bit 7 ... Fehler
+                Kassette_Status(4) = &H13                                                               'Puffer-/Record- Länge
             Case "RO"
-                Kassette_Status(1) = Kassette_Status(1) + &H80                                          'Bit 7 ... Fehler
-                Kassette_Status(2) = &H19                                                               'Aufzeichnen verboten
+                Kassette_Status(3) = Kassette_Status(3) + &H80                                          'Bit 7 ... Fehler
+                Kassette_Status(4) = &H19                                                               'Aufzeichnen verboten
         End Select
     End Sub
 #End Region
@@ -1092,129 +1097,137 @@ Public Class IOsim
             Cursor_buffer(0) = Cursor_buffer(0) + 1
         End If
 
-        Select Case Cursor_buffer(0)
-            Case 1                                                              '1. Byte "Startbyte" &HF0
-                If (data = &HF0) Then
-                    Cursor_buffer(Cursor_buffer(0)) = data
-                Else
-                    Cursor_buffer(0) = 0
-                End If
-            Case 2                                                              '2. Byte Kommando
-                If (data > 0 And data < 5) Then
-                    Cursor_buffer(Cursor_buffer(0)) = data
-                Else
-                    Cursor_buffer(0) = 0
-                End If
-            Case 3                                                              '3. Byte
-                Select Case Cursor_buffer(2)
-                    Case 1                                                      '        Cursor EIN
-                        If (data >= 0 And data < BWS.BWSx) Then
-                            Cursor_buffer(Cursor_buffer(0)) = data
-                        Else
-                            Cursor_buffer(0) = 0
-                        End If
-                    Case 2                                                      '        Cursor AUS
-                        If (data = &HFF) Then
-                            Cursor_buffer(Cursor_buffer(0)) = data
-                            weiter = True
-                        Else
-                            Cursor_buffer(0) = 0
-                        End If
-                    Case 3                                                      '        CursorTyp
-                        If (data >= 0 And data < 4) Then
-                            Cursor_buffer(Cursor_buffer(0)) = data
-                        Else
-                            Cursor_buffer(0) = 0
-                        End If
-                    Case 4                                                      '        Cursor EIN mit HL als BWS-Adresse
-                        Cursor_buffer(Cursor_buffer(0)) = data                  '        Low  (SY.BWSA)
-                End Select
-            Case 4
-                Select Case Cursor_buffer(2)
-                    Case 1                                                      '        Cursor EIN
-                        If (data >= 0 And data < BWS.BWSy) Then
-                            Cursor_buffer(Cursor_buffer(0)) = data
-                        Else
-                            Cursor_buffer(0) = 0
-                        End If
-                    Case 2                                                      '        Cursor AUS
-                        Cursor_buffer(0) = 0
-                    Case 3                                                      '        CursorTyp
-                        If (data = &HFF) Then
-                            Cursor_buffer(Cursor_buffer(0)) = data
-                            weiter = True
-                        Else
-                            Cursor_buffer(0) = 0
-                        End If
-                    Case 4                                                      '        Cursor EIN mit HL als BWS-Adresse
-                        Cursor_buffer(Cursor_buffer(0)) = data                  '        High (SY.BWSA)
-                End Select
-            Case 5
-                Select Case Cursor_buffer(2)
-                    Case 1                                                      '        Cursor EIN
-                        If (data = &HFF) Then
-                            Cursor_buffer(Cursor_buffer(0)) = data
-                            weiter = True
-                        Else
-                            Cursor_buffer(0) = 0
-                        End If
-                    Case 4                                                      '        Cursor EIN mit HL als BWS-Adresse
-                        Cursor_buffer(Cursor_buffer(0)) = data                  '        L    (HL)
-                    Case Else
-                        Cursor_buffer(0) = 0
-                End Select
-            Case 6
-                Select Case Cursor_buffer(2)
-                    Case 4                                                      '        Cursor EIN mit HL als BWS-Adresse
-                        Cursor_buffer(Cursor_buffer(0)) = data                  '        H    (HL)
-                    Case Else
-                        Cursor_buffer(0) = 0
-                End Select
-            Case 7
-                Select Case Cursor_buffer(2)
-                    Case 4                                                      '        Cursor EIN mit HL als BWS-Adresse
-                        If (data = &HFF) Then
-                            Cursor_buffer(Cursor_buffer(0)) = data
-                            weiter = True
-                        Else
-                            Cursor_buffer(0) = 0
-                        End If
-                    Case Else
-                        Cursor_buffer(0) = 0
-                End Select
-        End Select
+        Try
 
-        If (weiter) Then
-            Select Case Cursor_buffer(2)
-                Case 1                                                          'Cursor EIN
-                    BWS.SetCursor(Cursor_buffer(3), Cursor_buffer(4))
-                Case 2                                                          'Cursor AUS
-                    BWS.ResetCursor()
-                Case 3                                                          'CursorTyp
-                    Select Case Cursor_buffer(3)
-                        Case 0
-                            BWS.SetCursorTyp(BWS.eCursorTyp.None)
-                        Case 1
-                            BWS.SetCursorTyp(BWS.eCursorTyp.Normal)
-                        Case 2
-                            BWS.SetCursorTyp(BWS.eCursorTyp.Invers)
-                        Case 3
-                            BWS.SetCursorTyp(BWS.eCursorTyp.Full)
+            Select Case Cursor_buffer(0)
+                Case 1                                                              '1. Byte "Startbyte" &HF0
+                    If (data = &HF0) Then
+                        Cursor_buffer(Cursor_buffer(0)) = data
+                    Else
+                        Cursor_buffer(0) = 0
+                    End If
+                Case 2                                                              '2. Byte Kommando
+                    If (data > 0 And data < 5) Then
+                        Cursor_buffer(Cursor_buffer(0)) = data
+                    Else
+                        Cursor_buffer(0) = 0
+                    End If
+                Case 3                                                              '3. Byte
+                    Select Case Cursor_buffer(2)
+                        Case 1                                                      '        Cursor EIN
+                            If (data >= 0 And data < BWS.BWSx) Then
+                                Cursor_buffer(Cursor_buffer(0)) = data
+                            Else
+                                Cursor_buffer(0) = 0
+                            End If
+                        Case 2                                                      '        Cursor AUS
+                            If (data = &HFF) Then
+                                Cursor_buffer(Cursor_buffer(0)) = data
+                                weiter = True
+                            Else
+                                Cursor_buffer(0) = 0
+                            End If
+                        Case 3                                                      '        CursorTyp
+                            If (data >= 0 And data < 4) Then
+                                Cursor_buffer(Cursor_buffer(0)) = data
+                            Else
+                                Cursor_buffer(0) = 0
+                            End If
+                        Case 4                                                      '        Cursor EIN mit HL als BWS-Adresse
+                            Cursor_buffer(Cursor_buffer(0)) = data                  '        Low  (SY.BWSA)
                     End Select
-                Case 4                                                          'Cursor EIN mit HL als BWS-Adresse
-                    BWSA = Cursor_buffer(4) * 256 + Cursor_buffer(3)
-                    HL = Cursor_buffer(6) * 256 + Cursor_buffer(5)
-                    HL = HL - BWSA
-                    X = 0
-                    Y = 0
-                    While HL > 80
-                        HL = HL - 80
-                        Y = Y + 1
-                    End While
-                    X = HL
-                    BWS.SetCursor(X, Y)
+                Case 4
+                    Select Case Cursor_buffer(2)
+                        Case 1                                                      '        Cursor EIN
+                            If (data >= 0 And data < BWS.BWSy) Then
+                                Cursor_buffer(Cursor_buffer(0)) = data
+                            Else
+                                Cursor_buffer(0) = 0
+                            End If
+                        Case 2                                                      '        Cursor AUS
+                            Cursor_buffer(0) = 0
+                        Case 3                                                      '        CursorTyp
+                            If (data = &HFF) Then
+                                Cursor_buffer(Cursor_buffer(0)) = data
+                                weiter = True
+                            Else
+                                Cursor_buffer(0) = 0
+                            End If
+                        Case 4                                                      '        Cursor EIN mit HL als BWS-Adresse
+                            Cursor_buffer(Cursor_buffer(0)) = data                  '        High (SY.BWSA)
+                    End Select
+                Case 5
+                    Select Case Cursor_buffer(2)
+                        Case 1                                                      '        Cursor EIN
+                            If (data = &HFF) Then
+                                Cursor_buffer(Cursor_buffer(0)) = data
+                                weiter = True
+                            Else
+                                Cursor_buffer(0) = 0
+                            End If
+                        Case 4                                                      '        Cursor EIN mit HL als BWS-Adresse
+                            Cursor_buffer(Cursor_buffer(0)) = data                  '        L    (HL)
+                        Case Else
+                            Cursor_buffer(0) = 0
+                    End Select
+                Case 6
+                    Select Case Cursor_buffer(2)
+                        Case 4                                                      '        Cursor EIN mit HL als BWS-Adresse
+                            Cursor_buffer(Cursor_buffer(0)) = data                  '        H    (HL)
+                        Case Else
+                            Cursor_buffer(0) = 0
+                    End Select
+                Case 7
+                    Select Case Cursor_buffer(2)
+                        Case 4                                                      '        Cursor EIN mit HL als BWS-Adresse
+                            If (data = &HFF) Then
+                                Cursor_buffer(Cursor_buffer(0)) = data
+                                weiter = True
+                            Else
+                                Cursor_buffer(0) = 0
+                            End If
+                        Case Else
+                            Cursor_buffer(0) = 0
+                    End Select
             End Select
-        End If
+
+            If (weiter) Then
+                Select Case Cursor_buffer(2)
+                    Case 1                                                          'Cursor EIN
+                        BWS.SetCursor(Cursor_buffer(3), Cursor_buffer(4))
+                    Case 2                                                          'Cursor AUS
+                        BWS.ResetCursor()
+                    Case 3                                                          'CursorTyp
+                        Select Case Cursor_buffer(3)
+                            Case 0
+                                BWS.SetCursorTyp(BWS.eCursorTyp.None)
+                            Case 1
+                                BWS.SetCursorTyp(BWS.eCursorTyp.Normal)
+                            Case 2
+                                BWS.SetCursorTyp(BWS.eCursorTyp.Invers)
+                            Case 3
+                                BWS.SetCursorTyp(BWS.eCursorTyp.Full)
+                        End Select
+                    Case 4                                                          'Cursor EIN mit HL als BWS-Adresse
+                        BWSA = Cursor_buffer(4) * 256 + Cursor_buffer(3)
+                        HL = Cursor_buffer(6) * 256 + Cursor_buffer(5)
+                        If HL <= (BWSA + 80 * 32) Then
+                            HL = HL - BWSA
+                            X = 0
+                            Y = 0
+                            While HL > 80
+                                HL = HL - 80
+                                Y = Y + 1
+                            End While
+                            X = HL
+                            BWS.SetCursor(X, Y)
+                        End If
+                End Select
+            End If
+
+        Catch ex As Exception
+            MsgBox("IOsim.Cursor_out_s1: " + ex.Message)
+        End Try
 
         Cursor_out_s1 = 0
     End Function

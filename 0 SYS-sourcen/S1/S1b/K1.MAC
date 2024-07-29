@@ -9,40 +9,51 @@
 ;****************************************************************
 
 ;****************************************************************
+;*               BAMOS/Robotron         Stand: 01.Januar 1981   *
+;*               -----------------------------------------------*
 ;*               Geraetebedienroutine fuer Kassettenmagnetband  *
 ;*               Anschluss von zwei Laufwerken K5200            *
 ;*               an einer AKB K5020                             *
 ;*               -----------------------------------------------*
 ;*               E/A-Tabelle                                    *
+;*               Byte -2   HS-Bereich                           *
+;*               Byte -1   laenge der Daten im Puffer           *
+;*                         1, 10H, 20H, 80H                     *
+;*               -----------------------------------------------*
 ;*               Byte  0   Status                               *
 ;*               Byte  1   Fehlerschluessel                     *
-;*               Byte  2   Laenge der Daten im Puffer           *
-;*                         1, 10H, 20H, 80H                     *
-;*               Byte  3   Basisadresse der AKB                 *
-;*               Byte  4   Subadresse                           *
-;*               Byte  5   Kommando                             *
-;*               Byte  6   HS-Bereich                           *
-;*               Byte  7   H-Teil Blockadresse                  *
-;*               Byte  8   L-Teil Blockadresse                  *
+;*               Byte  2   Basisadresse der AKB                 *
+;*               Byte  3   Subadresse                           *
+;*               Byte  4   Kommando                             *
+;*               Byte  5   L-Teil Adresse Eintrittspunkt        *
+;*               Byte  6   H-Teil Adresse Eintrittspunkt        *
+;*               Byte  7   L-Teil Blockadresse                  *
+;*               Byte  8   H-Teil Blockadresse                  *
+;*               Byte  9   H-Teil Blocklaenge (Bit 15...Bit 8)  *
+;*               Byte 10   L-Teil Blocklaenge (Bit  7...Bit 0)  *
 ;*                         n      bei suchen Bandmarke          *
+;*               Byte 11   Anzahl Lese-/Schreib wiederholen     *
+;*               Byte 12   Anzahl Blocklueckenverlaengerungen   *
+;****************************************************************
+;*               Bytes fuer die Uebergabe an den Z80-Emulator   *
 ;*               -----------------------------------------------*
-;*               Byte  9 1 0F0H  Startbyte                      *
-;*               Byte 10 2       Kommando                       *
-;*               Byte 11 3       Subadresse                     *
-;*               Byte 12 4       Anzahl BM  bei 71, 75          *
-;*               Byte 12 4       'B'        bei 51              *
-;*               Byte 12 4       'S'        bei 61              *
-;*               Byte 12 4       HS-Bereich bei 02              *
-;*               Byte 12 4       Laenge     bei 08              *
-;*               Byte 12 4 0FFH             bei 31,41,21,11,15  *
-;*               Byte 13 5       H(Puffer)  bei 02              *
-;*               Byte 13 5       HS-Bereich bei 08              *
-;*               Byte 13 5 0FFH             bei 51,61,71,75     *
-;*               Byte 14 6       L(Puffer)  bei 02              *
-;*               Byte 14 6       H(Puffer)  bei 08              *
-;*               Byte 15 7       L(Puffer)  bei 08              *
-;*               Byte 15 7 0FFH             bei 02              *
-;*               Byte 16 8 0FFH             bei 08              *
+;*               Byte 28 1 0F0H  Startbyte                      *
+;*               Byte 29 2       Kommando                       *
+;*               Byte 30 3       Subadresse                     *
+;*               Byte 31 4       Anzahl BM  bei 71, 75          *
+;*               Byte 31 4       'B'        bei 51              *
+;*               Byte 31 4       'S'        bei 61              *
+;*               Byte 31 4       HS-Bereich bei 02              *
+;*               Byte 31 4       Laenge     bei 08              *
+;*               Byte 31 4 0FFH             bei 31,41,21,11,15  *
+;*               Byte 32 5       H(Puffer)  bei 02              *
+;*               Byte 32 5       HS-Bereich bei 08              *
+;*               Byte 32 5 0FFH             bei 51,61,71,75     *
+;*               Byte 33 6       L(Puffer)  bei 02              *
+;*               Byte 33 6       H(Puffer)  bei 08              *
+;*               Byte 34 7       L(Puffer)  bei 08              *
+;*               Byte 34 7 0FFH             bei 02              *
+;*               Byte 35 8 0FFH             bei 08              *
 ;****************************************************************
 ;*               Kommandos:                                     *
 ;*                 Hex   Kommando                               *
@@ -94,8 +105,6 @@
 ;*                 19    Aufzeichnen verboten                   *
 ;*                       (mit Kommando: Aufzeichnen)            *
 ;****************************************************************
-    PAGE
-;****************************************************************
 ;*               Hinweise zur Arbeit mit der Geraetebedienr.    *
 ;*                - E/A-Tabelle laden (Basisadresse AKB)        *
 ;*                - Adresse E/A-Tabelle in IX laden             *
@@ -133,7 +142,7 @@ K1.BRKMB:
 ;****************************************************************
 ;*               Analyse Kommando                               *
 ;****************************************************************
-    LD  A,(IX+5)
+    LD  A,(IX+4)
     CP  002H    ;naechsten Record einlesen
     JP  Z,STT02
     CP  008H    ;naechsten Record schreiben
@@ -153,7 +162,7 @@ K1.BRKMB:
     CP  061H    ;schreiben Schlussluecke
     JP  Z,STT61
     CP  071H    ;suche n-te Bandmarke vorwaerts
-    JP  Z,STT71    
+    JP  Z,STT71
     CP  075H    ;suche n-te Bandmarke rueckwaerts
     JP  Z,STT75
     JP  STF07   ;falsches Kommando
@@ -162,22 +171,30 @@ K1.BRKMB:
 ;*               Kernroutine MB                                 *
 ;****************************************************************
 K1.KERN:
-    LD  (IX+9),0F0H
-    LD  A,(IX+5)    ;Kommando
-    LD  (IX+10),A
-    LD  A,(IX+4)    ;Subadresse
-    LD  (IX+11),A
+    LD  (IX+28),0F0H
+    LD  A,(IX+4)    ;Kommando
+    LD  (IX+29),A
+    LD  A,(IX+3)    ;Subadresse
+    LD  (IX+30),A
 
-    LD  C,(IX+3)    ;Basisadresse der AKB
+    LD  C,(IX+2)    ;Basisadresse der AKB
     PUSH    IX
     POP HL
-    LD  DE,9
+    LD  DE,28
     ADD  HL,DE
     OTIR            ;KM - Routine aufrufen
     PUSH    IX
     POP HL
-    LD  B,6
+    DEC HL
+    DEC HL
+    LD  B,4
     INIR            ;Status und Fehler holen
+    DEC HL          ;Laenge der Daten im Puffer holen
+    DEC HL
+    DEC HL
+    LD  (IX+9),0
+    LD  A,(HL)
+    LD  (IX+10),A
     RET
     TITLE   '4-/5-Byte IO-Kommandos'
     PAGE
@@ -195,7 +212,7 @@ STT21:
 ;****************************************************************
 STT11:
 STT15:
-    LD  (IX+12),0FFH
+    LD  (IX+31),0FFH
 
     LD  B,4
     CALL K1.KERN
@@ -218,11 +235,11 @@ STT61:
 ;****************************************************************
 STT71:
 STT75:
-    LD  A,(IX+8)
+    LD  A,(IX+10)
     JR  STT5
 STT5:
-    LD  (IX+12),A
-    LD  (IX+13),0FFH
+    LD  (IX+31),A
+    LD  (IX+32),0FFH
 
     LD  B,5
     CALL K1.KERN
@@ -234,36 +251,36 @@ STT5:
 ;*               Eingabezweig                                   *
 ;****************************************************************
 STT02:
-    LD  A,(IX+6)
-    LD  (IX+12),A
+    LD  A,(K0.HSB)   ;HS-Bereich
+    LD  (IX+31),A
 
     LD  A,(IX+7)
-    LD  (IX+13),A
+    LD  (IX+32),A
     LD  A,(IX+8)
-    LD  (IX+14),A
+    LD  (IX+33),A
 
-    LD  (IX+15),0FFH
+    LD  (IX+34),0FFH
 
     LD  B,7
     CALL K1.KERN
     JP	KOMED	;Kommandoende
-    
+
 ;****************************************************************
 ;*               Aufzeichnungszweig                             *
 ;****************************************************************
 STT08:
-    LD  A,(IX+2)
-    LD  (IX+12),A
+    LD  A,(IX+10)   ;Laenge der Daten im Puffer
+    LD  (IX+31),A
 
-    LD  A,(IX+6)
-    LD  (IX+13),A
+    LD  A,(K0.HSB)   ;HS-Bereich
+    LD  (IX+32),A
 
     LD  A,(IX+7)
-    LD  (IX+14),A
+    LD  (IX+33),A
     LD  A,(IX+8)
-    LD  (IX+15),A
+    LD  (IX+34),A
 
-    LD  (IX+16),0FFH
+    LD  (IX+35),0FFH
 
     LD  B,8
     CALL K1.KERN
@@ -275,7 +292,7 @@ STT08:
 ;****************************************************************
 STF99:
 	LD	(IX+1),L	;Fehlerschluessel laden
-	SET	7,(IX)	;Fehlerbit setzen
+	SET	7,(IX+0)	;Fehlerbit setzen
 STFRS:
 	JP	KOMED	;Kommandoende
 

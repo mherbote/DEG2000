@@ -8,7 +8,7 @@
 ;----------------------------------------------------------------------
 ;     1.     MONITOR
 ;----------------------------------------------------------------------
-UR.MIMO:	PUSH	DE	;Register DE, BC retten
+UR.MIMO: PUSH	DE	;Register DE, BC retten
 	PUSH	BC
 	LD	B,(HL)	;Anzahl einzugebender Zeichen
 	INC	HL
@@ -2284,7 +2284,7 @@ FDOW4:
 	JR	FDOW1
 FDOW3:
 	POP	HL
-	XOR	A	;Endekennzeichen 00H 
+	XOR	A	;Endekennzeichen 00H
 	CALL	UK.PUTK
 	CALL	UK.KBA
 	CALL	FD.DECBZ
@@ -3115,7 +3115,7 @@ SBC:
 	SBC	HL,BC
 	LD	A,(HL)
 	CP	00H
-	RET	
+	RET
 ;---------------------------------------------------------------------
 ANZ:
 	PUSH	BC

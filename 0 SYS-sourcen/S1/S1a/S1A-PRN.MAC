@@ -2,16 +2,21 @@
 
 
                                 	TITLE	'Definitionen zum Betriebssystem'
-  5F36                          KH.BILO   EQU   05F36H
-  6B59                          UR.MIMO   EQU   06B59H
-  6F3F                          UC.CVABX  EQU   06F3FH
-  6F49                          UC.CVBX   EQU   UC.CVABX + 0000AH	;06EECH
-  6F6E                          UC.CVAXB  EQU   UC.CVABX + 0002FH	;06F11H
-  6FC2                          UC.CVBD2  EQU   UC.CVABX + 00083H	;06F65H
-  7007                          UC.CVDB   EQU   UC.CVABX + 000C8H	;06FAAH
-                                
                                 	PAGE	87
 'Definitionen zum Betriebssystem'	MACRO-80 3.44	09-Dec-81	PAGE	1-1
+
+
+                                
+  5F4F                          KH.BILO   EQU   05F4FH
+  6B72                          UR.MIMO   EQU   06B72H
+  6F60                          UC.CVABX  EQU   06F60H
+  6F6A                          UC.CVBX   EQU   UC.CVABX + 0000AH	;06EECH
+  6F8F                          UC.CVAXB  EQU   UC.CVABX + 0002FH	;06F11H
+  6FE3                          UC.CVBD2  EQU   UC.CVABX + 00083H	;06F65H
+  7028                          UC.CVDB   EQU   UC.CVABX + 000C8H	;06FAAH
+                                
+                                	PAGE	87
+'Definitionen zum Betriebssystem'	MACRO-80 3.44	09-Dec-81	PAGE	1-2
 
 
                                 
@@ -40,6 +45,7 @@
   0080                   C      SD.CTCK0   EQU  080H          ;CTC-Adresse Kanal 0
   0002                   C      SD.CTCKA   EQU  2             ;CTC-Kanal 2 (fuer KMBG Robotron)
   004F                   C      SD.AMB     EQU  04FH          ;Ausgabeadresse der   A M B
+  0028                   C      SD.SPST    EQU  028H          ;Adresse der Speicherblocksteuerung
                          C      
                          C      ;DEFINITIONEN ZUM EDITOR
                          C      
@@ -53,7 +59,7 @@
   8830                   C      SD.TPA     EQU  08830H        ;Anf.adr. Textpuffer
   FBFF                   C      SD.TPE     EQU  0FBFFH        ;Endeadr. Textpuffer
   2C00                   C      SD.BPA     EQU  SD.BWSA-400H  ;Anf.adr. Bildpuffer
-  001C                   C      SD.PSANZ   EQU  28            ;Anzahl programm. PF-Tasten
+  0030                   C      SD.PSANZ   EQU  48            ;Anzahl programm. PF-Tasten  ; 28 alt
   000A                   C      SD.TABZA   EQU  10            ;Tabulatorenzahl
   0000                   C      SD.QTAB1   EQU  0             ;1. Tabulator
   0009                   C      SD.QTAB2   EQU  9             ;2.    ''
@@ -66,7 +72,7 @@
                          C      	INCLUDE SM01.MAC
                          C      	TITLE	'Systemvariablen'
                          C      	PAGE
-'Systemvariablen'	MACRO-80 3.44	09-Dec-81	PAGE	1-2
+'Systemvariablen'	MACRO-80 3.44	09-Dec-81	PAGE	1-3
 
 
                          C      
@@ -151,7 +157,7 @@
                          C      			;Bereich fuer Nutzerkonstanten
   0E26'                  C      SM.NUTZK:   DEFS  20H,0
   0E46'                  C                  DEFS  12,0
-'Systemvariablen'	MACRO-80 3.44	09-Dec-81	PAGE	1-3
+'Systemvariablen'	MACRO-80 3.44	09-Dec-81	PAGE	1-4
 
 
                          C      
@@ -205,7 +211,7 @@
                          C      	INCLUDE SY01.MAC
                          C      	TITLE	'Betriebssystemkern DEG2000 Version 1.2'
                          C      	PAGE
-'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-4
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-5
 
 
                          C      
@@ -274,7 +280,7 @@
                          C      ; SY.IBE0:  DW    0468EH     ;???
                          C      
                          C      	PAGE
-'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-5
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-6
 
 
                          C      
@@ -359,7 +365,7 @@
   0115'   CD 04AE'       C      	CALL	SY.SETC	;Cursor setzen
   0118'                  C      SY.ININ1	EQU	$
                          C      
-'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-6
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-7
 
 
                          C      	IF	SD.GENE AND 00000001B
@@ -434,9 +440,9 @@
                          C      	ENDIF
                          C      
                          C      	IF	SD.GENE AND 00010001B
-  0176'   21 5330'       C      	LD	HL,PF.S3M	;PF1
+  0176'   21 5345'       C      	LD	HL,PF.S3M	;PF1
   0179'   22 0D00'       C      	LD	(SM.FKTAB+00H),HL
-  017C'   21 539C'       C      	LD	HL,PF.S4	;PF2
+  017C'   21 53B1'       C      	LD	HL,PF.S4	;PF2
   017F'   22 0D10'       C      	LD	(SM.FKTAB+10H),HL
                          C      	ENDIF
                          C      
@@ -445,7 +451,7 @@
   0183'                  C      SY.IFKT1:
   0183'   2A 0DB4'       C      	LD	HL,(SM.ZMIN)
   0186'   22 0DB2'       C      	LD	(SM.ZPOS),HL
-'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-7
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-8
 
 
   0189'   CD 05B4'       C      	CALL	SY.DZPOS
@@ -472,17 +478,8 @@
   01AF'   CD 05FA'       C      	CALL	SY.ICPOS
   01B2'   C9             C      	RET
                          C      
-  01B3'   01B3'          C      	DW	$
-  01B5'   44 50 54 53    C      	DB	'DPTS'
-  01B9'   CD 093B'       C      	CALL	S1.INPTR
-  01BC'   23             C      	INC	HL
-  01BD'   CD 0951'       C      	CALL	S1.HBKON
-  01C0'   5F             C      	LD	E,A
-  01C1'   ED 53 0FF7     C      	LD	(SM.PTS),DE
-  01C5'   C3 000B'       C      	JP	SY.SYSTB
-                         C      
                          C      	PAGE
-'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-8
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-9
 
 
                          C      
@@ -501,7 +498,7 @@
                          C      	ENDIF
                          C      
                          C      	PAGE
-'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-9
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-10
 
 
                          C      
@@ -586,7 +583,7 @@
   04F0'   ED B3          C      	OTIR
   04F2'   E1             C      	POP	HL
   04F3'   C1             C      	POP	BC
-'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-10
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-11
 
 
   04F4'   C9             C      	RET
@@ -672,7 +669,7 @@
   0576'                  C      SY.ZLPOF:
   0576'   CD 058C'       C      	CALL	SY.POSA
   0579'   18 08          C      	JR	SY.POS3
-'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-11
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-12
 
 
   057B'                  C      SY.ZLPOS:
@@ -758,7 +755,7 @@
   05EE'   B9             C      	CP	C
   05EF'   38 02          C      	JR	C,SY.INC1
   05F1'                  C      SY.INC3:
-'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-12
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-13
 
 
   05F1'   05             C      	DEC	B
@@ -844,7 +841,7 @@
   0669'   01 007F        C      	LD	BC,SM.TK-SM.FKTAB-1
   066C'   ED B0          C      	LDIR
   066E'   21 063B'       C      	LD	HL,SY.CNOS
-'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-13
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-14
 
 
   0671'   22 0D06'       C      	LD	(SM.FKTAB+6),HL
@@ -930,7 +927,7 @@
   06FF'   10 FB          C      	DJNZ	SY.DEL1
   0701'   C9             C      	RET
   0702'                  C      SY.AEIN:
-'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-14
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-15
 
 
   0702'   CD 0580'       C      	CALL	SY.CPOS	;<A> --> Cursorposition
@@ -1016,14 +1013,14 @@
                          C      
                          C      			;Stand: 28.Januar 85 - K EAW/wfvm..MSH
                          C      
-'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-15
+'Betriebssystemkern DEG2000 Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-16
 
 
                          C      ;	END
                          C      	INCLUDE S101.MAC
                          C      	TITLE	'Systemroutinen  DEG 2000    Version 1.2'
                          C      	PAGE
-'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-16
+'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-17
 
 
                          C      
@@ -1039,7 +1036,7 @@
   0768'   42 49 4C 44    C      	DB	'BILD'
                          C      
   076C'   11 3327        C      	LD	DE,SD.BWSA + 10*80 + 7	;327H
-  076F'   CD 7007        C      	CALL	UC.CVDB
+  076F'   CD 7028        C      	CALL	UC.CVDB
   0772'   D8             C      	RET	C
   0773'   AF             C      	XOR	A
   0774'   BC             C      	CP	H
@@ -1088,7 +1085,7 @@
   07B9'   C9             C      	RET
                          C      
                          C      	PAGE
-'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-17
+'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-18
 
 
                          C      
@@ -1156,7 +1153,7 @@
   0804'                  C      	DEFS	8,0
                          C      
                          C      	PAGE
-'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-18
+'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-19
 
 
                          C      
@@ -1164,9 +1161,9 @@
                          C      ;*                  PF-Tastendefinition 2.ROM-Ber. fuer  EDIT   *
                          C      ;****************************************************************
   080C'                  C      S1.PFO1:
-  080C'   21 5084'       C      	LD	HL,PF.O2END	;6FD5H
+  080C'   21 5099'       C      	LD	HL,PF.O2END	;6FD5H
   080F'   22 0E15'       C      	LD	(SM.PTSE),HL
-  0812'   21 4CA0'       C      	LD	HL,PF.O2ANF	;6D20H
+  0812'   21 4CB5'       C      	LD	HL,PF.O2ANF	;6D20H
   0815'   22 0E17'       C      	LD	(SM.PTSA),HL
   0818'   C9             C      	RET
                          C      
@@ -1241,7 +1238,7 @@
   0859'   12             C      	LD	(DE),A
   085A'   C9             C      	RET
   085B'                  C      S1.HDI1:
-'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-19
+'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-20
 
 
   085B'   CD 086E'       C      	CALL	S1.DIV
@@ -1327,7 +1324,7 @@
   08AD'   C9             C      	RET		;HL:=HL*10
                          C      
                          C      ;MELDUNGEN
-'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-20
+'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-21
 
 
                          C      ;DE=AUSZUGEBENDE ZEICHENKETTE, HL=DEZIMAL AUSZUGEBENDE HEXA-
@@ -1413,7 +1410,7 @@
   0904'   C8             C      	RET	Z		;Z=1: KEIN ZEICHEN
   0905'                  C      S1.SUZA1:
   0905'   CD 0877'       C      	CALL	S1.IDH
-'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-21
+'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-22
 
 
   0908'   D8             C      	RET	C	;Z=0 CY=1: FALSCHE ZAHL
@@ -1499,7 +1496,7 @@
   0953'   06 00          C      	LD	B,0
   0955'   CD 0968'       C      	CALL	S1.KON1
   0958'   CB 10          C      	RL	B
-'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-22
+'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-23
 
 
   095A'   CB 10          C      	RL	B
@@ -1554,7 +1551,7 @@
   0994'   C3 087F'       C      	JP	S1.IDH2
                          C      
                          C      	PAGE
-'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-23
+'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-24
 
 
                          C      
@@ -1605,7 +1602,7 @@
   09DD'   C8             C      	RET	Z
   09DE'                  C      S1.EIN1:
   09DE'   E5             C      	PUSH	HL
-  09DF'   CD 7007        C      	CALL	UC.CVDB
+  09DF'   CD 7028        C      	CALL	UC.CVDB
   09E2'   38 11          C      	JR	C,S1.RET
   09E4'   AF             C      	XOR	A
   09E5'   BC             C      	CP	H
@@ -1636,10 +1633,10 @@
   0A05'   E5             C      	PUSH	HL
   0A06'   6E             C      	LD	L,(HL)
   0A07'   26 00          C      	LD	H,0
-  0A09'   CD 6FC2        C      	CALL	UC.CVBD2
+  0A09'   CD 6FE3        C      	CALL	UC.CVBD2
   0A0C'   3E 2E          C      	LD	A,2EH
   0A0E'   12             C      	LD	(DE),A
-'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-24
+'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-25
 
 
   0A0F'   13             C      	INC	DE
@@ -1685,7 +1682,7 @@
                          C      
                          C      
                          C      	PAGE
-'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-25
+'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-26
 
 
                          C      
@@ -1770,7 +1767,7 @@
                          C      
   0AB9'                  C      S1.ETEST:
   0AB9'   D5             C      	PUSH	DE
-'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-26
+'Systemroutinen  DEG 2000    Version 1.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-27
 
 
   0ABA'   E5             C      	PUSH	HL
@@ -1791,11 +1788,11 @@
                                 ;	INCLUDE E101.MAC
                                 ;	INCLUDE E201.MAC
                                 ;	INCLUDE E301.MAC
-                                ;	INCLUDE E401.MAC	; 
+                                ;	INCLUDE E401.MAC	;
                          C      	INCLUDE ED01.MAC	; Editor
                          C      	TITLE	'EDITOR --- Meldephase'
                          C      	PAGE
-'EDITOR --- Meldephase'	MACRO-80 3.44	09-Dec-81	PAGE	1-27
+'EDITOR --- Meldephase'	MACRO-80 3.44	09-Dec-81	PAGE	1-28
 
 
                          C      
@@ -1816,7 +1813,7 @@
   1006'   F3             C      	DI
   1007'   CD 054A'       C      	CALL	SY.QTABL
   100A'   22 0E17'       C      	LD	(SM.PTSA),HL
-  100D'   06 1C          C      	LD	B,SD.PSANZ
+  100D'   06 30          C      	LD	B,SD.PSANZ
   100F'                  C      ED.MEL5:
   100F'   36 00          C      	LD	M,0
   1011'   23             C      	INC	HL
@@ -1880,7 +1877,7 @@
   107C'   2A 0DBE'       C      	LD	HL,(SM.ZANZ)	;volles Format laden
   107F'                  C      ED.FREI2:
   107F'   2D             C      	DEC	L
-'EDITOR --- Meldephase'	MACRO-80 3.44	09-Dec-81	PAGE	1-28
+'EDITOR --- Meldephase'	MACRO-80 3.44	09-Dec-81	PAGE	1-29
 
 
   1080'   2D             C      	DEC	L
@@ -1966,7 +1963,7 @@
                          C      
   111E'                  C      ED.UMLKP:
   111E'   CD 082B'       C      	CALL	S1.FOEX
-'EDITOR --- Meldephase'	MACRO-80 3.44	09-Dec-81	PAGE	1-29
+'EDITOR --- Meldephase'	MACRO-80 3.44	09-Dec-81	PAGE	1-30
 
 
   1121'   CD 17B5'       C      	CALL	E2.UML
@@ -2052,7 +2049,7 @@
   11A9'   1390'          C      	DW	E1.PTS22
   11AB'   1304'          C      	DW	E1.THOME
   11AD'   12FF'          C      	DW	E1.TCNZA
-'EDITOR --- Meldephase'	MACRO-80 3.44	09-Dec-81	PAGE	1-30
+'EDITOR --- Meldephase'	MACRO-80 3.44	09-Dec-81	PAGE	1-31
 
 
   11AF'   080C'          C      	DW	S1.PFO1
@@ -2073,7 +2070,7 @@
                          C      ;	END
                          C      	TITLE 'EDITOR --- Arbeitsphase'
                          C      	PAGE
-'EDITOR --- Arbeitsphase'	MACRO-80 3.44	09-Dec-81	PAGE	1-31
+'EDITOR --- Arbeitsphase'	MACRO-80 3.44	09-Dec-81	PAGE	1-32
 
 
                          C      
@@ -2158,7 +2155,7 @@
   1236'   EB             C      	EX	DE,HL
   1237'   11 3000        C      	LD	DE,SD.BWSA
   123A'   19             C      	ADD	HL,DE	;HL=BWSA+(SPANZ)
-'EDITOR --- Arbeitsphase'	MACRO-80 3.44	09-Dec-81	PAGE	1-32
+'EDITOR --- Arbeitsphase'	MACRO-80 3.44	09-Dec-81	PAGE	1-33
 
 
   123B'   ED B0          C      	LDIR
@@ -2244,7 +2241,7 @@
   12A6'   D8             C      	RET	C	;CY=1: gefunden
   12A7'   23             C      	INC	HL
   12A8'   10 FB          C      	DJNZ	E1.TAUP1
-'EDITOR --- Arbeitsphase'	MACRO-80 3.44	09-Dec-81	PAGE	1-33
+'EDITOR --- Arbeitsphase'	MACRO-80 3.44	09-Dec-81	PAGE	1-34
 
 
   12AA'   C9             C      	RET
@@ -2330,7 +2327,7 @@
   1304'   CD 0183'       C      	CALL	SY.IFKT1
   1307'                  C      E1.TCUR:
   1307'   CD 131A'       C      	CALL	E1.ZNUM
-'EDITOR --- Arbeitsphase'	MACRO-80 3.44	09-Dec-81	PAGE	1-34
+'EDITOR --- Arbeitsphase'	MACRO-80 3.44	09-Dec-81	PAGE	1-35
 
 
   130A'   C9             C      	RET
@@ -2416,7 +2413,7 @@
   137D'   00             C      E1.PTS3:	NOP
   137E'   00             C      E1.PTS4:	NOP
   137F'   00             C      E1.PTS5:	NOP
-'EDITOR --- Arbeitsphase'	MACRO-80 3.44	09-Dec-81	PAGE	1-35
+'EDITOR --- Arbeitsphase'	MACRO-80 3.44	09-Dec-81	PAGE	1-36
 
 
   1380'   00             C      E1.PTS6:	NOP
@@ -2499,15 +2496,15 @@
   13E8'   E3             C      	EX	(SP),HL
   13E9'   C1             C      	POP	BC
   13EA'                  C      E1.PS2:
-  13EA'   1E 1D          C      	LD	E,SD.PSANZ+1
+  13EA'   1E 31          C      	LD	E,SD.PSANZ+1
   13EC'   CD 13C3'       C      	CALL	E1.PTSN1
   13EF'   22 0E15'       C      	LD	(SM.PTSE),HL
-'EDITOR --- Arbeitsphase'	MACRO-80 3.44	09-Dec-81	PAGE	1-36
+'EDITOR --- Arbeitsphase'	MACRO-80 3.44	09-Dec-81	PAGE	1-37
 
 
   13F2'   C9             C      	RET
   13F3'                  C      E1.PS1:
-  13F3'   21 49E9'       C      	LD	HL,PF.O1ANF	;PF.PFT1
+  13F3'   21 49FE'       C      	LD	HL,PF.O1ANF	;PF.PFT1
   13F6'   22 0E17'       C      	LD	(SM.PTSA),HL
   13F9'   01 03FF        C      	LD	BC,3FFH
   13FC'   18 EC          C      	JR	E1.PS2
@@ -2537,7 +2534,7 @@
                          C      ;	END
                          C      	TITLE	'EDITOR --- Textaufruf'
                          C      	PAGE
-'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-37
+'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-38
 
 
                          C      
@@ -2622,7 +2619,7 @@
   149C'                  C      E2.ERR7A:
   149C'   0E 07          C      	LD	C,7	;Zeichenkette nicht vorhanden
   149E'   18 02          C      	JR	E2.ERR5A
-'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-38
+'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-39
 
 
   14A0'                  C      E2.ERRO5:
@@ -2708,7 +2705,7 @@
   1526'   EB             C      	EX	DE,HL
   1527'                  C      E2.NZEI7:
   1527'   D5             C      	PUSH	DE
-'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-39
+'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-40
 
 
   1528'   CD 163C'       C      	CALL	E2.ZNUMX
@@ -2794,7 +2791,7 @@
   159A'   C5             C      	PUSH	BC
   159B'   E3             C      	EX	(SP),HL
   159C'   C1             C      	POP	BC	;BC=Q.Laenge   HL=Q.Anfang
-'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-40
+'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-41
 
 
   159D'   C9             C      	RET		;CY=1 falls BC<=0
@@ -2880,7 +2877,7 @@
   1619'   CD 1590'       C      	CALL	E2.QLANG
   161C'                  C      E2.MRK1:
   161C'   CD 159E'       C      	CALL	E2.SUCH
-'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-41
+'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-42
 
 
   161F'   DA 149C'       C      	JP	C,E2.ERR7A
@@ -2966,7 +2963,7 @@
   1692'   36 1E          C      	LD	M,SD.NL
   1694'   03             C      	INC	BC
   1695'   E1             C      	POP	HL
-'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-42
+'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-43
 
 
   1696'   18 09          C      	JR	E2.RUF1
@@ -3052,7 +3049,7 @@
   170B'                  C      E2.MARK:
   170B'   7B             C      	LD	A,E
   170C'   91             C      	SUB	C	;Markenlaenge einstellen
-'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-43
+'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-44
 
 
   170D'   4F             C      	LD	C,A
@@ -3138,7 +3135,7 @@
   1783'   D2 16A6'       C      	JP	NC,E2.RUF4
   1786'   81             C      	ADD	A,C
   1787'   3D             C      	DEC	A
-'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-44
+'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-45
 
 
   1788'   4F             C      	LD	C,A
@@ -3224,7 +3221,7 @@
   17FB'   37             C      	SCF
   17FC'   ED 52          C      	SBC	HL,DE
   17FE'   23             C      	INC	HL
-'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-45
+'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-46
 
 
   17FF'   30 06          C      	JR	NC,E2.UMLC	;HL=Laenge Q.Rest
@@ -3310,7 +3307,7 @@
   186E'   18 ED          C      	JR	E2.UMLF2
                          C      
   1870'                  C      E2.UML1:
-'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-46
+'EDITOR --- Textaufruf'	MACRO-80 3.44	09-Dec-81	PAGE	1-47
 
 
   1870'   3E 20          C      	LD	A,SD.SPACE	;Komprimieren
@@ -3356,7 +3353,7 @@
                          C      ;	END
                          C      	TITLE	'EDITOR --- Kommandointerpreter'
                          C      	PAGE
-'EDITOR --- Kommandointerpreter'	MACRO-80 3.44	09-Dec-81	PAGE	1-47
+'EDITOR --- Kommandointerpreter'	MACRO-80 3.44	09-Dec-81	PAGE	1-48
 
 
                          C      
@@ -3441,7 +3438,7 @@
   1916'   22 0D99'       C      	LD	(SM.WEITE),HL
   1919'   C9             C      	RET
                          C      
-'EDITOR --- Kommandointerpreter'	MACRO-80 3.44	09-Dec-81	PAGE	1-48
+'EDITOR --- Kommandointerpreter'	MACRO-80 3.44	09-Dec-81	PAGE	1-49
 
 
   191A'                  C      E3.ERR3A:
@@ -3527,7 +3524,7 @@
   198F'   2B             C      	DEC	HL
   1990'   22 0DC0'       C      	LD	(SM.WINA),HL
   1993'   ED 4B 0DC6'    C      	LD	BC,(SM.LZA)
-'EDITOR --- Kommandointerpreter'	MACRO-80 3.44	09-Dec-81	PAGE	1-49
+'EDITOR --- Kommandointerpreter'	MACRO-80 3.44	09-Dec-81	PAGE	1-50
 
 
   1997'   06 00          C      	LD	B,0
@@ -3613,7 +3610,7 @@
   1A1E'   D1             C      	POP	DE
   1A1F'                  C      E3.ERR5B:
   1A1F'   EB             C      	EX	DE,HL
-'EDITOR --- Kommandointerpreter'	MACRO-80 3.44	09-Dec-81	PAGE	1-50
+'EDITOR --- Kommandointerpreter'	MACRO-80 3.44	09-Dec-81	PAGE	1-51
 
 
   1A20'   0E 05          C      	LD	C,5	;Zeilennummer zu gross
@@ -3699,7 +3696,7 @@
   1AC4'   E5             C      	PUSH	HL
   1AC5'   CD 17E7'       C      	CALL	E2.UMLAD
   1AC8'   C1             C      	POP	BC
-'EDITOR --- Kommandointerpreter'	MACRO-80 3.44	09-Dec-81	PAGE	1-51
+'EDITOR --- Kommandointerpreter'	MACRO-80 3.44	09-Dec-81	PAGE	1-52
 
 
   1AC9'   E1             C      	POP	HL	;HL=QA
@@ -3726,7 +3723,7 @@
   1AEF'   AF             C      	XOR	A
   1AF0'   08             C      	EX	AF,AF'
   1AF1'   DD 21 0C00     C      	LD	IX,SD.RAM
-  1AF5'   DD 36 00 1C    C      	LD	(IX+0),SD.PSANZ
+  1AF5'   DD 36 00 30    C      	LD	(IX+0),SD.PSANZ
   1AF9'   EB             C      	EX	DE,HL
   1AFA'   CD 090F'       C      	CALL	S1.LT1Z
   1AFD'   CA 1A3A'       C      	JP	Z,E3.ERR2A
@@ -3785,7 +3782,7 @@
   1B69'   D9             C      	EXX
   1B6A'   22 0DC4'       C      	LD	(SM.END),HL
   1B6D'   ED 53 0DC0'    C      	LD	(SM.WINA),DE
-'EDITOR --- Kommandointerpreter'	MACRO-80 3.44	09-Dec-81	PAGE	1-52
+'EDITOR --- Kommandointerpreter'	MACRO-80 3.44	09-Dec-81	PAGE	1-53
 
 
   1B71'   ED 43 0DC2'    C      	LD	(SM.WINE),BC
@@ -3811,7 +3808,7 @@
                          C      ;	END
                          C      	TITLE	'EDITOR --- Peripheriegeraete'
                          C      	PAGE
-'EDITOR --- Peripheriegeraete'	MACRO-80 3.44	09-Dec-81	PAGE	1-53
+'EDITOR --- Peripheriegeraete'	MACRO-80 3.44	09-Dec-81	PAGE	1-54
 
 
                          C      
@@ -3896,7 +3893,7 @@
   1BFC'   DD E1          C      	POP	IX
   1BFE'   C9             C      	RET
                          C      
-'EDITOR --- Peripheriegeraete'	MACRO-80 3.44	09-Dec-81	PAGE	1-54
+'EDITOR --- Peripheriegeraete'	MACRO-80 3.44	09-Dec-81	PAGE	1-55
 
 
                          C      
@@ -3929,7 +3926,7 @@
   1C33'   18 E1          C      	JR	E4.LEER1
                          C      
                          C      	PAGE
-'EDITOR --- Peripheriegeraete'	MACRO-80 3.44	09-Dec-81	PAGE	1-55
+'EDITOR --- Peripheriegeraete'	MACRO-80 3.44	09-Dec-81	PAGE	1-56
 
 
                          C      
@@ -3988,7 +3985,7 @@
   1CA8'   C9             C      	RET
                          C      
                          C      	PAGE
-'EDITOR --- Peripheriegeraete'	MACRO-80 3.44	09-Dec-81	PAGE	1-56
+'EDITOR --- Peripheriegeraete'	MACRO-80 3.44	09-Dec-81	PAGE	1-57
 
 
                          C      
@@ -4041,7 +4038,7 @@
                          C      	INCLUDE ME01.MAC	; M E M O
                          C      	TITLE	'M E M O'
                          C      	PAGE
-'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-57
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-58
 
 
                          C      
@@ -4103,7 +4100,7 @@
   1D30'   06 04          C      	LD	B,4
   1D32'                  C      ME.AZ4B1:
   1D32'   7E             C      	LD	A,(HL)
-  1D33'   CD 6F4B        C      	CALL	UC.CVBX+2
+  1D33'   CD 6F6C        C      	CALL	UC.CVBX+2
   1D36'   13             C      	INC	DE
   1D37'   23             C      	INC	HL
   1D38'   10 F8          C      	DJNZ	ME.AZ4B1
@@ -4126,7 +4123,7 @@
   1D4A'   3E 7F          C      	LD	A,7FH
   1D4C'   C9             C      	RET
                          C      ;
-'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-58
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-59
 
 
                          C      ;********************************************************
@@ -4212,7 +4209,7 @@
                          C      ;----------------------------------------------------------
                          C      ;
   1D9B'                  C      ME.NEWL:
-'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-59
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-60
 
 
   1D9B'   3A 2BE5'       C      	LD	A,(ME.BZEIN)
@@ -4298,7 +4295,7 @@
   1E17'   35             C      	DEC	(HL)
   1E18'                  C      ME.CHOC1:
   1E18'   CD 1D94'       C      	CALL	ME.BSADS
-'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-60
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-61
 
 
   1E1B'   2A 2BE2'       C      	LD	HL,(ME.AKTAD)
@@ -4384,7 +4381,7 @@
                          C      ;------------------------------------------------------------
                          C      ;
   1E92'                  C      ME.BLVOR:
-'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-61
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-62
 
 
   1E92'   2A 2BE0'       C      	LD	HL,(ME.AADR)
@@ -4470,7 +4467,7 @@
   1F09'                  C      ME.CREC3:
   1F09'   2A 2BE2'       C      	LD	HL,(ME.AKTAD)	;aktuelle Adr. erhoehen
   1F0C'   23             C      	INC	HL
-'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-62
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-63
 
 
   1F0D'   22 2BE2'       C      	LD	(ME.AKTAD),HL
@@ -4556,7 +4553,7 @@
   1F89'   35             C      	DEC	(HL)
   1F8A'   18 F2          C      	JR	ME.CLDE4
   1F8C'                  C      ME.CLDE3:
-'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-63
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-64
 
 
   1F8C'   2A 2BE2'       C      	LD	HL,(ME.AKTAD)
@@ -4642,7 +4639,7 @@
   200E'   21 2BE6'       C      	LD	HL,ME.BPZEI
   2011'   35             C      	DEC	(HL)
   2012'   C9             C      	RET
-'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-64
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-65
 
 
                          C      ;
@@ -4728,7 +4725,7 @@
   208F'   32 2BF2'       C      	LD	(ME.BPZE1),A
   2092'   AF             C      	XOR	A
   2093'   32 2BE4'       C      	LD	(ME.MOD),A
-'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-65
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-66
 
 
   2096'   32 2BE5'       C      	LD	(ME.BZEIN),A
@@ -4741,7 +4738,7 @@
   20AA'   21 0000        C      	LD	HL,0
   20AD'   22 2BE7'       C      	LD	(ME.PUZEI),HL
   20B0'                  C      ME.INSLN:
-  20B0'   CD 5F36        C      	CALL	KH.BILO
+  20B0'   CD 5F4F        C      	CALL	KH.BILO
   20B3'   CD 1CF1'       C      	CALL	ME.AZBLD
   20B6'   CD 1D94'       C      	CALL	ME.BSADS
   20B9'   CD 22B6'       C      	CALL	ME.DSPAD
@@ -4814,7 +4811,7 @@
                          C      ;-------------------------------------------------------------
                          C      ; B4H    (Zeilenanzahl verringern)
                          C      ;-------------------------------------------------------------
-'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-66
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-67
 
 
                          C      ;
@@ -4900,7 +4897,7 @@
   216A'   CD 04D1'       C      	CALL	SY.SETCHL
   216D'   C9             C      	RET
   216E'                  C      ME.ASCM1:
-'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-67
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-68
 
 
   216E'   CD 2175'       C      	CALL	ME.DSBH
@@ -4916,7 +4913,7 @@
   2180'   32 2BE6'       C      	LD	(ME.BPZEI),A	;Position ASCII
   2183'   EB             C      	EX	DE,HL
   2184'   78             C      	LD	A,B
-  2185'   CD 6F4B        C      	CALL	UC.CVBX+2	;Anzeige HEXA
+  2185'   CD 6F6C        C      	CALL	UC.CVBX+2	;Anzeige HEXA
   2188'   C9             C      	RET
                          C      ;
                          C      ;-------------------------------------------------------------
@@ -4925,7 +4922,7 @@
                          C      ;
   2189'                  C      ME.HEXMO:
   2189'   47             C      	LD	B,A	;Code retten
-  218A'   CD 6F6E        C      	CALL	UC.CVAXB	;ASCII-Hexa ---> Binaer < 16
+  218A'   CD 6F8F        C      	CALL	UC.CVAXB	;ASCII-Hexa ---> Binaer < 16
   218D'   4F             C      	LD	C,A
   218E'   CD 1D72'       C      	CALL	ME.BSADR
   2191'   23             C      	INC	HL
@@ -4952,7 +4949,7 @@
   21A9'   28 12          C      	JR	Z,ME.HEXM0	;---> RAM
   21AB'   EB             C      	EX	DE,HL
   21AC'   79             C      	LD	A,C
-  21AD'   CD 6F4B        C      	CALL	UC.CVBX+2	;alten Wert anzeigen
+  21AD'   CD 6F6C        C      	CALL	UC.CVBX+2	;alten Wert anzeigen
   21B0'   CD 1D94'       C      	CALL	ME.BSADS
   21B3'   C9             C      	RET
                          C      ;
@@ -4979,14 +4976,14 @@
   21D2'   CD 1D72'       C      	CALL	ME.BSADR
   21D5'   79             C      	LD	A,C
   21D6'   EB             C      	EX	DE,HL
-  21D7'   CD 6F4B        C      	CALL	UC.CVBX+2
+  21D7'   CD 6F6C        C      	CALL	UC.CVBX+2
   21DA'                  C      ME.HEXM1:
   21DA'   CD 1E7D'       C      	CALL	ME.REFHA
   21DD'   CD 1D72'       C      	CALL	ME.BSADR
   21E0'   79             C      	LD	A,C
   21E1'   CD 1D42'       C      	CALL	ME.TASCI
   21E4'   77             C      	LD	(HL),A	;Anzeige ASCII
-'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-68
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-69
 
 
   21E5'   21 2BE6'       C      	LD	HL,ME.BPZEI
@@ -5072,7 +5069,7 @@
   227C'   FE 30          C      	CP	'0'
   227E'   D8             C      	RET	C
   227F'   FE 3A          C      	CP	3AH
-'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-69
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-70
 
 
   2281'   DA 2189'       C      	JP	C,ME.HEXMO
@@ -5122,9 +5119,9 @@
                          C      
   22CE'                  C      ME.CVAX:
   22CE'   7C             C      	LD	A,H
-  22CF'   CD 6F4B        C      	CALL	UC.CVBX+2
+  22CF'   CD 6F6C        C      	CALL	UC.CVBX+2
   22D2'   7D             C      	LD	A,L
-  22D3'   CD 6F4B        C      	CALL	UC.CVBX+2
+  22D3'   CD 6F6C        C      	CALL	UC.CVBX+2
   22D6'   C9             C      	RET
                          C      
   22D7'                  C      ME.CVXB:
@@ -5158,10 +5155,10 @@
                          C      
   22F9'                  C      ME.CVX1B:
   22F9'   1A             C      	LD	A,(DE)	; ASCII hexa (DE) --> A binaer,DE+1
-'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-70
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-71
 
 
-  22FA'   CD 6F6E        C      	CALL	UC.CVAXB
+  22FA'   CD 6F8F        C      	CALL	UC.CVAXB
   22FD'   13             C      	INC	DE
   22FE'   C9             C      	RET
                          C      
@@ -5177,7 +5174,7 @@
   2308'   3E 14          C      	LD	A,20
   230A'   32 2B00        C      	LD	(ME.ZN),A
   230D'   21 2371'       C      	LD	HL,ME.ZKEIN
-  2310'   CD 6B59        C      	CALL	UR.MIMO
+  2310'   CD 6B72        C      	CALL	UR.MIMO
   2313'   D8             C      	RET	C
                          C      
   2314'   EB             C      	EX	DE,HL
@@ -5244,7 +5241,7 @@
   2360'   21 3000        C      	LD	HL,SD.BWSA
   2363'   0E 50          C      	LD	C,80
   2365'   CD 07D3'       C      	CALL	S1.HCP
-'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-71
+'M E M O'	MACRO-80 3.44	09-Dec-81	PAGE	1-72
 
 
   2368'   3E 1E          C      	LD	A,1EH
@@ -5293,7 +5290,7 @@
                          C      	INCLUDE V101.MAC	; Verbindungsroutinen
                          C          TITLE   'DEG2000 V. 1.2    Einsprungadressen'
                          C          PAGE
-'DEG2000 V. 1.2    Einsprungadressen'	MACRO-80 3.44	09-Dec-81	PAGE	1-72
+'DEG2000 V. 1.2    Einsprungadressen'	MACRO-80 3.44	09-Dec-81	PAGE	1-73
 
 
                          C      
@@ -5362,11 +5359,11 @@
   4068'   00             C                 NOP
                          C      
                          C      ;   END
-                                	
+                                
                          C      	INCLUDE TA01.MAC	; Tastatur
                          C      	TITLE	'DEG2000 V. 1.2    Tastaturmodul'
                          C      	PAGE
-'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-73
+'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-74
 
 
                          C      
@@ -5451,7 +5448,7 @@
   4171'   CD 41A4'       C      	CALL	TA.MM1
   4174'   C2 41CF'       C      	JP	NZ,TA.TFE
   4177'   2A 4007'       C      	LD	HL,(TR.TA2+1)
-'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-74
+'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-75
 
 
   417A'   CD 41A4'       C      	CALL	TA.MM1
@@ -5537,7 +5534,7 @@
   41F2'   CB 76          C      	BIT	6,M	;BIT 6 : kleine Buchstaben
   41F4'   28 D9          C      	JR	Z,TA.TFE
   41F6'   C3 414F'       C      	JP	TA.ABF2
-'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-75
+'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-76
 
 
                          C      
@@ -5623,7 +5620,7 @@
   4271'                  C      TA.BBB:
   4271'   3A 0D81'       C      	LD	A,(SM.FKT)	;( B )   laden fuer  TR.TIM
   4274'   3C             C      	INC	A
-'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-76
+'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-77
 
 
   4275'   47             C      	LD	B,A
@@ -5684,7 +5681,7 @@
   42D4'   18 EC          C      	JR	TA.STAS1
                          C      
                          C      	PAGE
-'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-77
+'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-78
 
 
                          C      
@@ -5769,7 +5766,7 @@
   4358'   0D24           C      	DW	00D24H	;ABS
                          C      
   435A'                  C      TA.TAB4:
-'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-78
+'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-79
 
 
   435A'   0D28           C      	DW	00D28H	;POS_QUIT
@@ -5779,7 +5776,7 @@
   4362'   0D78           C      	DW	00D78H	;M
                          C      
                          C      	PAGE
-'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-79
+'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-80
 
 
                          C      
@@ -5864,7 +5861,7 @@
   43C9'   47             C      	LD	B,A
   43CA'                  C      TA.CTRL2:
   43CA'   FE 50          C      	CP	50H
-'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-80
+'DEG2000 V. 1.2    Tastaturmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-81
 
 
   43CC'   D0             C      	RET	NC
@@ -5880,7 +5877,7 @@
                          C      	INCLUDE TR01.MAC
                          C      	TITLE	'physische Tastatur-Routine'
                          C      	PAGE
-'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-81
+'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-82
 
 
                          C      
@@ -5922,7 +5919,7 @@
                          C      	ENDIF
                          C      
                          C      	PAGE
-'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-82
+'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-83
 
 
                          C      
@@ -5975,7 +5972,7 @@
                          C      	ENDIF
                          C      
                          C      	PAGE
-'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-83
+'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-84
 
 
                          C      
@@ -6060,14 +6057,14 @@
   4405'   F5             C      	PUSH	AF
   4406'   CD 4006'       C      	CALL	TR.TA2
   4409'   F1             C      	POP	AF
-'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-84
+'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-85
 
 
   440A'   28 F3          C      	JR	Z,TR.TFE2
   440C'   C9             C      	RET
                          C      
                          C      	PAGE
-'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-85
+'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-86
 
 
                          C      
@@ -6152,7 +6149,7 @@
                          C      	CPIR
                          C      	JR	NZ,TR.KODE
                          C      	OR	A
-'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-86
+'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-87
 
 
                          C      	LD	HL,TR.TABB2
@@ -6166,7 +6163,7 @@
   441B'   C9             C      	RET
                          C      
                          C      	PAGE
-'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-87
+'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-88
 
 
                          C      
@@ -6246,7 +6243,7 @@
   443B'   C9             C      	RET
                          C      
                          C      	PAGE
-'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-88
+'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-89
 
 
                          C      
@@ -6303,7 +6300,7 @@
                          C      
                          C      
                          C      	PAGE
-'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-89
+'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-90
 
 
                          C      
@@ -6388,7 +6385,7 @@
                          C      	PUSH	BC
                          C      	LD	B,2		; /UCS4
                          C      	ENDIF
-'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-90
+'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-91
 
 
                          C      
@@ -6410,7 +6407,7 @@
                          C      	ENDIF
                          C      
                          C      	PAGE
-'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-91
+'physische Tastatur-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-92
 
 
                          C      
@@ -6439,7 +6436,7 @@
                          C      	INCLUDE LR01.MAC	; Lochband-Routine
                          C      	TITLE	'Lochband-Geraete-Treiber'
                          C      	PAGE
-'Lochband-Geraete-Treiber'	MACRO-80 3.44	09-Dec-81	PAGE	1-92
+'Lochband-Geraete-Treiber'	MACRO-80 3.44	09-Dec-81	PAGE	1-93
 
 
                          C      
@@ -6502,7 +6499,7 @@
   4473'   4580'          C      	DW	LR.IRLBL
                          C      
                          C      	PAGE
-'Lochband-Geraete-Treiber'	MACRO-80 3.44	09-Dec-81	PAGE	1-93
+'Lochband-Geraete-Treiber'	MACRO-80 3.44	09-Dec-81	PAGE	1-94
 
 
                          C      
@@ -6545,7 +6542,7 @@
                          C      
                          C      	TITLE	'Lochband-Geraete-Treiber Ausgaberoutine'
                          C      	PAGE
-'Lochband-Geraete-Treiber Ausgaberoutine'	MACRO-80 3.44	09-Dec-81	PAGE	1-94
+'Lochband-Geraete-Treiber Ausgaberoutine'	MACRO-80 3.44	09-Dec-81	PAGE	1-95
 
 
                          C      
@@ -6630,7 +6627,7 @@
   44EE'   0C             C      	INC	C
                          C      	ENDIF
                          C      	IF	LR.LBGEN AND 2
-'Lochband-Geraete-Treiber Ausgaberoutine'	MACRO-80 3.44	09-Dec-81	PAGE	1-95
+'Lochband-Geraete-Treiber Ausgaberoutine'	MACRO-80 3.44	09-Dec-81	PAGE	1-96
 
 
                          C      	LD	A,7	;SIF1000 - Kommando ausgeben
@@ -6682,7 +6679,7 @@
                          C      
                          C      	TITLE	'Lochband-Geraete-Treiber Eingaberoutine'
                          C      	PAGE
-'Lochband-Geraete-Treiber Eingaberoutine'	MACRO-80 3.44	09-Dec-81	PAGE	1-96
+'Lochband-Geraete-Treiber Eingaberoutine'	MACRO-80 3.44	09-Dec-81	PAGE	1-97
 
 
                          C      
@@ -6767,7 +6764,7 @@
   4555'                  C      LR.LBL4:
   4555'   CD 4485'       C      	CALL	LR.KONV1
   4558'   CB 50          C      	BIT	2,B	;EOR-Umwandlung ?
-'Lochband-Geraete-Treiber Eingaberoutine'	MACRO-80 3.44	09-Dec-81	PAGE	1-97
+'Lochband-Geraete-Treiber Eingaberoutine'	MACRO-80 3.44	09-Dec-81	PAGE	1-98
 
 
   455A'   28 09          C      	JR	Z,LR.LBLE	;NEIN
@@ -6811,7 +6808,7 @@
   4587'   ED 4D          C      	RETI
                          C      
                          C      	PAGE
-'Lochband-Geraete-Treiber Eingaberoutine'	MACRO-80 3.44	09-Dec-81	PAGE	1-98
+'Lochband-Geraete-Treiber Eingaberoutine'	MACRO-80 3.44	09-Dec-81	PAGE	1-99
 
 
                          C      
@@ -6867,7 +6864,7 @@
                          C      	ENDIF
                          C      
                          C      	PAGE
-'Lochband-Geraete-Treiber Eingaberoutine'	MACRO-80 3.44	09-Dec-81	PAGE	1-99
+'Lochband-Geraete-Treiber Eingaberoutine'	MACRO-80 3.44	09-Dec-81	PAGE	1-100
 
 
                          C      
@@ -6887,7 +6884,7 @@
                          C      	INCLUDE P108.MAC	; Drucker-Routinen
                          C      	TITLE	'Drucker-Verbindungsmodul'
                          C      	PAGE
-'Drucker-Verbindungsmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-100
+'Drucker-Verbindungsmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-101
 
 
                          C      
@@ -6951,7 +6948,7 @@
   47F3'   C3 000B'       C      	JP	SY.SYSTB
                          C      
                          C      	PAGE
-'Drucker-Verbindungsmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-101
+'Drucker-Verbindungsmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-102
 
 
                          C      
@@ -6983,7 +6980,7 @@
   4826'   18 CB          C      	JR	PR.SYS
                          C      
                          C      	PAGE
-'Drucker-Verbindungsmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-102
+'Drucker-Verbindungsmodul'	MACRO-80 3.44	09-Dec-81	PAGE	1-103
 
 
                          C      
@@ -7048,7 +7045,7 @@
                          C      ;	END
                          C      	TITLE	'Drucker-Routine'
                          C      	PAGE
-'Drucker-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-103
+'Drucker-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-104
 
 
                          C      
@@ -7088,7 +7085,7 @@
                          C      ;****************************************************************
                          C      
                          C      	PAGE	
-'Drucker-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-104
+'Drucker-Routine'	MACRO-80 3.44	09-Dec-81	PAGE	1-105
 
 
                          C      
@@ -7151,7 +7148,7 @@
                          C      
                          C      	TITLE	'Drucker-Initialisierung'
                          C      	PAGE
-'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-105
+'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-106
 
 
                          C      
@@ -7191,7 +7188,7 @@
                          C      	ENDIF
                          C      
                          C      	PAGE
-'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-106
+'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-107
 
 
                          C      
@@ -7265,7 +7262,7 @@
                          C      	ENDIF
                          C      
                          C      	PAGE
-'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-107
+'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-108
 
 
                          C      
@@ -7327,7 +7324,7 @@
                          C      	ENDIF
                          C      
                          C      	PAGE
-'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-108
+'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-109
 
 
                          C      
@@ -7368,7 +7365,7 @@
                          C      	ENDIF
                          C      
                          C      	PAGE
-'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-109
+'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-110
 
 
                          C      
@@ -7418,7 +7415,7 @@
                          C      	ENDIF
                          C      
                          C      	PAGE
-'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-110
+'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-111
 
 
                          C      
@@ -7477,7 +7474,7 @@
                          C      	ENDIF
                          C      
                          C      	PAGE
-'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-111
+'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-112
 
 
                          C      
@@ -7523,7 +7520,7 @@
   48E8'   C3 4943'       C      	JP	P1.M2
                          C      
                          C      	PAGE
-'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-112
+'Drucker-Initialisierung'	MACRO-80 3.44	09-Dec-81	PAGE	1-113
 
 
                          C      
@@ -7571,7 +7568,7 @@
                          C      
                          C      	TITLE	'Zeichenausgabe an den Drucker'
                          C      	PAGE
-'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-113
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-114
 
 
                          C      
@@ -7647,7 +7644,7 @@
   494A'   F1             C      	POP	AF
   494B'   C9             C      	RET
                          C      	PAGE
-'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-114
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-115
 
 
                          C      
@@ -7704,7 +7701,7 @@
                          C      	ENDIF
                          C      
                          C      	PAGE
-'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-115
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-116
 
 
                          C      
@@ -7747,7 +7744,7 @@
                          C      	ENDIF
                          C      
                          C      	PAGE
-'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-116
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-117
 
 
                          C      
@@ -7808,7 +7805,7 @@
                          C      	ENDIF
                          C      
                          C      	PAGE
-'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-117
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-118
 
 
                          C      
@@ -7870,7 +7867,7 @@
                          C      	ENDIF
                          C      
                          C      	PAGE
-'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-118
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-119
 
 
                          C      
@@ -7917,7 +7914,7 @@
                          C      	ENDIF
                          C      
                          C      	PAGE
-'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-119
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-120
 
 
                          C      
@@ -7959,7 +7956,7 @@
   4986'   C9             C      	RET		;return vom UP "ZEI"
                          C      
                          C      	PAGE
-'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-120
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-121
 
 
                          C      
@@ -8032,7 +8029,7 @@
   4991'   C9             C      	RET		;return vom UP "ZEIZ"
                          C      
                          C      	PAGE
-'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-121
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-122
 
 
                          C      
@@ -8075,7 +8072,7 @@
                          C      	ENDIF
                          C      
                          C      	PAGE
-'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-122
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-123
 
 
                          C      
@@ -8143,7 +8140,7 @@
                          C      	ENDIF
                          C      
                          C      	PAGE
-'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-123
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-124
 
 
                          C      
@@ -8203,7 +8200,7 @@
                          C      	ENDIF
                          C      
                          C      	PAGE
-'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-124
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-125
 
 
                          C      
@@ -8288,7 +8285,7 @@
                          C      	DB	0A1H
                          C      	DB	0A2H
                          C      	DB	0A3H
-'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-125
+'Zeichenausgabe an den Drucker'	MACRO-80 3.44	09-Dec-81	PAGE	1-126
 
 
                          C      	DB	0A4H
@@ -8342,7 +8339,7 @@
                          C      	INCLUDE PF01.MAC	; PF-Tasten-Belegungen
                          C      	TITLE	'DEG2000 V. 1.2    PF - Belegungen'
                          C      	PAGE
-'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-126
+'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-127
 
 
                          C      
@@ -8355,793 +8352,799 @@
                          C      ;*                  Stand        : 06.Februar 1985              *
                          C      ;****************************************************************
                          C      
-  001E                   C      CR	EQU	01EH
-  0028                   C      PF.SPST	EQU	028H
-                         C      
   49B0'   49B0'          C      	DW	$
-  49B2'   50 46 54 41    C      	DB	'PFTA'
-  49B6'   3A 3327        C      	LD	A,(SD.BWSA+327H)
-  49B9'   FE 31          C      	CP	'1'
-  49BB'   28 0A          C      	JR	Z,PF.O1
-  49BD'   FE 32          C      	CP	'2'
-  49BF'   28 0E          C      	JR	Z,PF.O2
-  49C1'   FE 33          C      	CP	'3'
-  49C3'   28 12          C      	JR	Z,PF.O3
-  49C5'   18 1F          C      	JR	PF.OXEND
+  49B2'   44 50 54 53    C      	DB	'DPTS'
+  49B6'   CD 093B'       C      	CALL	S1.INPTR
+  49B9'   23             C      	INC	HL
+  49BA'   CD 0951'       C      	CALL	S1.HBKON
+  49BD'   5F             C      	LD	E,A
+  49BE'   ED 53 0FF7     C      	LD	(SM.PTS),DE
+  49C2'   C3 000B'       C      	JP	SY.SYSTB
                          C      
-  49C7'                  C      PF.O1:
-  49C7'   21 49E9'       C      	LD	HL,PF.O1ANF
-  49CA'   11 4CA0'       C      	LD	DE,PF.O1END
-  49CD'   18 10          C      	JR	PF.OB
-  49CF'                  C      PF.O2:
-  49CF'   21 4CA0'       C      	LD	HL,PF.O2ANF
-  49D2'   11 5084'       C      	LD	DE,PF.O2END
-  49D5'   18 08          C      	JR	PF.OB
-  49D7'                  C      PF.O3:
-  49D7'   21 5084'       C      	LD	HL,PF.O3ANF
-  49DA'   11 532A'       C      	LD	DE,PF.O3END
-  49DD'   18 00          C      	JR	PF.OB
+  49C5'   49C5'          C      	DW	$
+  49C7'   50 46 54 41    C      	DB	'PFTA'
+  49CB'   3A 3327        C      	LD	A,(SD.BWSA+327H)
+  49CE'   FE 31          C      	CP	'1'
+  49D0'   28 0A          C      	JR	Z,PF.O1
+  49D2'   FE 32          C      	CP	'2'
+  49D4'   28 0E          C      	JR	Z,PF.O2
+  49D6'   FE 33          C      	CP	'3'
+  49D8'   28 12          C      	JR	Z,PF.O3
+  49DA'   18 1F          C      	JR	PF.OXEND
+                         C      
+  49DC'                  C      PF.O1:
+  49DC'   21 49FE'       C      	LD	HL,PF.O1ANF
+  49DF'   11 4CB5'       C      	LD	DE,PF.O1END
+  49E2'   18 10          C      	JR	PF.OB
+  49E4'                  C      PF.O2:
+  49E4'   21 4CB5'       C      	LD	HL,PF.O2ANF
+  49E7'   11 5099'       C      	LD	DE,PF.O2END
+  49EA'   18 08          C      	JR	PF.OB
+  49EC'                  C      PF.O3:
+  49EC'   21 5099'       C      	LD	HL,PF.O3ANF
+  49EF'   11 533F'       C      	LD	DE,PF.O3END
+  49F2'   18 00          C      	JR	PF.OB
                          C      	
-  49DF'                  C      PF.OB:
-  49DF'   ED 53 0E15'    C      	LD	(SM.PTSE),DE
-  49E3'   22 0E17'       C      	LD	(SM.PTSA),HL
-  49E6'                  C      PF.OXEND:
-  49E6'   C3 000B'       C      	JP	SY.SYSTB
+  49F4'                  C      PF.OB:
+  49F4'   ED 53 0E15'    C      	LD	(SM.PTSE),DE
+  49F8'   22 0E17'       C      	LD	(SM.PTSA),HL
+  49FB'                  C      PF.OXEND:
+  49FB'   C3 000B'       C      	JP	SY.SYSTB
                          C      
                          C      	PAGE
-'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-127
+'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-128
 
 
                          C      
                          C      ;****************************************************************
-  49E9'                  C      PF.O1ANF	EQU	$
-  49E9'   3B 2A 2A 2A    C      	DB	';****************************************************************'    ;PF01-0
-  49ED'   2A 2A 2A 2A    C      
-  49F1'   2A 2A 2A 2A    C      
-  49F5'   2A 2A 2A 2A    C      
-  49F9'   2A 2A 2A 2A    C      
-  49FD'   2A 2A 2A 2A    C      
-  4A01'   2A 2A 2A 2A    C      
-  4A05'   2A 2A 2A 2A    C      
-  4A09'   2A 2A 2A 2A    C      
-  4A0D'   2A 2A 2A 2A    C      
-  4A11'   2A 2A 2A 2A    C      
-  4A15'   2A 2A 2A 2A    C      
-  4A19'   2A 2A 2A 2A    C      
-  4A1D'   2A 2A 2A 2A    C      
-  4A21'   2A 2A 2A 2A    C      
-  4A25'   2A 2A 2A 2A    C      
-  4A29'   2A             C      
-  4A2A'   001E           C      	DW	CR
-  4A2C'   3B 2A 20 20    C      	DB	';*                                                              *'    ;PF02-0
-  4A30'   20 20 20 20    C      
-  4A34'   20 20 20 20    C      
-  4A38'   20 20 20 20    C      
-  4A3C'   20 20 20 20    C      
-  4A40'   20 20 20 20    C      
-  4A44'   20 20 20 20    C      
-  4A48'   20 20 20 20    C      
-  4A4C'   20 20 20 20    C      
-  4A50'   20 20 20 20    C      
-  4A54'   20 20 20 20    C      
-  4A58'   20 20 20 20    C      
-  4A5C'   20 20 20 20    C      
-  4A60'   20 20 20 20    C      
-  4A64'   20 20 20 20    C      
-  4A68'   20 20 20 20    C      
-  4A6C'   2A             C      
-  4A6D'   001E           C      	DW	CR
-  4A6F'   3B 2A 20 20    C      	DB	';*                  '                                                 ;PF03-0
-  4A73'   20 20 20 20    C      
-  4A77'   20 20 20 20    C      
-  4A7B'   20 20 20 20    C      
-  4A7F'   20 20 20 20    C      
-  4A83'   00             C      	DB	0
-                         C      ; ----
-  4A84'   3B 2A 20 20    C      	DB	';*                  Programmierer:'                                   ;PF04-0
+  49FE'                  C      PF.O1ANF	EQU	$
+  49FE'   3B 2A 2A 2A    C      	DB	';****************************************************************'    ;PF01-0
+  4A02'   2A 2A 2A 2A    C      
+  4A06'   2A 2A 2A 2A    C      
+  4A0A'   2A 2A 2A 2A    C      
+  4A0E'   2A 2A 2A 2A    C      
+  4A12'   2A 2A 2A 2A    C      
+  4A16'   2A 2A 2A 2A    C      
+  4A1A'   2A 2A 2A 2A    C      
+  4A1E'   2A 2A 2A 2A    C      
+  4A22'   2A 2A 2A 2A    C      
+  4A26'   2A 2A 2A 2A    C      
+  4A2A'   2A 2A 2A 2A    C      
+  4A2E'   2A 2A 2A 2A    C      
+  4A32'   2A 2A 2A 2A    C      
+  4A36'   2A 2A 2A 2A    C      
+  4A3A'   2A 2A 2A 2A    C      
+  4A3E'   2A             C      
+  4A3F'   001E           C      	DW	SD.NL
+  4A41'   3B 2A 20 20    C      	DB	';*                                                              *'    ;PF02-0
+  4A45'   20 20 20 20    C      
+  4A49'   20 20 20 20    C      
+  4A4D'   20 20 20 20    C      
+  4A51'   20 20 20 20    C      
+  4A55'   20 20 20 20    C      
+  4A59'   20 20 20 20    C      
+  4A5D'   20 20 20 20    C      
+  4A61'   20 20 20 20    C      
+  4A65'   20 20 20 20    C      
+  4A69'   20 20 20 20    C      
+  4A6D'   20 20 20 20    C      
+  4A71'   20 20 20 20    C      
+  4A75'   20 20 20 20    C      
+  4A79'   20 20 20 20    C      
+  4A7D'   20 20 20 20    C      
+  4A81'   2A             C      
+  4A82'   001E           C      	DW	SD.NL
+  4A84'   3B 2A 20 20    C      	DB	';*                  '                                                 ;PF03-0
   4A88'   20 20 20 20    C      
   4A8C'   20 20 20 20    C      
   4A90'   20 20 20 20    C      
   4A94'   20 20 20 20    C      
-  4A98'   50 72 6F 67    C      
-  4A9C'   72 61 6D 6D    C      
-  4AA0'   69 65 72 65    C      
-  4AA4'   72 3A          C      
-  4AA6'   20 4D 2E 20    C      	DB	' M. Herbote  K EAW  ZFT (WFV) *'
-  4AAA'   48 65 72 62    C      
-  4AAE'   6F 74 65 20    C      
-  4AB2'   20 4B 20 45    C      
-  4AB6'   41 57 20 20    C      
-  4ABA'   5A 46 54 20    C      
-  4ABE'   28 57 46 56    C      
-  4AC2'   29 20 2A       C      
-  4AC5'   001E           C      	DW	CR
-  4AC7'   3B 2A 20 20    C      	DB	';*                  --------------------------------------------*'    ;PF05-0
-  4ACB'   20 20 20 20    C      
-  4ACF'   20 20 20 20    C      
-  4AD3'   20 20 20 20    C      
-  4AD7'   20 20 20 20    C      
-  4ADB'   2D 2D 2D 2D    C      
-  4ADF'   2D 2D 2D 2D    C      
-  4AE3'   2D 2D 2D 2D    C      
-  4AE7'   2D 2D 2D 2D    C      
-  4AEB'   2D 2D 2D 2D    C      
-  4AEF'   2D 2D 2D 2D    C      
-  4AF3'   2D 2D 2D 2D    C      
-  4AF7'   2D 2D 2D 2D    C      
-  4AFB'   2D 2D 2D 2D    C      
-  4AFF'   2D 2D 2D 2D    C      
-  4B03'   2D 2D 2D 2D    C      
-  4B07'   2A             C      
-  4B08'   001E           C      	DW	CR
-'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-128
-
-
-  4B0A'   3B 2A 20 20    C      	DB	';*                  Stand        : '                                  ;PF06-0
-  4B0E'   20 20 20 20    C      
-  4B12'   20 20 20 20    C      
-  4B16'   20 20 20 20    C      
-  4B1A'   20 20 20 20    C      
-  4B1E'   53 74 61 6E    C      
-  4B22'   64 20 20 20    C      
-  4B26'   20 20 20 20    C      
-  4B2A'   20 3A 20       C      
-  4B2D'   00             C      	DB	0
+  4A98'   00             C      	DB	0
                          C      ; ----
-  4B2E'   20 20 20 20    C      	DB	'         CALL  '                                                      ;PF07-0
-  4B32'   20 20 20 20    C      
-  4B36'   20 43 41 4C    C      
-  4B3A'   4C 20 20       C      
-  4B3D'   00             C      	DB	0
-  4B3E'   20 20 20 20    C      	DB	'         DA    '                                                      ;PF08-0
-  4B42'   20 20 20 20    C      
-  4B46'   20 44 41 20    C      
-  4B4A'   20 20 20       C      
-  4B4D'   00             C      	DB	0
-  4B4E'   20 20 20 20    C      	DB	'         DB    '                                                      ;PF09-0
-  4B52'   20 20 20 20    C      
-  4B56'   20 44 42 20    C      
-  4B5A'   20 20 20       C      
-  4B5D'   00             C      	DB	0
-                         C      ; ----
-  4B5E'   20 20 20 20    C      	DB	'         XOR   A'                                                     ;PF10-0
-  4B62'   20 20 20 20    C      
-  4B66'   20 58 4F 52    C      
-  4B6A'   20 20 20 41    C      
-  4B6E'   001E           C      	DW	CR
-  4B70'   20 20 20 20    C      	DB	'         LD    A,'                                                    ;PF11-0
-  4B74'   20 20 20 20    C      
-  4B78'   20 4C 44 20    C      
-  4B7C'   20 20 20 41    C      
-  4B80'   2C             C      
-  4B81'   00             C      	DB	0
-  4B82'   20 20 20 20    C      	DB	'         LD    HL,'                                                   ;PF12-0
-  4B86'   20 20 20 20    C      
-  4B8A'   20 4C 44 20    C      
-  4B8E'   20 20 20 48    C      
-  4B92'   4C 2C          C      
-  4B94'   00             C      	DB	0
-                         C      ; ====	
-  4B95'   20 20 20 20    C      	DB	'         PUSH  HL'                                                    ;PF01-1 PF13
-  4B99'   20 20 20 20    C      
-  4B9D'   20 50 55 53    C      
-  4BA1'   48 20 20 48    C      
-  4BA5'   4C             C      
-  4BA6'   001E           C      	DW	CR
-  4BA8'   20 20 20 20    C      	DB	'         PUSH  IX'                                                    ;PF02-1 PF14
-  4BAC'   20 20 20 20    C      
-  4BB0'   20 50 55 53    C      
-  4BB4'   48 20 20 49    C      
-  4BB8'   58             C      
-  4BB9'   001E           C      	DW	CR
-  4BBB'   20 20 20 20    C      	DB	'         PUSH  IY'                                                    ;PF03-1 PF15
-  4BBF'   20 20 20 20    C      
-  4BC3'   20 50 55 53    C      
-  4BC7'   48 20 20 49    C      
-  4BCB'   59             C      
-  4BCC'   001E           C      	DW	CR
-                         C      ; ----
-  4BCE'   20 20 20 20    C      	DB	'         POP   HL'                                                    ;PF04-1 PF16
-  4BD2'   20 20 20 20    C      
-  4BD6'   20 50 4F 50    C      
-  4BDA'   20 20 20 48    C      
-  4BDE'   4C             C      
-  4BDF'   001E           C      	DW	CR
-  4BE1'   20 20 20 20    C      	DB	'         POP   IX'                                                    ;PF05-1 PF17
-  4BE5'   20 20 20 20    C      
-  4BE9'   20 50 4F 50    C      
-  4BED'   20 20 20 49    C      
-  4BF1'   58             C      
-  4BF2'   001E           C      	DW	CR
-  4BF4'   20 20 20 20    C      	DB	'         POP   IY'                                                    ;PF06-1 PF18
-  4BF8'   20 20 20 20    C      
-  4BFC'   20 50 4F 50    C      
-  4C00'   20 20 20 49    C      
-  4C04'   59             C      
-  4C05'   001E           C      	DW	CR
-                         C      ; ----
+  4A99'   3B 2A 20 20    C      	DB	';*                  Programmierer:'                                   ;PF04-0
+  4A9D'   20 20 20 20    C      
+  4AA1'   20 20 20 20    C      
+  4AA5'   20 20 20 20    C      
+  4AA9'   20 20 20 20    C      
+  4AAD'   50 72 6F 67    C      
+  4AB1'   72 61 6D 6D    C      
+  4AB5'   69 65 72 65    C      
+  4AB9'   72 3A          C      
+  4ABB'   20 4D 2E 20    C      	DB	' M. Herbote  K EAW  ZFT (WFV) *'
+  4ABF'   48 65 72 62    C      
+  4AC3'   6F 74 65 20    C      
+  4AC7'   20 4B 20 45    C      
+  4ACB'   41 57 20 20    C      
+  4ACF'   5A 46 54 20    C      
+  4AD3'   28 57 46 56    C      
+  4AD7'   29 20 2A       C      
+  4ADA'   001E           C      	DW	SD.NL
+  4ADC'   3B 2A 20 20    C      	DB	';*                  --------------------------------------------*'    ;PF05-0
+  4AE0'   20 20 20 20    C      
+  4AE4'   20 20 20 20    C      
+  4AE8'   20 20 20 20    C      
+  4AEC'   20 20 20 20    C      
+  4AF0'   2D 2D 2D 2D    C      
+  4AF4'   2D 2D 2D 2D    C      
+  4AF8'   2D 2D 2D 2D    C      
+  4AFC'   2D 2D 2D 2D    C      
+  4B00'   2D 2D 2D 2D    C      
+  4B04'   2D 2D 2D 2D    C      
+  4B08'   2D 2D 2D 2D    C      
+  4B0C'   2D 2D 2D 2D    C      
+  4B10'   2D 2D 2D 2D    C      
+  4B14'   2D 2D 2D 2D    C      
+  4B18'   2D 2D 2D 2D    C      
+  4B1C'   2A             C      
+  4B1D'   001E           C      	DW	SD.NL
 'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-129
 
 
-  4C07'   20 20 20 20    C      	DB	'         PUSH  AF'                                                    ;PF07-1 PF19
-  4C0B'   20 20 20 20    C      
-  4C0F'   20 50 55 53    C      
-  4C13'   48 20 20 41    C      
-  4C17'   46             C      
-  4C18'   001E           C      	DW	CR
-  4C1A'   20 20 20 20    C      	DB	'         PUSH  BC'                                                    ;PF08-1 PF20
-  4C1E'   20 20 20 20    C      
-  4C22'   20 50 55 53    C      
-  4C26'   48 20 20 42    C      
-  4C2A'   43             C      
-  4C2B'   001E           C      	DW	CR
-  4C2D'   20 20 20 20    C      	DB	'         PUSH  DE'                                                    ;PF09-1 PF21
-  4C31'   20 20 20 20    C      
-  4C35'   20 50 55 53    C      
-  4C39'   48 20 20 44    C      
-  4C3D'   45             C      
-  4C3E'   001E           C      	DW	CR
+  4B1F'   3B 2A 20 20    C      	DB	';*                  Stand        : '                                  ;PF06-0
+  4B23'   20 20 20 20    C      
+  4B27'   20 20 20 20    C      
+  4B2B'   20 20 20 20    C      
+  4B2F'   20 20 20 20    C      
+  4B33'   53 74 61 6E    C      
+  4B37'   64 20 20 20    C      
+  4B3B'   20 20 20 20    C      
+  4B3F'   20 3A 20       C      
+  4B42'   00             C      	DB	0
                          C      ; ----
-  4C40'   20 20 20 20    C      	DB	'         POP   AF'                                                    ;PF10-1 PF22
-  4C44'   20 20 20 20    C      
-  4C48'   20 50 4F 50    C      
-  4C4C'   20 20 20 41    C      
-  4C50'   46             C      
-  4C51'   001E           C      	DW	CR
-  4C53'   20 20 20 20    C      	DB	'         POP   BC'                                                    ;PF11-1 PF23
-  4C57'   20 20 20 20    C      
-  4C5B'   20 50 4F 50    C      
-  4C5F'   20 20 20 42    C      
-  4C63'   43             C      
-  4C64'   001E           C      	DW	CR
-  4C66'   20 20 20 20    C      	DB	'         POP   DE'                                                    ;PF12-1 PF24
-  4C6A'   20 20 20 20    C      
-  4C6E'   20 50 4F 50    C      
-  4C72'   20 20 20 44    C      
-  4C76'   45             C      
-  4C77'   001E           C      	DW	CR
-                         C      ; ====
-  4C79'   28 43 29 20    C      	DB	'(C) Marcus Herbote    K EAW / wfvm'                                   ;PF01-2 PF25
-  4C7D'   4D 61 72 63    C      
-  4C81'   75 73 20 48    C      
-  4C85'   65 72 62 6F    C      
-  4C89'   74 65 20 20    C      
-  4C8D'   20 20 4B 20    C      
-  4C91'   45 41 57 20    C      
-  4C95'   2F 20 77 66    C      
-  4C99'   76 6D          C      
-  4C9B'   001E           C      	DW	CR
-  4C9D'   00             C      	DB	0                                                                      ;PF02-2 PF26
-  4C9E'   00             C      	DB	0                                                                      ;PF03-2 PF27
-  4C9F'   00             C      	DB	0                                                                      ;PF04-2 PF28
-  4CA0'                  C      PF.O1END EQU	$
-                         C      	PAGE
+  4B43'   20 20 20 20    C      	DB	'         CALL  '                                                      ;PF07-0
+  4B47'   20 20 20 20    C      
+  4B4B'   20 43 41 4C    C      
+  4B4F'   4C 20 20       C      
+  4B52'   00             C      	DB	0
+  4B53'   20 20 20 20    C      	DB	'         DA    '                                                      ;PF08-0
+  4B57'   20 20 20 20    C      
+  4B5B'   20 44 41 20    C      
+  4B5F'   20 20 20       C      
+  4B62'   00             C      	DB	0
+  4B63'   20 20 20 20    C      	DB	'         DB    '                                                      ;PF09-0
+  4B67'   20 20 20 20    C      
+  4B6B'   20 44 42 20    C      
+  4B6F'   20 20 20       C      
+  4B72'   00             C      	DB	0
+                         C      ; ----
+  4B73'   20 20 20 20    C      	DB	'         XOR   A'                                                     ;PF10-0
+  4B77'   20 20 20 20    C      
+  4B7B'   20 58 4F 52    C      
+  4B7F'   20 20 20 41    C      
+  4B83'   001E           C      	DW	SD.NL
+  4B85'   20 20 20 20    C      	DB	'         LD    A,'                                                    ;PF11-0
+  4B89'   20 20 20 20    C      
+  4B8D'   20 4C 44 20    C      
+  4B91'   20 20 20 41    C      
+  4B95'   2C             C      
+  4B96'   00             C      	DB	0
+  4B97'   20 20 20 20    C      	DB	'         LD    HL,'                                                   ;PF12-0
+  4B9B'   20 20 20 20    C      
+  4B9F'   20 4C 44 20    C      
+  4BA3'   20 20 20 48    C      
+  4BA7'   4C 2C          C      
+  4BA9'   00             C      	DB	0
+                         C      ; ====	
+  4BAA'   20 20 20 20    C      	DB	'         PUSH  HL'                                                    ;PF01-1 PF13
+  4BAE'   20 20 20 20    C      
+  4BB2'   20 50 55 53    C      
+  4BB6'   48 20 20 48    C      
+  4BBA'   4C             C      
+  4BBB'   001E           C      	DW	SD.NL
+  4BBD'   20 20 20 20    C      	DB	'         PUSH  IX'                                                    ;PF02-1 PF14
+  4BC1'   20 20 20 20    C      
+  4BC5'   20 50 55 53    C      
+  4BC9'   48 20 20 49    C      
+  4BCD'   58             C      
+  4BCE'   001E           C      	DW	SD.NL
+  4BD0'   20 20 20 20    C      	DB	'         PUSH  IY'                                                    ;PF03-1 PF15
+  4BD4'   20 20 20 20    C      
+  4BD8'   20 50 55 53    C      
+  4BDC'   48 20 20 49    C      
+  4BE0'   59             C      
+  4BE1'   001E           C      	DW	SD.NL
+                         C      ; ----
+  4BE3'   20 20 20 20    C      	DB	'         POP   HL'                                                    ;PF04-1 PF16
+  4BE7'   20 20 20 20    C      
+  4BEB'   20 50 4F 50    C      
+  4BEF'   20 20 20 48    C      
+  4BF3'   4C             C      
+  4BF4'   001E           C      	DW	SD.NL
+  4BF6'   20 20 20 20    C      	DB	'         POP   IX'                                                    ;PF05-1 PF17
+  4BFA'   20 20 20 20    C      
+  4BFE'   20 50 4F 50    C      
+  4C02'   20 20 20 49    C      
+  4C06'   58             C      
+  4C07'   001E           C      	DW	SD.NL
+  4C09'   20 20 20 20    C      	DB	'         POP   IY'                                                    ;PF06-1 PF18
+  4C0D'   20 20 20 20    C      
+  4C11'   20 50 4F 50    C      
+  4C15'   20 20 20 49    C      
+  4C19'   59             C      
+  4C1A'   001E           C      	DW	SD.NL
+                         C      ; ----
 'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-130
 
 
-                         C      
-                         C      ;****************************************************************
-  4CA0'                  C      PF.O2ANF EQU	$
-  4CA0'   21 2F 2F 46    C      	DB	'!//FRJOB01  JOB (FR690030,01),FRpgrmr1,MSGLEVEL=(1,1),'               ;PF01-0
-  4CA4'   52 4A 4F 42    C      
-  4CA8'   30 31 20 20    C      
-  4CAC'   4A 4F 42 20    C      
-  4CB0'   28 46 52 36    C      
-  4CB4'   39 30 30 33    C      
-  4CB8'   30 2C 30 31    C      
-  4CBC'   29 2C 46 52    C      
-  4CC0'   70 67 72 6D    C      
-  4CC4'   72 31 2C 4D    C      
-  4CC8'   53 47 4C 45    C      
-  4CCC'   56 45 4C 3D    C      
-  4CD0'   28 31 2C 31    C      
-  4CD4'   29 2C          C      
-  4CD6'   001E           C      	DW	CR
-  4CD8'   21 2F 2F 20    C      	DB	'!//             REGION=090K,TYPRUN=HOLD,CLASS=E'                      ;PF02-0
-  4CDC'   20 20 20 20    C      
-  4CE0'   20 20 20 20    C      
-  4CE4'   20 20 20 20    C      
-  4CE8'   52 45 47 49    C      
-  4CEC'   4F 4E 3D 30    C      
-  4CF0'   39 30 4B 2C    C      
-  4CF4'   54 59 50 52    C      
-  4CF8'   55 4E 3D 48    C      
-  4CFC'   4F 4C 44 2C    C      
-  4D00'   43 4C 41 53    C      
-  4D04'   53 3D 45       C      
-  4D07'   001E           C      	DW	CR
-  4D09'   21 2F 2F 53    C      	DB	'!//STEP01  EXEC PGM=name...,PARM=''    '''                            ;PF03-0
-  4D0D'   54 45 50 30    C      
-  4D11'   31 20 20 45    C      
-  4D15'   58 45 43 20    C      
-  4D19'   50 47 4D 3D    C      
-  4D1D'   6E 61 6D 65    C      
-  4D21'   2E 2E 2E 2C    C      
-  4D25'   50 41 52 4D    C      
-  4D29'   3D 27 20 20    C      
-  4D2D'   20 20 27       C      
-  4D30'   001E           C      	DW	CR
+  4C1C'   20 20 20 20    C      	DB	'         PUSH  AF'                                                    ;PF07-1 PF19
+  4C20'   20 20 20 20    C      
+  4C24'   20 50 55 53    C      
+  4C28'   48 20 20 41    C      
+  4C2C'   46             C      
+  4C2D'   001E           C      	DW	SD.NL
+  4C2F'   20 20 20 20    C      	DB	'         PUSH  BC'                                                    ;PF08-1 PF20
+  4C33'   20 20 20 20    C      
+  4C37'   20 50 55 53    C      
+  4C3B'   48 20 20 42    C      
+  4C3F'   43             C      
+  4C40'   001E           C      	DW	SD.NL
+  4C42'   20 20 20 20    C      	DB	'         PUSH  DE'                                                    ;PF09-1 PF21
+  4C46'   20 20 20 20    C      
+  4C4A'   20 50 55 53    C      
+  4C4E'   48 20 20 44    C      
+  4C52'   45             C      
+  4C53'   001E           C      	DW	SD.NL
                          C      ; ----
-  4D32'   21 2F 2F 53    C      	DB	'!//STEPLIB  DD  DSN=FR1.LADT.T1,DISP=SHR'                             ;PF04-0
-  4D36'   54 45 50 4C    C      
-  4D3A'   49 42 20 20    C      
-  4D3E'   44 44 20 20    C      
-  4D42'   44 53 4E 3D    C      
-  4D46'   46 52 31 2E    C      
-  4D4A'   4C 41 44 54    C      
-  4D4E'   2E 54 31 2C    C      
-  4D52'   44 49 53 50    C      
-  4D56'   3D 53 48 52    C      
-  4D5A'   001E           C      	DW	CR
-  4D5C'   21 2F 2F 53    C      	DB	'!//SYSPRINT DD  SYSOUT=A'                                             ;PF05-0
-  4D60'   59 53 50 52    C      
-  4D64'   49 4E 54 20    C      
-  4D68'   44 44 20 20    C      
-  4D6C'   53 59 53 4F    C      
-  4D70'   55 54 3D 41    C      
-  4D74'   001E           C      	DW	CR
-  4D76'   21 2F 2F 53    C      	DB	'!//SYSUT1   DD  DSN=FRx.QUET.T1,DISP=SHR'                             ;PF06-0
-  4D7A'   59 53 55 54    C      
-  4D7E'   31 20 20 20    C      
-  4D82'   44 44 20 20    C      
-  4D86'   44 53 4E 3D    C      
-  4D8A'   46 52 78 2E    C      
-  4D8E'   51 55 45 54    C      
-  4D92'   2E 54 31 2C    C      
-  4D96'   44 49 53 50    C      
-  4D9A'   3D 53 48 52    C      
-  4D9E'   001E           C      	DW	CR
-                         C      ; ----
-  4DA0'   21 2F 2F 53    C      	DB	'!//SYSUT2   DD  DSN=FRx.QUET.T1,DISP=SHR'                             ;PF07-0
-  4DA4'   59 53 55 54    C      
-  4DA8'   32 20 20 20    C      
-  4DAC'   44 44 20 20    C      
-  4DB0'   44 53 4E 3D    C      
-  4DB4'   46 52 78 2E    C      
-  4DB8'   51 55 45 54    C      
-  4DBC'   2E 54 31 2C    C      
-  4DC0'   44 49 53 50    C      
+  4C55'   20 20 20 20    C      	DB	'         POP   AF'                                                    ;PF10-1 PF22
+  4C59'   20 20 20 20    C      
+  4C5D'   20 50 4F 50    C      
+  4C61'   20 20 20 41    C      
+  4C65'   46             C      
+  4C66'   001E           C      	DW	SD.NL
+  4C68'   20 20 20 20    C      	DB	'         POP   BC'                                                    ;PF11-1 PF23
+  4C6C'   20 20 20 20    C      
+  4C70'   20 50 4F 50    C      
+  4C74'   20 20 20 42    C      
+  4C78'   43             C      
+  4C79'   001E           C      	DW	SD.NL
+  4C7B'   20 20 20 20    C      	DB	'         POP   DE'                                                    ;PF12-1 PF24
+  4C7F'   20 20 20 20    C      
+  4C83'   20 50 4F 50    C      
+  4C87'   20 20 20 44    C      
+  4C8B'   45             C      
+  4C8C'   001E           C      	DW	SD.NL
+                         C      ; ====
+  4C8E'   28 43 29 20    C      	DB	'(C) Marcus Herbote    K EAW / wfvm'                                   ;PF01-2 PF25
+  4C92'   4D 61 72 63    C      
+  4C96'   75 73 20 48    C      
+  4C9A'   65 72 62 6F    C      
+  4C9E'   74 65 20 20    C      
+  4CA2'   20 20 4B 20    C      
+  4CA6'   45 41 57 20    C      
+  4CAA'   2F 20 77 66    C      
+  4CAE'   76 6D          C      
+  4CB0'   001E           C      	DW	SD.NL
+  4CB2'   00             C      	DB	0                                                                      ;PF02-2 PF26
+  4CB3'   00             C      	DB	0                                                                      ;PF03-2 PF27
+  4CB4'   00             C      	DB	0                                                                      ;PF04-2 PF28
+  4CB5'                  C      PF.O1END EQU	$
+                         C      	PAGE
 'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-131
 
 
-  4DC4'   3D 53 48 52    C      
-  4DC8'   001E           C      	DW	CR
-  4DCA'   21 2F 2F 53    C      	DB	'!//SYSIN    DD  *'                                                    ;PF08-0
-  4DCE'   59 53 49 4E    C      
-  4DD2'   20 20 20 20    C      
-  4DD6'   44 44 20 20    C      
-  4DDA'   2A             C      
-  4DDB'   001E           C      	DW	CR
-  4DDD'   21 2F 2F 20    C      	DB	'!//             UNIT=5010,VOL=SER=TBoooo,LABEL=(o,SL),'               ;PF09-0
-  4DE1'   20 20 20 20    C      
-  4DE5'   20 20 20 20    C      
-  4DE9'   20 20 20 20    C      
-  4DED'   55 4E 49 54    C      
-  4DF1'   3D 35 30 31    C      
-  4DF5'   30 2C 56 4F    C      
-  4DF9'   4C 3D 53 45    C      
-  4DFD'   52 3D 54 42    C      
-  4E01'   6F 6F 6F 6F    C      
-  4E05'   2C 4C 41 42    C      
-  4E09'   45 4C 3D 28    C      
-  4E0D'   6F 2C 53 4C    C      
-  4E11'   29 2C          C      
-  4E13'   001E           C      	DW	CR
+                         C      
+                         C      ;****************************************************************
+  4CB5'                  C      PF.O2ANF EQU	$
+  4CB5'   21 2F 2F 46    C      	DB	'!//FRJOB01  JOB (FR690030,01),FRpgrmr1,MSGLEVEL=(1,1),'               ;PF01-0
+  4CB9'   52 4A 4F 42    C      
+  4CBD'   30 31 20 20    C      
+  4CC1'   4A 4F 42 20    C      
+  4CC5'   28 46 52 36    C      
+  4CC9'   39 30 30 33    C      
+  4CCD'   30 2C 30 31    C      
+  4CD1'   29 2C 46 52    C      
+  4CD5'   70 67 72 6D    C      
+  4CD9'   72 31 2C 4D    C      
+  4CDD'   53 47 4C 45    C      
+  4CE1'   56 45 4C 3D    C      
+  4CE5'   28 31 2C 31    C      
+  4CE9'   29 2C          C      
+  4CEB'   001E           C      	DW	SD.NL
+  4CED'   21 2F 2F 20    C      	DB	'!//             REGION=090K,TYPRUN=HOLD,CLASS=E'                      ;PF02-0
+  4CF1'   20 20 20 20    C      
+  4CF5'   20 20 20 20    C      
+  4CF9'   20 20 20 20    C      
+  4CFD'   52 45 47 49    C      
+  4D01'   4F 4E 3D 30    C      
+  4D05'   39 30 4B 2C    C      
+  4D09'   54 59 50 52    C      
+  4D0D'   55 4E 3D 48    C      
+  4D11'   4F 4C 44 2C    C      
+  4D15'   43 4C 41 53    C      
+  4D19'   53 3D 45       C      
+  4D1C'   001E           C      	DW	SD.NL
+  4D1E'   21 2F 2F 53    C      	DB	'!//STEP01  EXEC PGM=name...,PARM=''    '''                            ;PF03-0
+  4D22'   54 45 50 30    C      
+  4D26'   31 20 20 45    C      
+  4D2A'   58 45 43 20    C      
+  4D2E'   50 47 4D 3D    C      
+  4D32'   6E 61 6D 65    C      
+  4D36'   2E 2E 2E 2C    C      
+  4D3A'   50 41 52 4D    C      
+  4D3E'   3D 27 20 20    C      
+  4D42'   20 20 27       C      
+  4D45'   001E           C      	DW	SD.NL
                          C      ; ----
-  4E15'   21 2F 2F 20    C      	DB	'!//             DCB=(RECFM=FBA,LRECL=121,BLKSIZE=0121),'              ;PF10-0
-  4E19'   20 20 20 20    C      
-  4E1D'   20 20 20 20    C      
-  4E21'   20 20 20 20    C      
-  4E25'   44 43 42 3D    C      
-  4E29'   28 52 45 43    C      
-  4E2D'   46 4D 3D 46    C      
-  4E31'   42 41 2C 4C    C      
-  4E35'   52 45 43 4C    C      
-  4E39'   3D 31 32 31    C      
-  4E3D'   2C 42 4C 4B    C      
-  4E41'   53 49 5A 45    C      
-  4E45'   3D 30 31 32    C      
-  4E49'   31 29 2C       C      
-  4E4C'   001E           C      	DW	CR
-  4E4E'   21 2F 2F 20    C      	DB	'!//             SPACE=(TRK,(100,50),RLSE),'                           ;PF11-0
-  4E52'   20 20 20 20    C      
-  4E56'   20 20 20 20    C      
-  4E5A'   20 20 20 20    C      
-  4E5E'   53 50 41 43    C      
-  4E62'   45 3D 28 54    C      
-  4E66'   52 4B 2C 28    C      
-  4E6A'   31 30 30 2C    C      
-  4E6E'   35 30 29 2C    C      
-  4E72'   52 4C 53 45    C      
-  4E76'   29 2C          C      
-  4E78'   001E           C      	DW	CR
-  4E7A'   21 2F 2F 20    C      	DB	'!//             DISP=(,PASS),'                                        ;PF12-0
-  4E7E'   20 20 20 20    C      
-  4E82'   20 20 20 20    C      
-  4E86'   20 20 20 20    C      
-  4E8A'   44 49 53 50    C      
-  4E8E'   3D 28 2C 50    C      
-  4E92'   41 53 53 29    C      
-  4E96'   2C             C      
-  4E97'   001E           C      	DW	CR
-                         C      ; ====
-  4E99'   21 2F 2F 20    C      	DB	'!//             HIS0=FR1,HIS1=FR1,NCAL=,MODUL=name'                   ;PF00-1 PF13
-  4E9D'   20 20 20 20    C      
-  4EA1'   20 20 20 20    C      
-  4EA5'   20 20 20 20    C      
-  4EA9'   48 49 53 30    C      
-  4EAD'   3D 46 52 31    C      
-  4EB1'   2C 48 49 53    C      
-  4EB5'   31 3D 46 52    C      
-  4EB9'   31 2C 4E 43    C      
-  4EBD'   41 4C 3D 2C    C      
-  4EC1'   4D 4F 44 55    C      
-  4EC5'   4C 3D 6E 61    C      
-  4EC9'   6D 65          C      
-  4ECB'   001E           C      	DW	CR
-  4ECD'   21 2F 2F 20    C      	DB	'!//             UNIT=5050,VOL=SER=BBoooo,DISP=(,PASS),'               ;PF02-1 PF14
-  4ED1'   20 20 20 20    C      
-  4ED5'   20 20 20 20    C      
-  4ED9'   20 20 20 20    C      
-  4EDD'   55 4E 49 54    C      
-  4EE1'   3D 35 30 35    C      
-  4EE5'   30 2C 56 4F    C      
-  4EE9'   4C 3D 53 45    C      
+  4D47'   21 2F 2F 53    C      	DB	'!//STEPLIB  DD  DSN=FR1.LADT.T1,DISP=SHR'                             ;PF04-0
+  4D4B'   54 45 50 4C    C      
+  4D4F'   49 42 20 20    C      
+  4D53'   44 44 20 20    C      
+  4D57'   44 53 4E 3D    C      
+  4D5B'   46 52 31 2E    C      
+  4D5F'   4C 41 44 54    C      
+  4D63'   2E 54 31 2C    C      
+  4D67'   44 49 53 50    C      
+  4D6B'   3D 53 48 52    C      
+  4D6F'   001E           C      	DW	SD.NL
+  4D71'   21 2F 2F 53    C      	DB	'!//SYSPRINT DD  SYSOUT=A'                                             ;PF05-0
+  4D75'   59 53 50 52    C      
+  4D79'   49 4E 54 20    C      
+  4D7D'   44 44 20 20    C      
+  4D81'   53 59 53 4F    C      
+  4D85'   55 54 3D 41    C      
+  4D89'   001E           C      	DW	SD.NL
+  4D8B'   21 2F 2F 53    C      	DB	'!//SYSUT1   DD  DSN=FRx.QUET.T1,DISP=SHR'                             ;PF06-0
+  4D8F'   59 53 55 54    C      
+  4D93'   31 20 20 20    C      
+  4D97'   44 44 20 20    C      
+  4D9B'   44 53 4E 3D    C      
+  4D9F'   46 52 78 2E    C      
+  4DA3'   51 55 45 54    C      
+  4DA7'   2E 54 31 2C    C      
+  4DAB'   44 49 53 50    C      
+  4DAF'   3D 53 48 52    C      
+  4DB3'   001E           C      	DW	SD.NL
+                         C      ; ----
+  4DB5'   21 2F 2F 53    C      	DB	'!//SYSUT2   DD  DSN=FRx.QUET.T1,DISP=SHR'                             ;PF07-0
+  4DB9'   59 53 55 54    C      
+  4DBD'   32 20 20 20    C      
+  4DC1'   44 44 20 20    C      
+  4DC5'   44 53 4E 3D    C      
+  4DC9'   46 52 78 2E    C      
+  4DCD'   51 55 45 54    C      
+  4DD1'   2E 54 31 2C    C      
+  4DD5'   44 49 53 50    C      
 'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-132
 
 
-  4EED'   52 3D 42 42    C      
-  4EF1'   6F 6F 6F 6F    C      
-  4EF5'   2C 44 49 53    C      
-  4EF9'   50 3D 28 2C    C      
-  4EFD'   50 41 53 53    C      
-  4F01'   29 2C          C      
-  4F03'   001E           C      	DW	CR
-  4F05'   21 4E 45 57    C      	DB	'!NEWMEMBER      name,R01'                                             ;PF03-1 PF15
-  4F09'   4D 45 4D 42    C      
-  4F0D'   45 52 20 20    C      
-  4F11'   20 20 20 20    C      
-  4F15'   6E 61 6D 65    C      
-  4F19'   2C 52 30 31    C      
-  4F1D'   001E           C      	DW	CR
+  4DD9'   3D 53 48 52    C      
+  4DDD'   001E           C      	DW	SD.NL
+  4DDF'   21 2F 2F 53    C      	DB	'!//SYSIN    DD  *'                                                    ;PF08-0
+  4DE3'   59 53 49 4E    C      
+  4DE7'   20 20 20 20    C      
+  4DEB'   44 44 20 20    C      
+  4DEF'   2A             C      
+  4DF0'   001E           C      	DW	SD.NL
+  4DF2'   21 2F 2F 20    C      	DB	'!//             UNIT=5010,VOL=SER=TBoooo,LABEL=(o,SL),'               ;PF09-0
+  4DF6'   20 20 20 20    C      
+  4DFA'   20 20 20 20    C      
+  4DFE'   20 20 20 20    C      
+  4E02'   55 4E 49 54    C      
+  4E06'   3D 35 30 31    C      
+  4E0A'   30 2C 56 4F    C      
+  4E0E'   4C 3D 53 45    C      
+  4E12'   52 3D 54 42    C      
+  4E16'   6F 6F 6F 6F    C      
+  4E1A'   2C 4C 41 42    C      
+  4E1E'   45 4C 3D 28    C      
+  4E22'   6F 2C 53 4C    C      
+  4E26'   29 2C          C      
+  4E28'   001E           C      	DW	SD.NL
                          C      ; ----
-  4F1F'   21 53 54 41    C      	DB	'!START    AUTOINCL'                                                   ;PF04-1 PF16
-  4F23'   52 54 20 20    C      
-  4F27'   20 20 41 55    C      
-  4F2B'   54 4F 49 4E    C      
-  4F2F'   43 4C          C      
-  4F31'   001E           C      	DW	CR
-  4F33'   21 50 41 52    C      	DB	'!PARM.PRINT'                                                          ;PF05-1 PF17
-  4F37'   4D 2E 50 52    C      
-  4F3B'   49 4E 54       C      
-  4F3E'   001E           C      	DW	CR
-  4F40'   21 49 4E 43    C      	DB	'!INCLUDE        name'                                                 ;PF06-1 PF18
-  4F44'   4C 55 44 45    C      
-  4F48'   20 20 20 20    C      
-  4F4C'   20 20 20 20    C      
-  4F50'   6E 61 6D 65    C      
-  4F54'   001E           C      	DW	CR
-                         C      ; ----
-  4F56'   21 20 20 20    C      	DB	'!         INCL  (ooooo}'
-  4F5A'   20 20 20 20    C      
-  4F5E'   20 20 49 4E    C      
-  4F62'   43 4C 20 20    C      
-  4F66'   28 6F 6F 6F    C      
-  4F6A'   6F 6F 7D       C      
-  4F6D'   9E             C      	DB	9EH
-  4F6E'   BA             C      	DB	0BAH
-  4F6F'   6F 6F 6F 2C    C      	DB	'ooo,oooooooo)'                                                        ;PF07-1 PF19
-  4F73'   6F 6F 6F 6F    C      
-  4F77'   6F 6F 6F 6F    C      
-  4F7B'   29             C      
-  4F7C'   001E           C      	DW	CR
-  4F7E'   21 20 6F 6F    C      	DB	'! oooooooo'                                                           ;PF08-1 PF20
-  4F82'   6F 6F 6F 6F    C      
-  4F86'   6F 6F          C      
-  4F88'   001E           C      	DW	CR
-  4F8A'   21 23 45 4E    C      	DB	'!#ENDE#'                                                              ;PF09-1 PF21
-  4F8E'   44 45 23       C      
-  4F91'   001E           C      	DW	CR
-                         C      ; ----
-  4F93'   21 41 2C 45    C      	DB	'!A,EXTRN        KOM'                                                  ;PF10-1 PF22
-  4F97'   58 54 52 4E    C      
-  4F9B'   20 20 20 20    C      
-  4F9F'   20 20 20 20    C      
-  4FA3'   4B 4F 4D       C      
-  4FA6'   001E           C      	DW	CR
-  4FA8'   21 43 4F 4E    C      	DB	'!CONTROL  ALL   FILPRINT,FIL#M01'                                     ;PF11-1 PF23
-  4FAC'   54 52 4F 4C    C      
-  4FB0'   20 20 41 4C    C      
-  4FB4'   4C 20 20 20    C      
-  4FB8'   46 49 4C 50    C      
-  4FBC'   52 49 4E 54    C      
-  4FC0'   2C 46 49 4C    C      
-  4FC4'   23 4D 30 31    C      
-  4FC8'   001E           C      	DW	CR
-  4FCA'   21 2E 2F 20    C      	DB	'!./       CHANGE NAME=name,newname,R02'                               ;PF12-1 PF24
-  4FCE'   20 20 20 20    C      
-  4FD2'   20 20 43 48    C      
-  4FD6'   41 4E 47 45    C      
-  4FDA'   20 4E 41 4D    C      
-  4FDE'   45 3D 6E 61    C      
-  4FE2'   6D 65 2C 6E    C      
-  4FE6'   65 77 6E 61    C      
-  4FEA'   6D 65 2C 52    C      
-  4FEE'   30 32          C      
-  4FF0'   001E           C      	DW	CR
-                         C      ; ----
-  4FF2'   7D             C      	DB	7DH
-  4FF3'   9F             C      	DB	9FH
-  4FF4'   37 21 20 20    C      	DB	'7!         TEXT  titelzeile'                                          ;PF01-2 PF25
+  4E2A'   21 2F 2F 20    C      	DB	'!//             DCB=(RECFM=FBA,LRECL=121,BLKSIZE=0121),'              ;PF10-0
+  4E2E'   20 20 20 20    C      
+  4E32'   20 20 20 20    C      
+  4E36'   20 20 20 20    C      
+  4E3A'   44 43 42 3D    C      
+  4E3E'   28 52 45 43    C      
+  4E42'   46 4D 3D 46    C      
+  4E46'   42 41 2C 4C    C      
+  4E4A'   52 45 43 4C    C      
+  4E4E'   3D 31 32 31    C      
+  4E52'   2C 42 4C 4B    C      
+  4E56'   53 49 5A 45    C      
+  4E5A'   3D 30 31 32    C      
+  4E5E'   31 29 2C       C      
+  4E61'   001E           C      	DW	SD.NL
+  4E63'   21 2F 2F 20    C      	DB	'!//             SPACE=(TRK,(100,50),RLSE),'                           ;PF11-0
+  4E67'   20 20 20 20    C      
+  4E6B'   20 20 20 20    C      
+  4E6F'   20 20 20 20    C      
+  4E73'   53 50 41 43    C      
+  4E77'   45 3D 28 54    C      
+  4E7B'   52 4B 2C 28    C      
+  4E7F'   31 30 30 2C    C      
+  4E83'   35 30 29 2C    C      
+  4E87'   52 4C 53 45    C      
+  4E8B'   29 2C          C      
+  4E8D'   001E           C      	DW	SD.NL
+  4E8F'   21 2F 2F 20    C      	DB	'!//             DISP=(,PASS),'                                        ;PF12-0
+  4E93'   20 20 20 20    C      
+  4E97'   20 20 20 20    C      
+  4E9B'   20 20 20 20    C      
+  4E9F'   44 49 53 50    C      
+  4EA3'   3D 28 2C 50    C      
+  4EA7'   41 53 53 29    C      
+  4EAB'   2C             C      
+  4EAC'   001E           C      	DW	SD.NL
+                         C      ; ====
+  4EAE'   21 2F 2F 20    C      	DB	'!//             HIS0=FR1,HIS1=FR1,NCAL=,MODUL=name'                   ;PF00-1 PF13
+  4EB2'   20 20 20 20    C      
+  4EB6'   20 20 20 20    C      
+  4EBA'   20 20 20 20    C      
+  4EBE'   48 49 53 30    C      
+  4EC2'   3D 46 52 31    C      
+  4EC6'   2C 48 49 53    C      
+  4ECA'   31 3D 46 52    C      
+  4ECE'   31 2C 4E 43    C      
+  4ED2'   41 4C 3D 2C    C      
+  4ED6'   4D 4F 44 55    C      
+  4EDA'   4C 3D 6E 61    C      
+  4EDE'   6D 65          C      
+  4EE0'   001E           C      	DW	SD.NL
+  4EE2'   21 2F 2F 20    C      	DB	'!//             UNIT=5050,VOL=SER=BBoooo,DISP=(,PASS),'               ;PF02-1 PF14
+  4EE6'   20 20 20 20    C      
+  4EEA'   20 20 20 20    C      
+  4EEE'   20 20 20 20    C      
+  4EF2'   55 4E 49 54    C      
+  4EF6'   3D 35 30 35    C      
+  4EFA'   30 2C 56 4F    C      
+  4EFE'   4C 3D 53 45    C      
 'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-133
 
 
-  4FF8'   20 20 20 20    C      
-  4FFC'   20 20 20 54    C      
-  5000'   45 58 54 20    C      
-  5004'   20 74 69 74    C      
-  5008'   65 6C 7A 65    C      
-  500C'   69 6C 65       C      
-  500F'   001E           C      	DW	CR
-  5011'   21 20 20 20    C      	DB	'!         PRINT name'                                                 ;PF02-2 PF26
-  5015'   20 20 20 20    C      
-  5019'   20 20 50 52    C      
-  501D'   49 4E 54 20    C      
-  5021'   6E 61 6D 65    C      
-  5025'   001E           C      	DW	CR
-  5027'   21 45 58 2C    C      	DB	'!EX,FILPRINT    INHALT*'                                              ;PF03-2 PF27
-  502B'   46 49 4C 50    C      
-  502F'   52 49 4E 54    C      
-  5033'   20 20 20 20    C      
-  5037'   49 4E 48 41    C      
-  503B'   4C 54 2A       C      
-  503E'   001E           C      	DW	CR
+  4F02'   52 3D 42 42    C      
+  4F06'   6F 6F 6F 6F    C      
+  4F0A'   2C 44 49 53    C      
+  4F0E'   50 3D 28 2C    C      
+  4F12'   50 41 53 53    C      
+  4F16'   29 2C          C      
+  4F18'   001E           C      	DW	SD.NL
+  4F1A'   21 4E 45 57    C      	DB	'!NEWMEMBER      name,R01'                                             ;PF03-1 PF15
+  4F1E'   4D 45 4D 42    C      
+  4F22'   45 52 20 20    C      
+  4F26'   20 20 20 20    C      
+  4F2A'   6E 61 6D 65    C      
+  4F2E'   2C 52 30 31    C      
+  4F32'   001E           C      	DW	SD.NL
                          C      ; ----
-  5040'   75 6D 73 63    C      	DB	'umschlagtitel '                                                       ;PF04-2 PF28
-  5044'   68 6C 61 67    C      
-  5048'   74 69 74 65    C      
-  504C'   6C 20          C      
-  504E'   001E           C      	DW	CR
-  5050'   56 56 56 56    C      	DB	'VVVVVVttmmjjDRnnMCR1FRbbbbb0001KOI7ECLK'                              ;PF05-2 PF29
-  5054'   56 56 74 74    C      
-  5058'   6D 6D 6A 6A    C      
-  505C'   44 52 6E 6E    C      
-  5060'   4D 43 52 31    C      
-  5064'   46 52 62 62    C      
-  5068'   62 62 62 30    C      
-  506C'   30 30 31 4B    C      
-  5070'   4F 49 37 45    C      
-  5074'   43 4C 4B       C      
-  5077'   001E           C      	DW	CR
-  5079'   21 2F 2F       C      	DB	'!//'                                                                  ;PF06-2 PF30
-  507C'   001E           C      	DW	CR
+  4F34'   21 53 54 41    C      	DB	'!START    AUTOINCL'                                                   ;PF04-1 PF16
+  4F38'   52 54 20 20    C      
+  4F3C'   20 20 41 55    C      
+  4F40'   54 4F 49 4E    C      
+  4F44'   43 4C          C      
+  4F46'   001E           C      	DW	SD.NL
+  4F48'   21 50 41 52    C      	DB	'!PARM.PRINT'                                                          ;PF05-1 PF17
+  4F4C'   4D 2E 50 52    C      
+  4F50'   49 4E 54       C      
+  4F53'   001E           C      	DW	SD.NL
+  4F55'   21 49 4E 43    C      	DB	'!INCLUDE        name'                                                 ;PF06-1 PF18
+  4F59'   4C 55 44 45    C      
+  4F5D'   20 20 20 20    C      
+  4F61'   20 20 20 20    C      
+  4F65'   6E 61 6D 65    C      
+  4F69'   001E           C      	DW	SD.NL
                          C      ; ----
-  507E'   00             C      	DB	0                                                                      ;PF07-2 PF31
-  507F'   00             C      	DB	0                                                                      ;PF08-2 PF32
-  5080'   00             C      	DB	0                                                                      ;PF09-2 PF33
+  4F6B'   21 20 20 20    C      	DB	'!         INCL  (ooooo}'
+  4F6F'   20 20 20 20    C      
+  4F73'   20 20 49 4E    C      
+  4F77'   43 4C 20 20    C      
+  4F7B'   28 6F 6F 6F    C      
+  4F7F'   6F 6F 7D       C      
+  4F82'   9E             C      	DB	9EH
+  4F83'   BA             C      	DB	0BAH
+  4F84'   6F 6F 6F 2C    C      	DB	'ooo,oooooooo)'                                                        ;PF07-1 PF19
+  4F88'   6F 6F 6F 6F    C      
+  4F8C'   6F 6F 6F 6F    C      
+  4F90'   29             C      
+  4F91'   001E           C      	DW	SD.NL
+  4F93'   21 20 6F 6F    C      	DB	'! oooooooo'                                                           ;PF08-1 PF20
+  4F97'   6F 6F 6F 6F    C      
+  4F9B'   6F 6F          C      
+  4F9D'   001E           C      	DW	SD.NL
+  4F9F'   21 23 45 4E    C      	DB	'!#ENDE#'                                                              ;PF09-1 PF21
+  4FA3'   44 45 23       C      
+  4FA6'   001E           C      	DW	SD.NL
                          C      ; ----
-  5081'   00             C      	DB	0                                                                      ;PF10-2 PF34
-  5082'   00             C      	DB	0                                                                      ;PF11-2 PF35
-  5083'   00             C      	DB	0                                                                      ;PF12-2 PF36
-  5084'                  C      PF.O2END EQU	$
-                         C      	PAGE
+  4FA8'   21 41 2C 45    C      	DB	'!A,EXTRN        KOM'                                                  ;PF10-1 PF22
+  4FAC'   58 54 52 4E    C      
+  4FB0'   20 20 20 20    C      
+  4FB4'   20 20 20 20    C      
+  4FB8'   4B 4F 4D       C      
+  4FBB'   001E           C      	DW	SD.NL
+  4FBD'   21 43 4F 4E    C      	DB	'!CONTROL  ALL   FILPRINT,FIL#M01'                                     ;PF11-1 PF23
+  4FC1'   54 52 4F 4C    C      
+  4FC5'   20 20 41 4C    C      
+  4FC9'   4C 20 20 20    C      
+  4FCD'   46 49 4C 50    C      
+  4FD1'   52 49 4E 54    C      
+  4FD5'   2C 46 49 4C    C      
+  4FD9'   23 4D 30 31    C      
+  4FDD'   001E           C      	DW	SD.NL
+  4FDF'   21 2E 2F 20    C      	DB	'!./       CHANGE NAME=name,newname,R02'                               ;PF12-1 PF24
+  4FE3'   20 20 20 20    C      
+  4FE7'   20 20 43 48    C      
+  4FEB'   41 4E 47 45    C      
+  4FEF'   20 4E 41 4D    C      
+  4FF3'   45 3D 6E 61    C      
+  4FF7'   6D 65 2C 6E    C      
+  4FFB'   65 77 6E 61    C      
+  4FFF'   6D 65 2C 52    C      
+  5003'   30 32          C      
+  5005'   001E           C      	DW	SD.NL
+                         C      ; ----
+  5007'   7D             C      	DB	7DH
+  5008'   9F             C      	DB	9FH
+  5009'   37 21 20 20    C      	DB	'7!         TEXT  titelzeile'                                          ;PF01-2 PF25
 'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-134
+
+
+  500D'   20 20 20 20    C      
+  5011'   20 20 20 54    C      
+  5015'   45 58 54 20    C      
+  5019'   20 74 69 74    C      
+  501D'   65 6C 7A 65    C      
+  5021'   69 6C 65       C      
+  5024'   001E           C      	DW	SD.NL
+  5026'   21 20 20 20    C      	DB	'!         PRINT name'                                                 ;PF02-2 PF26
+  502A'   20 20 20 20    C      
+  502E'   20 20 50 52    C      
+  5032'   49 4E 54 20    C      
+  5036'   6E 61 6D 65    C      
+  503A'   001E           C      	DW	SD.NL
+  503C'   21 45 58 2C    C      	DB	'!EX,FILPRINT    INHALT*'                                              ;PF03-2 PF27
+  5040'   46 49 4C 50    C      
+  5044'   52 49 4E 54    C      
+  5048'   20 20 20 20    C      
+  504C'   49 4E 48 41    C      
+  5050'   4C 54 2A       C      
+  5053'   001E           C      	DW	SD.NL
+                         C      ; ----
+  5055'   75 6D 73 63    C      	DB	'umschlagtitel '                                                       ;PF04-2 PF28
+  5059'   68 6C 61 67    C      
+  505D'   74 69 74 65    C      
+  5061'   6C 20          C      
+  5063'   001E           C      	DW	SD.NL
+  5065'   56 56 56 56    C      	DB	'VVVVVVttmmjjDRnnMCR1FRbbbbb0001KOI7ECLK'                              ;PF05-2 PF29
+  5069'   56 56 74 74    C      
+  506D'   6D 6D 6A 6A    C      
+  5071'   44 52 6E 6E    C      
+  5075'   4D 43 52 31    C      
+  5079'   46 52 62 62    C      
+  507D'   62 62 62 30    C      
+  5081'   30 30 31 4B    C      
+  5085'   4F 49 37 45    C      
+  5089'   43 4C 4B       C      
+  508C'   001E           C      	DW	SD.NL
+  508E'   21 2F 2F       C      	DB	'!//'                                                                  ;PF06-2 PF30
+  5091'   001E           C      	DW	SD.NL
+                         C      ; ----
+  5093'   00             C      	DB	0                                                                      ;PF07-2 PF31
+  5094'   00             C      	DB	0                                                                      ;PF08-2 PF32
+  5095'   00             C      	DB	0                                                                      ;PF09-2 PF33
+                         C      ; ----
+  5096'   00             C      	DB	0                                                                      ;PF10-2 PF34
+  5097'   00             C      	DB	0                                                                      ;PF11-2 PF35
+  5098'   00             C      	DB	0                                                                      ;PF12-2 PF36
+  5099'                  C      PF.O2END EQU	$
+                         C      	PAGE
+'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-135
 
 
                          C      
                          C      ;****************************************************************
-  5084'                  C      PF.O3ANF EQU	$
-  5084'   41 49 46 20    C      	DB	'AIF   ('                                                              ;PF01-0
-  5088'   20 20 28       C      
-  508B'   00             C      	DB	0
-  508C'   41 47 4F 20    C      	DB	'AGO   .'                                                              ;PF02-0
-  5090'   20 20 2E       C      
-  5093'   00             C      	DB	0
-  5094'   41 4E 4F 50    C      	DB	'ANOP'                                                                 ;PF03-0
-  5098'   00             C      	DB	0
-                         C      ; ----
-  5099'   53 45 54 61    C      	DB	'SETa  '                                                               ;PF04-0
-  509D'   20 20          C      
-  509F'   00             C      	DB	0
-  50A0'   4D 4E 4F 54    C      	DB	'MNOTE *,'                                                             ;PF05-0
-  50A4'   45 20 2A 2C    C      
+  5099'                  C      PF.O3ANF EQU	$
+  5099'   41 49 46 20    C      	DB	'AIF   ('                                                              ;PF01-0
+  509D'   20 20 28       C      
+  50A0'   00             C      	DB	0
+  50A1'   41 47 4F 20    C      	DB	'AGO   .'                                                              ;PF02-0
+  50A5'   20 20 2E       C      
   50A8'   00             C      	DB	0
-  50A9'   26 53 59 53    C      	DB	'&SYSLIST('                                                            ;PF06-0
-  50AD'   4C 49 53 54    C      
-  50B1'   28             C      
-  50B2'   00             C      	DB	0
+  50A9'   41 4E 4F 50    C      	DB	'ANOP'                                                                 ;PF03-0
+  50AD'   00             C      	DB	0
                          C      ; ----
-  50B3'   44 43 20 20    C      	DB	'DC    CL'                                                             ;PF07-0
-  50B7'   20 20 43 4C    C      
-  50BB'   00             C      	DB	0
-  50BC'   26 41 2B       C      	DB	'&A+'                                                                  ;PF08-0
-  50BF'   00             C      	DB	0
-  50C0'   26 50 52 4D    C      	DB	'&PRMCa('                                                              ;PF09-0
-  50C4'   43 61 28       C      
+  50AE'   53 45 54 61    C      	DB	'SETa  '                                                               ;PF04-0
+  50B2'   20 20          C      
+  50B4'   00             C      	DB	0
+  50B5'   4D 4E 4F 54    C      	DB	'MNOTE *,'                                                             ;PF05-0
+  50B9'   45 20 2A 2C    C      
+  50BD'   00             C      	DB	0
+  50BE'   26 53 59 53    C      	DB	'&SYSLIST('                                                            ;PF06-0
+  50C2'   4C 49 53 54    C      
+  50C6'   28             C      
   50C7'   00             C      	DB	0
                          C      ; ----
-  50C8'   20 45 51 20    C      	DB	' EQ '                                                                 ;PF10-0
-  50CC'   00             C      	DB	0
-  50CD'   20 4E 45 20    C      	DB	' NE '                                                                 ;PF11-0
-  50D1'   00             C      	DB	0
-  50D2'   20 4F 52 20    C      	DB	' OR '                                                                 ;PF12-0
-  50D6'   00             C      	DB	0
-                         C      ; ====
-  50D7'   20 41 4E 44    C      	DB	' AND '                                                                ;PF01-1 PF13
-  50DB'   20             C      
+  50C8'   44 43 20 20    C      	DB	'DC    CL'                                                             ;PF07-0
+  50CC'   20 20 43 4C    C      
+  50D0'   00             C      	DB	0
+  50D1'   26 41 2B       C      	DB	'&A+'                                                                  ;PF08-0
+  50D4'   00             C      	DB	0
+  50D5'   26 50 52 4D    C      	DB	'&PRMCa('                                                              ;PF09-0
+  50D9'   43 61 28       C      
   50DC'   00             C      	DB	0
-  50DD'   3B 2A 2A 2A    C      	DB	';****************************************************************'    ;PF02-1 PF14
-  50E1'   2A 2A 2A 2A    C      
-  50E5'   2A 2A 2A 2A    C      
-  50E9'   2A 2A 2A 2A    C      
-  50ED'   2A 2A 2A 2A    C      
-  50F1'   2A 2A 2A 2A    C      
-  50F5'   2A 2A 2A 2A    C      
-  50F9'   2A 2A 2A 2A    C      
-  50FD'   2A 2A 2A 2A    C      
-  5101'   2A 2A 2A 2A    C      
-  5105'   2A 2A 2A 2A    C      
-  5109'   2A 2A 2A 2A    C      
-  510D'   2A 2A 2A 2A    C      
-  5111'   2A 2A 2A 2A    C      
-  5115'   2A 2A 2A 2A    C      
-  5119'   2A 2A 2A 2A    C      
-  511D'   2A             C      
-  511E'   001E           C      	DW	CR
-  5120'   3B 2A 20 20    C      	DB	';*                                                              *'    ;PF03-1 PF15
-  5124'   20 20 20 20    C      
-  5128'   20 20 20 20    C      
-  512C'   20 20 20 20    C      
-  5130'   20 20 20 20    C      
-  5134'   20 20 20 20    C      
-  5138'   20 20 20 20    C      
-  513C'   20 20 20 20    C      
-  5140'   20 20 20 20    C      
-  5144'   20 20 20 20    C      
-  5148'   20 20 20 20    C      
-  514C'   20 20 20 20    C      
-  5150'   20 20 20 20    C      
-  5154'   20 20 20 20    C      
-  5158'   20 20 20 20    C      
-  515C'   20 20 20 20    C      
-  5160'   2A             C      
-  5161'   001E           C      	DW	CR
                          C      ; ----
-  5163'   2D 2D 2D 2D    C      	DB	'----+----1----+----2----+----3----+----4----+----5----+----6----+----7----+----'
-  5167'   2B 2D 2D 2D    C      
-  516B'   2D 31 2D 2D    C      
-'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-135
-
-
-  516F'   2D 2D 2B 2D    C      
-  5173'   2D 2D 2D 32    C      
-  5177'   2D 2D 2D 2D    C      
-  517B'   2B 2D 2D 2D    C      
-  517F'   2D 33 2D 2D    C      
-  5183'   2D 2D 2B 2D    C      
-  5187'   2D 2D 2D 34    C      
-  518B'   2D 2D 2D 2D    C      
-  518F'   2B 2D 2D 2D    C      
-  5193'   2D 35 2D 2D    C      
-  5197'   2D 2D 2B 2D    C      
-  519B'   2D 2D 2D 36    C      
-  519F'   2D 2D 2D 2D    C      
-  51A3'   2B 2D 2D 2D    C      
-  51A7'   2D 37 2D 2D    C      
-  51AB'   2D 2D 2B 2D    C      
-  51AF'   2D 2D 2D       C      
-  51B2'   001E           C      	DW	CR                                                                     ;PF04-1 PF16
-  51B4'   31 2D 2D 2D    C      	DB	'1---5----10---5----20---5----30---5----40---5----50---5----60---5----70*--5----'
-  51B8'   35 2D 2D 2D    C      
-  51BC'   2D 31 30 2D    C      
-  51C0'   2D 2D 35 2D    C      
-  51C4'   2D 2D 2D 32    C      
-  51C8'   30 2D 2D 2D    C      
-  51CC'   35 2D 2D 2D    C      
-  51D0'   2D 33 30 2D    C      
-  51D4'   2D 2D 35 2D    C      
-  51D8'   2D 2D 2D 34    C      
-  51DC'   30 2D 2D 2D    C      
-  51E0'   35 2D 2D 2D    C      
-  51E4'   2D 35 30 2D    C      
-  51E8'   2D 2D 35 2D    C      
-  51EC'   2D 2D 2D 36    C      
-  51F0'   30 2D 2D 2D    C      
-  51F4'   35 2D 2D 2D    C      
-  51F8'   2D 37 30 2A    C      
-  51FC'   2D 2D 35 2D    C      
-  5200'   2D 2D 2D       C      
-  5203'   001E           C      	DW	CR                                                                     ;PF04-1 PF17
-  5205'   7C 2D 2D 2D    C      	DB	'|------------------------------------------------------------------------------|'
-  5209'   2D 2D 2D 2D    C      
-  520D'   2D 2D 2D 2D    C      
-  5211'   2D 2D 2D 2D    C      
-  5215'   2D 2D 2D 2D    C      
-  5219'   2D 2D 2D 2D    C      
-  521D'   2D 2D 2D 2D    C      
-  5221'   2D 2D 2D 2D    C      
-  5225'   2D 2D 2D 2D    C      
-  5229'   2D 2D 2D 2D    C      
-  522D'   2D 2D 2D 2D    C      
-  5231'   2D 2D 2D 2D    C      
-  5235'   2D 2D 2D 2D    C      
-  5239'   2D 2D 2D 2D    C      
-  523D'   2D 2D 2D 2D    C      
-  5241'   2D 2D 2D 2D    C      
-  5245'   2D 2D 2D 2D    C      
-  5249'   2D 2D 2D 2D    C      
-  524D'   2D 2D 2D 2D    C      
-  5251'   2D 2D 2D 7C    C      
-  5255'   001E           C      	DW	CR                                                                     ;PF05-1 PF18
+  50DD'   20 45 51 20    C      	DB	' EQ '                                                                 ;PF10-0
+  50E1'   00             C      	DB	0
+  50E2'   20 4E 45 20    C      	DB	' NE '                                                                 ;PF11-0
+  50E6'   00             C      	DB	0
+  50E7'   20 4F 52 20    C      	DB	' OR '                                                                 ;PF12-0
+  50EB'   00             C      	DB	0
+                         C      ; ====
+  50EC'   20 41 4E 44    C      	DB	' AND '                                                                ;PF01-1 PF13
+  50F0'   20             C      
+  50F1'   00             C      	DB	0
+  50F2'   3B 2A 2A 2A    C      	DB	';****************************************************************'    ;PF02-1 PF14
+  50F6'   2A 2A 2A 2A    C      
+  50FA'   2A 2A 2A 2A    C      
+  50FE'   2A 2A 2A 2A    C      
+  5102'   2A 2A 2A 2A    C      
+  5106'   2A 2A 2A 2A    C      
+  510A'   2A 2A 2A 2A    C      
+  510E'   2A 2A 2A 2A    C      
+  5112'   2A 2A 2A 2A    C      
+  5116'   2A 2A 2A 2A    C      
+  511A'   2A 2A 2A 2A    C      
+  511E'   2A 2A 2A 2A    C      
+  5122'   2A 2A 2A 2A    C      
+  5126'   2A 2A 2A 2A    C      
+  512A'   2A 2A 2A 2A    C      
+  512E'   2A 2A 2A 2A    C      
+  5132'   2A             C      
+  5133'   001E           C      	DW	SD.NL
+  5135'   3B 2A 20 20    C      	DB	';*                                                              *'    ;PF03-1 PF15
+  5139'   20 20 20 20    C      
+  513D'   20 20 20 20    C      
+  5141'   20 20 20 20    C      
+  5145'   20 20 20 20    C      
+  5149'   20 20 20 20    C      
+  514D'   20 20 20 20    C      
+  5151'   20 20 20 20    C      
+  5155'   20 20 20 20    C      
+  5159'   20 20 20 20    C      
+  515D'   20 20 20 20    C      
+  5161'   20 20 20 20    C      
+  5165'   20 20 20 20    C      
+  5169'   20 20 20 20    C      
+  516D'   20 20 20 20    C      
+  5171'   20 20 20 20    C      
+  5175'   2A             C      
+  5176'   001E           C      	DW	SD.NL
                          C      ; ----
-  5257'   7C 20 20 20    C      	DB	'|                                                                              |'
-  525B'   20 20 20 20    C      
-  525F'   20 20 20 20    C      
-  5263'   20 20 20 20    C      
-  5267'   20 20 20 20    C      
-  526B'   20 20 20 20    C      
-  526F'   20 20 20 20    C      
-  5273'   20 20 20 20    C      
-  5277'   20 20 20 20    C      
-  527B'   20 20 20 20    C      
-  527F'   20 20 20 20    C      
-  5283'   20 20 20 20    C      
-  5287'   20 20 20 20    C      
-  528B'   20 20 20 20    C      
-  528F'   20 20 20 20    C      
-  5293'   20 20 20 20    C      
-  5297'   20 20 20 20    C      
-  529B'   20 20 20 20    C      
-  529F'   20 20 20 20    C      
-  52A3'   20 20 20 7C    C      
-  52A7'   001E           C      	DW	CR                                                                     ;PF06-1 PF19
-  52A9'   50 72 6F 67    C      	DB	'Programmierer: Marcus Herbote   --- IfR - OE-S'                       ;PF07-1 PF20
+  5178'   2D 2D 2D 2D    C      	DB	'----+----1----+----2----+----3----+----4----+----5----+----6----+----7----+----'
+  517C'   2B 2D 2D 2D    C      
+  5180'   2D 31 2D 2D    C      
 'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-136
 
 
-  52AD'   72 61 6D 6D    C      
-  52B1'   69 65 72 65    C      
-  52B5'   72 3A 20 4D    C      
-  52B9'   61 72 63 75    C      
-  52BD'   73 20 48 65    C      
-  52C1'   72 62 6F 74    C      
-  52C5'   65 20 20 20    C      
-  52C9'   2D 2D 2D 20    C      
-  52CD'   49 66 52 20    C      
-  52D1'   2D 20 4F 45    C      
-  52D5'   2D 53          C      
-  52D7'   00             C      	DB	0
-  52D8'   2D 2D 2D 2D    C      	DB	'-----------------------------------------------'                      ;PF08-1 PF21
-  52DC'   2D 2D 2D 2D    C      
-  52E0'   2D 2D 2D 2D    C      
-  52E4'   2D 2D 2D 2D    C      
-  52E8'   2D 2D 2D 2D    C      
-  52EC'   2D 2D 2D 2D    C      
-  52F0'   2D 2D 2D 2D    C      
-  52F4'   2D 2D 2D 2D    C      
-  52F8'   2D 2D 2D 2D    C      
-  52FC'   2D 2D 2D 2D    C      
-  5300'   2D 2D 2D 2D    C      
-  5304'   2D 2D 2D       C      
-  5307'   00             C      	DB	0
+  5184'   2D 2D 2B 2D    C      
+  5188'   2D 2D 2D 32    C      
+  518C'   2D 2D 2D 2D    C      
+  5190'   2B 2D 2D 2D    C      
+  5194'   2D 33 2D 2D    C      
+  5198'   2D 2D 2B 2D    C      
+  519C'   2D 2D 2D 34    C      
+  51A0'   2D 2D 2D 2D    C      
+  51A4'   2B 2D 2D 2D    C      
+  51A8'   2D 35 2D 2D    C      
+  51AC'   2D 2D 2B 2D    C      
+  51B0'   2D 2D 2D 36    C      
+  51B4'   2D 2D 2D 2D    C      
+  51B8'   2B 2D 2D 2D    C      
+  51BC'   2D 37 2D 2D    C      
+  51C0'   2D 2D 2B 2D    C      
+  51C4'   2D 2D 2D       C      
+  51C7'   001E           C      	DW	SD.NL                                                                     ;PF04-1 PF16
+  51C9'   31 2D 2D 2D    C      	DB	'1---5----10---5----20---5----30---5----40---5----50---5----60---5----70*--5----'
+  51CD'   35 2D 2D 2D    C      
+  51D1'   2D 31 30 2D    C      
+  51D5'   2D 2D 35 2D    C      
+  51D9'   2D 2D 2D 32    C      
+  51DD'   30 2D 2D 2D    C      
+  51E1'   35 2D 2D 2D    C      
+  51E5'   2D 33 30 2D    C      
+  51E9'   2D 2D 35 2D    C      
+  51ED'   2D 2D 2D 34    C      
+  51F1'   30 2D 2D 2D    C      
+  51F5'   35 2D 2D 2D    C      
+  51F9'   2D 35 30 2D    C      
+  51FD'   2D 2D 35 2D    C      
+  5201'   2D 2D 2D 36    C      
+  5205'   30 2D 2D 2D    C      
+  5209'   35 2D 2D 2D    C      
+  520D'   2D 37 30 2A    C      
+  5211'   2D 2D 35 2D    C      
+  5215'   2D 2D 2D       C      
+  5218'   001E           C      	DW	SD.NL                                                                     ;PF04-1 PF17
+  521A'   7C 2D 2D 2D    C      	DB	'|------------------------------------------------------------------------------|'
+  521E'   2D 2D 2D 2D    C      
+  5222'   2D 2D 2D 2D    C      
+  5226'   2D 2D 2D 2D    C      
+  522A'   2D 2D 2D 2D    C      
+  522E'   2D 2D 2D 2D    C      
+  5232'   2D 2D 2D 2D    C      
+  5236'   2D 2D 2D 2D    C      
+  523A'   2D 2D 2D 2D    C      
+  523E'   2D 2D 2D 2D    C      
+  5242'   2D 2D 2D 2D    C      
+  5246'   2D 2D 2D 2D    C      
+  524A'   2D 2D 2D 2D    C      
+  524E'   2D 2D 2D 2D    C      
+  5252'   2D 2D 2D 2D    C      
+  5256'   2D 2D 2D 2D    C      
+  525A'   2D 2D 2D 2D    C      
+  525E'   2D 2D 2D 2D    C      
+  5262'   2D 2D 2D 2D    C      
+  5266'   2D 2D 2D 7C    C      
+  526A'   001E           C      	DW	SD.NL                                                                     ;PF05-1 PF18
                          C      ; ----
-  5308'   3B 2A 20 20    C      	DB	';*               '                                                    ;PF09-1 PF22
-  530C'   20 20 20 20    C      
-  5310'   20 20 20 20    C      
-  5314'   20 20 20 20    C      
-  5318'   20             C      
-  5319'   00             C      	DB	0
-  531A'   53 74 61 6E    C      	DB	'Stand        :'                                                       ;PF10-1 PF23
-  531E'   64 20 20 20    C      
-  5322'   20 20 20 20    C      
-  5326'   20 3A          C      
-  5328'   00             C      	DB	0
-  5329'   00             C      	DB	0                                                                      ;PF11-1 PF24
-  532A'                  C      PF.O3END EQU	$
+  526C'   7C 20 20 20    C      	DB	'|                                                                              |'
+  5270'   20 20 20 20    C      
+  5274'   20 20 20 20    C      
+  5278'   20 20 20 20    C      
+  527C'   20 20 20 20    C      
+  5280'   20 20 20 20    C      
+  5284'   20 20 20 20    C      
+  5288'   20 20 20 20    C      
+  528C'   20 20 20 20    C      
+  5290'   20 20 20 20    C      
+  5294'   20 20 20 20    C      
+  5298'   20 20 20 20    C      
+  529C'   20 20 20 20    C      
+  52A0'   20 20 20 20    C      
+  52A4'   20 20 20 20    C      
+  52A8'   20 20 20 20    C      
+  52AC'   20 20 20 20    C      
+  52B0'   20 20 20 20    C      
+  52B4'   20 20 20 20    C      
+  52B8'   20 20 20 7C    C      
+  52BC'   001E           C      	DW	SD.NL                                                                     ;PF06-1 PF19
+  52BE'   50 72 6F 67    C      	DB	'Programmierer: Marcus Herbote   --- IfR - OE-S'                       ;PF07-1 PF20
+'DEG2000 V. 1.2    PF - Belegungen'	MACRO-80 3.44	09-Dec-81	PAGE	1-137
+
+
+  52C2'   72 61 6D 6D    C      
+  52C6'   69 65 72 65    C      
+  52CA'   72 3A 20 4D    C      
+  52CE'   61 72 63 75    C      
+  52D2'   73 20 48 65    C      
+  52D6'   72 62 6F 74    C      
+  52DA'   65 20 20 20    C      
+  52DE'   2D 2D 2D 20    C      
+  52E2'   49 66 52 20    C      
+  52E6'   2D 20 4F 45    C      
+  52EA'   2D 53          C      
+  52EC'   00             C      	DB	0
+  52ED'   2D 2D 2D 2D    C      	DB	'-----------------------------------------------'                      ;PF08-1 PF21
+  52F1'   2D 2D 2D 2D    C      
+  52F5'   2D 2D 2D 2D    C      
+  52F9'   2D 2D 2D 2D    C      
+  52FD'   2D 2D 2D 2D    C      
+  5301'   2D 2D 2D 2D    C      
+  5305'   2D 2D 2D 2D    C      
+  5309'   2D 2D 2D 2D    C      
+  530D'   2D 2D 2D 2D    C      
+  5311'   2D 2D 2D 2D    C      
+  5315'   2D 2D 2D 2D    C      
+  5319'   2D 2D 2D       C      
+  531C'   00             C      	DB	0
+                         C      ; ----
+  531D'   3B 2A 20 20    C      	DB	';*               '                                                    ;PF09-1 PF22
+  5321'   20 20 20 20    C      
+  5325'   20 20 20 20    C      
+  5329'   20 20 20 20    C      
+  532D'   20             C      
+  532E'   00             C      	DB	0
+  532F'   53 74 61 6E    C      	DB	'Stand        :'                                                       ;PF10-1 PF23
+  5333'   64 20 20 20    C      
+  5337'   20 20 20 20    C      
+  533B'   20 3A          C      
+  533D'   00             C      	DB	0
+  533E'   00             C      	DB	0                                                                      ;PF11-1 PF24
+  533F'                  C      PF.O3END EQU	$
                          C      
                          C      	TITLE 'Aufruf SYS2'
                          C      	PAGE
-'Aufruf SYS2'	MACRO-80 3.44	09-Dec-81	PAGE	1-137
+'Aufruf SYS2'	MACRO-80 3.44	09-Dec-81	PAGE	1-138
 
 
                          C      
@@ -9163,107 +9166,107 @@
                          C      
                          C      	TITLE 'Aufruf SYS3'
                          C      	PAGE
-'Aufruf SYS3'	MACRO-80 3.44	09-Dec-81	PAGE	1-138
+'Aufruf SYS3'	MACRO-80 3.44	09-Dec-81	PAGE	1-139
 
 
                          C      
                          C      ;****************************************************************
                          C      	IF	SD.GENE AND 00010000B	;DEG2000 Emulator
                          C      			;Aufruf des Systems   S Y S 3
-  532A'   532A'          C      	DW	$
-  532C'   53 33 2D 4D    C      	DB	'S3-M'	;       mit  Rahmen
-  5330'                  C      PF.S3M:
-  5330'   CD 5388'       C      	CALL	PF.BSLOE
-  5333'   CD 5350'       C      	CALL	PF.BSRAH
-  5336'   18 09          C      	JR	PF.SYS31
+  533F'   533F'          C      	DW	$
+  5341'   53 33 2D 4D    C      	DB	'S3-M'	;       mit  Rahmen
+  5345'                  C      PF.S3M:
+  5345'   CD 539D'       C      	CALL	PF.BSLOE
+  5348'   CD 5365'       C      	CALL	PF.BSRAH
+  534B'   18 09          C      	JR	PF.SYS31
                          C      
-  5338'   5338'          C      	DW	$
-  533A'   53 33 2D 4F    C      	DB	'S3-O'	;       ohne Rahmen
-  533E'   CD 5388'       C      	CALL	PF.BSLOE
-  5341'                  C      PF.SYS31:
-  5341'   01 04C0        C      	LD	BC,004C0H
-  5344'   21 534C'       C      	LD	HL,PF.SYS31a
-  5347'   ED B3          C      	OTIR
+  534D'   534D'          C      	DW	$
+  534F'   53 33 2D 4F    C      	DB	'S3-O'	;       ohne Rahmen
+  5353'   CD 539D'       C      	CALL	PF.BSLOE
+  5356'                  C      PF.SYS31:
+  5356'   01 04C0        C      	LD	BC,004C0H
+  5359'   21 5361'       C      	LD	HL,PF.SYS31a
+  535C'   ED B3          C      	OTIR
                          C      
-  5349'   C3 A800        C      	JP	0A800H	;0B40DH
+  535E'   C3 A800        C      	JP	0A800H	;0B40DH
                          C      
-  534C'                  C      PF.SYS31a:			;###
-  534C'   F0             C      	DB	0F0H	;Startbyte
-  534D'   03             C      	DB	003H	;wahl
-  534E'   08             C      	DB	008H	;Sys_31
-  534F'   FF             C      	DB	0FFH	;Endbyte
+  5361'                  C      PF.SYS31a:			;###
+  5361'   F0             C      	DB	0F0H	;Startbyte
+  5362'   03             C      	DB	003H	;wahl
+  5363'   08             C      	DB	008H	;Sys_31
+  5364'   FF             C      	DB	0FFH	;Endbyte
                          C      
                          C      
-  5350'                  C      PF.BSRAH:
-  5350'   21 30F7        C      	LD	HL,SD.BWSA+0F7H	;Bildrahmen erzeugen
-  5353'   11 30F9        C      	LD	DE,SD.BWSA+0F9H
-  5356'   01 0040        C      	LD	BC,64
-  5359'   36 82          C      	LD	(HL),082H
-  535B'   23             C      	INC	HL
-  535C'   36 81          C      	LD	(HL),081H
-  535E'   ED B0          C      	LDIR
-  5360'   36 83          C      	LD	(HL),083H
-  5362'   21 3647        C      	LD	HL,SD.BWSA+647H
-  5365'   11 3649        C      	LD	DE,SD.BWSA+649H
-  5368'   01 0040        C      	LD	BC,64
-  536B'   36 8A          C      	LD	(HL),08AH
-  536D'   23             C      	INC	HL
-  536E'   36 81          C      	LD	(HL),081H
-  5370'   ED B0          C      	LDIR
-  5372'   36 8B          C      	LD	(HL),08BH
-  5374'   21 3147        C      	LD	HL,SD.BWSA+147H
-  5377'   06 10          C      	LD	B,16
-  5379'                  C      PF.SYS30:
-  5379'   36 80          C      	LD	(HL),080H
-  537B'   11 0041        C      	LD	DE,65
-  537E'   19             C      	ADD	HL,DE
-  537F'   36 80          C      	LD	(HL),080H
-  5381'   11 000F        C      	LD	DE,15
-  5384'   19             C      	ADD	HL,DE
-  5385'   10 F2          C      	DJNZ	PF.SYS30
-  5387'   C9             C      	RET
+  5365'                  C      PF.BSRAH:
+  5365'   21 30F7        C      	LD	HL,SD.BWSA+0F7H	;Bildrahmen erzeugen
+  5368'   11 30F9        C      	LD	DE,SD.BWSA+0F9H
+  536B'   01 0040        C      	LD	BC,64
+  536E'   36 82          C      	LD	(HL),082H
+  5370'   23             C      	INC	HL
+  5371'   36 81          C      	LD	(HL),081H
+  5373'   ED B0          C      	LDIR
+  5375'   36 83          C      	LD	(HL),083H
+  5377'   21 3647        C      	LD	HL,SD.BWSA+647H
+  537A'   11 3649        C      	LD	DE,SD.BWSA+649H
+  537D'   01 0040        C      	LD	BC,64
+  5380'   36 8A          C      	LD	(HL),08AH
+  5382'   23             C      	INC	HL
+  5383'   36 81          C      	LD	(HL),081H
+  5385'   ED B0          C      	LDIR
+  5387'   36 8B          C      	LD	(HL),08BH
+  5389'   21 3147        C      	LD	HL,SD.BWSA+147H
+  538C'   06 10          C      	LD	B,16
+  538E'                  C      PF.SYS30:
+  538E'   36 80          C      	LD	(HL),080H
+  5390'   11 0041        C      	LD	DE,65
+  5393'   19             C      	ADD	HL,DE
+  5394'   36 80          C      	LD	(HL),080H
+  5396'   11 000F        C      	LD	DE,15
+  5399'   19             C      	ADD	HL,DE
+  539A'   10 F2          C      	DJNZ	PF.SYS30
+  539C'   C9             C      	RET
                          C      
-  5388'                  C      PF.BSLOE:
-  5388'   21 3000        C      	LD	HL,SD.BWSA
-  538B'   11 3001        C      	LD	DE,SD.BWSA+1
-  538E'   01 077F        C      	LD	BC,24*80 - 1	;007FFH
-  5391'   36 20          C      	LD	(HL),' '
-  5393'   ED B0          C      	LDIR
-  5395'   C9             C      	RET
+  539D'                  C      PF.BSLOE:
+  539D'   21 3000        C      	LD	HL,SD.BWSA
+  53A0'   11 3001        C      	LD	DE,SD.BWSA+1
+  53A3'   01 077F        C      	LD	BC,24*80 - 1	;007FFH
+  53A6'   36 20          C      	LD	(HL),' '
+  53A8'   ED B0          C      	LDIR
+  53AA'   C9             C      	RET
                          C      	ENDIF
                          C      
                          C      	TITLE 'Aufruf SYS4'
                          C      	PAGE
-'Aufruf SYS4'	MACRO-80 3.44	09-Dec-81	PAGE	1-139
+'Aufruf SYS4'	MACRO-80 3.44	09-Dec-81	PAGE	1-140
 
 
                          C      
                          C      	IF	SD.GENE AND 00010000B	;DEG2000 Emulator
-  5396'   5396'          C      	DW	$
-  5398'   53 34 20 20    C      	DB	'S4  '
-  539C'                  C      PF.S4:
-  539C'   01 04C0        C      	LD	BC,004C0H
-  539F'   21 53AA'       C      	LD	HL,PF.OUTB2
-  53A2'   ED B3          C      	OTIR
-  53A4'   21 53A8'       C      	LD	HL,PF.OUTB1+1
-  53A7'                  C      PF.OUTB1:
-  53A7'   C3 0000        C      	JP	00000H	;!!!!	;Sprung zum BIOS-Anfang
-  53AA'                  C      PF.OUTB2:
-  53AA'   F0             C      	DB	0F0H	;Startbyte
-  53AB'   03             C      	DB	003H	;wahl
-  53AC'   05             C      	DB	005H	;Sys_44
-  53AD'   FF             C      	DB	0FFH	;Endbyte
+  53AB'   53AB'          C      	DW	$
+  53AD'   53 34 20 20    C      	DB	'S4  '
+  53B1'                  C      PF.S4:
+  53B1'   01 04C0        C      	LD	BC,004C0H
+  53B4'   21 53BF'       C      	LD	HL,PF.OUTB2
+  53B7'   ED B3          C      	OTIR
+  53B9'   21 53BD'       C      	LD	HL,PF.OUTB1+1
+  53BC'                  C      PF.OUTB1:
+  53BC'   C3 0000        C      	JP	00000H	;!!!!	;Sprung zum BIOS-Anfang
+  53BF'                  C      PF.OUTB2:
+  53BF'   F0             C      	DB	0F0H	;Startbyte
+  53C0'   03             C      	DB	003H	;wahl
+  53C1'   05             C      	DB	005H	;Sys_44
+  53C2'   FF             C      	DB	0FFH	;Endbyte
                          C      	ENDIF
                          C      
                          C      	TITLE ''
                          C      	PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-140
+''	MACRO-80 3.44	09-Dec-81	PAGE	1-141
 
 
                          C      
-  53AE'                  C      PF.MINTP	EQU	$
+  53C3'                  C      PF.MINTP	EQU	$
                          C      	IF	SD.GENE AND 00000010B
-                         C      	LD	BC,PF.SPST  ;Sektoren 0, 1, 2, 3 wegschalten
+                         C      	LD	BC,SD.SPST  ;Sektoren 0, 1, 2, 3 wegschalten
                          C      	LD	E,4
                          C      	LD	A,8         ;<--|
                          C      	OUT	(C),A       ;   |
@@ -9279,9 +9282,9 @@
                          C      	LD	B,4
                          C      	EXX             ;<--|
                          C      	LD	B,A         ;   |
-                         C      	LD	C,PF.SPST+5 ;   |
+                         C      	LD	C,SD.SPST+5 ;   |
                          C      	OUT	(C),A       ;   |
-                         C      	LD	C,PF.SPST+7 ;   |
+                         C      	LD	C,SD.SPST+7 ;   |
                          C      	OUT	(C),A       ;   |
                          C      	ADD	A,10H       ;   |
                          C      	EXX             ;   |
@@ -9294,7 +9297,7 @@
                          C      	ENDIF
                          C      
                          C      	IF	SD.GENE AND 00000010B
-                         C      	LD	BC,PF.SPST  ;Sektoren 0, 1, 2    zuschalten
+                         C      	LD	BC,SD.SPST  ;Sektoren 0, 1, 2    zuschalten
                          C      	LD	E,3
                          C      	XOR	A           ;<--|
                          C      	OUT	(C),A       ;   |
@@ -9310,9 +9313,9 @@
                          C      	LD	B,3
                          C      	EXX             ;<--|
                          C      	LD	B,A         ;   |
-                         C      	LD	C,PF.SPST+4 ;   |
+                         C      	LD	C,SD.SPST+4 ;   |
                          C      	OUT	(C),A       ;   |
-                         C      	LD	C,PF.SPST+6 ;   |
+                         C      	LD	C,SD.SPST+6 ;   |
                          C      	OUT	(C),A       ;   |
                          C      	ADD	A,10H       ;   |
                          C      	EXX             ;   |
@@ -9333,7 +9336,7 @@
                          C      	ENDIF
                          C      
                          C      	IF	SD.GENE AND 00000010B
-                         C      	LD	BC,PF.SPST  ;Sektoren 0, 1, 2, 3 wegschalten
+                         C      	LD	BC,SD.SPST  ;Sektoren 0, 1, 2, 3 wegschalten
                          C      	LD	E,4
                          C      	LD	A,8         ;<--|
                          C      	OUT	(C),A       ;   |
@@ -9342,11 +9345,11 @@
                          C      	LD	B,A         ;   |
                          C      	DEC	E           ;   |
                          C      	JR	NZ,$-9      ;---|
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-141
+''	MACRO-80 3.44	09-Dec-81	PAGE	1-142
 
 
                          C      
-                         C      	LD	BC,PF.SPST  ;Sektoren 0, 1, 2    zuschalten
+                         C      	LD	BC,SD.SPST  ;Sektoren 0, 1, 2    zuschalten
                          C      	LD	E,3
                          C      	XOR	A           ;<--|
                          C      	OUT	(C),A       ;   |
@@ -9362,9 +9365,9 @@
                          C      	LD	B,4
                          C      	EXX             ;<--|
                          C      	LD	B,A         ;   |
-                         C      	LD	C,PF.SPST+5 ;   |
+                         C      	LD	C,SD.SPST+5 ;   |
                          C      	OUT	(C),A       ;   |
-                         C      	LD	C,PF.SPST+7 ;   |
+                         C      	LD	C,SD.SPST+7 ;   |
                          C      	OUT	(C),A       ;   |
                          C      	ADD	A,10H       ;   |
                          C      	EXX             ;   |
@@ -9374,9 +9377,9 @@
                          C      	LD	B,3
                          C      	EXX             ;<--|
                          C      	LD	B,A         ;   |
-                         C      	LD	C,PF.SPST+4 ;   |
+                         C      	LD	C,SD.SPST+4 ;   |
                          C      	OUT	(C),A       ;   |
-                         C      	LD	C,PF.SPST+6 ;   |
+                         C      	LD	C,SD.SPST+6 ;   |
                          C      	OUT	(C),A       ;   |
                          C      	ADD	A,10H       ;   |
                          C      	EXX             ;   |
@@ -9391,7 +9394,7 @@
                          C      	ENDIF
                          C      
                          C      	IF	SD.GENE AND 00000010B
-                         C      	LD	BC,PF.SPST  ;Sektoren 0, 1, 2    wegschalten
+                         C      	LD	BC,SD.SPST  ;Sektoren 0, 1, 2    wegschalten
                          C      	LD	E,3
                          C      	LD	A,8         ;<--|
                          C      	OUT	(C),A       ;   |
@@ -9407,9 +9410,9 @@
                          C      	LD	B,3
                          C      	EXX             ;<--|
                          C      	LD	B,A         ;   |
-                         C      	LD	C,PF.SPST+5 ;   |
+                         C      	LD	C,SD.SPST+5 ;   |
                          C      	OUT	(C),A       ;   |
-                         C      	LD	C,PF.SPST+7 ;   |
+                         C      	LD	C,SD.SPST+7 ;   |
                          C      	OUT	(C),A       ;   |
                          C      	ADD	A,10H       ;   |
                          C      	EXX             ;   |
@@ -9420,349 +9423,347 @@
                          C      	JP	00000H		;Aufruf des  U r l a d e r s
                          C      	ENDIF
                          C      
-  53AE'                  C      PF.ENDE	EQU	$
+  53C3'                  C      PF.ENDE	EQU	$
                          C      			;Stand: 21.Februar 85 - K EAW/wfvm..MSH
                          C      
                          C      ;	END
                                 
-                                	TITLE ''
+                                	TITLE 'Symbolliste S1a'
                                 	END
-''	MACRO-80 3.44	09-Dec-81	PAGE	S
+'Symbolliste S1a'	MACRO-80 3.44	09-Dec-81	PAGE	S
 
 
 Macros:
 SY.ZAN          
 
 Symbols:
-001E 	CR              1332'	E1.ABS          1347'	E1.ATTR         
-1350'	E1.ATTR1        125D'	E1.BIL          1260'	E1.BIL1         
-130B'	E1.BIZA         1407'	E1.CA           11D6'	E1.CNEW         
-11FF'	E1.CNEW1        1202'	E1.CNEW2        11ED'	E1.CNEW3        
-136E'	E1.DELZ         140F'	E1.DOL          13FE'	E1.GS           
-1400'	E1.GS1          1403'	E1.HT           1267'	E1.LEERZ        
-1226'	E1.LIFT         122C'	E1.LIFT1        1247'	E1.LOBP1        
-1244'	E1.LOEBP        1323'	E1.NUM          1326'	E1.NUM1         
-13D8'	E1.PS           13F3'	E1.PS1          13EA'	E1.PS2          
-13CD'	E1.PTEST        137B'	E1.PTS1         1384'	E1.PTS10        
-1385'	E1.PTS11        1386'	E1.PTS12        1387'	E1.PTS13        
-1388'	E1.PTS14        1389'	E1.PTS15        138A'	E1.PTS16        
-138B'	E1.PTS17        138C'	E1.PTS18        138D'	E1.PTS19        
-137C'	E1.PTS2         138E'	E1.PTS20        138F'	E1.PTS21        
-1390'	E1.PTS22        1391'	E1.PTS23        1392'	E1.PTS24        
-1393'	E1.PTS25        1394'	E1.PTS26        1395'	E1.PTS27        
-1396'	E1.PTS28        137D'	E1.PTS3         137E'	E1.PTS4         
-137F'	E1.PTS5         1380'	E1.PTS6         1381'	E1.PTS7         
-1382'	E1.PTS8         1383'	E1.PTS9         13AE'	E1.PTS91        
-13A1'	E1.PTS92        13B2'	E1.PTS93        13C3'	E1.PTSN1        
-13CB'	E1.PTSN2        13B6'	E1.PTSNR        124F'	E1.PUFLO        
-1252'	E1.PULO         1361'	E1.REPEL        1413'	E1.SCHW         
-127E'	E1.TAB          1297'	E1.TAB1         128A'	E1.TAB2         
-12CB'	E1.TABL         12D6'	E1.TABL1        12AB'	E1.TABS         
-12B2'	E1.TABS1        12B6'	E1.TABS3        12C0'	E1.TABS4        
-129D'	E1.TAUP         12A5'	E1.TAUP1        12A0'	E1.TAUP2        
-12F0'	E1.TCNLS        12F5'	E1.TCNOS        12EB'	E1.TCNRS        
-12FA'	E1.TCNUS        12FF'	E1.TCNZA        1307'	E1.TCUR         
-1304'	E1.THOME        120C'	E1.UMLZ1        140B'	E1.UND          
-1218'	E1.ZEINR        131A'	E1.ZNUM         11CD'	E1.ZSCH1        
-11CC'	E1.ZSCHR        11C7'	E1.ZSCHS        14A2'	E2.ERR5A        
-149C'	E2.ERR7A        1498'	E2.ERR99        14A0'	E2.ERRO5        
-1755'	E2.KOM          176C'	E2.KOM3         177F'	E2.KOMTR        
-17A1'	E2.KOMZ2        17A5'	E2.KOMZ3        179A'	E2.KOMZ4        
-1596'	E2.LANG         1593'	E2.LANG1        170B'	E2.MARK         
-15C1'	E2.MARKR        15F5'	E2.MRK          161C'	E2.MRK1         
-1625'	E2.MRK2         160F'	E2.MRK3         1619'	E2.MRK4         
-15CF'	E2.MRKR1        15EA'	E2.MRKR2        15DA'	E2.MRKR3        
-15E4'	E2.MRKR4        158C'	E2.NKOR1        1577'	E2.NKORR        
-150E'	E2.NZEI         1569'	E2.NZEI1        1574'	E2.NZEI3        
-155E'	E2.NZEI4        1531'	E2.NZEI6        1527'	E2.NZEI7        
-1512'	E2.NZEI8        1547'	E2.NZEIR        1538'	E2.NZEIV        
-1731'	E2.OP1          1726'	E2.OP2          173E'	E2.OP3          
-174C'	E2.OP4          1720'	E2.OPCO         1735'	E2.OPRD         
-17A9'	E2.POSI0        17AC'	E2.POSIT        1590'	E2.QLANG        
-1488'	E2.RESET        16A1'	E2.RUF1         1688'	E2.RUF2         
-1698'	E2.RUF3         16A6'	E2.RUF4         1663'	E2.RUF5         
-1691'	E2.RUF6         16E5'	E2.RUFQ         16CA'	E2.RUFQ1        
-16D2'	E2.RUFQ2        16AD'	E2.RUFQ3        16AC'	E2.RUFQ4        
-16B2'	E2.RUFQ5        1651'	E2.RUFT         164B'	E2.RUFTF        
-1491'	E2.SET          14E6'	E2.SPR          159E'	E2.SUCH         
-15A8'	E2.SUCH1        15B5'	E2.SUCHR        1442'	E2.TEX          
-14A5'	E2.TEX0         1428'	E2.TEXL         141E'	E2.TEXR         
-1423'	E2.TEXS         1417'	E2.TEXV         14B7'	E2.TEXV1        
-1473'	E2.TEXV2        145C'	E2.TEXV3        147B'	E2.TEXW         
-17B5'	E2.UML          1870'	E2.UML1         188E'	E2.UML2         
-1893'	E2.UML4         189D'	E2.UML5         1886'	E2.UML6         
-17D8'	E2.UMLA         17E7'	E2.UMLAD        1822'	E2.UMLBT        
-1807'	E2.UMLC         17E2'	E2.UMLE         182C'	E2.UMLF         
-1838'	E2.UMLF0        1855'	E2.UMLF1        185D'	E2.UMLF2        
-1866'	E2.UMLF3        186A'	E2.UMLFR        181A'	E2.UMLR         
-17C1'	E2.UMLT         17BF'	E2.UMLT1        14EE'	E2.ZNR          
-1504'	E2.ZNR0         1503'	E2.ZNR1         14F7'	E2.ZNR2         
-163C'	E2.ZNUMX        1645'	E2.ZNX1         163F'	E2.ZNX2         
-1A3A'	E3.ERR2A        191A'	E3.ERR3A        1A1F'	E3.ERR5B        
-1A1E'	E3.ERR5C        18D4'	E3.ERRO2        191B'	E3.ERRO3        
-193C'	E3.ERRO4        198A'	E3.ERRO7        1A25'	E3.ERRO8        
-1B85'	E3.ERRR         198F'	E3.EXCH         18D6'	E3.FEHL         
-18D9'	E3.FEHL1        18A7'	E3.KOMAN        19C8'	E3.LESE         
-19D5'	E3.LESE1        1A3E'	E3.MOVE         1A6F'	E3.MOVE1        
-1A2B'	E3.MOVE2        1A8F'	E3.MOVE3        1AE6'	E3.MOVE4        
-1AD1'	E3.MOVEV        19B7'	E3.NEU1         19B1'	E3.NEUST        
-1911'	E3.PL3          1B77'	E3.PTER4        1B7D'	E3.PTER9        
-1B69'	E3.PTEX         1AEF'	E3.PTSL         1B21'	E3.PTSL1        
-19E1'	E3.STAN         19F3'	E3.STAN1        19E2'	E3.STAN2        
-19EA'	E3.STAN3        1A06'	E3.STAN5        19ED'	E3.STAN6        
-1976'	E3.TAU1         197E'	E3.TAU2         195F'	E3.TAU3         
-196F'	E3.TAU4         1987'	E3.TAU5         196C'	E3.TAU6         
-1941'	E3.TAUS         18F5'	E3.Z1           1901'	E3.Z3           
-''	MACRO-80 3.44	09-Dec-81	PAGE	S-1
+1332'	E1.ABS          1347'	E1.ATTR         1350'	E1.ATTR1        
+125D'	E1.BIL          1260'	E1.BIL1         130B'	E1.BIZA         
+1407'	E1.CA           11D6'	E1.CNEW         11FF'	E1.CNEW1        
+1202'	E1.CNEW2        11ED'	E1.CNEW3        136E'	E1.DELZ         
+140F'	E1.DOL          13FE'	E1.GS           1400'	E1.GS1          
+1403'	E1.HT           1267'	E1.LEERZ        1226'	E1.LIFT         
+122C'	E1.LIFT1        1247'	E1.LOBP1        1244'	E1.LOEBP        
+1323'	E1.NUM          1326'	E1.NUM1         13D8'	E1.PS           
+13F3'	E1.PS1          13EA'	E1.PS2          13CD'	E1.PTEST        
+137B'	E1.PTS1         1384'	E1.PTS10        1385'	E1.PTS11        
+1386'	E1.PTS12        1387'	E1.PTS13        1388'	E1.PTS14        
+1389'	E1.PTS15        138A'	E1.PTS16        138B'	E1.PTS17        
+138C'	E1.PTS18        138D'	E1.PTS19        137C'	E1.PTS2         
+138E'	E1.PTS20        138F'	E1.PTS21        1390'	E1.PTS22        
+1391'	E1.PTS23        1392'	E1.PTS24        1393'	E1.PTS25        
+1394'	E1.PTS26        1395'	E1.PTS27        1396'	E1.PTS28        
+137D'	E1.PTS3         137E'	E1.PTS4         137F'	E1.PTS5         
+1380'	E1.PTS6         1381'	E1.PTS7         1382'	E1.PTS8         
+1383'	E1.PTS9         13AE'	E1.PTS91        13A1'	E1.PTS92        
+13B2'	E1.PTS93        13C3'	E1.PTSN1        13CB'	E1.PTSN2        
+13B6'	E1.PTSNR        124F'	E1.PUFLO        1252'	E1.PULO         
+1361'	E1.REPEL        1413'	E1.SCHW         127E'	E1.TAB          
+1297'	E1.TAB1         128A'	E1.TAB2         12CB'	E1.TABL         
+12D6'	E1.TABL1        12AB'	E1.TABS         12B2'	E1.TABS1        
+12B6'	E1.TABS3        12C0'	E1.TABS4        129D'	E1.TAUP         
+12A5'	E1.TAUP1        12A0'	E1.TAUP2        12F0'	E1.TCNLS        
+12F5'	E1.TCNOS        12EB'	E1.TCNRS        12FA'	E1.TCNUS        
+12FF'	E1.TCNZA        1307'	E1.TCUR         1304'	E1.THOME        
+120C'	E1.UMLZ1        140B'	E1.UND          1218'	E1.ZEINR        
+131A'	E1.ZNUM         11CD'	E1.ZSCH1        11CC'	E1.ZSCHR        
+11C7'	E1.ZSCHS        14A2'	E2.ERR5A        149C'	E2.ERR7A        
+1498'	E2.ERR99        14A0'	E2.ERRO5        1755'	E2.KOM          
+176C'	E2.KOM3         177F'	E2.KOMTR        17A1'	E2.KOMZ2        
+17A5'	E2.KOMZ3        179A'	E2.KOMZ4        1596'	E2.LANG         
+1593'	E2.LANG1        170B'	E2.MARK         15C1'	E2.MARKR        
+15F5'	E2.MRK          161C'	E2.MRK1         1625'	E2.MRK2         
+160F'	E2.MRK3         1619'	E2.MRK4         15CF'	E2.MRKR1        
+15EA'	E2.MRKR2        15DA'	E2.MRKR3        15E4'	E2.MRKR4        
+158C'	E2.NKOR1        1577'	E2.NKORR        150E'	E2.NZEI         
+1569'	E2.NZEI1        1574'	E2.NZEI3        155E'	E2.NZEI4        
+1531'	E2.NZEI6        1527'	E2.NZEI7        1512'	E2.NZEI8        
+1547'	E2.NZEIR        1538'	E2.NZEIV        1731'	E2.OP1          
+1726'	E2.OP2          173E'	E2.OP3          174C'	E2.OP4          
+1720'	E2.OPCO         1735'	E2.OPRD         17A9'	E2.POSI0        
+17AC'	E2.POSIT        1590'	E2.QLANG        1488'	E2.RESET        
+16A1'	E2.RUF1         1688'	E2.RUF2         1698'	E2.RUF3         
+16A6'	E2.RUF4         1663'	E2.RUF5         1691'	E2.RUF6         
+16E5'	E2.RUFQ         16CA'	E2.RUFQ1        16D2'	E2.RUFQ2        
+16AD'	E2.RUFQ3        16AC'	E2.RUFQ4        16B2'	E2.RUFQ5        
+1651'	E2.RUFT         164B'	E2.RUFTF        1491'	E2.SET          
+14E6'	E2.SPR          159E'	E2.SUCH         15A8'	E2.SUCH1        
+15B5'	E2.SUCHR        1442'	E2.TEX          14A5'	E2.TEX0         
+1428'	E2.TEXL         141E'	E2.TEXR         1423'	E2.TEXS         
+1417'	E2.TEXV         14B7'	E2.TEXV1        1473'	E2.TEXV2        
+145C'	E2.TEXV3        147B'	E2.TEXW         17B5'	E2.UML          
+1870'	E2.UML1         188E'	E2.UML2         1893'	E2.UML4         
+189D'	E2.UML5         1886'	E2.UML6         17D8'	E2.UMLA         
+17E7'	E2.UMLAD        1822'	E2.UMLBT        1807'	E2.UMLC         
+17E2'	E2.UMLE         182C'	E2.UMLF         1838'	E2.UMLF0        
+1855'	E2.UMLF1        185D'	E2.UMLF2        1866'	E2.UMLF3        
+186A'	E2.UMLFR        181A'	E2.UMLR         17C1'	E2.UMLT         
+17BF'	E2.UMLT1        14EE'	E2.ZNR          1504'	E2.ZNR0         
+1503'	E2.ZNR1         14F7'	E2.ZNR2         163C'	E2.ZNUMX        
+1645'	E2.ZNX1         163F'	E2.ZNX2         1A3A'	E3.ERR2A        
+191A'	E3.ERR3A        1A1F'	E3.ERR5B        1A1E'	E3.ERR5C        
+18D4'	E3.ERRO2        191B'	E3.ERRO3        193C'	E3.ERRO4        
+198A'	E3.ERRO7        1A25'	E3.ERRO8        1B85'	E3.ERRR         
+198F'	E3.EXCH         18D6'	E3.FEHL         18D9'	E3.FEHL1        
+18A7'	E3.KOMAN        19C8'	E3.LESE         19D5'	E3.LESE1        
+1A3E'	E3.MOVE         1A6F'	E3.MOVE1        1A2B'	E3.MOVE2        
+1A8F'	E3.MOVE3        1AE6'	E3.MOVE4        1AD1'	E3.MOVEV        
+19B7'	E3.NEU1         19B1'	E3.NEUST        1911'	E3.PL3          
+1B77'	E3.PTER4        1B7D'	E3.PTER9        1B69'	E3.PTEX         
+1AEF'	E3.PTSL         1B21'	E3.PTSL1        19E1'	E3.STAN         
+19F3'	E3.STAN1        19E2'	E3.STAN2        19EA'	E3.STAN3        
+1A06'	E3.STAN5        19ED'	E3.STAN6        1976'	E3.TAU1         
+197E'	E3.TAU2         195F'	E3.TAU3         196F'	E3.TAU4         
+1987'	E3.TAU5         196C'	E3.TAU6         1941'	E3.TAUS         
+18F5'	E3.Z1           1901'	E3.Z3           1905'	E3.Z4           
+'Symbolliste S1a'	MACRO-80 3.44	09-Dec-81	PAGE	S-1
 
 
-1905'	E3.Z4           1921'	E3.ZEIK         1928'	E3.ZEIKA        
-1932'	E3.ZEIKB        192F'	E3.ZEIKC        18DC'	E3.ZET          
-18FC'	E3.ZET1         1BDF'	E4.ERR0         1BDD'	E4.ERR13        
-1BE4'	E4.FERTL        1C5B'	E4.ISO          1BFF'	E4.LEER         
-1C16'	E4.LEER1        1B93'	E4.LESER        1B99'	E4.LLQ0         
-1BD4'	E4.LLQ2         1BB8'	E4.LLQ6         1BF0'	E4.LSQ1         
-1CCA'	E4.MBIF         1CD2'	E4.MBIF1        1CDB'	E4.MBIF2        
-1CE7'	E4.MBIF3        1CEB'	E4.MBIF4        1BEA'	E4.STANZ        
-1C1E'	E4.STEND        1C8C'	E4.TAB          1107'	ED.ARBFK        
-1104'	ED.ARBPH        1064'	ED.ERRO1        112B'	ED.FALAT        
-1137'	ED.FALFT        1094'	ED.FREI         107F'	ED.FREI2        
-10FB'	ED.KOEIN        10A9'	ED.KOMA1        1084'	ED.KOMA2        
-10B2'	ED.KOMA3        10F0'	ED.KONER        10E5'	ED.KONEV        
-000F 	ED.LZED1        101C'	ED.MEL1         101F'	ED.MEL11        
-1019'	ED.MEL2         1049'	ED.MEL3         100F'	ED.MEL5         
-1006'	ED.MELAN        1053'	ED.MELNL        1069'	ED.QUELL        
-111E'	ED.UMLKP        107C'	ED.VOLLF        11B7'	ED.ZED1         
-5F36 	KH.BILO         4066'	KMBINI          4060'	KMBROB          
-4063'	KMBRUC          4518'	LR.ILBL         44AA'	LR.ILBS         
-4471'	LR.IRLB         4580'	LR.IRLBL        4500'	LR.IRLBS        
-4475'	LR.KONV         4485'	LR.KONV1        4497'	LR.KONV2        
-449A'	LR.KONV3        0001 	LR.LBGEN        450D'	LR.LBL          
-4542'	LR.LBL2         454C'	LR.LBL3         4555'	LR.LBL4         
-4565'	LR.LBLE         449C'	LR.LBS          44E1'	LR.LBS1         
-44CD'	LR.LBS2         44E8'	LR.LBSE         4050'	LR.LRLBL        
-4053'	LR.LRLBS        4595'	LR.SKTBI        4695'	LR.SKTBO        
-458F'	LR.SWLBL        4589'	LR.SWLBS        22AD'	ME.AAALT        
-2BE0'	ME.AADR         2BEC'	ME.AADR1        1EBB'	ME.ABLVO        
-1FBD'	ME.ACLNK        1FD1'	ME.ACLNZ        1F3B'	ME.ACREC        
-1F4F'	ME.ACRNZ        1D6E'	ME.AHOME        2BEE'	ME.AKTA1        
-2BE2'	ME.AKTAD        1DBD'	ME.ANEWL        1D17'	ME.ANZ11        
-1D20'	ME.ANZ12        1D2A'	ME.ANZ13        1D3D'	ME.ANZ1B        
-1D0E'	ME.ANZ1Z        216E'	ME.ASCM1        1E64'	ME.ASCMD        
-2156'	ME.ASCMO        1E89'	ME.ASMD1        1E83'	ME.ASMD2        
-21EF'	ME.ATACO        204C'	ME.AUPU1        2013'	ME.AUPUF        
-1D32'	ME.AZ4B1        1D2F'	ME.AZ4BY        1D05'	ME.AZBL1        
-1D0A'	ME.AZBL2        1CF1'	ME.AZBLD        1EC9'	ME.BLRU1        
-1EBF'	ME.BLRUC        1EB4'	ME.BLVO1        1E9F'	ME.BLVO2        
-1E9C'	ME.BLVO3        1E92'	ME.BLVOR        2BF2'	ME.BPZE1        
-2BE6'	ME.BPZEI        1D82'	ME.BSAD1        1D85'	ME.BSAD2        
-1D90'	ME.BSADL        1D72'	ME.BSADR        1D94'	ME.BSADS        
-2BF1'	ME.BZEI1        2BE5'	ME.BZEIN        2BEB'	ME.BZMAX        
-1DDC'	ME.CAKA1        1DD3'	ME.CAKA2        1DC8'	ME.CAKAL        
-1E73'	ME.CBPZ         1FFD'	ME.CCPO         1E28'	ME.CHBLD        
-1E18'	ME.CHOC1        1E0B'	ME.CHOCH        1FAC'	ME.CLCBD        
-1F82'	ME.CLDE2        1F8C'	ME.CLDE3        1F7E'	ME.CLDE4        
-1F72'	ME.CLDEC        1F53'	ME.CLINK        1F94'	ME.CLNZ         
-1FA6'	ME.CLNZ1        1F99'	ME.CLNZ2        1EEF'	ME.CRAIC        
-1DFC'	ME.CRBLD        1F2C'	ME.CRCBD        1EFF'	ME.CREC2        
-1F09'	ME.CREC3        1EFB'	ME.CREC4        1ED0'	ME.CRECH        
-1F11'	ME.CRNZ         1F26'	ME.CRNZ1        1F16'	ME.CRNZ2        
-1DEE'	ME.CRUN1        1DDE'	ME.CRUNT        22CE'	ME.CVAX         
-22EB'	ME.CVX11        22F9'	ME.CVX1B        22EE'	ME.CVXA         
-22D7'	ME.CVXB         2132'	ME.DECB1        210D'	ME.DECBZ        
-205C'	ME.DELL         2074'	ME.DELL1        21D2'	ME.DSBAH        
-2175'	ME.DSBH         22BE'	ME.DSPA1        22B6'	ME.DSPAD        
-22C4'	ME.DSPOI        235F'	ME.END          20CC'	ME.GET          
-20EF'	ME.GET1         20DC'	ME.GET2         2360'	ME.HC           
-2329'	ME.HC01         2330'	ME.HC02         233E'	ME.HC021        
-2341'	ME.HC03         235B'	ME.HC04         2305'	ME.HDCOP        
-1E59'	ME.HEMD1        1E53'	ME.HEMD2        21BD'	ME.HEXM0        
-21DA'	ME.HEXM1        2189'	ME.HEXMO        1D52'	ME.HOME         
-1D63'	ME.HOME1        20FF'	ME.INCBZ        1FD5'	ME.INPUF        
-20B0'	ME.INSLN        2197'	ME.LHB          21A4'	ME.LHB1         
-2BE4'	ME.MOD          2BF0'	ME.MOD1         1D9B'	ME.NEWL         
-1DB3'	ME.NEWL1        227B'	ME.NHEXA        2C00 	ME.PUFAN        
-2BE7'	ME.PUZEI        1E4D'	ME.REFAH        1E7D'	ME.REFHA        
-2136'	ME.REFTB        21B4'	ME.RHB          21EA'	ME.RHB1         
-20C0'	ME.SAVE         20C6'	ME.SAVE1        20FB'	ME.STAR1        
-20F3'	ME.START        1D4D'	ME.SYS          21FF'	ME.SYSM         
-22FF'	ME.TAREP        1D4A'	ME.TASC1        1D42'	ME.TASCI        
-2201'	ME.TAUSF        207E'	ME.TDEL         1DC1'	ME.TSZMX        
-1E39'	ME.UMOD         2BE9'	ME.VTAS         2371'	ME.ZKEIN        
-2B00 	ME.ZN           0008 	P1.ANST         4950'	P1.B1           
-495B'	P1.B3           4967'	P1.B4           4968'	P1.B6           
-490F'	P1.CL1          49A6'	P1.CPI          49A8'	P1.CPI1         
-4992'	P1.CPI10        4997'	P1.CPI12        0002 	P1.DRU          
-0000 	P1.ES2          48A4'	P1.IN1          499C'	P1.LPI6         
-49A1'	P1.LPI8         4940'	P1.M1           4943'	P1.M2           
-493B'	P1.M3           487D'	P1.MRES         0001 	P1.PIO          
-487C'	P1.PRINT        48EB'	P1.PRIO         4975'	P1.SIOTB        
-497F'	P1.STAT         494C'	P1.ZEI          4987'	P1.ZEIZ         
-5388'	PF.BSLOE        5350'	PF.BSRAH        53AE'	PF.ENDE         
-''	MACRO-80 3.44	09-Dec-81	PAGE	S-2
+1921'	E3.ZEIK         1928'	E3.ZEIKA        1932'	E3.ZEIKB        
+192F'	E3.ZEIKC        18DC'	E3.ZET          18FC'	E3.ZET1         
+1BDF'	E4.ERR0         1BDD'	E4.ERR13        1BE4'	E4.FERTL        
+1C5B'	E4.ISO          1BFF'	E4.LEER         1C16'	E4.LEER1        
+1B93'	E4.LESER        1B99'	E4.LLQ0         1BD4'	E4.LLQ2         
+1BB8'	E4.LLQ6         1BF0'	E4.LSQ1         1CCA'	E4.MBIF         
+1CD2'	E4.MBIF1        1CDB'	E4.MBIF2        1CE7'	E4.MBIF3        
+1CEB'	E4.MBIF4        1BEA'	E4.STANZ        1C1E'	E4.STEND        
+1C8C'	E4.TAB          1107'	ED.ARBFK        1104'	ED.ARBPH        
+1064'	ED.ERRO1        112B'	ED.FALAT        1137'	ED.FALFT        
+1094'	ED.FREI         107F'	ED.FREI2        10FB'	ED.KOEIN        
+10A9'	ED.KOMA1        1084'	ED.KOMA2        10B2'	ED.KOMA3        
+10F0'	ED.KONER        10E5'	ED.KONEV        000F 	ED.LZED1        
+101C'	ED.MEL1         101F'	ED.MEL11        1019'	ED.MEL2         
+1049'	ED.MEL3         100F'	ED.MEL5         1006'	ED.MELAN        
+1053'	ED.MELNL        1069'	ED.QUELL        111E'	ED.UMLKP        
+107C'	ED.VOLLF        11B7'	ED.ZED1         5F4F 	KH.BILO         
+4066'	KMBINI          4060'	KMBROB          4063'	KMBRUC          
+4518'	LR.ILBL         44AA'	LR.ILBS         4471'	LR.IRLB         
+4580'	LR.IRLBL        4500'	LR.IRLBS        4475'	LR.KONV         
+4485'	LR.KONV1        4497'	LR.KONV2        449A'	LR.KONV3        
+0001 	LR.LBGEN        450D'	LR.LBL          4542'	LR.LBL2         
+454C'	LR.LBL3         4555'	LR.LBL4         4565'	LR.LBLE         
+449C'	LR.LBS          44E1'	LR.LBS1         44CD'	LR.LBS2         
+44E8'	LR.LBSE         4050'	LR.LRLBL        4053'	LR.LRLBS        
+4595'	LR.SKTBI        4695'	LR.SKTBO        458F'	LR.SWLBL        
+4589'	LR.SWLBS        22AD'	ME.AAALT        2BE0'	ME.AADR         
+2BEC'	ME.AADR1        1EBB'	ME.ABLVO        1FBD'	ME.ACLNK        
+1FD1'	ME.ACLNZ        1F3B'	ME.ACREC        1F4F'	ME.ACRNZ        
+1D6E'	ME.AHOME        2BEE'	ME.AKTA1        2BE2'	ME.AKTAD        
+1DBD'	ME.ANEWL        1D17'	ME.ANZ11        1D20'	ME.ANZ12        
+1D2A'	ME.ANZ13        1D3D'	ME.ANZ1B        1D0E'	ME.ANZ1Z        
+216E'	ME.ASCM1        1E64'	ME.ASCMD        2156'	ME.ASCMO        
+1E89'	ME.ASMD1        1E83'	ME.ASMD2        21EF'	ME.ATACO        
+204C'	ME.AUPU1        2013'	ME.AUPUF        1D32'	ME.AZ4B1        
+1D2F'	ME.AZ4BY        1D05'	ME.AZBL1        1D0A'	ME.AZBL2        
+1CF1'	ME.AZBLD        1EC9'	ME.BLRU1        1EBF'	ME.BLRUC        
+1EB4'	ME.BLVO1        1E9F'	ME.BLVO2        1E9C'	ME.BLVO3        
+1E92'	ME.BLVOR        2BF2'	ME.BPZE1        2BE6'	ME.BPZEI        
+1D82'	ME.BSAD1        1D85'	ME.BSAD2        1D90'	ME.BSADL        
+1D72'	ME.BSADR        1D94'	ME.BSADS        2BF1'	ME.BZEI1        
+2BE5'	ME.BZEIN        2BEB'	ME.BZMAX        1DDC'	ME.CAKA1        
+1DD3'	ME.CAKA2        1DC8'	ME.CAKAL        1E73'	ME.CBPZ         
+1FFD'	ME.CCPO         1E28'	ME.CHBLD        1E18'	ME.CHOC1        
+1E0B'	ME.CHOCH        1FAC'	ME.CLCBD        1F82'	ME.CLDE2        
+1F8C'	ME.CLDE3        1F7E'	ME.CLDE4        1F72'	ME.CLDEC        
+1F53'	ME.CLINK        1F94'	ME.CLNZ         1FA6'	ME.CLNZ1        
+1F99'	ME.CLNZ2        1EEF'	ME.CRAIC        1DFC'	ME.CRBLD        
+1F2C'	ME.CRCBD        1EFF'	ME.CREC2        1F09'	ME.CREC3        
+1EFB'	ME.CREC4        1ED0'	ME.CRECH        1F11'	ME.CRNZ         
+1F26'	ME.CRNZ1        1F16'	ME.CRNZ2        1DEE'	ME.CRUN1        
+1DDE'	ME.CRUNT        22CE'	ME.CVAX         22EB'	ME.CVX11        
+22F9'	ME.CVX1B        22EE'	ME.CVXA         22D7'	ME.CVXB         
+2132'	ME.DECB1        210D'	ME.DECBZ        205C'	ME.DELL         
+2074'	ME.DELL1        21D2'	ME.DSBAH        2175'	ME.DSBH         
+22BE'	ME.DSPA1        22B6'	ME.DSPAD        22C4'	ME.DSPOI        
+235F'	ME.END          20CC'	ME.GET          20EF'	ME.GET1         
+20DC'	ME.GET2         2360'	ME.HC           2329'	ME.HC01         
+2330'	ME.HC02         233E'	ME.HC021        2341'	ME.HC03         
+235B'	ME.HC04         2305'	ME.HDCOP        1E59'	ME.HEMD1        
+1E53'	ME.HEMD2        21BD'	ME.HEXM0        21DA'	ME.HEXM1        
+2189'	ME.HEXMO        1D52'	ME.HOME         1D63'	ME.HOME1        
+20FF'	ME.INCBZ        1FD5'	ME.INPUF        20B0'	ME.INSLN        
+2197'	ME.LHB          21A4'	ME.LHB1         2BE4'	ME.MOD          
+2BF0'	ME.MOD1         1D9B'	ME.NEWL         1DB3'	ME.NEWL1        
+227B'	ME.NHEXA        2C00 	ME.PUFAN        2BE7'	ME.PUZEI        
+1E4D'	ME.REFAH        1E7D'	ME.REFHA        2136'	ME.REFTB        
+21B4'	ME.RHB          21EA'	ME.RHB1         20C0'	ME.SAVE         
+20C6'	ME.SAVE1        20FB'	ME.STAR1        20F3'	ME.START        
+1D4D'	ME.SYS          21FF'	ME.SYSM         22FF'	ME.TAREP        
+1D4A'	ME.TASC1        1D42'	ME.TASCI        2201'	ME.TAUSF        
+207E'	ME.TDEL         1DC1'	ME.TSZMX        1E39'	ME.UMOD         
+2BE9'	ME.VTAS         2371'	ME.ZKEIN        2B00 	ME.ZN           
+0008 	P1.ANST         4950'	P1.B1           495B'	P1.B3           
+4967'	P1.B4           4968'	P1.B6           490F'	P1.CL1          
+49A6'	P1.CPI          49A8'	P1.CPI1         4992'	P1.CPI10        
+4997'	P1.CPI12        0002 	P1.DRU          0000 	P1.ES2          
+48A4'	P1.IN1          499C'	P1.LPI6         49A1'	P1.LPI8         
+4940'	P1.M1           4943'	P1.M2           493B'	P1.M3           
+487D'	P1.MRES         0001 	P1.PIO          487C'	P1.PRINT        
+48EB'	P1.PRIO         4975'	P1.SIOTB        497F'	P1.STAT         
+494C'	P1.ZEI          4987'	P1.ZEIZ         539D'	PF.BSLOE        
+5365'	PF.BSRAH        53C3'	PF.ENDE         53C3'	PF.MINTP        
+'Symbolliste S1a'	MACRO-80 3.44	09-Dec-81	PAGE	S-2
 
 
-53AE'	PF.MINTP        49C7'	PF.O1           49E9'	PF.O1ANF        
-4CA0'	PF.O1END        49CF'	PF.O2           4CA0'	PF.O2ANF        
-5084'	PF.O2END        49D7'	PF.O3           5084'	PF.O3ANF        
-532A'	PF.O3END        49DF'	PF.OB           53A7'	PF.OUTB1        
-53AA'	PF.OUTB2        49E6'	PF.OXEND        5330'	PF.S3M          
-539C'	PF.S4           0028 	PF.SPST         5379'	PF.SYS30        
-5341'	PF.SYS31        534C'	PF.SYS31A       47C8'	PR.CPI          
-47C4'	PR.CPI10        4043'	PR.DINIT        486F'	PR.END          
-47DD'	PR.LPI          47D9'	PR.LPI6         480A'	PR.M2           
-4046'	PR.MRES         47ED'	PR.NULL         47EC'	PR.ONULL        
-3327 	PR.PAR          4842'	PR.PR1          4849'	PR.PR2          
-4855'	PR.PR3          4857'	PR.PR4          4795'	PR.PRINA        
-4040'	PR.PRINT        4049'	PR.PRIO         47F3'	PR.SYS          
-0A05'	S1.ANZ1         09F8'	S1.ANZG         0975'	S1.BHKON        
-078C'	S1.BI1          0795'	S1.BI2          07BA'	S1.COPG         
-09C6'	S1.DA1          09CF'	S1.DA2          086E'	S1.DIV          
-086F'	S1.DIV1         0AAF'	S1.ED           0A6C'	S1.ED1          
-0A77'	S1.ED11         0A7B'	S1.ED2          0A8C'	S1.ED3          
-0A97'	S1.ED4          0AA0'	S1.ED5          0A7F'	S1.ED6          
-0A9C'	S1.ED7          0A3F'	S1.EDN          09DE'	S1.EIN1         
-09D5'	S1.EING         0826'	S1.ENDF1        0822'	S1.ENDF2        
-08C2'	S1.ERRO         08BF'	S1.ERROR        0AB9'	S1.ETEST        
-082B'	S1.FOEX         0833'	S1.FOEX1        098B'	S1.HB10         
-0951'	S1.HBKON        07D3'	S1.HCP          083D'	S1.HDI          
-085B'	S1.HDI1         086B'	S1.HDI3         0877'	S1.IDH          
-0896'	S1.IDH1         087F'	S1.IDH2         0883'	S1.IDH3         
-098F'	S1.IDH41        0892'	S1.IDHE         0890'	S1.IDHF         
-093B'	S1.INPTR        08EF'	S1.KET1         08F7'	S1.KET2         
-08F3'	S1.KET3         08EC'	S1.KETTE        07F6'	S1.KODE         
-07FE'	S1.KODE1        0968'	S1.KON1         0983'	S1.KON2         
-090F'	S1.LT1Z         0005 	S1.LZS11        0005 	S1.LZS12        
-000E 	S1.LZS13        07DA'	S1.M1           07DD'	S1.M2           
-08AF'	S1.MELDE        08AE'	S1.MELDN        08A5'	S1.MUL10        
-0921'	S1.MX           080C'	S1.PFO1         09F5'	S1.RET          
-092B'	S1.RNL          0923'	S1.RNR          089E'	S1.SIEBD        
-0814'	S1.SPOSN        0A3C'	S1.STAB         0A30'	S1.STAND        
-0800'	S1.STANL        07AC'	S1.STR          0901'	S1.SUZA         
-0905'	S1.SUZA1        090A'	S1.SUZA3        08FB'	S1.SUZEI        
-0A2E'	S1.TE1          0A19'	S1.TEST         0933'	S1.UMS          
-0972'	S1.ZAHL         081F'	S1.ZENDF        08D1'	S1.ZS11         
-08D7'	S1.ZS12         08DD'	S1.ZS13         004F 	SD.AMB          
-2C00 	SD.BPA          3000 	SD.BWSA         0080 	SD.CTCK0        
-0002 	SD.CTCKA        0F70 	SD.DEAT         1000 	SD.EDITA        
-0010 	SD.GENE         001E 	SD.NL           8820 	SD.NPA          
-8410 	SD.NPI          8420 	SD.PFFA         8010 	SD.PFFI         
-001C 	SD.PSANZ        0000 	SD.QTAB1        0009 	SD.QTAB2        
-000F 	SD.QTAB3        0022 	SD.QTAB4        0C00 	SD.RAM          
-0020 	SD.SPACE        0000 	SD.SYSTA        0009 	SD.TAB          
-000A 	SD.TABZA        8830 	SD.TPA          FBFF 	SD.TPE          
-8000 	SD.VPI          0002 	SD.ZEIT1        0010 	SD.ZEIT2        
-0F6B'	SM.ADR          0E52'	SM.AEATB        0E1E'	SM.ANFAD        
-0E24'	SM.BWSE         0D98'	SM.BZA          0F6D'	SM.CONTR        
-0E5E'	SM.CRCZ         0FFC 	SM.CTRL         0FF0 	SM.DATUM        
-0DAC'	SM.DEL          0DAA'	SM.DELZ         0FE0 	SM.EAAMB        
-0F70'	SM.EADRU        0FA0'	SM.EALBL        0F80'	SM.EALBS        
-0DB0'	SM.EINA         0DC4'	SM.END          0E60'	SM.FEHLZ        
-0D81'	SM.FKT          0D00'	SM.FKTAB        0D93'	SM.FSTAT        
-0D92'	SM.GRZEI        0E64'	SM.IDAT         0FFE 	SM.IMERK        
-0FFD 	SM.KGMER        0F69'	SM.KOMDO        0026 	SM.LOE          
-000F 	SM.LOE1         0DC6'	SM.LZA          0E12'	SM.LZN          
-0D91'	SM.MERK         0D95'	SM.MODE         0DAE'	SM.NEWL         
-0E26'	SM.NUTZK        0E20'	SM.PARAM        0E61'	SM.POS          
-0FF7 	SM.PTS          0E17'	SM.PTSA         FC00 	SM.PTSC         
-0E15'	SM.PTSE         0E65'	SM.PUFFS        0E54'	SM.PZAUS        
-0E56'	SM.PZEIN        0FF9 	SM.RST38        0E63'	SM.SDAT         
-0DB7'	SM.SMAX         0DBD'	SM.SMAX2        0DB5'	SM.SMIN         
-0DBB'	SM.SMIN2        0DBF'	SM.SPANZ        0FFF 	SM.SPMER        
-0DB3'	SM.SPOS         0DB9'	SM.SPOS2        0D00 	SM.STACK        
-0E1C'	SM.START        0D94'	SM.STAT         0DA8'	SM.TABU         
-0D9B'	SM.TABZ         0D90'	SM.TC           0D80'	SM.TK           
-0DA5'	SM.UMERK        0DA6'	SM.USCH         0D99'	SM.WEITE        
-0DC0'	SM.WINA         0DC2'	SM.WINE         0E5C'	SM.Z1           
-0E5D'	SM.Z2           0DBE'	SM.ZANZ         0E58'	SM.ZAUS         
-0E19'	SM.ZEIAD        0E5A'	SM.ZEIN         0F6A'	SM.ZEITK        
-0D96'	SM.ZEIZ         0E1B'	SM.ZEIZ2        0DC7'	SM.ZKA          
-0E13'	SM.ZKN          0DB6'	SM.ZMAX         0DBC'	SM.ZMAX2        
-0DB4'	SM.ZMIN         0DBA'	SM.ZMIN2        0DB2'	SM.ZPOS         
-0DB8'	SM.ZPOS2        0D8E'	SM.ZSMER        0D8F'	SM.ZSTC         
-05A5'	SY.ADDBL        0702'	SY.AEIN         05A8'	SY.AMSZ         
-05AE'	SY.AMSZ1        0490'	SY.BILA1        048D'	SY.BILAD        
-0644'	SY.BILO         0567'	SY.BWSAF        05A2'	SY.BWSE         
-0598'	SY.BWSL         0631'	SY.CNLS         063B'	SY.CNOS         
-062C'	SY.CNRS         0636'	SY.CNUS         0580'	SY.CPOS         
-''	MACRO-80 3.44	09-Dec-81	PAGE	S-3
+49DC'	PF.O1           49FE'	PF.O1ANF        4CB5'	PF.O1END        
+49E4'	PF.O2           4CB5'	PF.O2ANF        5099'	PF.O2END        
+49EC'	PF.O3           5099'	PF.O3ANF        533F'	PF.O3END        
+49F4'	PF.OB           53BC'	PF.OUTB1        53BF'	PF.OUTB2        
+49FB'	PF.OXEND        5345'	PF.S3M          53B1'	PF.S4           
+538E'	PF.SYS30        5356'	PF.SYS31        5361'	PF.SYS31A       
+47C8'	PR.CPI          47C4'	PR.CPI10        4043'	PR.DINIT        
+486F'	PR.END          47DD'	PR.LPI          47D9'	PR.LPI6         
+480A'	PR.M2           4046'	PR.MRES         47ED'	PR.NULL         
+47EC'	PR.ONULL        3327 	PR.PAR          4842'	PR.PR1          
+4849'	PR.PR2          4855'	PR.PR3          4857'	PR.PR4          
+4795'	PR.PRINA        4040'	PR.PRINT        4049'	PR.PRIO         
+47F3'	PR.SYS          0A05'	S1.ANZ1         09F8'	S1.ANZG         
+0975'	S1.BHKON        078C'	S1.BI1          0795'	S1.BI2          
+07BA'	S1.COPG         09C6'	S1.DA1          09CF'	S1.DA2          
+086E'	S1.DIV          086F'	S1.DIV1         0AAF'	S1.ED           
+0A6C'	S1.ED1          0A77'	S1.ED11         0A7B'	S1.ED2          
+0A8C'	S1.ED3          0A97'	S1.ED4          0AA0'	S1.ED5          
+0A7F'	S1.ED6          0A9C'	S1.ED7          0A3F'	S1.EDN          
+09DE'	S1.EIN1         09D5'	S1.EING         0826'	S1.ENDF1        
+0822'	S1.ENDF2        08C2'	S1.ERRO         08BF'	S1.ERROR        
+0AB9'	S1.ETEST        082B'	S1.FOEX         0833'	S1.FOEX1        
+098B'	S1.HB10         0951'	S1.HBKON        07D3'	S1.HCP          
+083D'	S1.HDI          085B'	S1.HDI1         086B'	S1.HDI3         
+0877'	S1.IDH          0896'	S1.IDH1         087F'	S1.IDH2         
+0883'	S1.IDH3         098F'	S1.IDH41        0892'	S1.IDHE         
+0890'	S1.IDHF         093B'	S1.INPTR        08EF'	S1.KET1         
+08F7'	S1.KET2         08F3'	S1.KET3         08EC'	S1.KETTE        
+07F6'	S1.KODE         07FE'	S1.KODE1        0968'	S1.KON1         
+0983'	S1.KON2         090F'	S1.LT1Z         0005 	S1.LZS11        
+0005 	S1.LZS12        000E 	S1.LZS13        07DA'	S1.M1           
+07DD'	S1.M2           08AF'	S1.MELDE        08AE'	S1.MELDN        
+08A5'	S1.MUL10        0921'	S1.MX           080C'	S1.PFO1         
+09F5'	S1.RET          092B'	S1.RNL          0923'	S1.RNR          
+089E'	S1.SIEBD        0814'	S1.SPOSN        0A3C'	S1.STAB         
+0A30'	S1.STAND        0800'	S1.STANL        07AC'	S1.STR          
+0901'	S1.SUZA         0905'	S1.SUZA1        090A'	S1.SUZA3        
+08FB'	S1.SUZEI        0A2E'	S1.TE1          0A19'	S1.TEST         
+0933'	S1.UMS          0972'	S1.ZAHL         081F'	S1.ZENDF        
+08D1'	S1.ZS11         08D7'	S1.ZS12         08DD'	S1.ZS13         
+004F 	SD.AMB          2C00 	SD.BPA          3000 	SD.BWSA         
+0080 	SD.CTCK0        0002 	SD.CTCKA        0F70 	SD.DEAT         
+1000 	SD.EDITA        0010 	SD.GENE         001E 	SD.NL           
+8820 	SD.NPA          8410 	SD.NPI          8420 	SD.PFFA         
+8010 	SD.PFFI         0030 	SD.PSANZ        0000 	SD.QTAB1        
+0009 	SD.QTAB2        000F 	SD.QTAB3        0022 	SD.QTAB4        
+0C00 	SD.RAM          0020 	SD.SPACE        0028 	SD.SPST         
+0000 	SD.SYSTA        0009 	SD.TAB          000A 	SD.TABZA        
+8830 	SD.TPA          FBFF 	SD.TPE          8000 	SD.VPI          
+0002 	SD.ZEIT1        0010 	SD.ZEIT2        0F6B'	SM.ADR          
+0E52'	SM.AEATB        0E1E'	SM.ANFAD        0E24'	SM.BWSE         
+0D98'	SM.BZA          0F6D'	SM.CONTR        0E5E'	SM.CRCZ         
+0FFC 	SM.CTRL         0FF0 	SM.DATUM        0DAC'	SM.DEL          
+0DAA'	SM.DELZ         0FE0 	SM.EAAMB        0F70'	SM.EADRU        
+0FA0'	SM.EALBL        0F80'	SM.EALBS        0DB0'	SM.EINA         
+0DC4'	SM.END          0E60'	SM.FEHLZ        0D81'	SM.FKT          
+0D00'	SM.FKTAB        0D93'	SM.FSTAT        0D92'	SM.GRZEI        
+0E64'	SM.IDAT         0FFE 	SM.IMERK        0FFD 	SM.KGMER        
+0F69'	SM.KOMDO        0026 	SM.LOE          000F 	SM.LOE1         
+0DC6'	SM.LZA          0E12'	SM.LZN          0D91'	SM.MERK         
+0D95'	SM.MODE         0DAE'	SM.NEWL         0E26'	SM.NUTZK        
+0E20'	SM.PARAM        0E61'	SM.POS          0FF7 	SM.PTS          
+0E17'	SM.PTSA         FC00 	SM.PTSC         0E15'	SM.PTSE         
+0E65'	SM.PUFFS        0E54'	SM.PZAUS        0E56'	SM.PZEIN        
+0FF9 	SM.RST38        0E63'	SM.SDAT         0DB7'	SM.SMAX         
+0DBD'	SM.SMAX2        0DB5'	SM.SMIN         0DBB'	SM.SMIN2        
+0DBF'	SM.SPANZ        0FFF 	SM.SPMER        0DB3'	SM.SPOS         
+0DB9'	SM.SPOS2        0D00 	SM.STACK        0E1C'	SM.START        
+0D94'	SM.STAT         0DA8'	SM.TABU         0D9B'	SM.TABZ         
+0D90'	SM.TC           0D80'	SM.TK           0DA5'	SM.UMERK        
+0DA6'	SM.USCH         0D99'	SM.WEITE        0DC0'	SM.WINA         
+0DC2'	SM.WINE         0E5C'	SM.Z1           0E5D'	SM.Z2           
+0DBE'	SM.ZANZ         0E58'	SM.ZAUS         0E19'	SM.ZEIAD        
+0E5A'	SM.ZEIN         0F6A'	SM.ZEITK        0D96'	SM.ZEIZ         
+0E1B'	SM.ZEIZ2        0DC7'	SM.ZKA          0E13'	SM.ZKN          
+0DB6'	SM.ZMAX         0DBC'	SM.ZMAX2        0DB4'	SM.ZMIN         
+0DBA'	SM.ZMIN2        0DB2'	SM.ZPOS         0DB8'	SM.ZPOS2        
+0D8E'	SM.ZSMER        0D8F'	SM.ZSTC         05A5'	SY.ADDBL        
+0702'	SY.AEIN         05A8'	SY.AMSZ         05AE'	SY.AMSZ1        
+0490'	SY.BILA1        048D'	SY.BILAD        0644'	SY.BILO         
+0567'	SY.BWSAF        05A2'	SY.BWSE         0598'	SY.BWSL         
+0631'	SY.CNLS         063B'	SY.CNOS         062C'	SY.CNRS         
+0636'	SY.CNUS         0580'	SY.CPOS         063E'	SY.CURS         
+'Symbolliste S1a'	MACRO-80 3.44	09-Dec-81	PAGE	S-3
 
 
-063E'	SY.CURS         0601'	SY.DCPOS        05CC'	SY.DEC2         
-06FC'	SY.DEL1         06FB'	SY.DEL2         06F2'	SY.DELZL        
-0625'	SY.DESZ         05C1'	SY.DSPOS        05B4'	SY.DZPOS        
-0661'	SY.FKTLA        05FA'	SY.ICPOS        0072'	SY.ICTC1        
-0074'	SY.ICTC2        0076'	SY.ICTC3        0183'	SY.IFKT1        
-0190'	SY.IFKT2        019B'	SY.IFKT3        01A5'	SY.IFKT4        
-05F3'	SY.INC1         05EB'	SY.INC2         05F1'	SY.INC3         
-05F4'	SY.INC4         015B'	SY.INFKT        0121'	SY.INI          
-012D'	SY.INI1         0133'	SY.INI2         0136'	SY.INI3         
-0118'	SY.ININ1        0118'	SY.ININ3        0143'	SY.INNMI        
-00CF'	SY.INRE         00A0'	SY.INRE1        00B1'	SY.INRE2        
-0148'	SY.INSTB        0153'	SY.INSTC        0400'	SY.IO           
-05E0'	SY.ISPOS        0058'	SY.ISRA0        0070'	SY.ISRA3        
-05D3'	SY.IZPOS        04A0'	SY.KOM          04F8'	SY.KOM1         
-0504'	SY.KOM2         0614'	SY.LCP1         0608'	SY.LCPOS        
-0008 	SY.LZSY1        000E 	SY.LZSY2        000B 	SY.LZSY3        
-0008 	SY.LZSY4        06EB'	SY.MELD         06E5'	SY.MELDE        
-0696'	SY.MEML1        068D'	SY.MEMLA        070D'	SY.NL           
-0066'	SY.NMI          00AD'	SY.OUTB1        058A'	SY.POS1         
-0583'	SY.POS3         0587'	SY.POS4         056F'	SY.POS5         
-0595'	SY.POS7         058C'	SY.POSA         06C0'	SY.PRUEF        
-054A'	SY.QTABL        06A6'	SY.RALO         06B1'	SY.RALO1        
-06C7'	SY.RALO2        06DD'	SY.RAMPR        04E8'	SY.RESC         
-04F5'	SY.RESC1        4036'	SY.RESCG        0010'	SY.RST10        
-0018'	SY.RST18        0020'	SY.RST20        0028'	SY.RST28        
-0030'	SY.RST30        0038'	SY.RST38        0008'	SY.RST8         
-04AE'	SY.SETC         04CC'	SY.SETC1        4030'	SY.SETCG        
-04D1'	SY.SETCHL       04E1'	SY.SETCHL1      04E5'	SY.SETCHL2      
-4033'	SY.SETCHLG      056C'	SY.SPPOF        0592'	SY.SPPOS        
-0720'	SY.SUCH1        071E'	SY.SUCH2        0719'	SY.SUCHE        
-000B'	SY.SYSTB        0756'	SY.SZA1         0752'	SY.SZAHL        
-0745'	SY.SZEI         0748'	SY.SZEI1        074F'	SY.SZEI2        
-074A'	SY.SZEI3        074B'	SY.SZEI4        073B'	SY.VERG1        
-0743'	SY.VERG2        073A'	SY.VERGL        0762'	SY.ZAHL         
-0576'	SY.ZLPOF        057B'	SY.ZLPOS        051D'	SY.ZSY1         
-0526'	SY.ZSY2         0535'	SY.ZSY3         0541'	SY.ZSY4         
-075F'	SY.ZZA1         075B'	SY.ZZAHL        4136'	TA.AB01         
-438E'	TA.AB1          413F'	TA.ABF1         41C5'	TA.ABF10        
-41E3'	TA.ABF11        41E7'	TA.ABF12        41EE'	TA.ABF13        
-4128'	TA.ABF14        4122'	TA.ABF15        4126'	TA.ABF16        
-414F'	TA.ABF2         41F9'	TA.ABF20        4152'	TA.ABF3         
-41A7'	TA.ABF6         41AF'	TA.ABF7         41B5'	TA.ABF8         
-41BF'	TA.ABF9         4364'	TA.ABFR         4026'	TA.ABFR1        
-4393'	TA.ABFR2        422B'	TA.ABFR9        4271'	TA.BBB          
-43AF'	TA.CT1          43A3'	TA.CTRL         43B9'	TA.CTRL0        
-43C0'	TA.CTRL1        43CA'	TA.CTRL2        429E'	TA.E0IN         
-421F'	TA.EAW2         4223'	TA.EAW3         4226'	TA.EAW5         
-4236'	TA.EW1          4297'	TA.FKT1         428B'	TA.FKT2         
-4286'	TA.HZE          4258'	TA.INSMD        4261'	TA.INSME        
-4262'	TA.INSML        41A6'	TA.MM           41A4'	TA.MM1          
-42C2'	TA.STAS1        4253'	TA.STEU1        4249'	TA.STEUT        
-4284'	TA.STZ          42D6'	TA.TAB1         4336'	TA.TAB2         
-434E'	TA.TAB3         435A'	TA.TAB4         4100'	TA.TAST         
-4020'	TA.TAST1        41CF'	TA.TFE          4023'	TA.TFE1         
-41D5'	TA.TFE2         4164'	TA.WART         4166'	TA.WART1        
-4192'	TA.WART3        4198'	TA.WART4        0002 	TR.ANST         
-00A0 	TR.ATAST        0001 	TR.CTR          43D6'	TR.PIOP2        
-43D4'	TR.PIOPR        43EE'	TR.PIOU2        43EE'	TR.PIOUM        
-4467'	TR.PST          4018'	TR.PSTAS        4003'	TR.TA1          
-4006'	TR.TA2          4009'	TR.TA3          43EF'	TR.TA31         
-43F1'	TR.TA32         0002 	TR.TAST         4015'	TR.TBEL         
-4012'	TR.TEM          400C'	TR.TFE          43FD'	TR.TFE1         
-43FF'	TR.TFE2         400F'	TR.TIM          4000'	TR.TINIT        
-440D'	TR.TTA11        440F'	TR.TTA12        4416'	TR.TTA21        
-4418'	TR.TTA22        4442'	TR.TTBL1        4444'	TR.TTBL2        
-443C'	TR.TTEM1        443E'	TR.TTEM2        4440'	TR.TTEM3        
-441C'	TR.TTIM1        441E'	TR.TTIM2        4431'	TR.TTIM3        
-442E'	TR.TTIM4        6F3F 	UC.CVABX        6F6E 	UC.CVAXB        
-6FC2 	UC.CVBD2        6F49 	UC.CVBX         7007 	UC.CVDB         
-6B59 	UR.MIMO         
+0601'	SY.DCPOS        05CC'	SY.DEC2         06FC'	SY.DEL1         
+06FB'	SY.DEL2         06F2'	SY.DELZL        0625'	SY.DESZ         
+05C1'	SY.DSPOS        05B4'	SY.DZPOS        0661'	SY.FKTLA        
+05FA'	SY.ICPOS        0072'	SY.ICTC1        0074'	SY.ICTC2        
+0076'	SY.ICTC3        0183'	SY.IFKT1        0190'	SY.IFKT2        
+019B'	SY.IFKT3        01A5'	SY.IFKT4        05F3'	SY.INC1         
+05EB'	SY.INC2         05F1'	SY.INC3         05F4'	SY.INC4         
+015B'	SY.INFKT        0121'	SY.INI          012D'	SY.INI1         
+0133'	SY.INI2         0136'	SY.INI3         0118'	SY.ININ1        
+0118'	SY.ININ3        0143'	SY.INNMI        00CF'	SY.INRE         
+00A0'	SY.INRE1        00B1'	SY.INRE2        0148'	SY.INSTB        
+0153'	SY.INSTC        0400'	SY.IO           05E0'	SY.ISPOS        
+0058'	SY.ISRA0        0070'	SY.ISRA3        05D3'	SY.IZPOS        
+04A0'	SY.KOM          04F8'	SY.KOM1         0504'	SY.KOM2         
+0614'	SY.LCP1         0608'	SY.LCPOS        0008 	SY.LZSY1        
+000E 	SY.LZSY2        000B 	SY.LZSY3        0008 	SY.LZSY4        
+06EB'	SY.MELD         06E5'	SY.MELDE        0696'	SY.MEML1        
+068D'	SY.MEMLA        070D'	SY.NL           0066'	SY.NMI          
+00AD'	SY.OUTB1        058A'	SY.POS1         0583'	SY.POS3         
+0587'	SY.POS4         056F'	SY.POS5         0595'	SY.POS7         
+058C'	SY.POSA         06C0'	SY.PRUEF        054A'	SY.QTABL        
+06A6'	SY.RALO         06B1'	SY.RALO1        06C7'	SY.RALO2        
+06DD'	SY.RAMPR        04E8'	SY.RESC         04F5'	SY.RESC1        
+4036'	SY.RESCG        0010'	SY.RST10        0018'	SY.RST18        
+0020'	SY.RST20        0028'	SY.RST28        0030'	SY.RST30        
+0038'	SY.RST38        0008'	SY.RST8         04AE'	SY.SETC         
+04CC'	SY.SETC1        4030'	SY.SETCG        04D1'	SY.SETCHL       
+04E1'	SY.SETCHL1      04E5'	SY.SETCHL2      4033'	SY.SETCHLG      
+056C'	SY.SPPOF        0592'	SY.SPPOS        0720'	SY.SUCH1        
+071E'	SY.SUCH2        0719'	SY.SUCHE        000B'	SY.SYSTB        
+0756'	SY.SZA1         0752'	SY.SZAHL        0745'	SY.SZEI         
+0748'	SY.SZEI1        074F'	SY.SZEI2        074A'	SY.SZEI3        
+074B'	SY.SZEI4        073B'	SY.VERG1        0743'	SY.VERG2        
+073A'	SY.VERGL        0762'	SY.ZAHL         0576'	SY.ZLPOF        
+057B'	SY.ZLPOS        051D'	SY.ZSY1         0526'	SY.ZSY2         
+0535'	SY.ZSY3         0541'	SY.ZSY4         075F'	SY.ZZA1         
+075B'	SY.ZZAHL        4136'	TA.AB01         438E'	TA.AB1          
+413F'	TA.ABF1         41C5'	TA.ABF10        41E3'	TA.ABF11        
+41E7'	TA.ABF12        41EE'	TA.ABF13        4128'	TA.ABF14        
+4122'	TA.ABF15        4126'	TA.ABF16        414F'	TA.ABF2         
+41F9'	TA.ABF20        4152'	TA.ABF3         41A7'	TA.ABF6         
+41AF'	TA.ABF7         41B5'	TA.ABF8         41BF'	TA.ABF9         
+4364'	TA.ABFR         4026'	TA.ABFR1        4393'	TA.ABFR2        
+422B'	TA.ABFR9        4271'	TA.BBB          43AF'	TA.CT1          
+43A3'	TA.CTRL         43B9'	TA.CTRL0        43C0'	TA.CTRL1        
+43CA'	TA.CTRL2        429E'	TA.E0IN         421F'	TA.EAW2         
+4223'	TA.EAW3         4226'	TA.EAW5         4236'	TA.EW1          
+4297'	TA.FKT1         428B'	TA.FKT2         4286'	TA.HZE          
+4258'	TA.INSMD        4261'	TA.INSME        4262'	TA.INSML        
+41A6'	TA.MM           41A4'	TA.MM1          42C2'	TA.STAS1        
+4253'	TA.STEU1        4249'	TA.STEUT        4284'	TA.STZ          
+42D6'	TA.TAB1         4336'	TA.TAB2         434E'	TA.TAB3         
+435A'	TA.TAB4         4100'	TA.TAST         4020'	TA.TAST1        
+41CF'	TA.TFE          4023'	TA.TFE1         41D5'	TA.TFE2         
+4164'	TA.WART         4166'	TA.WART1        4192'	TA.WART3        
+4198'	TA.WART4        0002 	TR.ANST         00A0 	TR.ATAST        
+0001 	TR.CTR          43D6'	TR.PIOP2        43D4'	TR.PIOPR        
+43EE'	TR.PIOU2        43EE'	TR.PIOUM        4467'	TR.PST          
+4018'	TR.PSTAS        4003'	TR.TA1          4006'	TR.TA2          
+4009'	TR.TA3          43EF'	TR.TA31         43F1'	TR.TA32         
+0002 	TR.TAST         4015'	TR.TBEL         4012'	TR.TEM          
+400C'	TR.TFE          43FD'	TR.TFE1         43FF'	TR.TFE2         
+400F'	TR.TIM          4000'	TR.TINIT        440D'	TR.TTA11        
+440F'	TR.TTA12        4416'	TR.TTA21        4418'	TR.TTA22        
+4442'	TR.TTBL1        4444'	TR.TTBL2        443C'	TR.TTEM1        
+443E'	TR.TTEM2        4440'	TR.TTEM3        441C'	TR.TTIM1        
+441E'	TR.TTIM2        4431'	TR.TTIM3        442E'	TR.TTIM4        
+6F60 	UC.CVABX        6F8F 	UC.CVAXB        6FE3 	UC.CVBD2        
+6F6A 	UC.CVBX         7028 	UC.CVDB         6B72 	UR.MIMO         
 
 
 
 No Fatal error(s)
 
 
-    400F'	TR.TIM          4000'	TR.TINIT        
-440D'	TR.TTA11       
+

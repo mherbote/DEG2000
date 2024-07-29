@@ -90,19 +90,19 @@ KM.CNZA:
 	LD	A,(KM.TX2-KM.UP13+KM.RAM)
 	CP	'l'
 	JR	Z,KM.CNZA1
-	LD	(IX+7),0
-	LD	(IX+8),1
+	LD	(IX+9),0
+	LD	(IX+10),1
 KM.CNZA1:
 	LD	A,71H
-	OR	(IX+5)
-	LD	(IX+5),A
+	OR	(IX+4)
+	LD	(IX+4),A
 	CALL	KM.UP5
-	LD	A,(IX+5)
+	LD	A,(IX+4)
 	CALL	KM.UP1
 	DB	2
 	CALL	KM.UP2
 	DB	15H
-	LD	(IX+5),A
+	LD	(IX+4),A
 	JP	KM.UP4-KM.UP13+KM.RAM
 ;****************************************************************
 ;*                  Routine fuer die Taste   E T 1              *
@@ -111,8 +111,8 @@ KM.NEWL:
 	BIT	7,(IX)
 	RET	NZ
 	LD	HL,KM.PUFF
-	LD	(KM.KMTAB+0DFH),HL	;2BE0
-	LD	A,(IX+8)
+	LD	(KM.KMTAB+0DFH),HL	;2BE0	;???
+	LD	A,(IX+10)
 	DEC	A
 	AND	0F0H
 	RLCA
@@ -169,7 +169,7 @@ KM.EINA7:
 	RET	Z
 	CP	3
 	RET	NC
-	LD	(IX+4),A
+	LD	(IX+3),A
 	CALL	KM.UP20
 	JR	KM.EINA6
 
@@ -185,14 +185,14 @@ KM.EINA9:
 	LD	E,A
 	LD	D,0
 	LD	H,D
-	LD	L,(IX+8)
+	LD	L,(IX+10)
 	ADD	HL,HL
 	ADD	HL,HL
 	ADD	HL,HL
 	ADD	HL,HL
 	ADD	HL,DE
-	LD	(IX+7),H
-	LD	(IX+8),L
+	LD	(IX+9),H
+	LD	(IX+10),L
 	JR	KM.EINA6
 
 KM.EINAA:
@@ -206,15 +206,15 @@ KM.EINAB:
 	RET
 
 KM.EINAC:
-;	LD	(IX+13),0	;???
-;	LD	(IX+14),0	;???
+	LD	(IX+13),0	;???
+	LD	(IX+14),0	;???
 KM.EINAD:
 	CALL	KM.UP1
 	DB	2
-	LD	A,(IX+7)
-	OR	(IX+8)
+	LD	A,(IX+9)
+	OR	(IX+10)
 	JR	Z,KM.EINAE
-;	INC	(IX+13)	;???
+	INC	(IX+13)	;???
 	CALL	KM.EINAE
 	JR	KM.EINAD
 
@@ -228,7 +228,7 @@ KM.EINAE:
 	RET
 
 KM.UP20:
-	LD	C,(IX+3)
+	LD	C,(IX+2)
 	INC	C	;???
 	INC	C
 	INC	C
@@ -342,7 +342,7 @@ KM.UP3:
 	PUSH	AF
 	LD	A,(HL)
 	INC	HL
-	LD	(IX+5),A
+	LD	(IX+4),A
 	POP	AF
 	EX	(SP),HL
 KM.UP5:
@@ -386,10 +386,10 @@ KM.UP12:
 
 KM.UP41:
 	LD	DE,SD.BWSA
-	LD	A,(IX+8)
+	LD	A,(IX+10)
 	OR	A
 	JR	NZ,KM.UP42
-	BIT	0,(IX+7)
+	BIT	0,(IX+9)
 	RET	Z
 	PUSH	AF
 	CALL	KM.MANZ
@@ -447,7 +447,7 @@ KM.UP14:
 KM.UP4:
 	PUSH	AF
 	CALL	KM.LOE2
-	LD	A,(IX+4)
+	LD	A,(IX+3)
 	ADD	A,30H
 	LD	(KM.TX1-KM.UP13+KM.RAM),A
 	LD	DE,SD.BWSA + 18*80 ;5A0H
@@ -478,7 +478,7 @@ KM.TX1:
 	INC	HL
 	CALL	KM.UP15-KM.UP13+KM.RAM
 	INC	DE
-	LD	B,(IX+8)
+	LD	B,(IX+10)
 	PUSH	HL
 	INC	HL
 	DJNZ	$-1
