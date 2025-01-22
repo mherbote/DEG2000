@@ -16,6 +16,9 @@ DEG2000 Emulator auf Basis des Z80-Emulator von Udo Munk Release 1.17
 <image src="./DOC/images/Tastatur.jpg"   alt="Tastatur"   border="0">
 
 <br>
+<image src="./DOC/images/Zentrale.jpg"   alt="Zentrale"   border="0">
+
+<br>
 <image src="./DOC/images/Bildschirm.jpg" alt="Bildschirm" border="0">
 
 <br>
