@@ -416,6 +416,7 @@ Public Class ucKassette
                                 .Rows(RowIndex).Cells("ChangeK").Value = "Close"
                                 .Rows(RowIndex).Cells("CheckCreateK").Value = True
                             End With
+                            RIndex = RowIndex
                     End Select
                 End If
             Else                                                                      ' Close
@@ -455,7 +456,9 @@ Public Class ucKassette
             NameOld = Laufwerke.Kassetten1.Rows(RowIndex).Cells("DateinameK").Value
             Kassette.CloseKassette()                                                                ' Kassette schließen
 
-            My.Computer.FileSystem.RenameFile(NameOld, Name)                                        ' Kassette umbenennen
+            If Name <> Path.GetFileName(NameOld) Then
+                My.Computer.FileSystem.RenameFile(NameOld, Name)                                        ' Kassette umbenennen
+            End If
 
             NameOld = Path.GetDirectoryName(NameOld) + "\"
 

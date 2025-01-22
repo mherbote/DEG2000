@@ -8,9 +8,9 @@
 msg:
 	defb	cr,lf,0,0,0,bell
 
-	defm	'monitor_______MH_-_computer_____Version 2.3',cr,lf
 	defm	'MC01-MONITOR EPR-START V3.4 ,AL = L, RDK/HE',cr,lf
 	defm	'===========================================',cr,lf
+	defm	'monitor_______MH_-_computer_____Version 2.3',cr,lf
 	defm	'(C) Nov 1984             by  Marcus Herbote',cr,lf,0
 msgl	equ	$-msg
 ;

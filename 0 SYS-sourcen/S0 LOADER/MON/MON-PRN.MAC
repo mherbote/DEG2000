@@ -134,41 +134,41 @@
   F036    0D 0A 00 00    C      	defb	cr,lf,0,0,0,bell
   F03A    00 07          C      
                          C      
-  F03C    6D 6F 6E 69    C      	defm	'monitor_______MH_-_computer_____Version 2.3',cr,lf
-  F040    74 6F 72 5F    C      
-  F044    5F 5F 5F 5F    C      
-  F048    5F 5F 4D 48    C      
-  F04C    5F 2D 5F 63    C      
-  F050    6F 6D 70 75    C      
-  F054    74 65 72 5F    C      
-  F058    5F 5F 5F 5F    C      
-  F05C    56 65 72 73    C      
-  F060    69 6F 6E 20    C      
-  F064    32 2E 33 0D    C      
+  F03C    4D 43 30 31    C      	defm	'MC01-MONITOR EPR-START V3.4 ,AL = L, RDK/HE',cr,lf
+  F040    2D 4D 4F 4E    C      
+  F044    49 54 4F 52    C      
+  F048    20 45 50 52    C      
+  F04C    2D 53 54 41    C      
+  F050    52 54 20 56    C      
+  F054    33 2E 34 20    C      
+  F058    2C 41 4C 20    C      
+  F05C    3D 20 4C 2C    C      
+  F060    20 52 44 4B    C      
+  F064    2F 48 45 0D    C      
   F068    0A             C      
-  F069    4D 43 30 31    C      	defm	'MC01-MONITOR EPR-START V3.4 ,AL = L, RDK/HE',cr,lf
-  F06D    2D 4D 4F 4E    C      
-  F071    49 54 4F 52    C      
-  F075    20 45 50 52    C      
-  F079    2D 53 54 41    C      
-  F07D    52 54 20 56    C      
-  F081    33 2E 34 20    C      
-  F085    2C 41 4C 20    C      
-  F089    3D 20 4C 2C    C      
-  F08D    20 52 44 4B    C      
-  F091    2F 48 45 0D    C      
+  F069    3D 3D 3D 3D    C      	defm	'===========================================',cr,lf
+  F06D    3D 3D 3D 3D    C      
+  F071    3D 3D 3D 3D    C      
+  F075    3D 3D 3D 3D    C      
+  F079    3D 3D 3D 3D    C      
+  F07D    3D 3D 3D 3D    C      
+  F081    3D 3D 3D 3D    C      
+  F085    3D 3D 3D 3D    C      
+  F089    3D 3D 3D 3D    C      
+  F08D    3D 3D 3D 3D    C      
+  F091    3D 3D 3D 0D    C      
   F095    0A             C      
-  F096    3D 3D 3D 3D    C      	defm	'===========================================',cr,lf
-  F09A    3D 3D 3D 3D    C      
-  F09E    3D 3D 3D 3D    C      
-  F0A2    3D 3D 3D 3D    C      
-  F0A6    3D 3D 3D 3D    C      
-  F0AA    3D 3D 3D 3D    C      
-  F0AE    3D 3D 3D 3D    C      
-  F0B2    3D 3D 3D 3D    C      
-  F0B6    3D 3D 3D 3D    C      
-  F0BA    3D 3D 3D 3D    C      
-  F0BE    3D 3D 3D 0D    C      
+  F096    6D 6F 6E 69    C      	defm	'monitor_______MH_-_computer_____Version 2.3',cr,lf
+  F09A    74 6F 72 5F    C      
+  F09E    5F 5F 5F 5F    C      
+  F0A2    5F 5F 4D 48    C      
+  F0A6    5F 2D 5F 63    C      
+  F0AA    6F 6D 70 75    C      
+  F0AE    74 65 72 5F    C      
+  F0B2    5F 5F 5F 5F    C      
+  F0B6    56 65 72 73    C      
+  F0BA    69 6F 6E 20    C      
+  F0BE    32 2E 33 0D    C      
   F0C2    0A             C      
   F0C3    28 43 29 20    C      	defm	'(C) Nov 1984             by  Marcus Herbote',cr,lf,0
   F0C7    4E 6F 76 20    C      
