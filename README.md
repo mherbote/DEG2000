@@ -12,14 +12,14 @@ DEG2000 Emulator auf Basis des Z80-Emulator von Udo Munk Release 1.17
         <area shape="rect" coords="0650,0250,1000,0450" href="./DOC/images/Laufwerke.jpg">
 </map>
 
-<br>
+<br>DEG2000 - Tastatur<br>
 <image src="./DOC/images/Tastatur.jpg"   alt="Tastatur"   border="0">
 
-<br>
+<br>DEG2000 - Kontrollzentrum<br>
 <image src="./DOC/images/Zentrale.jpg"   alt="Zentrale"   border="0">
 
-<br>
+<br>DEG2000 - Bildschirm<br>
 <image src="./DOC/images/Bildschirm.jpg" alt="Bildschirm" border="0">
 
-<br>
+<br>DEG2000 - Laufwerke<br>
 <image src="./DOC/images/Laufwerke.jpg"  alt="Laufwerke"  border="0">

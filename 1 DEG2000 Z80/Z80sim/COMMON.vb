@@ -36,7 +36,7 @@ Module COMMON
     Public Const COPYR2 As String = "Copyright (C) 1987-2008 by Udo Munk"
     Public Const RELEASE As String = "1.17"
     Public Const USR_COM As String = "DEG2000-System Emulator"
-    Public Const USR_CPR As String = "Copyright (C) 1996-2024 by Marcus Herbote"
+    Public Const USR_CPR As String = "Copyright (C) 1996-2025 by Marcus Herbote"
     Public Const USR_CO1 As String = "D E G 2 0 0 0   Software"
     Public Const USR_CP1 As String = "Copyright (C) 1981-1982 by IfR             Berlin/GDR"
     Public Const USR_CP2 As String = "Copyright (C) 1983-1985 by K EAW           Berlin/GDR"

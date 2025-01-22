@@ -14,7 +14,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("Emuliert eine Z80-CPU für System DEG2000")> 
 <Assembly: AssemblyCompany("")> 
 <Assembly: AssemblyProduct("DEG2000")>
-<Assembly: AssemblyCopyright("Copyright ©  2024 by Marcus Herbote, Berlin")>
+<Assembly: AssemblyCopyright("Copyright © 2025 by Marcus Herbote, Berlin")>
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(False)> 

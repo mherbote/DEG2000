@@ -231,21 +231,25 @@ Public Class Tastatur
     Private Sub Ebene0_Click(sender As Object, e As EventArgs) Handles Button5.Click
         COMMON.PFebene = 0
         Call Init_PFi()
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(41))      'D59
         Call HideFocus()
     End Sub
     Private Sub Ebene1_Click(sender As Object, e As EventArgs) Handles Button10.Click
         COMMON.PFebene = 1
         Call Init_PFi()
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(42))      'C59
         Call HideFocus()
     End Sub
     Private Sub Ebene2_Click(sender As Object, e As EventArgs) Handles Button15.Click
         COMMON.PFebene = 2
         Call Init_PFi()
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(43))      'B59
         Call HideFocus()
     End Sub
     Private Sub Ebene3_Click(sender As Object, e As EventArgs) Handles Button20.Click
         COMMON.PFebene = 3
         Call Init_PFi()
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(44))      'A59
         Call HideFocus()
     End Sub
 #End Region

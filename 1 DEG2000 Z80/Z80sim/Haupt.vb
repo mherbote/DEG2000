@@ -81,8 +81,13 @@ Public Class Haupt
         COMMON.KeyCodes1(39) = "A56"        'PF11
         COMMON.KeyCodes1(40) = "A57"        'PF12
 
-        'MsgBox(ProgVerz + My.Settings.FontVerzeichnis + "\CODES_OLD.KEY")
-        Call GetKeyCodes(ProgVerz + My.Settings.FontVerzeichnis + "\CODES_OLD.KEY")
+        COMMON.KeyCodes1(41) = "D59"        'E=0
+        COMMON.KeyCodes1(42) = "C59"        'E=1
+        COMMON.KeyCodes1(43) = "B59"        'E=2
+        COMMON.KeyCodes1(44) = "A59"        'E=3
+
+        'MsgBox(ProgVerz + My.Settings.FontVerzeichnis + "\CODES.KEY")
+        Call GetKeyCodes(ProgVerz + My.Settings.FontVerzeichnis + "\CODES.KEY")
     End Sub
     Public Sub GetKeyCodes(ByVal datei As String)
         Dim file As System.IO.StreamReader
