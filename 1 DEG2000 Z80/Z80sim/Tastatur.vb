@@ -390,76 +390,83 @@ Public Class Tastatur
 #End Region
 
 #Region "NumPad0 ... NumPad9"
+    Private Sub Click2Buffer2(value1 As Byte, value2 As Byte)
+        Select Case Button46.BackColor
+            Case System.Drawing.Color.WhiteSmoke
+                Call Click2Buffer(&H100 + value2)
+            Case System.Drawing.Color.Red
+                Select Case Button66.BackColor
+                    Case System.Drawing.Color.WhiteSmoke
+                        Call Click2Buffer(&H100 + value1)
+                    Case System.Drawing.Color.Red
+                        Call Click2Buffer(&H110 + value1)
+                End Select
+        End Select
+    End Sub
     Private Sub Click_NP0(sender As Object, e As EventArgs) Handles Button23.Click
-        Call Click2Buffer(&H100 + Asc("0"))
+        Call Click2Buffer2(0, &H30)
         Call HideFocus()
     End Sub
     Private Sub Click_NP1(sender As Object, e As EventArgs) Handles Button27.Click
-        Call Click2Buffer(&H100 + Asc("1"))
+        Call Click2Buffer2(1, &H31)
         Call HideFocus()
     End Sub
     Private Sub Click_NP2(sender As Object, e As EventArgs) Handles Button26.Click
-        Call Click2Buffer(&H100 + Asc("2"))
+        Call Click2Buffer2(2, &H32)
         Call HideFocus()
     End Sub
     Private Sub Click_NP3(sender As Object, e As EventArgs) Handles Button25.Click
-        Call Click2Buffer(&H100 + Asc("3"))
+        Call Click2Buffer2(3, &H33)
         Call HideFocus()
     End Sub
     Private Sub Click_NP4(sender As Object, e As EventArgs) Handles Button31.Click
-        Call Click2Buffer(&H100 + Asc("4"))
+        Call Click2Buffer2(4, &H34)
         Call HideFocus()
     End Sub
     Private Sub Click_NP5(sender As Object, e As EventArgs) Handles Button30.Click
-        Call Click2Buffer(&H100 + Asc("5"))
+        Call Click2Buffer2(5, &H35)
         Call HideFocus()
     End Sub
     Private Sub Click_NP6(sender As Object, e As EventArgs) Handles Button29.Click
-        Call Click2Buffer(&H100 + Asc("6"))
+        Call Click2Buffer2(6, &H36)
         Call HideFocus()
     End Sub
     Private Sub Click_NP7(sender As Object, e As EventArgs) Handles Button35.Click
-        Call Click2Buffer(&H100 + Asc("7"))
+        Call Click2Buffer2(7, &H37)
         Call HideFocus()
     End Sub
     Private Sub Click_NP8(sender As Object, e As EventArgs) Handles Button34.Click
-        Call Click2Buffer(&H100 + Asc("8"))
+        Call Click2Buffer2(8, &H38)
         Call HideFocus()
     End Sub
     Private Sub Click_NP9(sender As Object, e As EventArgs) Handles Button33.Click
-        Call Click2Buffer(&H100 + Asc("9"))
+        Call Click2Buffer2(9, &H39)
         Call HideFocus()
     End Sub
 #End Region
 #Region "NumPadA ... NumPadF"
-    Private Sub Click_NPA(sender As Object, e As EventArgs) Handles Button22.Click
-        '        Call Click2Buffer(&H100 + Asc("A"))
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(23))      'A52
+    Private Sub Click_NPA(sender As Object, e As EventArgs) Handles Button22.Click      ' Hex "A"
+        Call Click2Buffer2(10, COMMON.KeyCodes2(23))      'A52
         Call HideFocus()
     End Sub
-    Private Sub Click_NPB(sender As Object, e As EventArgs) Handles Button21.Click
-        '        Call Click2Buffer(&H100 + Asc("B"))
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(24))      'A53
+    Private Sub Click_NPB(sender As Object, e As EventArgs) Handles Button21.Click      ' Hex "B"
+        Call Click2Buffer2(11, COMMON.KeyCodes2(24))      'A53
         Call HideFocus()
     End Sub
-    Private Sub Click_NPC(sender As Object, e As EventArgs) Handles Button24.Click
-        '       Call Click2Buffer(&H100 + Asc("C"))
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(25))      'A50
+    Private Sub Click_NPC(sender As Object, e As EventArgs) Handles Button24.Click      ' Hex "C"
+        Call Click2Buffer2(12, COMMON.KeyCodes2(25))      'A50
         Call HideFocus()
     End Sub
-    Private Sub Click_NPD(sender As Object, e As EventArgs) Handles Button28.Click
-        '        Call Click2Buffer(&H100 + Asc("D"))
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(26))      'B50
+    Private Sub Click_NPD(sender As Object, e As EventArgs) Handles Button28.Click      ' Hex "D"
+        Call Click2Buffer2(13, COMMON.KeyCodes2(26))      'B50
         Call HideFocus()
     End Sub
-    Private Sub Click_NPE(sender As Object, e As EventArgs) Handles Button32.Click
-        '        Call Click2Buffer(&H100 + Asc("E"))
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(27))      'C50
+    Private Sub Click_NPE(sender As Object, e As EventArgs) Handles Button32.Click      ' Hex "E"
+        Call Click2Buffer2(14, COMMON.KeyCodes2(27))      'C50
         Call HideFocus()
     End Sub
-    Private Sub Click_NPF(sender As Object, e As EventArgs) Handles Button36.Click
-        '        Call Click2Buffer(&H100 + Asc("F"))
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(28))      'D50
+    Private Sub Click_NPF(sender As Object, e As EventArgs) Handles Button36.Click      ' Hex "F"
+        Call Click2Buffer2(15, COMMON.KeyCodes2(28))      'D50
         Call HideFocus()
     End Sub
 #End Region
@@ -770,7 +777,13 @@ Public Class Tastatur
     End Sub
 
     Private Sub CE_Click(sender As Object, e As EventArgs) Handles Button68.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(22))      'A99
+        Select Case Button46.BackColor
+            Case System.Drawing.Color.WhiteSmoke
+                Button46.BackColor = System.Drawing.Color.Red
+            Case System.Drawing.Color.Red
+                Button46.BackColor = System.Drawing.Color.WhiteSmoke
+        End Select
+        'Call Click2Buffer(&H200 + COMMON.KeyCodes2(22))      'A99
         Call HideFocus()
     End Sub
 

@@ -713,7 +713,7 @@ Partial Class Tastatur
         '
         'Button46
         '
-        Me.Button46.BackColor = System.Drawing.SystemColors.ControlLight
+        Me.Button46.BackColor = System.Drawing.Color.WhiteSmoke
         Me.Button46.Enabled = False
         Me.Button46.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Button46.Location = New System.Drawing.Point(1060, 20)
@@ -726,7 +726,7 @@ Partial Class Tastatur
         '
         'Button41
         '
-        Me.Button41.BackColor = System.Drawing.SystemColors.ControlLight
+        Me.Button41.BackColor = System.Drawing.SystemColors.ControlDark
         Me.Button41.Enabled = False
         Me.Button41.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Button41.Location = New System.Drawing.Point(960, 20)
