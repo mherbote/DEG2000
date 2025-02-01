@@ -1,4 +1,3 @@
-/.vs/
 /1 DEG2000 Z80/.vs/
 /1 DEG2000 Z80/packages/
 /1 DEG2000 Z80/Z80sim/bin/
@@ -7,6 +6,7 @@
 /2 CASerzeugen/CASerzeugen/.vs/
 /2 CASerzeugen/CASerzeugen/bin/
 /2 CASerzeugen/CASerzeugen/obj/
+/3 FontView/.vs/
 /3 FontView/FontView/bin/
 /3 FontView/FontView/obj/
 /8 PAS/MRES_BIN/lib/
@@ -19,3 +19,4 @@
 /9 Test/WPF-Test1/WPF-Test/obj/
 /9 Test/WPF-Test2/WPF-Test/obj/
 /9 Test/Z80_SIM/__history/
+/MEM/
