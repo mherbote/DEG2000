@@ -45,6 +45,8 @@ Partial Class Haupt
         Me.SpeicherLoeschenFF = New System.Windows.Forms.ToolStripMenuItem()
         Me.SpeicherLaden = New System.Windows.Forms.ToolStripMenuItem()
         Me.SpeichernToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.AlleBereicheToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.NurStandardbereich1ToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.COMDateiFürS4LadenToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.BeendenToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.EinstellungenToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -169,9 +171,6 @@ Partial Class Haupt
         CType(Me.CommandLineBez, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
-        'TestbildChange
-        '
-        '
         'MenuStrip1
         '
         Me.MenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DateiToolStripMenuItem, Me.EinstellungenToolStripMenuItem, Me.ToolStripMenuItem1, Me.CPUZ80ToolStripMenuItem, Me.HilfeToolStripMenuItem})
@@ -193,7 +192,7 @@ Partial Class Haupt
         '
         Me.SpeicherLadenToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SpeicherLoeschen, Me.SpeicherLaden, Me.SpeichernToolStripMenuItem, Me.COMDateiFürS4LadenToolStripMenuItem})
         Me.SpeicherLadenToolStripMenuItem.Name = "SpeicherLadenToolStripMenuItem"
-        Me.SpeicherLadenToolStripMenuItem.Size = New System.Drawing.Size(131, 22)
+        Me.SpeicherLadenToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.SpeicherLadenToolStripMenuItem.Text = "&Speicher ..."
         '
         'SpeicherLoeschen
@@ -223,9 +222,24 @@ Partial Class Haupt
         '
         'SpeichernToolStripMenuItem
         '
+        Me.SpeichernToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AlleBereicheToolStripMenuItem, Me.NurStandardbereich1ToolStripMenuItem})
         Me.SpeichernToolStripMenuItem.Name = "SpeichernToolStripMenuItem"
         Me.SpeichernToolStripMenuItem.Size = New System.Drawing.Size(209, 22)
         Me.SpeichernToolStripMenuItem.Text = "... &Speichern"
+        '
+        'AlleBereicheToolStripMenuItem
+        '
+        Me.AlleBereicheToolStripMenuItem.Name = "AlleBereicheToolStripMenuItem"
+        Me.AlleBereicheToolStripMenuItem.Size = New System.Drawing.Size(198, 22)
+        Me.AlleBereicheToolStripMenuItem.Text = "alle Bereiche"
+        AddHandler Me.AlleBereicheToolStripMenuItem.Click, AddressOf Me.AlleBereicheSpeichern
+        '
+        'NurStandardbereich1ToolStripMenuItem
+        '
+        Me.NurStandardbereich1ToolStripMenuItem.Name = "NurStandardbereich1ToolStripMenuItem"
+        Me.NurStandardbereich1ToolStripMenuItem.Size = New System.Drawing.Size(198, 22)
+        Me.NurStandardbereich1ToolStripMenuItem.Text = "nur Standardbereich (1)"
+        AddHandler Me.NurStandardbereich1ToolStripMenuItem.Click, AddressOf Me.NurBereich1Speichern
         '
         'COMDateiFürS4LadenToolStripMenuItem
         '
@@ -236,7 +250,7 @@ Partial Class Haupt
         'BeendenToolStripMenuItem
         '
         Me.BeendenToolStripMenuItem.Name = "BeendenToolStripMenuItem"
-        Me.BeendenToolStripMenuItem.Size = New System.Drawing.Size(131, 22)
+        Me.BeendenToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.BeendenToolStripMenuItem.Text = "Beenden"
         '
         'EinstellungenToolStripMenuItem
@@ -528,9 +542,6 @@ Partial Class Haupt
         Me.InfoÜberZ80EmulatorToolStripMenuItem.Name = "InfoÜberZ80EmulatorToolStripMenuItem"
         Me.InfoÜberZ80EmulatorToolStripMenuItem.Size = New System.Drawing.Size(195, 22)
         Me.InfoÜberZ80EmulatorToolStripMenuItem.Text = "Info über Z80 Emulator"
-        '
-        'Timer2
-        '
         '
         'Panel1
         '
@@ -1076,7 +1087,6 @@ Partial Class Haupt
         Me.CMDliste.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.CMDliste.ColumnHeadersVisible = False
         Me.CMDliste.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn13})
-        Me.CMDliste.Cursor = System.Windows.Forms.Cursors.Default
         DataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle8.BackColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
         DataGridViewCellStyle8.Font = New System.Drawing.Font("Arial Rounded MT Bold", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -1176,9 +1186,6 @@ Partial Class Haupt
         Me.CommandLine.Name = "CommandLine"
         Me.CommandLine.Size = New System.Drawing.Size(450, 23)
         Me.CommandLine.TabIndex = 64
-        '
-        'SplashScreenStarttime
-        '
         '
         'Haupt
         '
@@ -1347,4 +1354,6 @@ Partial Class Haupt
     Friend WithEvents NornalToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents InversToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents FullToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents AlleBereicheToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents NurStandardbereich1ToolStripMenuItem As ToolStripMenuItem
 End Class

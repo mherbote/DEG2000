@@ -24,13 +24,32 @@ Partial Class AnzeigeHS
     Private Sub InitializeComponent()
         Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle5 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle6 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle7 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(AnzeigeHS))
         Me.HSanzeige = New System.Windows.Forms.DataGridView()
+        Me.DataGridViewTextBoxColumn13 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.sp0 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.sp1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.sp2 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.sp3 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.sp4 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.sp5 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.sp6 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.sp7 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.sp8 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.sp9 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.spA = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.spB = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.spC = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.spD = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.spE = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.spF = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.spNULL = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.spChar = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.BereichsWahl = New System.Windows.Forms.DataGridView()
         Me.Bereich = New System.Windows.Forms.DataGridViewButtonColumn()
         Me.BereichAll = New System.Windows.Forms.DataGridView()
@@ -55,25 +74,6 @@ Partial Class AnzeigeHS
         Me.DataGridViewTextBoxColumn19 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Button1 = New System.Windows.Forms.Button()
         Me.Button2 = New System.Windows.Forms.Button()
-        Me.DataGridViewTextBoxColumn13 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.sp0 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.sp1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.sp2 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.sp3 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.sp4 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.sp5 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.sp6 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.sp7 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.sp8 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.sp9 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.spA = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.spB = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.spC = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.spD = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.spE = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.spF = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.spNULL = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.spChar = New System.Windows.Forms.DataGridViewTextBoxColumn()
         CType(Me.HSanzeige, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.BereichsWahl, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.BereichAll, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -114,6 +114,136 @@ Partial Class AnzeigeHS
         Me.HSanzeige.ScrollBars = System.Windows.Forms.ScrollBars.None
         Me.HSanzeige.Size = New System.Drawing.Size(777, 340)
         Me.HSanzeige.TabIndex = 63
+        '
+        'DataGridViewTextBoxColumn13
+        '
+        DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
+        DataGridViewCellStyle2.Font = New System.Drawing.Font("Courier New", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle2.ForeColor = System.Drawing.Color.Gray
+        DataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
+        DataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.Gray
+        Me.DataGridViewTextBoxColumn13.DefaultCellStyle = DataGridViewCellStyle2
+        Me.DataGridViewTextBoxColumn13.HeaderText = ""
+        Me.DataGridViewTextBoxColumn13.Name = "DataGridViewTextBoxColumn13"
+        Me.DataGridViewTextBoxColumn13.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.DataGridViewTextBoxColumn13.Width = 45
+        '
+        'sp0
+        '
+        Me.sp0.HeaderText = "0"
+        Me.sp0.Name = "sp0"
+        Me.sp0.Width = 30
+        '
+        'sp1
+        '
+        Me.sp1.HeaderText = "1"
+        Me.sp1.Name = "sp1"
+        Me.sp1.Width = 30
+        '
+        'sp2
+        '
+        Me.sp2.HeaderText = "2"
+        Me.sp2.Name = "sp2"
+        Me.sp2.Width = 30
+        '
+        'sp3
+        '
+        Me.sp3.HeaderText = "3"
+        Me.sp3.Name = "sp3"
+        Me.sp3.Width = 30
+        '
+        'sp4
+        '
+        Me.sp4.HeaderText = "4"
+        Me.sp4.Name = "sp4"
+        Me.sp4.Width = 30
+        '
+        'sp5
+        '
+        Me.sp5.HeaderText = "5"
+        Me.sp5.Name = "sp5"
+        Me.sp5.Width = 30
+        '
+        'sp6
+        '
+        Me.sp6.HeaderText = "6"
+        Me.sp6.Name = "sp6"
+        Me.sp6.Width = 30
+        '
+        'sp7
+        '
+        Me.sp7.HeaderText = "7"
+        Me.sp7.Name = "sp7"
+        Me.sp7.Width = 30
+        '
+        'sp8
+        '
+        Me.sp8.HeaderText = "8"
+        Me.sp8.Name = "sp8"
+        Me.sp8.Width = 30
+        '
+        'sp9
+        '
+        Me.sp9.HeaderText = "9"
+        Me.sp9.Name = "sp9"
+        Me.sp9.Width = 30
+        '
+        'spA
+        '
+        Me.spA.HeaderText = "A"
+        Me.spA.Name = "spA"
+        Me.spA.Width = 30
+        '
+        'spB
+        '
+        Me.spB.HeaderText = "B"
+        Me.spB.Name = "spB"
+        Me.spB.Width = 30
+        '
+        'spC
+        '
+        Me.spC.HeaderText = "C"
+        Me.spC.Name = "spC"
+        Me.spC.Width = 30
+        '
+        'spD
+        '
+        Me.spD.HeaderText = "D"
+        Me.spD.Name = "spD"
+        Me.spD.Width = 30
+        '
+        'spE
+        '
+        Me.spE.HeaderText = "E"
+        Me.spE.Name = "spE"
+        Me.spE.Width = 30
+        '
+        'spF
+        '
+        Me.spF.HeaderText = "F"
+        Me.spF.Name = "spF"
+        Me.spF.Width = 30
+        '
+        'spNULL
+        '
+        Me.spNULL.HeaderText = ""
+        Me.spNULL.Name = "spNULL"
+        Me.spNULL.Width = 15
+        '
+        'spChar
+        '
+        DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
+        DataGridViewCellStyle3.Font = New System.Drawing.Font("Courier New", 6.0!)
+        DataGridViewCellStyle3.ForeColor = System.Drawing.Color.Gray
+        DataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
+        DataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.Gray
+        Me.spChar.DefaultCellStyle = DataGridViewCellStyle3
+        Me.spChar.HeaderText = "Char"
+        Me.spChar.MinimumWidth = 185
+        Me.spChar.Name = "spChar"
+        Me.spChar.Width = 185
         '
         'BereichsWahl
         '
@@ -156,7 +286,7 @@ Partial Class AnzeigeHS
         Me.BereichAll.MultiSelect = False
         Me.BereichAll.Name = "BereichAll"
         Me.BereichAll.RowHeadersVisible = False
-        Me.BereichAll.Size = New System.Drawing.Size(91, 180)
+        Me.BereichAll.Size = New System.Drawing.Size(91, 200)
         Me.BereichAll.TabIndex = 69
         '
         'Column1
@@ -321,136 +451,6 @@ Partial Class AnzeigeHS
         Me.Button2.TabIndex = 71
         Me.Button2.Text = "0100 H"
         Me.Button2.UseVisualStyleBackColor = False
-        '
-        'DataGridViewTextBoxColumn13
-        '
-        DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
-        DataGridViewCellStyle2.Font = New System.Drawing.Font("Courier New", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle2.ForeColor = System.Drawing.Color.Gray
-        DataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
-        DataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.Gray
-        Me.DataGridViewTextBoxColumn13.DefaultCellStyle = DataGridViewCellStyle2
-        Me.DataGridViewTextBoxColumn13.HeaderText = ""
-        Me.DataGridViewTextBoxColumn13.Name = "DataGridViewTextBoxColumn13"
-        Me.DataGridViewTextBoxColumn13.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn13.Width = 45
-        '
-        'sp0
-        '
-        Me.sp0.HeaderText = "0"
-        Me.sp0.Name = "sp0"
-        Me.sp0.Width = 30
-        '
-        'sp1
-        '
-        Me.sp1.HeaderText = "1"
-        Me.sp1.Name = "sp1"
-        Me.sp1.Width = 30
-        '
-        'sp2
-        '
-        Me.sp2.HeaderText = "2"
-        Me.sp2.Name = "sp2"
-        Me.sp2.Width = 30
-        '
-        'sp3
-        '
-        Me.sp3.HeaderText = "3"
-        Me.sp3.Name = "sp3"
-        Me.sp3.Width = 30
-        '
-        'sp4
-        '
-        Me.sp4.HeaderText = "4"
-        Me.sp4.Name = "sp4"
-        Me.sp4.Width = 30
-        '
-        'sp5
-        '
-        Me.sp5.HeaderText = "5"
-        Me.sp5.Name = "sp5"
-        Me.sp5.Width = 30
-        '
-        'sp6
-        '
-        Me.sp6.HeaderText = "6"
-        Me.sp6.Name = "sp6"
-        Me.sp6.Width = 30
-        '
-        'sp7
-        '
-        Me.sp7.HeaderText = "7"
-        Me.sp7.Name = "sp7"
-        Me.sp7.Width = 30
-        '
-        'sp8
-        '
-        Me.sp8.HeaderText = "8"
-        Me.sp8.Name = "sp8"
-        Me.sp8.Width = 30
-        '
-        'sp9
-        '
-        Me.sp9.HeaderText = "9"
-        Me.sp9.Name = "sp9"
-        Me.sp9.Width = 30
-        '
-        'spA
-        '
-        Me.spA.HeaderText = "A"
-        Me.spA.Name = "spA"
-        Me.spA.Width = 30
-        '
-        'spB
-        '
-        Me.spB.HeaderText = "B"
-        Me.spB.Name = "spB"
-        Me.spB.Width = 30
-        '
-        'spC
-        '
-        Me.spC.HeaderText = "C"
-        Me.spC.Name = "spC"
-        Me.spC.Width = 30
-        '
-        'spD
-        '
-        Me.spD.HeaderText = "D"
-        Me.spD.Name = "spD"
-        Me.spD.Width = 30
-        '
-        'spE
-        '
-        Me.spE.HeaderText = "E"
-        Me.spE.Name = "spE"
-        Me.spE.Width = 30
-        '
-        'spF
-        '
-        Me.spF.HeaderText = "F"
-        Me.spF.Name = "spF"
-        Me.spF.Width = 30
-        '
-        'spNULL
-        '
-        Me.spNULL.HeaderText = ""
-        Me.spNULL.Name = "spNULL"
-        Me.spNULL.Width = 15
-        '
-        'spChar
-        '
-        DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
-        DataGridViewCellStyle3.Font = New System.Drawing.Font("Courier New", 6.0!)
-        DataGridViewCellStyle3.ForeColor = System.Drawing.Color.Gray
-        DataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
-        DataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.Gray
-        Me.spChar.DefaultCellStyle = DataGridViewCellStyle3
-        Me.spChar.HeaderText = "Char"
-        Me.spChar.MinimumWidth = 185
-        Me.spChar.Name = "spChar"
-        Me.spChar.Width = 185
         '
         'AnzeigeHS
         '

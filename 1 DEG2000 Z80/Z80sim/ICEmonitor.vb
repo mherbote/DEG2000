@@ -379,9 +379,7 @@ ende:
             Case &HFF                                                           ' Mostek header Standard = &HFF
                 wrk_ram = 0
                 err = loadmos(BINfile, 1, 1, &HFF)
-                If BWS.BWSy > 24 Then
-                    Call BWS.ResetControlArray(System.Drawing.Color.LightGray, System.Drawing.Color.Black)
-                End If
+                Call BWS.Init2()
             Case &HFE                                                           ' abgeändert M.Herbote für Programm-Parameter
                 Select Case fb(1)                                               ' PixelAnz = 1 | 2 | 3
                     Case 1, 2, 3

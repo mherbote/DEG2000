@@ -1,4 +1,5 @@
 ﻿Imports System
+Imports System.Diagnostics.Eventing.Reader
 Imports System.Drawing
 Imports System.IO
 
@@ -642,9 +643,7 @@ Public Class Haupt
 
 #Region "gesamten Speicher laden"
     Private Sub SpeicherLaden_Click(sender As System.Object, e As System.EventArgs) Handles SpeicherLaden.Click
-        'BWS.BackColorBWS = BWS.cBack       '???
-        'BWS.ForeColorBWS = BWS.cFore
-        'BWS.CursorColorBWS = BWS.cCursor
+        Call BWS.Init1()
 
         OpenFileDialog1.InitialDirectory = COMMON.MemVerzeichnis
         OpenFileDialog1.FileName = "*.MEM;*.DEG"
@@ -652,56 +651,133 @@ Public Class Haupt
 
             COMMON.BinDateiname = OpenFileDialog1.FileName
             Call SpeicherLaden1()
+
+            Call BWS.Init2()
         End If
         Call AnzeigeHSrefresh()
     End Sub ' SpeicherLaden_Click
     Private Sub SpeicherLaden1()
         Dim bb As Byte
-        Dim w As UInteger
-        Dim fb(0) As Byte
+        Dim sa As Byte
+        Dim ff As Boolean
 
         Try
             Dim fi As FileInfo
             fi = New FileInfo(COMMON.BinDateiname)
             Dim fs As FileStream = fi.OpenRead
 
-            For bb = 0 To Z80cpu.cSeg_HS
-                For w = 0 To &HFFFF
-                    fs.Read(fb, 0, 1)
-                    COMMON.vZ80cpu.Speicher_schreiben_Byte1(w, fb(0), bb)
-                Next w
-            Next bb
+            sa = 0
+            ff = True
+            While sa <= Z80cpu.cSeg_HS And ff
+                If fi.Length >= &H10000 * (sa + 1) Then
+                    sa += 1
+                Else
+                    ff = False
+                    If sa > 1 Then sa -= 1
+                End If
+            End While
+            If ff Then sa -= 1
+
+            If sa = 1 Then
+                Call SpeicherLaden2(fs, 1)                          ' Speicher für Block 1  laden
+            Else
+                For bb = 0 To sa
+                    Call SpeicherLaden2(fs, bb)                     ' Speicher für Block bb laden
+                Next bb
+            End If
+            If fi.Length > &H10000 * sa Then
+                RegisterLaden(fs)                                   ' Register laden
+            End If
+
             fs.Close()
         Catch ex As Exception
 
         End Try
-    End Sub ' SpeicherLaden
+    End Sub ' SpeicherLaden1
+    Private Sub SpeicherLaden2(fs As FileStream, block As Byte)
+        Dim w As UInteger
+        Dim fb(0) As Byte
+
+        For w = 0 To &HFFFF
+            fs.Read(fb, 0, 1)
+            COMMON.vZ80cpu.Speicher_schreiben_Byte1(w, fb(0), block)
+        Next w
+    End Sub ' SpeicherLaden2
+    Private Sub RegisterLaden(fs As FileStream)
+        Dim w As Int16
+        Dim b(15) As Byte
+
+        fs.Read(b, 0, 16)
+        For w = 0 To 15                                                     ' Global Speicher Einstellung
+            COMMON.vZ80cpu.Seg_HS(w) = b(w)
+        Next w
+
+        fs.Read(b, 0, 2)
+        COMMON.vZ80cpu.PC = b(0) * 256 + b(1)                               ' PC speichern
+        fs.Read(b, 0, 2)
+        COMMON.vZ80cpu.STACK = b(0) * 256 + b(1)                            ' STACK speichern
+
+        fs.Read(b, 0, 2)
+        COMMON.vZ80cpu.IX = b(0) * 256 + b(1)                               ' IX speichern
+        fs.Read(b, 0, 2)
+        COMMON.vZ80cpu.IY = b(0) * 256 + b(1)                               ' IY speichern
+
+        fs.Read(b, 0, 2)
+        COMMON.vZ80cpu.R = b(0) * 256 + b(1)                                ' R speichern
+
+        fs.Read(b, 0, 2)
+        COMMON.vZ80cpu.III = b(0)                                           ' III speichern
+        COMMON.vZ80cpu.IFF = b(1)                                           ' IFF speichern
+
+        fs.Read(b, 0, 8)
+        COMMON.vZ80cpu.A = b(0)                                             ' A speichern
+        COMMON.vZ80cpu.F = b(1)                                             ' F speichern
+        COMMON.vZ80cpu.B = b(2)                                             ' B speichern
+        COMMON.vZ80cpu.C = b(3)                                             ' C speichern
+        COMMON.vZ80cpu.D = b(4)                                             ' D speichern
+        COMMON.vZ80cpu.E = b(5)                                             ' E speichern
+        COMMON.vZ80cpu.H = b(6)                                             ' H speichern
+        COMMON.vZ80cpu.L = b(7)                                             ' L speichern
+
+        fs.Read(b, 0, 8)
+        COMMON.vZ80cpu.A_ = b(0)                                            ' A_ speichern
+        COMMON.vZ80cpu.F_ = b(1)                                            ' F_ speichern
+        COMMON.vZ80cpu.B_ = b(2)                                            ' B_ speichern
+        COMMON.vZ80cpu.C_ = b(3)                                            ' C_ speichern
+        COMMON.vZ80cpu.D_ = b(4)                                            ' D_ speichern
+        COMMON.vZ80cpu.E_ = b(5)                                            ' E_ speichern
+        COMMON.vZ80cpu.H_ = b(6)                                            ' H_ speichern
+        COMMON.vZ80cpu.L_ = b(7)                                            ' L_ speichern
+
+        Call PrintRegListe()
+    End Sub ' RegisterLaden
 #End Region
 
 #Region "gesamten Speicher abspeichern"
-    Private Sub SpeicherSpeichern_Click(sender As Object, e As EventArgs) Handles SpeichernToolStripMenuItem.Click
+    Private Sub AlleBereicheSpeichern(sender As Object, e As EventArgs)
         SaveFileDialog1.InitialDirectory = COMMON.MemVerzeichnis
         SaveFileDialog1.FileName = "*.MEM"
         If SaveFileDialog1.ShowDialog() = Windows.Forms.DialogResult.OK Then
             COMMON.BinDateiname = SaveFileDialog1.FileName
-            Call SpeicherSpeichern(COMMON.BinDateiname)
+            Call SpeicherSpeichern(COMMON.BinDateiname, 0)
         End If
     End Sub
-    Private Shared Function SpeicherSpeichern(pfn As String) As Integer
+    Private Function SpeicherSpeichern(pfn As String, bereich As Int16) As Integer
         Dim bb As Byte
-        Dim w As UInteger
-        Dim b(0) As Byte
 
         Try
             Dim fi As FileInfo
             fi = New FileInfo(pfn)
             Dim fs As FileStream = fi.OpenWrite
-            For bb = 0 To Z80cpu.cSeg_HS
-                For w = 0 To &HFFFF
-                    b(0) = COMMON.vZ80cpu.Speicher_lesen_Byte1(w, bb)
-                    fs.Write(b, 0, 1)
-                Next w
-            Next bb
+            Select Case bereich
+                Case 0
+                    For bb = 0 To Z80cpu.cSeg_HS
+                        Call SpeicherSpeichern1(fs, bb)
+                    Next bb
+                Case 1
+                    Call SpeicherSpeichern1(fs, 1)
+            End Select
+            Call RegisterSpeicher(fs)
             fs.Close()
         Catch ex As Exception
 
@@ -709,6 +785,76 @@ Public Class Haupt
 
         SpeicherSpeichern = 0
     End Function
+    Private Sub SpeicherSpeichern1(fs As FileStream, bereich As Int16)
+        Dim w As UInteger
+        Dim b(0) As Byte
+
+        For w = 0 To &HFFFF
+            b(0) = COMMON.vZ80cpu.Speicher_lesen_Byte1(w, bereich)
+            fs.Write(b, 0, 1)
+        Next w
+    End Sub ' SpeicherSpeichern1
+    Private Sub RegisterSpeicher(fs As FileStream)
+        Dim w As Int16
+        Dim b(15) As Byte
+
+        For w = 0 To 15                                                     ' Global Speicher Einstellung
+            b(w) = COMMON.vZ80cpu.Seg_HS(w)
+        Next w
+        fs.Write(b, 0, 16)
+
+        b(0) = (COMMON.vZ80cpu.PC And &HFF00) / 256                         ' PC speichern
+        b(1) = (COMMON.vZ80cpu.PC And &HFF)
+        fs.Write(b, 0, 2)
+        b(0) = (COMMON.vZ80cpu.STACK And &HFF00) / 256                      ' STACK speichern
+        b(1) = (COMMON.vZ80cpu.STACK And &HFF)
+        fs.Write(b, 0, 2)
+
+        b(0) = (COMMON.vZ80cpu.IX And &HFF00) / 256                         ' IX speichern
+        b(1) = (COMMON.vZ80cpu.IX And &HFF)
+        fs.Write(b, 0, 2)
+        b(0) = (COMMON.vZ80cpu.IY And &HFF00) / 256                         ' IY speichern
+        b(1) = (COMMON.vZ80cpu.IY And &HFF)
+        fs.Write(b, 0, 2)
+
+        b(0) = (COMMON.vZ80cpu.R And &HFF00) / 256                          ' R speichern
+        b(1) = (COMMON.vZ80cpu.R And &HFF)
+        fs.Write(b, 0, 2)
+
+        b(0) = COMMON.vZ80cpu.III                                           ' III speichern
+        b(1) = COMMON.vZ80cpu.IFF                                           ' IFF speichern
+        fs.Write(b, 0, 2)
+
+        b(0) = COMMON.vZ80cpu.A                                             ' A speichern
+        b(1) = COMMON.vZ80cpu.F                                             ' F speichern
+        b(2) = COMMON.vZ80cpu.B                                             ' B speichern
+        b(3) = COMMON.vZ80cpu.C                                             ' C speichern
+        b(4) = COMMON.vZ80cpu.D                                             ' D speichern
+        b(5) = COMMON.vZ80cpu.E                                             ' E speichern
+        b(6) = COMMON.vZ80cpu.H                                             ' H speichern
+        b(7) = COMMON.vZ80cpu.L                                             ' L speichern
+        fs.Write(b, 0, 8)
+
+        b(0) = COMMON.vZ80cpu.A_                                            ' A_ speichern
+        b(1) = COMMON.vZ80cpu.F_                                            ' F_ speichern
+        b(2) = COMMON.vZ80cpu.B_                                            ' B_ speichern
+        b(3) = COMMON.vZ80cpu.C_                                            ' C_ speichern
+        b(4) = COMMON.vZ80cpu.D_                                            ' D_ speichern
+        b(5) = COMMON.vZ80cpu.E_                                            ' E_ speichern
+        b(6) = COMMON.vZ80cpu.H_                                            ' H_ speichern
+        b(7) = COMMON.vZ80cpu.L_                                            ' L_ speichern
+        fs.Write(b, 0, 8)
+    End Sub ' RegisterSpeicher
+#End Region
+#Region "nur Standard-Bereich (1) abspeichern"
+    Private Sub NurBereich1Speichern(sender As Object, e As EventArgs)
+        SaveFileDialog1.InitialDirectory = COMMON.MemVerzeichnis
+        SaveFileDialog1.FileName = "*.MEM"
+        If SaveFileDialog1.ShowDialog() = Windows.Forms.DialogResult.OK Then
+            COMMON.BinDateiname = SaveFileDialog1.FileName
+            Call SpeicherSpeichern(COMMON.BinDateiname, 1)
+        End If
+    End Sub
 #End Region
 
 #Region "COM-Datei einlesen für SYS 4"

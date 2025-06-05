@@ -1,19 +1,18 @@
 ﻿Public Class Z80cpu
-    Public Const cSeg_HS As Byte = 4
+    Public Const cSeg_HS As Byte = 5
     Public Seg_BWS As Byte
     Public Seg_HS(0 To 15) As Byte
 
     Public HS(0 To 15, 0 To cSeg_HS) As Hauptspeicher
 
     Public XFN(0 To COMMON.const_LENCMD) As Char                                ' buffer for filename (option -x)
-    Public A, B, C, D, E, H, L As Byte                                          ' Z80 primary   registers   
-    Public A_, B_, C_, D_, E_, H_, L_ As Byte                                   ' Z80 secondary registers
+    Public A, F, B, C, D, E, H, L As Byte                                       ' Z80 primary   registers   
+    Public A_, F_, B_, C_, D_, E_, H_, L_ As Byte                               ' Z80 secondary registers
     Public PC As ULong                                                          ' Z80 programm counter *PC
     Public STACK As ULong                                                       ' Z80 stackpointer     *STACK
     Public III As Byte                                                          ' Z80 interrupt register
     Public IFF As Byte                                                          ' Z80 interrupt flags
     Public IX, IY As ULong                                                      ' Z80 
-    Public F, F_ As Byte                                                        ' Z80
     Public R As ULong                                                           ' Z80 refresh register
 
     Public wrk_ram As UShort                                                    ' workpointer into memory for dump etc. *wrk_ram

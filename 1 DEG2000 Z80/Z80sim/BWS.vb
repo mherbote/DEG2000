@@ -214,6 +214,16 @@ Public Class BWS
         Me.Height = PIy * Zy * BWSy + 39                '39
         Me.Width = PIx * Zx * BWSx + 2 + 14             '14
     End Sub
+    Public Sub Init1()                                          ' Standard für BWS Back-/Fore-Color und Cursor setzen
+        BackColorBWS = cBack
+        ForeColorBWS = cFore
+        CursorColorBWS = cCursor
+    End Sub
+    Public Sub Init2()                                          ' Standand für BWS-Controlbereich setzen
+        If BWSy > 24 Then
+            Call ResetControlArray(System.Drawing.Color.LightGray, System.Drawing.Color.Black)
+        End If
+    End Sub
 #End Region
 
 #Region "Change BWS"
