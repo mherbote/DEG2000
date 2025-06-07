@@ -147,11 +147,31 @@ Public Class Tastatur
     End Sub
 
     Private Function ShiftEbene(Taste As Char) As Boolean
-        If KleinGross = Klein Then
-            ShiftEbene = False
-        Else
-            ShiftEbene = True
-        End If
+        Select Case Taste
+            Case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "="
+                Select Case COMMON.PSTAS
+                    Case COMMON.STAS
+                        If KleinGross = Klein Then
+                            ShiftEbene = False
+                        Else
+                            ShiftEbene = True
+                        End If
+                    Case COMMON.PTAS
+                        If KleinGross = Klein Then
+                            ShiftEbene = True
+                        Else
+                            ShiftEbene = False
+                        End If
+                End Select
+            Case Else
+                If KleinGross = Klein Then
+                    ShiftEbene = False
+                Else
+                    ShiftEbene = True
+                End If
+        End Select
+
+
         'ShiftEbene = False
 
         'Select Case Taste
@@ -231,25 +251,25 @@ Public Class Tastatur
     Private Sub Ebene0_Click(sender As Object, e As EventArgs) Handles Button5.Click
         COMMON.PFebene = 0
         Call Init_PFi()
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(41))      'D59
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(29))      'D59
         Call HideFocus()
     End Sub
     Private Sub Ebene1_Click(sender As Object, e As EventArgs) Handles Button10.Click
         COMMON.PFebene = 1
         Call Init_PFi()
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(42))      'C59
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(30))      'C59
         Call HideFocus()
     End Sub
     Private Sub Ebene2_Click(sender As Object, e As EventArgs) Handles Button15.Click
         COMMON.PFebene = 2
         Call Init_PFi()
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(43))      'B59
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(31))      'B59
         Call HideFocus()
     End Sub
     Private Sub Ebene3_Click(sender As Object, e As EventArgs) Handles Button20.Click
         COMMON.PFebene = 3
         Call Init_PFi()
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(44))      'A59
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(32))      'A59
         Call HideFocus()
     End Sub
 #End Region
@@ -783,7 +803,7 @@ Public Class Tastatur
             Case System.Drawing.Color.Red
                 Button46.BackColor = System.Drawing.Color.WhiteSmoke
         End Select
-        'Call Click2Buffer(&H200 + COMMON.KeyCodes2(22))      'A99
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(22))      'A99
         Call HideFocus()
     End Sub
 
@@ -873,16 +893,31 @@ Public Class Tastatur
         KleinGross = Klein
         Me.KG.Text = Klein
 
-        Button83.Text = "1"
-        Button82.Text = "2"
-        Button81.Text = "3"
-        Button80.Text = "4"
-        Button79.Text = "5"
-        Button78.Text = "6"
-        Button77.Text = "7"
-        Button76.Text = "8"
-        Button75.Text = "9"
-        Button74.Text = "0"
+        Select Case COMMON.PSTAS
+            Case COMMON.STAS
+                Button83.Text = "1"
+                Button82.Text = "2"
+                Button81.Text = "3"
+                Button80.Text = "4"
+                Button79.Text = "5"
+                Button78.Text = "6"
+                Button77.Text = "7"
+                Button76.Text = "8"
+                Button75.Text = "9"
+                Button74.Text = "0"
+            Case COMMON.PTAS
+                Button83.Text = "!"
+                Button82.Text = """"
+                Button81.Text = "#"
+                Button80.Text = "$"
+                Button79.Text = "%"
+                Button78.Text = "&&"
+                Button77.Text = "'"
+                Button76.Text = "("
+                Button75.Text = ")"
+                Button74.Text = "_"
+        End Select
+
         Button73.Text = "-"
         Button72.Text = "^"
 
@@ -928,16 +963,31 @@ Public Class Tastatur
         KleinGross = Gross
         Me.KG.Text = Gross
 
-        Button83.Text = "!"
-        Button82.Text = """"
-        Button81.Text = "#"
-        Button80.Text = "$"
-        Button79.Text = "%"
-        Button78.Text = "&&"
-        Button77.Text = "'"
-        Button76.Text = "("
-        Button75.Text = ")"
-        Button74.Text = "_"
+        Select Case COMMON.PSTAS
+            Case COMMON.STAS
+                Button83.Text = "!"
+                Button82.Text = """"
+                Button81.Text = "#"
+                Button80.Text = "$"
+                Button79.Text = "%"
+                Button78.Text = "&&"
+                Button77.Text = "'"
+                Button76.Text = "("
+                Button75.Text = ")"
+                Button74.Text = "_"
+            Case COMMON.PTAS
+                Button83.Text = "1"
+                Button82.Text = "2"
+                Button81.Text = "3"
+                Button80.Text = "4"
+                Button79.Text = "5"
+                Button78.Text = "6"
+                Button77.Text = "7"
+                Button76.Text = "8"
+                Button75.Text = "9"
+                Button74.Text = "0"
+        End Select
+
         Button73.Text = "="
         Button72.Text = "_"
 
@@ -1271,29 +1321,29 @@ Public Class Tastatur
                     keyNew = &H200 + &HF7           'cursor left
 
                 Case Keys.F1
-                    keyNew = &H200 + COMMON.KeyCodes2(29) + COMMON.PFebene * 12      'D54
+                    keyNew = &H200 + COMMON.KeyCodes2(33) '+ COMMON.PFebene * 12      'D54
                 Case Keys.F2
-                    keyNew = &H200 + COMMON.KeyCodes2(30) + COMMON.PFebene * 12      'D56
+                    keyNew = &H200 + COMMON.KeyCodes2(34) '+ COMMON.PFebene * 12      'D56
                 Case Keys.F3
-                    keyNew = &H200 + COMMON.KeyCodes2(31) + COMMON.PFebene * 12      'D57
+                    keyNew = &H200 + COMMON.KeyCodes2(35) '+ COMMON.PFebene * 12      'D57
                 Case Keys.F4
-                    keyNew = &H200 + COMMON.KeyCodes2(32) + COMMON.PFebene * 12      'C54
+                    keyNew = &H200 + COMMON.KeyCodes2(36) '+ COMMON.PFebene * 12      'C54
                 Case Keys.F5
-                    keyNew = &H200 + COMMON.KeyCodes2(33) + COMMON.PFebene * 12      'C56
+                    keyNew = &H200 + COMMON.KeyCodes2(37) '+ COMMON.PFebene * 12      'C56
                 Case Keys.F6
-                    keyNew = &H200 + COMMON.KeyCodes2(34) + COMMON.PFebene * 12      'C57
+                    keyNew = &H200 + COMMON.KeyCodes2(38) '+ COMMON.PFebene * 12      'C57
                 Case Keys.F7
-                    keyNew = &H200 + COMMON.KeyCodes2(35) + COMMON.PFebene * 12      'B54
+                    keyNew = &H200 + COMMON.KeyCodes2(39) '+ COMMON.PFebene * 12      'B54
                 Case Keys.F8
-                    keyNew = &H200 + COMMON.KeyCodes2(36) + COMMON.PFebene * 12      'B56
+                    keyNew = &H200 + COMMON.KeyCodes2(40) '+ COMMON.PFebene * 12      'B56
                 Case Keys.F9
-                    keyNew = &H200 + COMMON.KeyCodes2(37) + COMMON.PFebene * 12      'B57
+                    keyNew = &H200 + COMMON.KeyCodes2(41) '+ COMMON.PFebene * 12      'B57
                 Case Keys.F10
-                    keyNew = &H200 + COMMON.KeyCodes2(38) + COMMON.PFebene * 12      'A54
+                    keyNew = &H200 + COMMON.KeyCodes2(42) '+ COMMON.PFebene * 12      'A54
                 Case Keys.F11
-                    keyNew = &H200 + COMMON.KeyCodes2(39) + COMMON.PFebene * 12      'A56
+                    keyNew = &H200 + COMMON.KeyCodes2(43) '+ COMMON.PFebene * 12      'A56
                 Case Keys.F12
-                    keyNew = &H200 + COMMON.KeyCodes2(40) + COMMON.PFebene * 12      'A57
+                    keyNew = &H200 + COMMON.KeyCodes2(44) '+ COMMON.PFebene * 12      'A57
                 Case Else
                     keyNew = e.KeyCode
             End Select
