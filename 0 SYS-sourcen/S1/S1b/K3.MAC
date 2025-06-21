@@ -45,7 +45,7 @@ KI.KN:
 	LD	HL,UA.KNAME	;ABFRAGE KASS.NAME
 	CALL	UR.MIMO
 	RET	C
-;??? ---\
+;---\
 	PUSH	HL
 	PUSH	BC
 	LD	DE,PUF.KASS
@@ -53,7 +53,7 @@ KI.KN:
 	LDIR
 	POP	BC
 	POP	HL
-;??? ---/
+;---/
 	LD	B,6
 	LD	DE,UE.PUF+4	;NAME IN PUFFER
 	CALL	UC.KONV	;MIT KONVERTIERUNG IN DKOI-CODE
@@ -61,7 +61,7 @@ KI.NMR:
 	LD	HL,UA.NR	;ABFR. KASS.NUMMER
 	CALL	UR.MIMO
 	JR	C,KI.KN	;BEI SYS-TASTE ZU VORHERIGER
-;??? ---\
+;---\
 	PUSH	HL
 	PUSH	BC
 	LD	DE,PUF.KASS+6
@@ -69,7 +69,7 @@ KI.NMR:
 	LDIR
 	POP	BC
 	POP	HL
-;??? ---/
+;---/
 	LD	B,3
 	LD	DE,UE.PUF+37
 	CALL	UC.KONV
@@ -81,7 +81,7 @@ KI.KM:
 	LD	DE,UE.PUF+40
 	CALL	UC.KONV
 	CALL	UF.EXEC	;3.BLOCK SCHREIBEN
-	CALL	KI.RENA	;Kassette umbenennen	;???
+	CALL	KI.RENA	;Kassette umbenennen
 	CALL	UR.KBM	;BM , 1.LABEL BEENDET
 	LD	HL,UA.ALTR
 	LD	DE,UE.PUF
@@ -128,12 +128,12 @@ KI.RENA:	;Kassettendateiname umbenennen
 	PUSH	BC
 	PUSH	AF
 	LD	HL,PUF.KASS+10
-	LD	(HL),0	;Abschluß neuer Name
+	LD	(HL),0          ;Abschluss neuer Name
 	LD	HL,KI.RENA9+2
-	LD	A,(IX+3)	;SubAdresse
+	LD	A,(IX+3)        ;SubAdresse
 	LD	(HL),A
 	LD	HL,KI.RENA9
-	LD	BC,00730H	;AKB-Adresse + Länge Parameterbereich
+	LD	BC,00700H + AKB ;AKB-Adresse + Laenge Parameterbereich
 	OTIR
 	POP	AF
 	POP	BC
@@ -142,9 +142,9 @@ KI.RENA:	;Kassettendateiname umbenennen
 	RET
 KI.RENA9:
 	DB	0F0H
-	DB	044H	;Kommando
-	DB	0		;SubAdresse
-	DB	1		;HSbereich
+	DB	044H            ;Kommando
+	DB	0               ;SubAdresse
+	DB	1               ;HSbereich
 	DB	HIGH(PUF.KASS)
 	DB	LOW(PUF.KASS)
 	DB	0FFH
@@ -883,8 +883,8 @@ FD.POSK:
 	CALL	UF.ERANZ
 	RET
 ;
-FD.KO01:	;???
-	LD	(IX+4),2	;FUER FD19
+FD.KO01:
+	LD	(IX+4),002H	;FUER FD19
 	JP	UF.EXEC
 ;----------------------------------------------------------------------
 ;      Datei im Verzeichnis suchen

@@ -190,28 +190,28 @@ SY.INSTC:
 	JR	SY.ININ3
 
 SY.INFKT:
-	LD	(SM.FKTAB+68H),HL
+	LD	(SM.FKTAB+(2*SM.FSYS)),HL
 	LD	HL,SY.IFKT1	;Taste: HOME
-	LD	(SM.FKTAB+74H),HL
+	LD	(SM.FKTAB+(2*SM.FPOS1)),HL
 	LD	HL,SY.IFKT2	;Taste: CNZA
-	LD	(SM.FKTAB+76H),HL
-	LD	HL,SY.IFKT3	;Taste: 000 
-	LD	(SM.FKTAB+48H),HL
-	LD	HL,SY.IFKT4	;Taste: 00  
-	LD	(SM.FKTAB+4CH),HL
+	LD	(SM.FKTAB+(2*SM.FNL)),HL
+	LD	HL,SY.IFKT3	;Taste: 000
+	LD	(SM.FKTAB+(2*SM.F000)),HL
+	LD	HL,SY.IFKT4	;Taste: 00
+	LD	(SM.FKTAB+(2*SM.F00)),HL
 
 	IF	SD.GENE AND 00000001B
 	LD	HL,PF.S2	;Taste: ABS	;Kommando 'S2  '
-	LD	(SM.FKTAB+24H),HL
+	LD	(SM.FKTAB+(2*SM.FABS)),HL
 	LD	HL,TE.TEST+6	;Taste: DEL	;Kommando 'TEST'
-	LD	(SM.FKTAB+58H),HL
+	LD	(SM.FKTAB+(2*SM.FDEL)),HL
 	ENDIF
 
 	IF	SD.GENE AND 00010001B
-	LD	HL,PF.S3M	;PF1
-	LD	(SM.FKTAB+00H),HL
-	LD	HL,PF.S4	;PF2
-	LD	(SM.FKTAB+10H),HL
+	LD	HL,PF.S3M	;PF3
+	LD	(SM.FKTAB+(2*SM.FP03)),HL
+	LD	HL,PF.S4	;PF4
+	LD	(SM.FKTAB+(2*SM.FP04)),HL
 	ENDIF
 
 	RET
@@ -245,7 +245,7 @@ SY.IFKT4:
 
 	PAGE
 ;****************************************************************
-	ORG	00280H
+;	ORG	00280H
 
 	IF	SD.GENE AND 00001110B
 	LD	HL,00000H	;ZRE umladen
@@ -260,7 +260,7 @@ SY.IFKT4:
 
 	PAGE
 ;****************************************************************
-	ORG	00400H
+;	ORG	00400H
 			;Sprung zur Tastaturroutine
 ;SY.ABFR:
 ;	JP	TA.TAST
@@ -271,7 +271,7 @@ SY.IO:
 	EI
 	RETI
 ;****************************************************************
-	ORG	0048DH
+;	ORG	0048DH
 			;Bildausschrift Systemgrundzustand
 SY.BILAD:
 	LD	HL,SY.ZSY2
@@ -582,13 +582,13 @@ SY.FKTLA:
 	LD	BC,SM.TK-SM.FKTAB-1
 	LDIR
 	LD	HL,SY.CNOS
-	LD	(SM.FKTAB+6),HL
+	LD	(SM.FKTAB+(2*SM.FUP)),HL
 	LD	HL,SY.CNLS
-	LD	(SM.FKTAB+8),HL
+	LD	(SM.FKTAB+(2*SM.FLEFT)),HL
 	LD	HL,SY.CNRS
-	LD	(SM.FKTAB+16H),HL
+	LD	(SM.FKTAB+(2*SM.FRIGHT)),HL
 	LD	HL,SY.CNUS
-	LD	(SM.FKTAB+18H),HL
+	LD	(SM.FKTAB+(2*SM.FDOWN)),HL
 	LD	HL,SY.INSTB
 	JP	SY.INFKT
 	RET

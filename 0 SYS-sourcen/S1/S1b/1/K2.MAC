@@ -1,0 +1,471 @@
+	TITLE	'Kassettengrundroutinen'
+	PAGE
+;****************************************************************
+;*               Anschlussroutinen fuer BAMOS/Emulator          *
+;* OS - Version  -----------------------------------------------*
+;*               Programmierer: Marcus Herbote                  *
+;* V 1 . 2       -----------------------------------------------*
+;*               Stand        : 18.November 2022                *
+;****************************************************************
+;	PN	KR
+;---------------------------------------------------------------------
+;        Kassettengrundroutinen
+;---------------------------------------------------------------------
+	DW	$
+	DB	'K1RE'
+KR.GR1:
+	LD	A,01H
+	JR	KR.GR3
+;
+	DW	$
+	DB	'K2RE'
+KR.GR2:
+	LD	A,02H
+KR.GR3:
+	CALL	U1.KTINI
+	LD	(IX+3),A
+	CALL	UR.KRE
+	RET
+;-------------------------------------------------------------------
+	DW	$
+	DB	'K1L+'
+	CALL	KR.GR1
+	JR	$+11
+;
+	DW	$
+	DB	'K2L+'
+	CALL	KR.GR2
+	LD	HL,1	; IX + 10 := 1 / Anzahl BM
+	CALL	XY.STDX
+	DB	9
+	CALL	UR.KLV
+	RET
+;---------------------------------------------------------------------
+	DW	$
+	DB	'K1L-'
+	CALL	KR.GR1
+	JR	$+11
+;
+	DW	$
+	DB	'K2L-'
+	CALL	KR.GR2
+	LD	HL,1	; IX + 10 := 1 / Anzahl BM
+	CALL	XY.STDX
+	DB	9
+	CALL	UR.KLR
+	RET
+;---------------------------------------------------------------------
+	DW	$
+	DB	'K1R+'
+	CALL	KR.GR1
+	JR	$+11
+;
+	DW	$
+	DB	'K2R+'
+	CALL	KR.GR2
+	CALL	UR.KBV
+	RET
+;--------------------------------------------------------------------
+	DW	$
+	DB	'K1R-'
+	CALL	KR.GR1
+	JR	$+11
+;
+	DW	$
+	DB	'K2R-'
+	CALL	KR.GR2
+	CALL	UR.KBR
+	RET
+;--------------------------------------------------------------------
+	DW	$
+	DB	'K1RW'
+	CALL	KR.GR1
+	JR	$+11
+;
+	DW	$
+	DB	'K2RW'
+	CALL	KR.GR2
+	CALL	UR.KRW
+	JR	KR.CKRA
+;---------------------------------------------------------------------
+	DW	$
+	DB	'K1RA'
+	CALL	KR.GR1
+	JR	$+11
+;
+	DW	$
+	DB	'K2RA'
+	CALL	KR.GR2
+KR.CKRA:
+	CALL	UR.KRA
+	RET
+;---------------------------------------------------------------------
+KR.KARO:
+	CALL	UE.BRKMB	;AUFRUF PHYS.KASS.ROUTINE
+	RET
+;----------------------------------------------------------------------
+KR.VORSP:
+	LD	DE,UE.BWSA+327H
+	CALL	UC.CVDB
+	LD	B,L
+	LD	A,'F'
+	LD	(UB.PAR2),A
+	CALL	UR.KRE
+	CALL	UR.POSIK
+	RET
+;---------------------------------------------------------------------
+	DW	$
+	DB	'XKA1'
+	CALL	KR.GR1
+	JR	$+11
+;
+	DW	$
+	DB	'XKA2'
+	CALL	KR.GR2
+	CALL	KR.VORSP
+	CALL	FD.FDINP
+	CALL	UR.KRW
+	CALL	UR.KRA
+	RET
+;----------------------------------------------------------------------
+	DW	$
+	DB	'YKA1'
+	CALL	KR.GR1
+	JR	KR.YKA1	;$+11
+;
+	DW	$
+	DB	'YKA2'
+	CALL	KR.GR2
+KR.YKA1:
+	CALL	UR.KRE
+	LD	DE,UE.BWSA+327H
+	CALL	UC.CVDB
+	DEC	L
+	JR	Z,KR.YKA2	;$+11
+	LD	(IX+10),L
+	CALL	KR.TYPT
+	CALL	UR.KLV
+KR.YKA2:
+	CALL	FD.FDOUT
+	RET
+;---------------------------------------------------------------------------
+	DW	$
+	DB	'K1CL'
+	CALL	KR.GR1
+	JR	KR.KCL	;$+11
+;
+	DW	$
+	DB	'K2CL'
+	CALL	KR.GR2
+KR.KCL:
+	CALL	UR.KBM
+	CALL	UR.KSL
+	CALL	UR.KRW
+	CALL	UR.KRA
+	JP	UE.SYSTB
+;--------------------------------------------------------------------
+KR.TYPT:
+	INC	DE
+	LD	A,(DE)
+	LD	(UB.PAR2),A
+	RET
+;--------------------------------------------------------------------
+;	END
+	TITLE	'Fehleranzeige und Behandlung'
+	PAGE
+;	PN	UF
+;***************************************************************
+;
+;      Fehleranzeige  UND  BEHANDLUNG
+;
+;***************************************************************
+UF.RET:
+	POP	AF
+	POP	BC
+	POP	DE
+	POP	HL
+	RET
+;---------------------Ausfhr. Kass.kommando lt.Steuerblock-------------
+UF.EXEC:
+	PUSH	HL
+	PUSH	DE
+	PUSH	BC
+	PUSH	AF
+	RES	7,(IX)
+	LD	(IX+1),0
+	;JP	KO.KO05
+
+	LD	A,1
+	LD	(K0.HSB),A	;HS-Bereich
+	LD	A,(IX+4)	;Kommando
+	CP	071H
+	JR	Z,UF.EXEC2
+	CP	075H
+	JR	Z,UF.EXEC2
+	LD	(IX+7),HIGH(UE.PUF)
+	LD	(IX+8),LOW(UE.PUF)
+UF.EXEC2:
+	CALL	KR.KARO
+UF.EXEC1:
+	BIT	7,(IX)	;Status
+	JR	Z,UF.RET
+	LD	A,(IX+1)	;Fehlerschlüssel
+;-------------------------Fehlerbehandlung---------------
+UF.ERANZ:
+	PUSH	HL
+	PUSH	DE
+	PUSH	BC
+	PUSH	AF
+	PUSH	AF
+	LD	A,19
+	LD	(UB.ZN),A
+	LD	HL,UA.ZKF	;IN: <A> Fehlerschluessel
+	CALL	UR.MIMO
+	POP	AF
+	PUSH	AF
+	EX	DE,HL
+	CALL	UC.CVBX+2
+	POP	AF
+	CP	17H
+	JP	Z,UF.FL17
+	CP	18H
+	JP	Z,UF.FL18
+	CP	00H
+	JP	Z,UF.BEHB
+	CP	11H
+	JP	Z,UF.BEHB
+	CP	19H
+	JR	Z,UF.AZVB
+	CP	14H
+	JP	Z,UF.FL14
+	CP	16H
+	JP	Z,UF.FL16
+	JP	UF.RET		;??? 22H 21H nicht übernommen!
+;----------------------------------------------------------------------
+UF.SYS:
+	LD	A,(IX+1)
+	LD	DE,UE.BWSA+5A8H
+	CALL	UC.CVBX+2
+	NOP
+	NOP
+	NOP
+UF.SYS1:
+	LD	SP,UE.STANF
+	RET
+;----------------------------------------------------------
+UF.AZVB:
+	RES	2,(IX)	;Aufzeichnen verboten
+	LD	(IX+4),41H
+	CALL	KR.KARO
+	BIT	7,(IX)
+	JR	NZ,UF.SYS
+	LD	HL,UA.FRZ
+	CALL	UR.MIMO
+	JR	C,UF.SYS1
+	LD	(IX+4),31H
+	CALL	KR.KARO
+	BIT	4,(IX+0)
+	JR	NZ,UF.SYS
+	BIT	7,(IX+0)
+	JR	NZ,UF.SYS
+	BIT	2,(IX+0)
+	JR	NZ,UF.SYS
+	JP	UF.BEHB1	;??? KO.KO04
+;----------------------------------------------------------
+UF.BEHB:
+	LD	HL,UA.FRZ
+	CALL	UR.MIMO
+	JR	C,UF.SYS1
+UF.BEHB1:
+	LD	(IX+4),C	;??? Inhalt von C
+	JP	UF.EXEC+4
+;---------------------------------------
+UF.FL18:
+	LD	HL,UA.BMGF
+	CALL	UR.MIMO
+	JP	C,UF.SYS1
+	JP	UF.RET
+;------------------------------------------
+UF.FL17:
+	JP	UF.RET
+;-------------------------------------
+UF.FL14:
+	JP	UF.RET
+
+UF.FL16:
+	LD	HL,UA.FRZ
+	CALL	UR.MIMO
+	JP	UF.RET
+;----------------------------------------------------------------------
+;	END
+    PAGE
+;--------------------------------------------------------------------
+	TITLE	'Ausschriften'
+	PAGE
+;	PN	UA01
+;----------------------------------------------------------------------
+;
+;     AUSSCHRIFTEN
+;
+;----------------------------------------------------------------------
+UA.DS:
+	DB	0
+	DB	1
+	DB	0
+	DB	1
+	DB	'  DS************   '
+	DB	1
+	DB	0
+	DB	0
+	DB	0
+	DB	0
+	DB	0
+	DB	0
+	DB	0
+	DB	0
+;----------------------------------------------------------------------
+UA.KNAME:
+	DB	06H
+	DB	16
+	DB	40H
+	DB	' KassettenName: '
+UA.NR:
+	DB	03H
+	DB	16
+	DB	40H
+	DB	' Kassetten-Nr.: '
+UA.KOMMT:
+	DB	0BH
+	DB	16
+	DB	80H
+	DB	'     Kommentar: '
+;----------------------------------------------------------------------
+UA.Z7E:
+	DB	'Eingabe      =====>     Ausgabe'
+UA.GER:
+	DB	'       Geraet: '
+;----------------------------------------------------------------------
+UA.KOPFR:
+	DB	01H
+	DB	51
+	DB	80H
+	DB	'                Datei               kopieren J/N ? '
+UA.EABFR:
+	DB	01H
+	DB	51
+	DB	80H
+	DB	'                Eingaben in Ordnung  ---->   J/N ? '
+UA.VORH:
+	DB	1
+	DB	51
+	DB	80H
+	DB	'************* Datei vorh.;SYS-Ende,kopieren  J/N ? '
+;----------------------------------------------------------------------
+UA.FRZ:
+	DB	2
+	DB	3
+	DB	80H
+	DB	'?? '
+UA.BMGF:
+	DB	01H
+	DB	7
+	DB	80H
+	DB	'BM ! ??'
+UA.DOK:
+	DB	0
+	DB	4
+	DB	80H
+	DB	'i.O.'
+UA.DF:
+	DB	0
+	DB	4
+	DB	80H
+	DB	'Fhl.'
+;----------------------------------------------------------------------
+UA.ZKDAT:
+	DB	6
+	DB	16
+	DB	40H
+	DB	'     Dateiname: '
+UA.ZKLAD:
+	DB	4
+	DB	16
+	DB	08H
+	DB	'   Ladeadresse: '
+;------------------------------------------------------------------
+UA.ZKBEG:
+	DB	4
+	DB	16
+	DB	08H
+	DB	'        Beginn: '
+UA.ZKEND:
+	DB	4
+	DB	16
+	DB	08H
+	DB	'          Ende: '
+UA.STADR:
+	DB	4
+	DB	16
+	DB	08H
+	DB	'  Startadresse: '
+UA.ZKDL:
+	DB	1
+	DB	16
+	DB	20H
+	DB	' Loeschen J/N : '
+UA.ZKF:
+	DB	0
+	DB	8
+	DB	0
+	DB	'Fehler: '
+;----------------------------------------------------------------------
+UA.ZKRES:
+	DB	3
+	DB	16
+	DB	10H
+	DB	'Reservebloecke: '
+UA.ZKSDT:
+	DB	4
+	DB	18
+	DB	40H
+	DB	'     Dateiname:   '
+UA.ZKBEL:
+	DB	0
+	DB	16
+	DB	0
+	DB	'Bloecke belegt: '
+UA.ZKBLG:
+	DB	0
+	DB	16
+	DB	0
+	DB	'Bloecke gesamt: '
+;----------------------------------------------------------------------
+UA.ZKBA:
+	DB	'Bandanfang'
+UA.ZKBM:
+	DB	'Bandmarke'
+UA.ZKSL:
+	DB	'Schlussluecke'
+UA.ZKEE:
+;----------------------------------------------------------------------
+UA.LD:
+	DB	38
+	DB	15
+	DB	80H
+	DB	'               '
+UA.ZRSCH:
+	DB	1
+	DB	22
+	DB	80H
+	DB	'Verz. schreiben J/N ? '
+UA.ANZWD:
+	DB	1
+	DB	22
+	DB	80H
+	DB	'Anzeige wdhln.  J/N ? '
+;----------------------------------------------------------------------
+UA.ALTR:
+	DB	' AUSGLEICH LAUFWERKSTOLERANZEN  '
+;----------------------------------------------------------------------
+;	END
+

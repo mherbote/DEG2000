@@ -2,6 +2,9 @@
 ;****************************************************************
 ;*                  EQUAL - Anweisungen fuer Assembler          *
 ;****************************************************************
+AKB      EQU	030H    ;IO-Adresse der AKB
+MaxBL    EQU	080H    ;max. Blocklaenge
+
 UE.TACL  EQU	0F7H    ;Kursor nach links
 UE.TACR  EQU	0F9H    ; ''    nach rechts
 UE.TASYS EQU	0CDH    ;SYS-Taste
@@ -52,26 +55,14 @@ UB.END    EQU	$
 BC.EGG     EQU	0	;EINGABEGERAET
 BC.AGG     EQU	1	;AUSGABEGERAET
 
-BC.TAB1    EQU	0E000H
+;	ORG	0E000H
+BC.TAB1    EQU	0E000H               ;Subadresse fuer Input -Kassette
+;          EQU	0E001H               ;Subadresse fuer Output-Kassette
 BC.VTABA   EQU	BC.TAB1  +    2
 BC.VTABE   EQU	BC.VTABA + 3200
 BC.TAB2    EQU	BC.VTABE + 3200
 BC.TAB2A   EQU	BC.TAB2  +  104
 BC.TAB3    EQU	BC.TAB2A +  104
 BC.END     EQU	BC.TAB3  +  104
-;	ORG	0E000H
-;BC.TAB1:   DS	2
-;
-;BC.EGG     EQU	0	;EINGABEGERAET
-;BC.AGG     EQU	1	;AUSGABEGERAET
-;----------------------------------------------------------------------
-;BC.VTABA:  DS	3200
-;BC.VTABE:  DS	3200
-;----------------------------------------------------------------------
-;BC.TAB2:   DS	104
-;BC.TAB2A:  DS	104
-;BC.TAB3:   DS	104
-;BC.END     EQU	$
-;----------------------------------------------------------------------
 ;         END
 

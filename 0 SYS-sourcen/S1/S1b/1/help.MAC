@@ -1,0 +1,5 @@
+S1a     :20 0000 bis :20 2B00
+S1b     :20 2B20 bis :20 2B60           ; drei Zeilen
+S1a     :20 2B80 bis :20 3FE0
+S1b     :20 4000 bis :1D 6180           ; bis Ende - letzte Zeile
+S1a     :20 6C00 bis :00 0000           ; bis Ende

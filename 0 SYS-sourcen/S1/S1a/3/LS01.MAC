@@ -1,0 +1,14 @@
+;****************************************************************
+;*               Arbeitszellen LBL 1210                         *
+;****************************************************************
+LS.LBLIX:  DEFS  6,0               ;ZWSP FUER ANFANGSADR DER E/A-TAB
+LS.LBLP    EQU   LBLIX+2           ;POINTERADR FUER E/A-PUFFER
+LS.LBLRB   EQU   LBLIX+4           ;RESTBYTEZAEHLER
+;****************************************************************
+;*               Arbeitszellen LBS 1215                         *
+;****************************************************************
+LS.LBSIX:  DEFS  6,0               ;ZWSP FUER ANFANGSADR DER E/A-TAB
+LS.LBSP    EQU   LBSIX+2           ;POINTERADR FUER E/A-PUFFER
+LS.LBSRB   EQU   LBSIX+4           ;RESTBYTEZAEHLER
+;       END
+

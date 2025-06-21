@@ -1,0 +1,533 @@
+	TITLE	'Kmbg'
+	PAGE
+;	PN	KM01
+;****************************************************************
+;*                  DEG2000   V.1.2   ---   Programm:   K m b g *
+;*  Version         --------------------------------------------*
+;*                  Programmierer: R. Sieber   A d W            *
+;*  V 1 . 2         --------------------------------------------*
+;*                  Stand        : 25.Februar 1985              *
+;****************************************************************
+
+KM.ANF:
+	DW	$
+	DB	'Kmbg'
+	LD	HL,KM.DEL	;Taste:   D E L
+	LD	(SM.FKTAB+58H),HL
+	LD	HL,KM.ABS	;Taste:   A B S
+	LD	(SM.FKTAB+24H),HL
+	LD	HL,KM.HOME	;Taste:   H O M E
+	LD	(SM.FKTAB+74H),HL
+	LD	HL,KM.SL	;Taste:   SCH_LINKS
+	LD	(SM.FKTAB+26H),HL
+	LD	HL,KM.SR	;Taste:   SCH_RECHTS
+	LD	(SM.FKTAB+36H),HL
+	LD	HL,KM.CO	;Taste:   C_HOCH
+	LD	(SM.FKTAB+06H),HL
+	LD	HL,KM.CR	;Taste:   C_RECHTS
+	LD	(SM.FKTAB+16H),HL
+	LD	HL,KM.CU	;Taste:   C_RUNTER
+	LD	(SM.FKTAB+18H),HL
+	LD	HL,KM.CL	;Taste:   C_LINKS
+	LD	(SM.FKTAB+08H),HL
+	LD	HL,KM.CNZA	;Taste:   C N Z A
+	LD	(SM.FKTAB+76H),HL
+	LD	HL,KM.NEWL	;Taste:   E T 1
+	LD	(KM.TNEWL),HL
+	LD	HL,KM.EINA	;alphanum. Tasten
+	LD	(KM.TEINA),HL
+
+	; LD	HL,KM.UP13
+	; LD	DE,KM.RAM
+	; LD	BC,KM.UPEND-KM.UP13
+	; LDIR
+
+	LD	IX,KM.KMTAB
+KM.CO:
+	BIT	7,(IX)
+	JP	NZ,KM.UP4-KM.UP13+KM.RAM
+	CALL	KM.UP2	;KMBG Reservieren EIN
+	DB	31H
+	RET
+
+	PAGE
+;****************************************************************
+;*                  Auswertung der Cursor-Tasten                *
+;****************************************************************
+KM.HOME:
+	CALL	KM.UP1	;KMBG Kassette zurueckspulen
+	DB	21H
+	RET
+
+KM.CU:
+	CALL	KM.UP2	;KMBG Reservieren AUS
+	DB	41H
+	RET
+
+KM.SL:
+	CALL	KM.UP2	;KMBG vorh.  Datensatz anzeigen
+	DB	15H
+	CALL	KM.UP1
+	DB	2
+KM.CL:
+	CALL	KM.UP2	;KMBG einen  Datensatz zuruecksetzen
+	DB	15H
+	RET
+
+KM.SR:
+	CALL	KM.UP1	;KMBG nachf. Datensatz anzeigen
+	DB	2
+	RET
+
+KM.CR:
+	CALL	KM.UP2	;KMBG einen  Datensatz vorsetzen
+	DB	11H
+	RET
+
+KM.CNZA:
+	BIT	7,(IX)
+	RET	NZ
+	LD	A,(KM.TX2-KM.UP13+KM.RAM)
+	CP	'l'
+	JR	Z,KM.CNZA1
+	LD	(IX+9),0
+	LD	(IX+10),1
+KM.CNZA1:
+	LD	A,71H
+	OR	(IX+4)
+	LD	(IX+4),A
+	CALL	KM.UP5
+	LD	A,(IX+4)
+	CALL	KM.UP1
+	DB	2
+	CALL	KM.UP2
+	DB	15H
+	LD	(IX+4),A
+	JP	KM.UP4-KM.UP13+KM.RAM
+;****************************************************************
+;*                  Routine fuer die Taste   E T 1              *
+;****************************************************************
+KM.NEWL:
+	BIT	7,(IX)
+	RET	NZ
+	LD	HL,KM.PUFF
+	LD	(KM.KMTAB+0DFH),HL	;2BE0	;???
+	LD	A,(IX+10)
+	DEC	A
+	AND	0F0H
+	RLCA
+	RLCA
+	RLCA
+	RLCA
+	INC	A
+	LD	(KM.KMTAB+0EAH),A	;2BEB
+	CALL	KM.MHOME
+	CALL	KM.MINSL
+	CALL	ATACO
+	JP	KM.UP4-KM.UP13+KM.RAM
+
+	PAGE
+;****************************************************************
+;*                  Auswertung der alphanumerischen Tasten      *
+;****************************************************************
+KM.EINA:
+	LD	A,C
+	LD	HL,0
+	CP	'r'
+	JR	NZ,KM.EINA1
+	LD	HL,KM.EINAB
+KM.EINA1:
+	CP	'z'
+	JR	NZ,KM.EINA2
+	LD	HL,KM.EINAC
+KM.EINA2:
+	CP	'p'
+	JR	NZ,KM.EINA3
+	LD	HL,0
+KM.EINA3:
+	CP	'c'
+	JR	NZ,KM.EINA4
+	LD	HL,0
+KM.EINA4:
+	LD	(KM.TTABU),HL
+	CP	'0'
+	JR	C,KM.EINA5
+	CP	'G'
+	JR	C,KM.EINA7
+KM.EINA5:
+	LD	(KM.TX2-KM.UP13+KM.RAM),A
+KM.EINA6:
+	JP	KM.UP4-KM.UP13+KM.RAM
+
+KM.EINA7:
+	LD	A,(KM.TX2-KM.UP13+KM.RAM)
+	CP	'g'
+	JR	NZ,KM.EINA8
+	LD	A,C
+	SUB	30H
+	RET	C
+	RET	Z
+	CP	3
+	RET	NC
+	LD	(IX+3),A
+	CALL	KM.UP20
+	JR	KM.EINA6
+
+KM.EINA8:
+	CP	'l'
+	JR	NZ,KM.EINAA
+	LD	A,C
+	SUB	30H
+	CP	00AH
+	JR	C,KM.EINA9
+	SUB	7
+KM.EINA9:
+	LD	E,A
+	LD	D,0
+	LD	H,D
+	LD	L,(IX+10)
+	ADD	HL,HL
+	ADD	HL,HL
+	ADD	HL,HL
+	ADD	HL,HL
+	ADD	HL,DE
+	LD	(IX+9),H
+	LD	(IX+10),L
+	JR	KM.EINA6
+
+KM.EINAA:
+	RET
+
+KM.EINAB:
+	CALL	KM.UP2
+	DB	8
+	LD	HL,0
+	LD	(SM.TABU),HL	;00DA8H
+	RET
+
+KM.EINAC:
+	LD	(IX+13),0	;???
+	LD	(IX+14),0	;???
+KM.EINAD:
+	CALL	KM.UP1
+	DB	2
+	LD	A,(IX+9)
+	OR	(IX+10)
+	JR	Z,KM.EINAE
+	INC	(IX+13)	;???
+	CALL	KM.EINAE
+	JR	KM.EINAD
+
+KM.EINAE:
+	CALL	KM.UP4-KM.UP13+KM.RAM
+	LD	DE,SD.BWSA + 18*80 + 64	;5E0H
+	CALL	KM.UP10
+	DB	'bz:'
+	DB	00DH
+	DB	20H+80H
+	RET
+
+KM.UP20:
+	LD	C,(IX+2)
+	INC	C	;???
+	INC	C
+	INC	C
+	INC	C
+	IN	B,(C)
+	CP	1
+	JR	NZ,KM.UP21
+	BIT	1,B
+	JR	NZ,KM.UP25
+KM.UP21:
+	SET	3,B
+	JR	KM.UP22
+	BIT	0,B
+	JR	NZ,KM.UP25
+	SET	2,B
+KM.UP22:
+	OUT	(C),B
+	INC	C
+	IN	D,(C)
+	DEC	C
+	RES	2,B
+	RES	3,B
+	OUT	(C),B
+	CP	1
+	JR	NZ,KM.UP23
+	BIT	4,D
+	JR	KM.UP24
+
+KM.UP23:
+	BIT	3,D
+KM.UP24:
+	JR	Z,KM.UP25
+	LD	(IX+0),0
+	JP	KM.CO
+
+KM.UP25:
+	SET	7,(IX+0)
+	RET
+
+	PAGE
+KM.ABS:
+	LD	HL,SD.BWSA
+	LD	B,17
+KM.ABS1:
+	PUSH	BC
+	CALL	KM.UP30
+	POP	BC
+	DJNZ	KM.ABS1
+	JP	KM.UP36
+
+KM.UP30:
+	CALL	KM.UP34
+	DB	0A0H
+	JR	Z,KM.UP33
+	CALL	KM.UP34
+	DB	050H
+	JR	Z,KM.UP32
+KM.UP31:
+	LD	A,(HL)
+	INC	HL
+	CALL	PRINT
+	DJNZ	KM.UP31
+KM.UP36:
+	LD	A,1EH
+	JP	PRINT
+
+KM.UP32:
+	CALL	KM.UP36
+KM.UP33:
+	INC	HL
+	DJNZ	KM.UP33
+	RET
+
+KM.UP34:
+	EX	(SP),HL
+	LD	B,(HL)
+	INC	HL
+	EX	(SP),HL
+	PUSH	HL
+	CALL	KM.UP35
+	POP	HL
+	LD	B,80
+	RET
+
+KM.UP35:
+	LD	A,' '
+	CP	(HL)
+	INC	HL
+	RET	NZ
+	DJNZ	KM.UP35
+	RET
+
+KM.DEL:
+	RES	7,(IX+0)
+	LD	(IX+1),0
+	JP	KM.UP4-KM.UP13+KM.RAM
+
+	PAGE
+;****************************************************************
+;*                  Unterprogramme                              *
+;****************************************************************
+KM.UP1:
+	CALL	KM.LOE1
+KM.UP2:
+	BIT	7,(IX)
+	JR	Z,KM.UP3
+	POP	HL
+	RET	NZ
+KM.UP3:
+	EX	(SP),HL
+	PUSH	AF
+	LD	A,(HL)
+	INC	HL
+	LD	(IX+4),A
+	POP	AF
+	EX	(SP),HL
+KM.UP5:
+	CALL	KM.KARO
+	LD	HL,FD.DASU	;05C01H
+	LD	(SM.FKTAB+8EH),HL	;SM.ZSMER , SM.ZSTC
+	JP	KM.UP4-KM.UP13+KM.RAM
+
+KM.LOE1:
+	LD	HL,KM.PUFF-1
+	LD	(HL),0
+	LD	BC,103H
+	JR	KM.LOE3
+KM.LOE2:
+	LD	HL,SD.BWSA
+	LD	BC,24*80 -1 ;007FFH ??? (25*80-1 = 07CFH; 07FFH-07CFH=30H=48)
+	LD	(HL),' '
+KM.LOE3:
+	PUSH	HL
+	POP	DE
+	INC	DE
+	LDIR
+	RET
+
+KM.UP10:
+	EX	(SP),HL
+KM.UP11:
+	LD	A,(HL)
+	AND	07FH
+	CP	' '
+	JR	C,KM.UP12
+	LD	(DE),A
+	INC	DE
+KM.UP12:
+	CALL	C,KM.UP13-KM.UP13+KM.RAM
+	BIT	7,(HL)
+	INC	HL
+	JR	Z,KM.UP11
+	EX	(SP),HL
+	RET
+
+KM.UP41:
+	LD	DE,SD.BWSA
+	LD	A,(IX+10)
+	OR	A
+	JR	NZ,KM.UP42
+	BIT	0,(IX+9)
+	RET	Z
+	PUSH	AF
+	CALL	KM.MANZ
+	POP	AF
+	SUB	10H
+KM.UP42:
+	PUSH	AF
+	CALL	KM.MANZ
+	POP	AF
+	SUB	10H
+	RET	Z
+	RET	C
+	JR	KM.UP42
+
+KM.UP43:
+	CP	01EH
+	RET	Z
+	CP	00AH
+	RET	Z
+	CP	00DH
+	RET	Z
+	OR	A
+	RET	Z
+	CP	' '
+	JR	C,KM.UP44
+	CP	080H
+	RET	C
+KM.UP44:
+	LD	A,07FH
+	RET
+
+	PAGE
+;	ORG	00300H
+
+KM.UP13:	LD	(KM.UP15-KM.UP13+KM.RAM-1),A	;???
+	LD	A,(IX+1)	;<<<
+KM.UP15:
+	EX	DE,HL
+	LD	(HL),A
+	LD	A,33H
+	RRD
+	EX	DE,HL
+	PUSH	AF
+	LD	A,(DE)
+	CALL	KM.UP14-KM.UP13+KM.RAM
+	POP	AF
+KM.UP14:
+	CP	03AH
+	JR	C,$+4	;---!
+	ADD	A,7	;   !
+	LD	(DE),A	;<--!
+	INC	DE
+	RET
+
+KM.UP4:
+	PUSH	AF
+	CALL	KM.LOE2
+	LD	A,(IX+3)
+	ADD	A,30H
+	LD	(KM.TX1-KM.UP13+KM.RAM),A
+	LD	DE,SD.BWSA + 18*80 ;5A0H
+	CALL	KM.UP10
+KM.TX2:
+	DB	'g '
+	DB	004H
+	DB	'('	;<<<
+KM.TX1:
+	DB	'2)'	;<<<
+	DB	3AH+80H	;":"
+	LD	DE,SD.BWSA + 18*80 + 14 ;5AEH	;18*80 +20	;5B4H
+	CALL	KM.UP10
+	DB	'l:'
+	DB	9
+	DB	10
+	DB	' s:'
+	DB	0
+	DB	'/'
+	DB	1
+	DB	'      '
+	DB	2DH+80H	;"-"
+	DEC	DE
+	DEC	DE
+	DEC	DE
+	LD	HL,KM.PUFF-1
+	LD	A,(HL)
+	INC	HL
+	CALL	KM.UP15-KM.UP13+KM.RAM
+	INC	DE
+	LD	B,(IX+10)
+	PUSH	HL
+	INC	HL
+	DJNZ	$-1
+	LD	A,(HL)
+	CALL	KM.UP15-KM.UP13+KM.RAM
+	INC	HL
+	LD	A,(HL)
+	CALL	KM.UP15-KM.UP13+KM.RAM
+	POP	HL
+	PUSH	HL
+	LD	DE,SD.BWSA + 20*80	;640H
+	LD	B,0
+	LD	A,(HL)
+	CALL	KM.UP43
+	LD	(DE),A
+	INC	HL
+	INC	DE
+	DJNZ	$-7
+	POP	HL
+KM.UP40:
+	CALL	KM.UP41
+	POP	AF
+	RET
+
+KM.UPEND	EQU	$
+
+;SM.FKTAB	EQU	00D00H
+KM.TTABU  EQU	00DA8H
+KM.TNEWL  EQU	00DAEH
+KM.TEINA  EQU	00DB0H
+KM.PUFF   EQU	00E66H
+
+KM.MANZ   EQU	0201DH
+KM.MHOME  EQU	02060H
+KM.MINSL  EQU	023BAH
+;ATACO    EQU	024F8H
+
+KM.KMTAB  EQU	UB.KTAB
+;         DEFS  17,0
+;SD.BWSA  EQU	03000H
+
+KM.KARO   EQU	KR.KARO   ;05A93H
+
+;DRUZ     EQU	07C00H
+
+KM.RAM    EQU	KM.UP13   ;0FF80H
+
+			;(C) Rainer Sieber     A d W
+
+
+;	END
+

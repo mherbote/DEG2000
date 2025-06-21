@@ -41,7 +41,7 @@ PF.O3:
 	LD	HL,PF.O3ANF
 	LD	DE,PF.O3END
 	JR	PF.OB
-	
+
 PF.OB:
 	LD	(SM.PTSE),DE
 	LD	(SM.PTSA),HL
@@ -79,7 +79,7 @@ PF.O1ANF	EQU	$
 	DB	0
 	DB	'         LD    HL,'                                                   ;PF12-0
 	DB	0
-; ====	
+; ====
 	DB	'         PUSH  HL'                                                    ;PF01-1 PF13
 	DW	SD.NL
 	DB	'         PUSH  IX'                                                    ;PF02-1 PF14
@@ -113,7 +113,7 @@ PF.O1ANF	EQU	$
 	DB	0                                                                      ;PF02-2 PF26
 	DB	0                                                                      ;PF03-2 PF27
 	DB	0                                                                      ;PF04-2 PF28
-PF.O1END EQU	$
+PF.O1END EQU	$-1
 	PAGE
 ;****************************************************************
 PF.O2ANF EQU	$
@@ -159,10 +159,7 @@ PF.O2ANF EQU	$
 	DB	'!INCLUDE        name'                                                 ;PF06-1 PF18
 	DW	SD.NL
 ; ----
-	DB	'!         INCL  (ooooo}'
-	DB	9EH
-	DB	0BAH
-	DB	'ooo,oooooooo)'                                                        ;PF07-1 PF19
+	DB	'!         INCL  (oooooooo,oooooooo)'                                  ;PF07-1 PF19
 	DW	SD.NL
 	DB	'! oooooooo'                                                           ;PF08-1 PF20
 	DW	SD.NL
@@ -176,9 +173,7 @@ PF.O2ANF EQU	$
 	DB	'!./       CHANGE NAME=name,newname,R02'                               ;PF12-1 PF24
 	DW	SD.NL
 ; ----
-	DB	7DH
-	DB	9FH
-	DB	'7!         TEXT  titelzeile'                                          ;PF01-2 PF25
+	DB	'!         TEXT  titelzeile'                                          ;PF01-2 PF25
 	DW	SD.NL
 	DB	'!         PRINT name'                                                 ;PF02-2 PF26
 	DW	SD.NL
@@ -199,7 +194,7 @@ PF.O2ANF EQU	$
 	DB	0                                                                      ;PF10-2 PF34
 	DB	0                                                                      ;PF11-2 PF35
 	DB	0                                                                      ;PF12-2 PF36
-PF.O2END EQU	$
+PF.O2END EQU	$-1
 	PAGE
 ;****************************************************************
 PF.O3ANF EQU	$
@@ -257,7 +252,7 @@ PF.O3ANF EQU	$
 	DB	'Stand        :'                                                       ;PF10-1 PF23
 	DB	0
 	DB	0                                                                      ;PF11-1 PF24
-PF.O3END EQU	$
+PF.O3END EQU	$-1
 
 	TITLE 'Aufruf SYS2'
 	PAGE
@@ -307,23 +302,23 @@ PF.SYS31a:			;###
 
 
 PF.BSRAH:
-	LD	HL,SD.BWSA+0F7H	;Bildrahmen erzeugen
-	LD	DE,SD.BWSA+0F9H
+	LD	HL,SD.BWSA + 80* 3 + 7	;Bildrahmen erzeugen  0F7H
+	LD	DE,SD.BWSA + 80* 3 + 9	;0F9H
 	LD	BC,64
 	LD	(HL),082H
 	INC	HL
 	LD	(HL),081H
 	LDIR
 	LD	(HL),083H
-	LD	HL,SD.BWSA+647H
-	LD	DE,SD.BWSA+649H
+	LD	HL,SD.BWSA + 80*20 + 7	;647H
+	LD	DE,SD.BWSA + 80*20 + 9	;649H
 	LD	BC,64
 	LD	(HL),08AH
 	INC	HL
 	LD	(HL),081H
 	LDIR
 	LD	(HL),08BH
-	LD	HL,SD.BWSA+147H
+	LD	HL,SD.BWSA + 80* 4 + 7	;147H
 	LD	B,16
 PF.SYS30:
 	LD	(HL),080H

@@ -1,0 +1,68 @@
+    TITLE   'DEG2000 V. 1.2    Einsprungadressen'
+    PAGE
+;****************************************************************
+;*                  DEG2000 V. 1.2    Einsprungadressen         *
+;*  Version         --------------------------------------------*
+;*                  Programmierer: M. Herbote                   *
+;*  V 1 . 2         --------------------------------------------*
+;*                  Stand        : 03.Dezember 2022             *
+;****************************************************************
+	ORG	04000H
+;****************************************************************
+;*                  physische Ansteuerung der Tastatur          *
+;****************************************************************
+TR.TINIT:  JP	TR.PIOP2    ;Initialisierung der Tastatur
+TR.TA1:    JP	TR.TTA12    ;U_Int - Abfrage
+TR.TA2:    JP	TR.TTA22    ;Tastencode-Eingabe
+TR.TA3:    JP	TR.TA32     ;Warten auf Tasten
+TR.TFE:    JP	TR.TFE2     ;Warten auf Tastenende
+TR.TIM:    JP	TR.TTIM2    ;Ansteuerung der INS_MOD - Diode
+TR.TEM:    JP	TR.TTEM2    ;Ansteuerung der Ebenen  - Dioden
+TR.TBEL:   JP	TR.TTBL2    ;Ansteuerung der Fehleranzeigen
+TR.PSTAS:  JP	TR.PST      ;Merker PTAS/STAS
+;
+    ORG	04020H
+TA.TAST1:  JP	TA.TAST     ;04020H
+TA.TFE1:   JP	TA.TFE      ;04023H
+TA.ABFR1:  JP	TA.ABFR2    ;04026H
+
+	ORG	04030H
+;****************************************************************
+;*                  SET-/RESET- Cursor                          *
+;****************************************************************
+SY.SETCG:   JP   SY.SETC    ;04030H
+SY.SETCHLG: JP   SY.SETCHL  ;04033H
+SY.RESCG:   JP   SY.RESC    ;04036H
+
+	ORG	04040H
+;****************************************************************
+;*                  Druckerroutinen                             *
+;****************************************************************
+PR.PRINT:  JP   PR.PRINA    ;04040H
+PR.DINIT:  JP   PR.PRINA    ;04043H
+PR.MRES:   JP   P1.MRES     ;04046H
+PR.PRIO:   JP   P1.PRIO     ;04049H
+
+	ORG	04050H
+;****************************************************************
+;*                  Lochbandroutinen                            *
+;****************************************************************
+LR.LRLBL:  JP   LR.LBL      ;04050H
+LR.LRLBS:  JP   LR.LBS      ;04053H
+
+	ORG	04060H
+;****************************************************************
+;*                  Kassettenroutinen                           *
+;****************************************************************
+KMBROB:    RET              ;04060H
+           NOP
+           NOP
+KMBRUC:    RET              ;04063H
+           NOP
+           NOP
+KMBINI:    RET              ;04066H
+           NOP
+           NOP
+
+;   END
+
