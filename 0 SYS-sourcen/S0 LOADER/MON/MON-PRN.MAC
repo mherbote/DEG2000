@@ -1,4 +1,4 @@
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1
 
 
   0001                          gene1 equ    1     ; 1 ... ohne 'incFL.MAC'
@@ -12,9 +12,9 @@
                                 
                                 	IF gene2 AND 2
                                 	.z80
-                                	title	'monitor   MH-Computer   1184  2.2'
+                                	title	'monitor   MH-Computer   1184  2.3'
                                 	page
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-1
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-1
 
 
                                 
@@ -42,7 +42,7 @@
                                 ;	im  ROM  auf Adresse 0
                                 ;
   0000'                         beginn:
-  0000'   31 FFFF               	ld	sp,0ffffh  ;DUMMY LOAD 
+  0000'   31 FFFF               	ld	sp,0ffffh  ;DUMMY LOAD
   0003'   3E C9                 	ld	a,0c9h     ;Ablage RET Befehl
   0005'   32 F000               	ld	(0f000h),a ;auf Zieladresse
   0008'   CD F000               	call	0f000h ;feststellen
@@ -78,7 +78,7 @@
   00F2                          SIOBDAT	EQU	0F2H
   00F3                          SIOBSTS	EQU	0F3H
                                 ;
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-2
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-2
 
 
                                 ;
@@ -121,7 +121,7 @@
                          C      	include	incINI.MAC
                          C      	IF gene2 AND 2
                          C      	page
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-3
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-3
 
 
                          C      
@@ -185,7 +185,7 @@
   00BB                   C      msgl	equ	$-msg
                          C      ;
                          C      ;
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-4
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-4
 
 
   F0F1                   C      begin:
@@ -250,7 +250,7 @@
   F146    85             C      	add	a,l
   F147    6F             C      	ld	l,a
   F148    7C             C      	ld	a,h
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-5
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-5
 
 
   F149    CE 00          C      	adc	a,0
@@ -264,7 +264,7 @@
                          C      	include	incIO.MAC
                          C      	IF gene2 AND 2
                          C      	page
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-6
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-6
 
 
                          C      
@@ -328,7 +328,7 @@
                          C      ttyout:
                          C      	jp	Gate.conout	;fuer AgonLight
                          C      	ENDIF
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-7
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-7
 
 
                          C      
@@ -393,7 +393,7 @@
   F1DF    3E 06          C      	ld	a,6				;10111110b
   F1E1    D3 A2          C      	out	(atss2),a
   F1E3    18 E9          C      	jr	toute
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-8
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-8
 
 
                          C      ;
@@ -458,7 +458,7 @@
                          C      ;
   F21C                   C      iobyte:
   F21C    3A F466        C      	ld	a,(iobyt)
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-9
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-9
 
 
   F21F    C9             C      	ret
@@ -523,7 +523,7 @@
                                 
                                 ;
                                 ;
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-10
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-10
 
 
                                 ;	IOBYTE  assign
@@ -539,7 +539,7 @@
                                 ;
                                 	IF gene2 AND 2
                                 	page
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-11
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-11
 
 
                                 
@@ -603,7 +603,7 @@
   F295    CD F78B               	call	crlf
   F298    C1                    	pop	bc
   F299    D1                    	pop	de
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-12
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-12
 
 
   F29A    E1                    	pop	hl
@@ -668,7 +668,7 @@
                                 ;	hex math
                                 ;
   F2DB                          hexn:
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-13
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-13
 
 
   F2DB    CD F786               	call	exlf
@@ -733,7 +733,7 @@
   F321    F5                    	push	af
   F322    0F                    	rrca
   F323    0F                    	rrca
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-14
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-14
 
 
   F324    0F                    	rrca
@@ -779,13 +779,13 @@
                                 ;
                                 	IF gene2 AND 2
                                 	page
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-15
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-15
 
 
                                 
                                 	ENDIF
   F352                          restart:
-  F352    E5                    	push	hl	
+  F352    E5                    	push	hl
   F353    D5                    	push	de
   F354    C5                    	push	bc
   F355    F5                    	push	af
@@ -830,7 +830,7 @@
   F384    21 0020               	ld	hl,llocx
   F387    39                    	add	hl,sp
   F388    73                    	ld	(hl),e
-  F389    23                    	inc	hl	
+  F389    23                    	inc	hl
   F38A    72                    	ld	(hl),d
   F38B    23                    	inc	hl
   F38C    23                    	inc	hl
@@ -843,7 +843,7 @@
   F396    E1                    	pop	hl
   F397    CD F2E7               	call	ladr
   F39A    21 0025               	ld	hl,tlocx
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-16
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-16
 
 
   F39D    39                    	add	hl,sp
@@ -908,14 +908,14 @@
   F3E7    D0                    	ret	nc
   F3E8    E6 5F                 lxt:	and	5fh
   F3EA    C9                    	ret
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-17
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-17
 
 
                                 ;
                                 ;
                                 	IF gene2 AND 2
                                 	page
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-18
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-18
 
 
                                 
@@ -979,7 +979,7 @@
   0009                          aploc	equ	9
   000B                          bploc	equ	0bh
   000A                          cploc	equ	0ah
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-19
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-19
 
 
   000D                          dploc	equ	0dh
@@ -994,7 +994,7 @@
                                 
                                 	IF gene2 AND 2
                                 	page
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-20
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-20
 
 
                                 
@@ -1056,7 +1056,7 @@
                          C      	include	incCMD.MAC
                          C      	IF gene2 AND 2
                          C      	page
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-21
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-21
 
 
                          C      
@@ -1120,7 +1120,7 @@
   F4B9    59             C      	ld	e,c
   F4BA                   C      arep22:
   F4BA    CD F3CA        C      	call	ti
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-22
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-22
 
 
   F4BD    FE 3D          C      	cp	'='
@@ -1185,7 +1185,7 @@
   F508    C4 F510        C      	call	nz,cerr
   F50B    CD F2CB        C      	call	hilox
   F50E    18 F4          C      	jr	lxc
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-23
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-23
 
 
                          C      ;
@@ -1250,7 +1250,7 @@
                          C      ;   ----
                          C      ;	Start eines Anwenderprogramms mit Break-Points
   F562                   C      goto:
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-24
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-24
 
 
   F562    CD F33D        C      	call	pchk
@@ -1315,7 +1315,7 @@
   F5B3                   C      lxt11:
   F5B3    7E             C      	ld	a,(hl)
   F5B4    47             C      	ld	b,a
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-25
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-25
 
 
   F5B5    2F             C      	cpl
@@ -1380,7 +1380,7 @@
   F607    18 DF          C      	jr	lxl3
                          C      ;
                          C      ;	move
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-26
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-26
 
 
                          C      ;   ----
@@ -1445,7 +1445,7 @@
   F650    3E 18          C      	ld	a,'0' shr 1
   F652    8F             C      	adc	a,a
   F653    4F             C      	ld	c,a
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-27
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-27
 
 
   F654    CD F18C        C      	call	co
@@ -1510,7 +1510,7 @@
   F6A4    1D             C      	dec	e
   F6A5    28 19          C      	jr	z,done
   F6A7    3D             C      	dec	a
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-28
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-28
 
 
   F6A8    28 22          C      	jr	z,lodr
@@ -1575,7 +1575,7 @@
   F6FC                   C      sbyte:
   F6FC    C5             C      	push	bc
   F6FD    CD F309        C      	call	ribble
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-29
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-29
 
 
   F700    07             C      	rlca
@@ -1640,7 +1640,7 @@
   F744    CD F786        C      	call	exlf
   F747                   C      lxt0:
   F747    CD F8D0        C      	call	lfadr
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-30
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-30
 
 
   F74A    06 40          C      	ld	b,32+32
@@ -1705,7 +1705,7 @@
   F796    0A             C      	ld	a,(bc)
   F797    BE             C      	cp	(hl)
   F798    28 05          C      	jr	z,lxbbn
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-31
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-31
 
 
   F79A    C5             C      	push	bc
@@ -1770,7 +1770,7 @@
   F7F0    21 F43B        C      	ld	hl,prmtb
   F7F3    CD F3CA        C      	call	ti
   F7F6    FE 0D          C      	cp	cr
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-32
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-32
 
 
   F7F8    28 4C          C      	jr	z,lxx6
@@ -1835,7 +1835,7 @@
   F846    CD F78B        C      	call	crlf
   F849                   C      lxx7:
   F849    CD F8D6        C      	call	blk
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-33
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-33
 
 
   F84C    7E             C      	ld	a,(hl)
@@ -1900,7 +1900,7 @@
   F895    39             C      	add	hl,sp
   F896    E5             C      	push	hl
   F897    C5             C      	push	bc
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-34
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-34
 
 
   F898                   C      findc:
@@ -1965,7 +1965,7 @@
                                 ;
   F8E8                          boot1:
   F8E8    21 F8DB               	ld	hl,flpmsg		;falls da
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	1-35
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	1-35
 
 
   F8EB    CD F905               	call	print
@@ -1998,7 +1998,7 @@
   F912                          maxi:
   F912    C9                    	ret
                                 	ENDIF
-                                ;	
+                                ;
                                 	IF gene1 AND 2
                                 	include	incFL.MAC
                                 	ENDIF
@@ -2020,7 +2020,7 @@
                                 	savebin	"bootstrap/z80-MON.bin", beginn, $ - beginn
                                 	ENDIF
                                 	end	beginn
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	S
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	S
 
 
 Macros:
@@ -2084,7 +2084,7 @@ F5C8 	LXT2            F753 	LXT22           F755 	LXT3
 F7A8 	LXW0            F883 	LXW00           F7B3 	LXW1            
 F7C5 	LXW2            F7D1 	LXW3            F7DD 	LXW4            
 F7FA 	LXX0            F806 	LXX1            F809 	LXX2            
-'monitor   MH-Computer   1184  2.2'	MACRO-80 3.44	09-Dec-81	PAGE	S-1
+'monitor   MH-Computer   1184  2.3'	MACRO-80 3.44	09-Dec-81	PAGE	S-1
 
 
 F822 	LXX3            F83B 	LXX4            F841 	LXX5            
@@ -2123,6 +2123,4 @@ F7E2 	XAM             0007 	XLOC            0005 	YLOC
 No Fatal error(s)
 
 
-    
-F1C8 	TOUTLF          F01E 	TRAP            F217 	TSTS            
-F20D 	TTYCSTS         F15A 	TTYIN           F193 	
+

@@ -105,7 +105,7 @@ bye:
 
 	call	crlf
 lxby:
-	call	ki	;In HEX Dump 1E 
+	call	ki	;In HEX Dump 1E
 	cp	01eh	;CRTL N ist 0eh
 	jr	nz,lxby	;gaendert gegen MC-Vers
 	pop	de
@@ -141,11 +141,11 @@ cerr:
 disp:
 	call	exlf
 lxd0:
-	call	lfadr
+	call	lfadr	;Display Adresse
 lxd1:
 	call	blk
 	ld	a,(hl)
-	call	lbyte
+	call	lbyte	;Display Byte
 	call	hilox
 	ld	a,l
 	and	00fh
@@ -239,7 +239,7 @@ lxg3:
 ;
 ;	test  (j)
 ;   ----
-;	Schnelltest fuer den Speicher 
+;	Schnelltest fuer den Speicher
 ;	FAST Complement Test
 test:
 	call	exlf
@@ -263,7 +263,7 @@ lxt2:
 	call	hilox
 	jr	lxt11
 ;
-;   laden von Binaerdaten 
+;   laden von Binaerdaten
 ;   -----
 ;   tartkennung ist eine Gruppe von 0FFh - Werten
 load:
@@ -841,7 +841,7 @@ done2:
 	ret
 ;
 ;	search mem
-;   
+;
 size:
 	call	memsiz
 	ld	bc,endx-exit

@@ -138,7 +138,7 @@ Public Class Zeichen
                     End If
                 Next pX1
             Next pY1
-            For pY1 = PixelY * ZeichenY - 4 * PixelY To PixelY * ZeichenY - 3 * PixelY Step PixelY
+            For pY1 = PixelY * ZeichenY - 2 * PixelY To PixelY * ZeichenY - 1 * PixelY Step PixelY
                 For pX1 = 0 To PixelX * ZeichenX - PixelX Step PixelX
                     For pX2 = 0 To PixelX - 1
                         For pY2 = 0 To PixelY - 1

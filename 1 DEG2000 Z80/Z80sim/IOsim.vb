@@ -800,12 +800,16 @@ Public Class IOsim
         If NextChar = -99999 Then
             'Tast_in_d = &HFF
         Else
-            If (NextChar And &H100) = &H100 Then
-                Tast_in_d = NextChar - &H100
-            ElseIf (NextChar And &H200) = &H200 Then
-                Tast_in_d = NextChar - &H200
+            If NextChar = &H100 Then                            'test auf NUL
+                Tast_in_d = &HC9
             Else
-                Tast_in_d = NextChar
+                If (NextChar And &H100) = &H100 Then
+                    Tast_in_d = NextChar - &H100
+                ElseIf (NextChar And &H200) = &H200 Then
+                    Tast_in_d = NextChar - &H200
+                Else
+                    Tast_in_d = NextChar
+                End If
             End If
             KeyProc = False
         End If

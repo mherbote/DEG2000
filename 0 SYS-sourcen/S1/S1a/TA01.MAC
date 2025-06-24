@@ -249,8 +249,8 @@ TA.BBB:
 	INC	A
 	LD	B,A
 	LD	A,080H
-	RLCA		;<--!
-	DJNZ	$-1	;$-$-$-!
+	RLCA            ;<--!
+	DJNZ	$-1     ;---!
 	LD	B,A
 	LD	A,(SM.IMERK)
 	OR	A
@@ -415,6 +415,10 @@ TA.ABFR:
 
 	OR	A	;Zeichen  NULL
 	JR	Z,TA.AB1
+	CP	0C9H
+	JR	NZ,TA.AB2
+	XOR	A
+TA.AB2:
 	RES	6,C	;Taste betaetigt ----- Z=0
 	LD	H,B	;Inhalt von A retten fuer CTRL
 	LD	B,A	;B : Tastencode
@@ -435,10 +439,10 @@ TA.ABFR2:
 	PUSH	AF
 	PUSH	BC
 	LD	BC,03000H
-	DEC	BC           ;<--|
+	DEC	BC           ;<--\
 	LD	A,B          ;   |
 	OR	C            ;   |
-	JR	NZ,$-3       ;---|
+	JR	NZ,$-3       ;---/
 	POP	BC
 	POP	AF
 	RET

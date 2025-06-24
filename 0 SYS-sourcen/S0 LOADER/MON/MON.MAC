@@ -9,7 +9,7 @@ gene2 equ    2     ; 1 ... AgonLight
 
 	IF gene2 AND 2
 	.z80
-	title	'monitor   MH-Computer   1184  2.2'
+	title	'monitor   MH-Computer   1184  2.3'
 	page
 	ENDIF
 
@@ -35,7 +35,7 @@ rst7  equ	038h
 ;	im  ROM  auf Adresse 0
 ;
 beginn:
-	ld	sp,0ffffh  ;DUMMY LOAD 
+	ld	sp,0ffffh  ;DUMMY LOAD
 	ld	a,0c9h     ;Ablage RET Befehl
 	ld	(0f000h),a ;auf Zieladresse
 	call	0f000h ;feststellen
@@ -355,7 +355,7 @@ rix:
 	page
 	ENDIF
 restart:
-	push	hl	
+	push	hl
 	push	de
 	push	bc
 	push	af
@@ -400,7 +400,7 @@ lxr3:
 	ld	hl,llocx
 	add	hl,sp
 	ld	(hl),e
-	inc	hl	
+	inc	hl
 	ld	(hl),d
 	inc	hl
 	inc	hl
@@ -642,7 +642,7 @@ mini:
 maxi:
 	ret
 	ENDIF
-;	
+;
 	IF gene1 AND 2
 	include	incFL.MAC
 	ENDIF

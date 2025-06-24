@@ -8,11 +8,16 @@
             ORG   0
             DEFS  0C00H,0FFH     ;ZRE --- ROM ab 0000H
             DEFS  0400H,000H     ;    --- RAM ab 0C00H
-            DEFS  2000H,0FFH     ;OFS --- ROM ab 1000H
+            DEFS  1800H,0FFH     ;OFS --- ROM ab 1000H
+            DEFS  0800H,000H     ;    --- RAM ab 2800H
             DEFS  1000H,SD.SPACE ;ABS --- RAM ab 3000H
             DEFS  4000H,0FFH     ;PFS --- ROM ab 4000H
+;           DEFS  4000H,000H     ;OPS --- RAM ab 8000H
+;           DEFS  4000H,000H     ;OPS --- RAM ab C000H
+SM.ENDE     EQU   $
+;****************************************************************
 
-SM.STACK    EQU   SD.RAM+100H   ;STACK Anfang
+SM.STACK    EQU   SD.RAM+100H-20H   ;STACK Anfang ;-20H hizugefuegt
 
             ORG   SM.STACK
 SM.FKTAB:   DEFS  0A0H,0         ;Tabelle Fkt. fuer Tastaturroutine
@@ -105,7 +110,7 @@ SM.FP48     EQU   80
 SM.FKTABE   EQU   SM.FKTAB+(2*SM.FP48)
 
 SM.TK:      DB    0             ;Speicher Alpha-Tastencode
-SM.FKT:     DB    0             ;Speicher Funktionsadresse  {0 ... 3} für Funktionstastenebene
+SM.FKT:     DB    0             ;Speicher Funktionsadresse  {0 ... 3} fuer Funktionstastenebene
             DEFS  12,0          ;TEMO
 SM.ZSMER:   DB    0             ;Merker  Z-Schnellschreiben
 SM.ZSTC:    DB    0             ;Zaehler Z-schnell 0,5s
@@ -114,7 +119,7 @@ SM.MERK:    DB    0             ;Zeichenmerker Cursorposition
 SM.GRZEI:   DB    0             ;Merker Grafikzeichen
 SM.FSTAT:   DB    0             ;Status Format
 SM.STAT:    DB    0             ;Status der virtuellen Tast.
-SM.MODE:    DB    0             ;Stauts der Betriebsart
+SM.MODE:    DB    0             ;Status der Betriebsart
 SM.ZEIZ:    DW    0             ;Zeilenzaehler Text
 SM.BZA:     DB    0             ;Zeilenzaehler Window--Text
 SM.WEITE:   DW    0             ;Zeilen--Sprungweite

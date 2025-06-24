@@ -383,7 +383,9 @@ SY.ZSY4:
 	DB	'Datum:  '
 SY.LZSY4	EQU	$-SY.ZSY4-1
 ;****************************************************************
-SY.QTABL:
+SY.QTABL:       ;Standard TABs setzen (0,9,15,34)
+	PUSH	AF
+	PUSH	HL
 	LD	HL,SM.TABZ
 	LD	(HL),SD.QTAB1
 	INC	HL
@@ -399,7 +401,8 @@ SY.QTABL:
 	INC	DE
 	LD	BC,5
 	LDIR
-	LD	HL,(SM.PTS)
+	POP	HL
+	POP	AF
 	RET
 ;****************************************************************
 ;	ORG	00548H

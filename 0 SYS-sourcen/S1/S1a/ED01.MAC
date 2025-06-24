@@ -12,26 +12,81 @@
 	ORG	SD.EDITA
 
 	DW	$
-	DB	'EDIT'
+	DB	'EDIT'          ;Editor normaler Start
 ED.MELAN:
 	DI
-	CALL	SY.QTABL
-	LD	(SM.PTSA),HL
-	LD	B,SD.PSANZ
-ED.MEL5:
-	LD	M,0
+; Parameter auswerten
+; EDIT  { |L|0|1|2|3}
+; EDIT N{ |L|0|1|2|3}
+; EDIT R{ |L|0|1|2|3}
+	LD	HL,SD.BWSA + 10*80 +7
+	LD	A,(HL)          ;erster Parameter { |N|R}
+	CP	SD.SPACE
+	JR	NZ,ED.MEL12
 	INC	HL
-	DJNZ	ED.MEL5
-	LD	(SM.PTSE),HL
+	LD	A,(HL)          ;zweiter Parameter { |L|0|1|2|3}
+	CP	SD.SPACE
+	JR	Z,ED.MEL1       ;altes Kommando 'ED  '
+	JR	ED.MEL21
+
+ED.MEL12:
+	CP	'N'
+	JR	NZ,ED.MEL13
+	CALL	SY.QTABL        ;Standard TABs setzen (0,9,15,34)
+	JR	ED.MEL22
+
+ED.MEL13:
+	CP	'R'
+	JP	NZ,SY.SYSTB	;erster Parameter nicht { |N|R}
+ED.MEL22:
+	INC	HL
+	LD	A,(HL)
+ED.MEL21:
+	CP	'L'
+	JR	NZ,ED.MEL14
+	CALL	PF.INIT1        ;Init Bereich ab (SM.PTS)
 	JR	ED.MEL1
+
+ED.MEL14:
+	CP	'0'
+	JR	NZ,ED.MEL15
+	CALL	S1.EDN          ;Uebernahme aus Editorbereich nach FC00H
+	JR	ED.MEL1
+
+ED.MEL15:
+	CP	'1'
+	JR	NZ,ED.MEL16
+	LD	HL,PF.O1ANF
+	LD	DE,PF.O1END
+	JR	ED.MEL18
+ED.MEL16:
+	CP	'2'
+	JR	NZ,ED.MEL17
+	LD	HL,PF.O2ANF
+	LD	DE,PF.O2END
+	JR	ED.MEL18
+ED.MEL17:
+	CP	'3'
+	JR	NZ,ED.MEL19
+	LD	HL,PF.O3ANF
+	LD	DE,PF.O3END
+
+ED.MEL18:
+	LD	(SM.PTSA),HL
+	LD	(SM.PTSE),DE
+ED.MEL19:
+	JR	ED.MEL1
+
 ED.MEL2:
 	CALL	ED.UMLKP
+
+; Eintrittspunkt fuer 'ED  ' und 'EDN '
 ED.MEL1:
-	CALL	SY.BILO	;Bild loeschen
+	CALL	SY.BILO         ;Bild loeschen
 ED.MEL11:
 	CALL	E2.RESET
-	CALL	E1.PUFLO	;TP loeschen
-	CALL	SY.MEMLA	;Fkt.Tast. u. RAM definieren
+	CALL	E1.PUFLO        ;TP loeschen
+	CALL	SY.MEMLA        ;Fkt.Tast. u. RAM definieren
 	LD	HL,ED.MELNL
 	LD	(SM.FKTAB+(2*SM.FPQ)),HL
 	LD	HL,0
@@ -152,7 +207,7 @@ ED.KOEIN:
 ED.ARBPH:
 	CALL	S1.FOEX
 ED.ARBFK:
-	LD	HL,ED.FALFT	;Fkt. fuer Arb.Phase init.
+	LD	HL,ED.FALFT     ;Fkt. fuer Arb.Phase init.
 	LD	DE,SM.FKTAB
 	LD	BC,0A0H
 	LDIR
@@ -163,14 +218,15 @@ ED.ARBFK:
 	RET
 
 ED.UMLKP:
-	CALL	S1.FOEX
+	CALL	S1.FOEX         ;AUSTAUSCH FORMATMERKER <--> ZWEITMERKER
 	CALL	E2.UML
-	CALL	E1.LOEBP
-	CALL	S1.FOEX
+	CALL	E1.LOEBP        ;Bildpuffer loeschen
+	CALL	S1.FOEX         ;AUSTAUSCH FORMATMERKER <--> ZWEITMERKER
 	RET
 
+;Fkt.Adressliste Alphatastatur
 ED.FALAT:
-	DW	S1.UMS	;Fkt.Adressliste Alphatastatur
+	DW	S1.UMS
 	DW	E1.TAB
 	DW	E1.DELZ
 	DW	E1.LEERZ
@@ -178,14 +234,13 @@ ED.FALAT:
 	DW	E1.ZSCHS
 
 ;Funktionsadressliste Funktionstastatur
-
 ED.FALFT:
-	DW	0          ;00	ET2
-	DW	0          ;01	ET1
+	DW	E1.HT      ;00	ET2
+	DW	E1.TCNZA   ;01	ET1
 
 	DW	E1.TCNLS   ;02	NewLine
 	DW	E1.TCNUS   ;03  Down
-	DW	0          ;04	PosQuit
+	DW	E2.TEXV    ;04	PosQuit
 
 	DW	E1.TCNLS   ;05	Left
 	DW	E1.THOME   ;06	Home / Pos1
@@ -201,9 +256,9 @@ ED.FALFT:
 	DW	0          ;14	DEL LIN
 
 	DW	E1.TABS    ;15	TAB setzen
-	DW	E1.TABL    ;16	TAB löschen
+	DW	E1.TABL    ;16	TAB loeschen
 
-	DW	0          ;17	CI
+	DW	E1.PS      ;17	CI
 	DW	0          ;18	M
 	DW	0          ;19	RESET
 
@@ -211,10 +266,10 @@ ED.FALFT:
 	DW	0          ;21	CTRL
 	DW	0          ;22	CE
 
-	DW	0          ;23	00
-	DW	0          ;24	000
-	DW	0          ;25	NeqQuit
-	DW	0          ;26	SYS
+	DW	SY.IFKT4   ;23	00
+	DW	SY.IFKT3   ;24	000
+	DW	E2.TEXR    ;25	NeqQuit
+	DW	ED.KOMA1   ;26	SYS
 	DW	0          ;27	END
 	DW	E1.ABS     ;28	ABS
 
@@ -222,21 +277,6 @@ ED.FALFT:
 	DW	0          ;30	E=1
 	DW	0          ;31	E=2
 	DW	0          ;32	E=3
-
-	; DW	E2.TEXR
-	; DW	E2.TEXV
-	; DW	E1.PS
-	; DW	E1.GS
-	; DW	E1.UND
-	; DW	SY.IFKT3
-	; DW	SY.IFKT4
-	; DW	E1.HT
-	; DW	E1.DOL
-	; DW	E1.CA
-	; DW	E1.SCHW
-	; DW	ED.KOMA1
-	; DW	E1.TCNZA
-
 
 	DW	E1.PTS1    ;33	PF01
 	DW	E1.PTS2    ;34	PF02
@@ -387,7 +427,6 @@ E1.LIFT1:
 	RET
 
 ;Bildpuffer loeschen
-
 E1.LOEBP:
 	CALL	E1.BIL
 E1.LOBP1:
@@ -738,27 +777,9 @@ E1.PS1:
 	LD	(SM.PTSA),HL
 	LD	BC,3FFH
 	JR	E1.PS2
-
-E1.GS:
-	LD	A,1DH
-E1.GS1:
-	JP	E1.ZSCH1
 E1.HT:
 	LD	A,9
-	JR	E1.GS1
-E1.CA:
-	LD	A,18H
-	JR	E1.GS1
-E1.UND:
-	LD	A,26H
-	JR	E1.GS1
-E1.DOL:
-	LD	A,24H
-	JR	E1.GS1
-E1.SCHW:
-	LD	A,40H
-	JR	E1.GS1
-
+	JP	E1.ZSCH1
 			;Stand: 30.Januar 85 - K EAW/wfvm..MSH
 
 ;	END
@@ -1592,7 +1613,7 @@ E3.FEHL1:
 ;  Z '...'          4          ab naechster Zeichenkette
 ;  Z +n             8          ab Zeilenstand  +n
 ;  Z +              8          ''      ''      +1
-;  Z*....       wie oben       wie oben ab Zeile 1 geginnend
+;  Z*....       wie oben       wie oben ab Zeile 1 beginnend
 ;  T '..' '..'   ''  ''+10H    Tausch von Zeichenketten
 ;  Y ....        ''  ''  ''    Stanzen
 ;  M ....        ''  ''  ''    Verschieben

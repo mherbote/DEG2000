@@ -276,52 +276,52 @@ Public Class Tastatur
 
 #Region "PF - Tasten"
     Private Sub PF01_Click(sender As Object, e As EventArgs) Handles Button2.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(29) + COMMON.PFebene * 12)      'D54
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(29))      'D54   ' + COMMON.PFebene * 12 rausgenommen
         Call HideFocus()
     End Sub
     Private Sub PF02_Click(sender As Object, e As EventArgs) Handles Button3.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(30) + COMMON.PFebene * 12)      'D56
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(30))      'D56
         Call HideFocus()
     End Sub
     Private Sub PF03_Click(sender As Object, e As EventArgs) Handles Button4.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(31) + COMMON.PFebene * 12)      'D57
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(31))      'D57
         Call HideFocus()
     End Sub
 
     Private Sub PF04_Click(sender As Object, e As EventArgs) Handles Button7.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(32) + COMMON.PFebene * 12)      'C54
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(32))      'C54
         Call HideFocus()
     End Sub
     Private Sub PF05_Click(sender As Object, e As EventArgs) Handles Button8.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(33) + COMMON.PFebene * 12)      'C56
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(33))      'C56
         Call HideFocus()
     End Sub
     Private Sub PF06_Click(sender As Object, e As EventArgs) Handles Button9.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(34) + COMMON.PFebene * 12)      'C57
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(34))      'C57
         Call HideFocus()
     End Sub
     Private Sub PF07_Click(sender As Object, e As EventArgs) Handles Button12.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(35) + COMMON.PFebene * 12)      'B54
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(35))      'B54
         Call HideFocus()
     End Sub
     Private Sub PF08_Click(sender As Object, e As EventArgs) Handles Button13.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(36) + COMMON.PFebene * 12)      'B56
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(36))      'B56
         Call HideFocus()
     End Sub
     Private Sub PF09_Click(sender As Object, e As EventArgs) Handles Button14.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(37) + COMMON.PFebene * 12)      'B57
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(37))      'B57
         Call HideFocus()
     End Sub
     Private Sub PF10_Click(sender As Object, e As EventArgs) Handles Button17.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(38) + COMMON.PFebene * 12)      'A54
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(38))      'A54
         Call HideFocus()
     End Sub
     Private Sub PF11_Click(sender As Object, e As EventArgs) Handles Button18.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(39) + COMMON.PFebene * 12)      'A56
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(39))      'A56
         Call HideFocus()
     End Sub
     Private Sub PF12_Click(sender As Object, e As EventArgs) Handles Button19.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(40) + COMMON.PFebene * 12)      'A57
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(40))      'A57
         Call HideFocus()
     End Sub
 #End Region
@@ -417,7 +417,12 @@ Public Class Tastatur
             Case System.Drawing.Color.Red
                 Select Case Button66.BackColor
                     Case System.Drawing.Color.WhiteSmoke
-                        Call Click2Buffer(&H100 + value1)
+                        Select Case value1
+                            Case 0
+                                Call Click2Buffer(&HC9)
+                            Case Else
+                                Call Click2Buffer(&H100 + value1)
+                        End Select
                     Case System.Drawing.Color.Red
                         Call Click2Buffer(&H110 + value1)
                 End Select
@@ -700,64 +705,51 @@ Public Class Tastatur
 #End Region
 
 #Region "Sondertasten"
-    Private Sub ET1_Click(sender As Object, e As EventArgs) Handles Button59.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(1))      'A10
-        Call HideFocus()
-    End Sub
     Private Sub ET2_Click(sender As Object, e As EventArgs) Handles Button63.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(0))      'A00   'RESET
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(0))      'A00    'ET2    RESET
         Call HideFocus()
     End Sub
-
-    Private Sub TabLeft_Click(sender As Object, e As EventArgs) Handles Button60.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(8))      'C15
-        Call HideFocus()
-    End Sub
-    Private Sub CursorUp_CLick(sender As Object, e As EventArgs) Handles Button53.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(9))      'C16
-        Call HideFocus()
-    End Sub
-    Private Sub TabRight_Click(sender As Object, e As EventArgs) Handles Button56.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(10))     'C17
-        Call HideFocus()
-    End Sub
-
-    Private Sub CursorLeft_Click(sender As Object, e As EventArgs) Handles Button61.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(5))      'B15
-        Call HideFocus()
-    End Sub
-    Private Sub Home_Click(sender As Object, e As EventArgs) Handles Button54.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(6))      'B16
-        Call HideFocus()
-    End Sub
-    Private Sub CursorRight_Click(sender As Object, e As EventArgs) Handles Button58.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(7))      'B17
+    Private Sub ET1_Click(sender As Object, e As EventArgs) Handles Button59.Click
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(1))      'A10    'ET1
         Call HideFocus()
     End Sub
 
     Private Sub Enter_Click(sender As Object, e As EventArgs) Handles Button51.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(2))      'A15
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(2))      'A15    'NewLine
         Call HideFocus()
     End Sub
     Private Sub CursorDown_Click(sender As Object, e As EventArgs) Handles Button57.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(3))      'A16
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(3))      'A16    'Down
         Call HideFocus()
     End Sub
     Private Sub PageUp_Click(sender As Object, e As EventArgs) Handles Button50.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(4))      'A17                                '&HFC ?
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(4))      'A17    'PosQuit                           '&HFC ?
         Call HideFocus()
     End Sub
 
-    Private Sub DEL_Click(sender As Object, e As EventArgs) Handles Button69.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(12))     'E17
+    Private Sub CursorLeft_Click(sender As Object, e As EventArgs) Handles Button61.Click
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(5))      'B15    'Left
         Call HideFocus()
     End Sub
-    Private Sub InsLine_Click(sender As Object, e As EventArgs) Handles Button52.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(13))     'D16
+    Private Sub Home_Click(sender As Object, e As EventArgs) Handles Button54.Click
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(6))      'B16    'Pos1 / Home
         Call HideFocus()
     End Sub
-    Private Sub DelLine_Click(sender As Object, e As EventArgs) Handles Button55.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(14))     'D17
+    Private Sub CursorRight_Click(sender As Object, e As EventArgs) Handles Button58.Click
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(7))      'B17    'Right
+        Call HideFocus()
+    End Sub
+
+    Private Sub TabLeft_Click(sender As Object, e As EventArgs) Handles Button60.Click
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(8))      'C15    'TAB Left
+        Call HideFocus()
+    End Sub
+    Private Sub CursorUp_CLick(sender As Object, e As EventArgs) Handles Button53.Click
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(9))      'C16    'Up
+        Call HideFocus()
+    End Sub
+    Private Sub TabRight_Click(sender As Object, e As EventArgs) Handles Button56.Click
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(10))     'C17    'TAB Right
         Call HideFocus()
     End Sub
 
@@ -768,31 +760,53 @@ Public Class Tastatur
             Case System.Drawing.Color.Red
                 Button122.BackColor = System.Drawing.Color.WhiteSmoke
         End Select
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(11))      'E16
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(11))      'E16   'INS MOD
+        Call HideFocus()
+    End Sub
+
+    Private Sub DEL_Click(sender As Object, e As EventArgs) Handles Button69.Click
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(12))     'E17    'DEL
+        Call HideFocus()
+    End Sub
+    Private Sub InsLine_Click(sender As Object, e As EventArgs) Handles Button52.Click
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(13))     'D16    'INS LIN
+        Call HideFocus()
+    End Sub
+    Private Sub DelLine_Click(sender As Object, e As EventArgs) Handles Button55.Click
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(14))     'D17    'DEL LIN
         Call HideFocus()
     End Sub
 
     Private Sub TABS_Click(sender As Object, e As EventArgs) Handles Button71.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(15))      'E13
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(15))      'E13   'TABS
         Call HideFocus()
     End Sub
     Private Sub TABL_Click(sender As Object, e As EventArgs) Handles Button121.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(16))      'D15
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(16))      'D15   'TABL
         Call HideFocus()
     End Sub
 
     Private Sub CI_Click(sender As Object, e As EventArgs) Handles Button45.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(17))      'F54
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(17))      'F54   'CI
         Call HideFocus()
     End Sub
     Private Sub M_Click(sender As Object, e As EventArgs) Handles Button44.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(18))      'F56
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(18))      'F56   'M
         Call HideFocus()
     End Sub
     Private Sub RES_Click(sender As Object, e As EventArgs) Handles Button43.Click
         Call Fehleranzeige(System.Drawing.Color.WhiteSmoke)         'Fehleranzeige deaktivieren
 
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(19))      'F57
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(19))      'F57   'RESET
+        Call HideFocus()
+    End Sub
+
+    Private Sub ESC_Click(sender As Object, e As EventArgs) Handles Button65.Click
+        Call Click2Buffer(&H200 + COMMON.KeyCodes2(20))      'E00   'ESC
+        Call HideFocus()
+    End Sub
+    Private Sub CTRL_Click(sender As Object, e As EventArgs) Handles Button64.Click
+        Call Click2Buffer(&H100 + COMMON.KeyCodes2(21))      'D00   'CTRL
         Call HideFocus()
     End Sub
 
@@ -803,16 +817,7 @@ Public Class Tastatur
             Case System.Drawing.Color.Red
                 Button46.BackColor = System.Drawing.Color.WhiteSmoke
         End Select
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(22))      'A99
-        Call HideFocus()
-    End Sub
-
-    Private Sub ESC_Click(sender As Object, e As EventArgs) Handles Button65.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(20))      'E00
-        Call HideFocus()
-    End Sub
-    Private Sub CTRL_Click(sender As Object, e As EventArgs) Handles Button64.Click
-        Call Click2Buffer(&H200 + COMMON.KeyCodes2(21))      'D00
+        Call Click2Buffer(&H100 + COMMON.KeyCodes2(22))      'A99
         Call HideFocus()
     End Sub
 
@@ -1289,61 +1294,61 @@ Public Class Tastatur
                     End If
 
                 Case Keys.Left
-                    keyNew = &H200 + COMMON.KeyCodes2(5)            'B15
+                    keyNew = &H200 + COMMON.KeyCodes2(5)            'B15    'Left
                 Case Keys.Right
-                    keyNew = &H200 + COMMON.KeyCodes2(7)            'B17
+                    keyNew = &H200 + COMMON.KeyCodes2(7)            'B17    'Right
                 Case Keys.Up
-                    keyNew = &H200 + COMMON.KeyCodes2(9)            'C16
+                    keyNew = &H200 + COMMON.KeyCodes2(9)            'C16    'Up
                 Case Keys.Down
-                    keyNew = &H200 + COMMON.KeyCodes2(3)            'A16
+                    keyNew = &H200 + COMMON.KeyCodes2(3)            'A16    'Down
 
                 Case Keys.PageDown
-                    keyNew = &H200 + COMMON.KeyCodes2(4)            'A50
+                    keyNew = &H200 + COMMON.KeyCodes2(25)           'A50    'NegQuit
                 Case Keys.PageUp
-                    keyNew = &H200 + COMMON.KeyCodes2(25)           'A17 '&HFC ?
+                    keyNew = &H200 + COMMON.KeyCodes2(4)            'A17    'PosQuit '&HFC ?
 
                 Case Keys.Home
-                    keyNew = &H200 + COMMON.KeyCodes2(6)            'B16
+                    keyNew = &H200 + COMMON.KeyCodes2(6)            'B16    'Pos1 / Home
                 Case Keys.End
-                    keyNew = &H200 + COMMON.KeyCodes2(27)           'C50
+                    keyNew = &H200 + COMMON.KeyCodes2(27)           'C50    'END
                 Case Keys.Insert
-                    keyNew = &H200 + COMMON.KeyCodes2(11)           'E16    '&H2
+                    keyNew = &H200 + COMMON.KeyCodes2(11)           'E16    'INS MOD   '&H2
                 Case Keys.Delete
-                    keyNew = &H200 + COMMON.KeyCodes2(12)           'E17   '&H1B
+                    keyNew = &H200 + COMMON.KeyCodes2(12)           'E17    'DEL   '&H1B
 
                 Case Keys.Enter
-                    keyNew = &H200 + COMMON.KeyCodes2(1)            'A10
+                    keyNew = &H200 + COMMON.KeyCodes2(1)            'A10    'ET1
                 Case Keys.Escape
-                    keyNew = &H200 + COMMON.KeyCodes2(20)           'E00
+                    keyNew = &H200 + COMMON.KeyCodes2(20)           'E00    'ESC / SYS
                 Case Keys.Tab
-                    keyNew = &H200 + &H1F           '&H9
+                    keyNew = &H200 + &H1F                                   '&H9
                 Case Keys.Back
-                    keyNew = &H200 + &HF7           'cursor left
+                    keyNew = &H200 + &HF7                                   'cursor left
 
                 Case Keys.F1
-                    keyNew = &H200 + COMMON.KeyCodes2(29) '+ COMMON.PFebene * 12      'D54
+                    keyNew = &H200 + COMMON.KeyCodes2(29)           '+ COMMON.PFebene * 12      'D54
                 Case Keys.F2
-                    keyNew = &H200 + COMMON.KeyCodes2(30) '+ COMMON.PFebene * 12      'D56
+                    keyNew = &H200 + COMMON.KeyCodes2(30)           '+ COMMON.PFebene * 12      'D56
                 Case Keys.F3
-                    keyNew = &H200 + COMMON.KeyCodes2(31) '+ COMMON.PFebene * 12      'D57
+                    keyNew = &H200 + COMMON.KeyCodes2(31)           '+ COMMON.PFebene * 12      'D57
                 Case Keys.F4
-                    keyNew = &H200 + COMMON.KeyCodes2(32) '+ COMMON.PFebene * 12      'C54
+                    keyNew = &H200 + COMMON.KeyCodes2(32)           '+ COMMON.PFebene * 12      'C54
                 Case Keys.F5
-                    keyNew = &H200 + COMMON.KeyCodes2(33) '+ COMMON.PFebene * 12      'C56
+                    keyNew = &H200 + COMMON.KeyCodes2(33)           '+ COMMON.PFebene * 12      'C56
                 Case Keys.F6
-                    keyNew = &H200 + COMMON.KeyCodes2(34) '+ COMMON.PFebene * 12      'C57
+                    keyNew = &H200 + COMMON.KeyCodes2(34)           '+ COMMON.PFebene * 12      'C57
                 Case Keys.F7
-                    keyNew = &H200 + COMMON.KeyCodes2(35) '+ COMMON.PFebene * 12      'B54
+                    keyNew = &H200 + COMMON.KeyCodes2(35)           '+ COMMON.PFebene * 12      'B54
                 Case Keys.F8
-                    keyNew = &H200 + COMMON.KeyCodes2(36) '+ COMMON.PFebene * 12      'B56
+                    keyNew = &H200 + COMMON.KeyCodes2(36)           '+ COMMON.PFebene * 12      'B56
                 Case Keys.F9
-                    keyNew = &H200 + COMMON.KeyCodes2(37) '+ COMMON.PFebene * 12      'B57
+                    keyNew = &H200 + COMMON.KeyCodes2(37)           '+ COMMON.PFebene * 12      'B57
                 Case Keys.F10
-                    keyNew = &H200 + COMMON.KeyCodes2(38) '+ COMMON.PFebene * 12      'A54
+                    keyNew = &H200 + COMMON.KeyCodes2(38)           '+ COMMON.PFebene * 12      'A54
                 Case Keys.F11
-                    keyNew = &H200 + COMMON.KeyCodes2(39) '+ COMMON.PFebene * 12      'A56
+                    keyNew = &H200 + COMMON.KeyCodes2(39)           '+ COMMON.PFebene * 12      'A56
                 Case Keys.F12
-                    keyNew = &H200 + COMMON.KeyCodes2(40) '+ COMMON.PFebene * 12      'A57
+                    keyNew = &H200 + COMMON.KeyCodes2(40)           '+ COMMON.PFebene * 12      'A57
                 Case Else
                     keyNew = e.KeyCode
             End Select

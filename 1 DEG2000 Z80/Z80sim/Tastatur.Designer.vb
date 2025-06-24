@@ -839,7 +839,7 @@ Partial Class Tastatur
         'Button64
         '
         Me.Button64.BackColor = System.Drawing.SystemColors.ControlDark
-        Me.Button64.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Button64.Font = New System.Drawing.Font("Microsoft Sans Serif", 7.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Button64.Location = New System.Drawing.Point(20, 100)
         Me.Button64.Margin = New System.Windows.Forms.Padding(2, 3, 2, 3)
         Me.Button64.Name = "Button64"
@@ -850,14 +850,14 @@ Partial Class Tastatur
         '
         'Button65
         '
-        Me.Button65.BackColor = System.Drawing.SystemColors.ControlDark
-        Me.Button65.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Button65.BackColor = System.Drawing.SystemColors.ControlLight
+        Me.Button65.Font = New System.Drawing.Font("Arial", 8.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Button65.Location = New System.Drawing.Point(20, 60)
         Me.Button65.Margin = New System.Windows.Forms.Padding(2, 3, 2, 3)
         Me.Button65.Name = "Button65"
         Me.Button65.Size = New System.Drawing.Size(40, 40)
         Me.Button65.TabIndex = 64
-        Me.Button65.Text = " "
+        Me.Button65.Text = " ESC"
         Me.Button65.UseVisualStyleBackColor = False
         '
         'Button66

@@ -126,18 +126,6 @@ S1.KODE1:
 
 	PAGE
 ;****************************************************************
-;*                  PF-Tastendefinition 2.ROM-Ber. fuer  EDIT   *
-;****************************************************************
-S1.PFO1:
-	LD	HL,PF.O2END	;6FD5H
-	LD	(SM.PTSE),HL
-	LD	HL,PF.O2ANF	;6D20H
-	LD	(SM.PTSA),HL
-	RET
-
-;	DEFS	3,0
-
-;****************************************************************
 ;	ORG	00800H
 			;
 S1.STANL:
@@ -627,17 +615,16 @@ S1.STAB:
 
 	PAGE
 ;****************************************************************
-;*                  Editorkommandos  'EDN'  und  'ED'           *
+;*                  Editorkommandos  'EDN'                      *
 ;****************************************************************
 S1.EDN:
-	DW	$
-	DB	'EDN '
 	DI
 	XOR	A
 	LD	HL,(SM.END)
 	LD	DE,SD.TPA
 	SBC	HL,DE
-	JP	C,SY.SYSTB
+;	JP	C,SY.SYSTB
+	RET	C
 
 	LD	A,01CH
 	LD	(SM.NUTZK),A
@@ -697,13 +684,8 @@ S1.ED5:
 	LD	(SM.PTSA),HL
 	LD	HL,0FFFFH
 	LD	(SM.PTSE),HL
-	JP	ED.MEL1
-
-S1.ED:
-	DW	$
-	DB	'ED  '
-	DI
-	JP	ED.MEL1
+;	JP	ED.MEL1
+	RET
 
 S1.ETEST:
 	PUSH	DE
