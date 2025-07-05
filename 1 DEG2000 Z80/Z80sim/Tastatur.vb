@@ -83,15 +83,15 @@ Public Class Tastatur
                             .Rows(.Rows.Count - 1).Height = 20
                             .Rows(row).Cells(col).Value = row + 1
                         End If
-                        k = k + 1
+                        k += 1
                         If COMMON.NextCharTast1(i) Then
-                            col = col + 1
+                            col += 1
                             B = COMMON.NextCharTast2(i)
                             .Rows(row).Cells(col).Value = COMMON.vZ80cpu.HexAnzeigeWordByte(B, "B")
-                            hilf2 = hilf2 + Chr(B And &HFF)
+                            hilf2 += Chr(B And &HFF)
                             If col = 10 Then
                                 .Rows(row).Cells(12).Value = hilf2
-                                row = row + 1
+                                row += 1
                                 col = 0
                                 hilf2 = ""
                                 k = 0
@@ -117,7 +117,7 @@ Public Class Tastatur
     Private Sub Click2Buffer(TastCode As UInt16)
         If TastCode = 0 Then Exit Sub
         If COMMON.NextCharTast0 < COMMON.const_NextCharTast - 1 Then
-            COMMON.NextCharTast0 = COMMON.NextCharTast0 + 1
+            COMMON.NextCharTast0 += 1
 
             COMMON.NextCharTast1(COMMON.NextCharTast0) = True
             COMMON.NextCharTast2(COMMON.NextCharTast0) = TastCode
@@ -162,6 +162,8 @@ Public Class Tastatur
                         Else
                             ShiftEbene = False
                         End If
+                    Case Else
+                        ShiftEbene = False
                 End Select
             Case Else
                 If KleinGross = Klein Then
@@ -236,11 +238,11 @@ Public Class Tastatur
         Next i
         j = COMMON.PFebene * 12
         For i = 0 To 11
-            j = j + 1
+            j += 1
             s = ""
             t = ""
-            If i < 9 Then s = s + " "
-            If j < 12 Then t = t + "  "
+            If i < 9 Then s += " "
+            If j < 12 Then t += "  "
             If j < 13 Then
                 PFbutton2(i).Text = CStr(j)
             Else
@@ -790,7 +792,7 @@ Public Class Tastatur
         Call Click2Buffer(&H200 + COMMON.KeyCodes2(17))      'F54   'CI
         Call HideFocus()
     End Sub
-    Private Sub M_Click(sender As Object, e As EventArgs) Handles Button44.Click
+    Private Sub MM_Click(sender As Object, e As EventArgs) Handles Button44.Click
         Call Click2Buffer(&H200 + COMMON.KeyCodes2(18))      'F56   'M
         Call HideFocus()
     End Sub

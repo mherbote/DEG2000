@@ -409,6 +409,7 @@ Module ED
         COMMON.vZ80cpu.STACK = COMMON.vZ80cpu.Speicher_lesen_Byte(p) : p = p + 1
         COMMON.vZ80cpu.STACK = COMMON.vZ80cpu.STACK + COMMON.vZ80cpu.Speicher_lesen_Byte(p) * 256
         op_ldspinn = 20
+        If Haupt.BufferAnzeigenVis.Checked Then Call AnzeigeBuffer.AnzeigeBuffer()
     End Function '7B    'op_ldspinn
 #End Region
 #Region "LD R,A  LD A,R  RLD (HL)"

@@ -430,7 +430,7 @@ lxr4:
 lxr5:
 	inc	hl
 	djnz	lxr4
-	ex	AF,AF'
+	ex	AF,AF'	;'
 	exx
 	push	hl
 	push	de
@@ -501,7 +501,7 @@ exit:
 	pop	bc
 	pop	de
 	pop	hl
-	ex	AF,AF'
+	ex	AF,AF'	;'
 	exx
 	pop	de
 	pop	bc

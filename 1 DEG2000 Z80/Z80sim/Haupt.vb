@@ -1078,6 +1078,21 @@ Public Class Haupt
         End Select
     End Sub ' HSAnzeigenVis1_Click
 
+    Private Sub BufferAnzeigenVIS_Click(sender As System.Object, e As System.EventArgs) Handles BufferAnzeigenVis.Click
+        Select Case BufferAnzeigenVis.Checked
+            Case False
+                BufferAnzeigenVis.Checked = True
+                AnzeigeBuffer.Show()
+                AnzeigeBuffer.Top = BWS.Top
+                AnzeigeBuffer.Left = BWS.Left + BWS.Width - 10
+                Call AnzeigeBuffer.AnzeigeBuffer()
+            Case True
+                BufferAnzeigenVis.Checked = False
+                AnzeigeBuffer.Hide()
+        End Select
+    End Sub ' BufferAnzeigenVIS_Click
+
+
 #Region "BMK Speicher anzeigen"
     Private Sub HSAnzeigenVisPar(sender As System.Object, e As System.EventArgs, ByVal adresse As Integer)
         Select Case HSAnzeigenVis1.Checked

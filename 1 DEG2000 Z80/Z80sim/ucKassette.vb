@@ -152,20 +152,29 @@ Public Class ucKassette
                                 hilf = ""
                                 For i = 0 To 15
                                     .Rows(j - 1).Cells(i + 1).Value = COMMON.vZ80cpu.HexAnzeigeByte(Kassette.buffer.b(j).z(i))
-                                    If Kassette.FilePos > 5 * 16 And Kassette.FilePos < 75 * 16 Then
-                                        If COMMON.EBDC(Kassette.buffer.b(j).z(i)) > &H1F And COMMON.EBDC(Kassette.buffer.b(j).z(i)) < &H7F Then
-                                            hilf = hilf + Chr(COMMON.EBDC(Kassette.buffer.b(j).z(i)))
-                                        Else
-                                            hilf = hilf + "."
-                                        End If
-                                    Else
-                                        If Kassette.buffer.b(j).z(i) > &H1F And Kassette.buffer.b(j).z(i) < &H7F Then
+                                    Select Case Kassette.MBtyp
+                                        Case &H10                   '"MRES"
+                                            If Kassette.FilePos > 5 * 16 And Kassette.FilePos < 75 * 16 Then
+                                                If COMMON.EBDC(Kassette.buffer.b(j).z(i)) > &H1F And COMMON.EBDC(Kassette.buffer.b(j).z(i)) < &H7F Then
+                                                    hilf = hilf + Chr(COMMON.EBDC(Kassette.buffer.b(j).z(i)))
+                                                Else
+                                                    hilf = hilf + "."
+                                                End If
+                                            Else
+                                                If Kassette.buffer.b(j).z(i) > &H1F And Kassette.buffer.b(j).z(i) < &H7F Then
+                                                    hilf = hilf + Chr(Kassette.buffer.b(j).z(i))
+                                                Else
+                                                    hilf = hilf + "."
+                                                End If
+                                            End If
+                                        Case Else
+                                            'If Kassette.buffer.b(j).z(i) > &H1F And Kassette.buffer.b(j).z(i) < &H7F Then
                                             hilf = hilf + Chr(Kassette.buffer.b(j).z(i))
-                                        Else
-                                            hilf = hilf + "."
-                                        End If
+                                            'Else
+                                            '    hilf = hilf + "."
+                                            'End If
+                                    End Select
 
-                                    End If
                                 Next
                                 .Rows(j - 1).Cells(18).Value = hilf
                                 .Refresh()

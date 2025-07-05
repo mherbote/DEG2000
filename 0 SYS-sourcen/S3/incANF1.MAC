@@ -23,7 +23,7 @@ A000:
 	JP	A12A	;0012AH
 ;
     ; ORG 0A008H
-	DEFS	3,0FFH	
+	DEFS	3,0FFH
 A008:
     DB  0,0     ;   OUT	(0F9H),A
 	LD	(V1.SAVSP),SP
@@ -136,13 +136,13 @@ A100:
 	PUSH	DE
 	PUSH	HL
 	PUSH	AF
-	EX	AF,AF'
+	EX	AF,AF'	;'
 	EXX
 	PUSH	BC
 	PUSH	DE
 	PUSH	HL
 	PUSH	AF
-	EX	AF,AF'
+	EX	AF,AF'	;'
 	EXX
 	LD	SP,0F262H
 	JP	0F000H	;---> C20E
@@ -210,7 +210,7 @@ A14B:
 	POP	HL
 	XOR	A
 	SBC	HL,DE
-	; JR	NZ,A17E	;ORIG !!! 
+	; JR	NZ,A17E	;ORIG !!!
 	NOP
 	NOP
 A178:
@@ -699,7 +699,7 @@ D443:
 	DW	00068H
 	; DB	"KDSabclep****  "	;OLD !!!
 	DB	"KDabSClep****  "		;NEU !!!
-	DB	"XXXX       "	
+	DB	"XXXX       "
 ;
 	;ORG	$+42	;BER	42
 	;DEFS	42,0FFH
@@ -721,7 +721,7 @@ D443:
 	DEFS	2,0
 	DEFS	2,0FFH
 	DW	04000H
-;	
+;
 	DW	0E7B8H
 	DW	0FFFFH
 	DW	05353H
@@ -1047,9 +1047,9 @@ D74E:
 	LD	C,C
 	ADD	A,D
 	LD	D,002H
-	EX	AF,AF'
+	EX	AF,AF'	;'
 	JR	D776	;$+16	;0776
-;	
+;
 	JR	NC,$+108	;07D4
 	; SBC	A,E	;OLD !!!
 	; SUB	L	;OLD !!!

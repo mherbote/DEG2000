@@ -13,7 +13,7 @@
 	LD	BC,15
 	LD	(HL),020H
 	LDIR
-	LD	A,(UE.BWSA+327H)
+	LD	A,(UE.BWSA + 10*80 +7)	;327H
 	CALL	U1.TST
 	RET	C
 	PUSH	AF
@@ -160,7 +160,7 @@ KI.RENA9:
 ;----------------------------------------------------------------------
 	DW	$
 	DB	'DIR '
-	LD	A,(UE.BWSA+326H)
+	LD	A,(UE.BWSA + 10*80 +6)	;326H
 	CALL	U1.TST
 	RET	C
 	CALL	U1.KTINI
@@ -997,22 +997,23 @@ FD.SDIN:
 ;      Ausgabe einer F/S - Datei (neuer Bestand)
 ;
 FD.FDOUT:
-	LD	HL,0	;Blockzaehler loeschen
+	LD	HL,0                   ;Blockzaehler loeschen
 	CALL	XY.STDX
 	DB	17
-	LD	HL,80H	;Blocklaenge eintragen
+	LD	HL,80H                 ;Blocklaenge eintragen
 	CALL	XY.STIDX
 	DB	9
-	CALL	UK.KSPFB	;Pufferbereitstellung
-	LD	HL,UE.TEXAN	;HL:= Textanfang
-	LD	DE,(UE.EDEND)	;BC:= Textende
+	CALL	UK.KSPFB               ;Pufferbereitstellung
+	LD	HL,UE.TEXAN            ;HL:= Textanfang
+	LD	DE,(UE.EDEND)          ;BC:= Textende
 	EXX
 	CALL	CP.INIT
 	EXX
-	OR	A	;CY:= 0
+FD.FDOUT1:
+	OR	A                      ;CY:= 0
 	PUSH	HL
 	SBC	HL,DE
-	JR	NC,$+21
+	JR	NC,FD.FDOUT2           ;$+21
 	POP	HL
 	LD	A,(UB.PAR2)
 	CP	'S'
@@ -1023,18 +1024,20 @@ FD.FDOUT:
 	LD	A,(HL)
 	CALL	NZ,UK.PUTK
 	INC	HL
-	JR	$-23
-	POP	HL	;Endebehandlung
+	JR	FD.FDOUT1              ;$-23
+FD.FDOUT2:
+	POP	HL                     ;Endebehandlung
 	LD	BC,288
+FD.FDOUT3:
 	XOR	A
 	CALL	UK.PUTK
 	DEC	BC
 	LD	A,B
 	OR	C
-	JR	NZ,$-7
+	JR	NZ,FD.FDOUT3           ;$-7
 	CALL	FD.DSPBB
-	CALL	FD.WRRES	;Reservebloecke schreiben
-	CALL	XY.LDDX	;HL:= Blockzaehler
+	CALL	FD.WRRES               ;Reservebloecke schreiben
+	CALL	XY.LDDX                ;HL:= Blockzaehler
 	DB	17
 	RET
 FD.SDOUT:
@@ -1137,7 +1140,7 @@ FD.SDK1:
 FD.FSTRT:
 	CALL	U1.BILO
 	CALL	U1.KTINI
-	LD	A,(UE.BWSA+326H)
+	LD	A,(UE.BWSA + 10*80 +6)	;326H
 	CALL	U1.TST
 	JP	C,FD.STRT1
 	LD	(IX+3),A
@@ -1319,7 +1322,7 @@ FD.BMGF:
 ;***********************************************************
 	DW	$
 	DB	'LOAD'
-	LD	A,(UE.BWSA+327H)
+	LD	A,(UE.BWSA + 10*80 +7)	;327H
 	CALL	U1.TST
 	RET	C
 	CALL	U1.KTINI
@@ -1640,7 +1643,7 @@ RL.FMELD:
 ;**********************************************************************
 	DW	$
 	DB	'SAVE'
-	LD	A,(UE.BWSA+327H)
+	LD	A,(UE.BWSA+ 10*80 +7)	;327H
 	CALL	U1.TST
 	RET	C
 	CALL	U1.KTINI

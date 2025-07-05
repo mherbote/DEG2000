@@ -13,8 +13,8 @@
 	.PHASE	0E000H
 BWSA:	DS	00800H
 
-V1	EQU	1	;1  ...  B W S  mit 80 Spalten
-			;2  ...  B W S  mit 64 Spalten
+V1	EQU	1       ;1  ...  B W S  mit 80 Spalten
+                        ;2  ...  B W S  mit 64 Spalten
 
 	JP	MAIN
 	DB	'V1.2/010385'
@@ -44,10 +44,10 @@ BWSUS:	PUSH	HL
 	RET
 
 BWSU1:	LD	A,(HL)
-	EX	AF,AF'
+	EX	AF,AF'	;'
 	LD	A,(DE)
 	LD	(HL),A
-	EX	AF,AF'
+	EX	AF,AF'	;'
 	LD	(DE),A
 	INC	HL
 	INC	DE
@@ -297,7 +297,7 @@ C06:	LD	(DDBC),BC	;USER - Register retten
 	PUSH	AF
 	POP	BC
 	LD	(DDAF),BC
-	EX	AF,AF'
+	EX	AF,AF'	;'
 	EXX
 	LD	(DDBCS),BC
 	LD	(DDDES),DE
@@ -330,7 +330,7 @@ C07:	LD	(ST3),HL	;USER - Register laden
 	LD	DE,(DDDES)
 	LD	BC,(DDBCS)
 	EXX
-	EX	AF,AF'
+	EX	AF,AF'	;'
 	LD	BC,(DDAF)
 	PUSH	BC
 	POP	AF

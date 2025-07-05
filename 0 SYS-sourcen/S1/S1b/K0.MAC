@@ -13,14 +13,14 @@ UE.SVL   EQU	07DH    ;Laenge der SAVE-Bloecke
 UE.COTAL EQU	060H    ;Laenge ASC/KOI Codetabelle
 UE.KMPUL EQU	132H    ;max. Laenge E/A-Puffer
 
-UE.SYSTB EQU	0000BH   ;SY.SYSTB
-UE.STANF EQU	00CFEH   ;STACK
-UE.EDEND EQU	00DC4H   ;Speicherpl. fuer Adr. Editorende
-UE.ZEIN  EQU	00E5AH   ;Pufferzaehler Eingabe
-UE.PUF   EQU	00E66H   ;System-Puffer
-UE.BWSA  EQU	03000H   ;Bildwiederholspeicher
-UE.KPUFF EQU	08010H   ;E/A Puffer
-UE.TEXAN EQU	08830H   ;Begin Editorraum
+UE.SYSTB EQU	SY.SYSTB
+UE.STANF EQU	SM.STACK
+UE.EDEND EQU	SM.END   ;Speicherpl. fuer Adr. Editorende
+UE.ZEIN  EQU	SM.ZEIN  ;Pufferzaehler Eingabe
+UE.PUF   EQU	SM.PUFFS ;System-Puffer
+UE.BWSA  EQU	SD.BWSA  ;Bildwiederholspeicher
+UE.KPUFF EQU	SD.PFFI  ;E/A Puffer
+UE.TEXAN EQU	SD.TPA   ;Begin Editorraum
 
 UE.BRKMB EQU	K1.BRKMB ;04000H	;phys. Kass.Routine
 UE.CRC   EQU	K1.CRC   ;04740H	;CRC-Berechnung

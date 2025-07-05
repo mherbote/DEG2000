@@ -1,8 +1,14 @@
 	TITLE 'EQUAL - Anweisungen fuer Assembler'
 	PAGE	87
 SY.SYSTB  EQU	0000BH
+SM.STACK  EQU	00CE0H
 SM.FKTAB  EQU	00CE0H
 SM.TABU   EQU	00DAAH
+SM.END    EQU	00DC6H  ;Position Textende
+SM.ZEIN   EQU	00E5AH  ;Zaehler Eingabe
+SM.PUFFS  EQU	00E65H  ;Eingabepuffer
+SD.PFFI   EQU	08010H  ;Eingabepuffer
+SD.TPA    EQU	08830H  ;Anf.adr. Textpuffer
 ATACO     EQU	0225CH
 SD.BWSA   EQU	03000H
 TA.ABFR1  EQU	04026H

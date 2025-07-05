@@ -1,16 +1,16 @@
-                                	PAGE	87
-''	MACRO-80 3.44	09-Dec-81	PAGE	1
+                                        PAGE    87
+''      MACRO-80 3.44   09-Dec-81       PAGE    1
 
 
                                 
-                                ;	ORG		0E600H
-                         C      	INCLUDE incBDOS.MAC
-                         C      	PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-1
+                                ;       ORG             0E600H
+                         C              INCLUDE incBDOS.MAC
+                         C              PAGE
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-1
 
 
                          C      
-                         C      ;	PN	BD08
+                         C      ;       PN      BD08
                          C      ;****************************************************************
                          C      ;*               S  Y  S  4    --- Basisroutinen  (B D O S)     *
                          C      ;*                                 basic disc operating system  *
@@ -77,7 +77,7 @@
   E628    32 F3E0        C               LD      (AUTOFLAG),A
   E62B    32 F3DE        C               LD      (AUTO),A
   E62E    21 F374        C               LD      HL,GOBACK             ;set return address
-  E631    E5             C               PUSH	 HL
+  E631    E5             C               PUSH    HL
   E632    79             C               LD      A,C                   ;get function number
   E633    FE 29          C               CP      NFUNCTS               ;valid function number?
   E635    D0             C               RET     NC
@@ -91,14 +91,14 @@
   E640    23             C               INC     HL
   E641    56             C               LD      D,(HL)                ;now (DE)=address for this function
   E642    2A E943        C               LD      HL,(PARAMS)           ;retrieve parameters
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-2
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-2
 
 
   E645    EB             C               EX      DE,HL                 ;now (DE) has the original parameters
   E646    E9             C               JP      (HL)                  ;execute desired function
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-3
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-3
 
 
                          C      
@@ -151,7 +151,7 @@
   E697    F39B           C               DW      WTSPECL
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-4
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-4
 
 
                          C      
@@ -236,7 +236,7 @@
                          C      ;   Set the zero flag on a carriage control character and the carry flag on any other control character
                          C      ;
   E714                   C      CHKCHAR:
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-5
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-5
 
 
   E714    FE 0D          C               CP      CR                    ;check for carriage return, line feed, backspace
@@ -322,7 +322,7 @@
                          C      ;
                          C      ;   Output (A) to the screen
                          C      ;   If it is a control character (other than carriage control), use ^x format
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-6
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-6
 
 
                          C      ;
@@ -402,7 +402,7 @@
   E7DE    C3 E7D3        C               JP      PRTMESG
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-7
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-7
 
 
                          C      
@@ -487,7 +487,7 @@
   E868    C3 E7E1        C               JP      RDBUFF
   E86B                   C      RDBUF9:
   E86B    FE 12          C               CP      CTRLR                 ;control-r?
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-8
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-8
 
 
   E86D    C2 E8A6        C               JP      NZ,RDBUF14
@@ -555,7 +555,7 @@
   E8C5    C3 E748        C               JP      OUTCHAR               ;output (cr) and return
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-9
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-9
 
 
                          C      
@@ -640,7 +640,7 @@
   E907    C3 E901        C               JP      SETSTAT
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-10
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-10
 
 
                          C      
@@ -675,7 +675,7 @@
   E945    0000           C      STATUS:  DW      0                     ;status returned from bdos function
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-11
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-11
 
 
                          C      
@@ -760,7 +760,7 @@
                          C      ;
                          C      ;   Routine to home the disk track head and clear pointers
                          C      ;
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-12
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-12
 
 
   E9A1                   C      HOMEDRV:
@@ -846,7 +846,7 @@
   EA04    78             C               LD      A,B
   EA05    9C             C               SBC     A,H
   EA06    DA EA0F        C               JP      C,TRKSEC4
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-13
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-13
 
 
   EA09    EB             C               EX      DE,HL                 ;not yes, increment track counter
@@ -932,7 +932,7 @@
   EA69    B7             C               OR      A
   EA6A    CA EA71        C               JP      Z,EXTBLK1
   EA6D    6E             C               LD      L,(HL)                ;no, extract an 8 bit number from the fcb
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-14
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-14
 
 
   EA6E    26 00          C               LD      H,0
@@ -1018,7 +1018,7 @@
   EABF    32 F3E3        C               LD      (SAVNREC),A
   EAC2    EB             C               EX      DE,HL
   EAC3    7E             C               LD      A,(HL)                ;get and store next record number byte
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-15
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-15
 
 
   EAC4    32 F3E1        C               LD      (SAVNXT),A
@@ -1085,12 +1085,12 @@
                          C      ;   Shift (HL) left (C) bits
                          C      ;
   EB04                   C      SHIFTL:
-  EB04    0C             C               INC	C
+  EB04    0C             C               INC    C
   EB05                   C      SHIFTL1:
-  EB05    0D             C               DEC	C
-  EB06    C8             C               RET	Z
-  EB07    29             C               ADD	HL,HL                  ;shift left 1 bit
-  EB08    C3 EB05        C               JP	SHIFTL1
+  EB05    0D             C               DEC    C
+  EB06    C8             C               RET    Z
+  EB07    29             C               ADD    HL,HL                  ;shift left 1 bit
+  EB08    C3 EB05        C               JP     SHIFTL1
                          C      
                          C      ;
                          C      ;   Routine to set a bit in a 16 bit value contained in (BC)
@@ -1104,7 +1104,7 @@
   EB13    CD EB04        C               CALL    SHIFTL                ;shift bit 0 into place
   EB16    C1             C               POP     BC                    ;now 'or' this with the original word
   EB17    79             C               LD      A,C
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-16
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-16
 
 
   EB18    B5             C               OR      L
@@ -1190,7 +1190,7 @@
                          C      ;
   EB69                   C      GETS2:
   EB69    2A E943        C               LD      HL,(PARAMS)           ;get address of fcb
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-17
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-17
 
 
   EB6C    11 000E        C               LD      DE,14                 ;relative position of 's2'
@@ -1276,7 +1276,7 @@
   EBAA    CD EAF7        C               CALL    CHECKSUM              ;else compute checksum
   EBAD    2A F3BD        C               LD      HL,(CHKVECT)          ;get address of checksum table
   EBB0    EB             C               EX      DE,HL
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-18
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-18
 
 
   EBB1    2A F3EC        C               LD      HL,(CKSUMTBL)
@@ -1362,7 +1362,7 @@
   EC01    22 F3EA        C               LD      (FILEPOS),HL
   EC04    C9             C               RET
                          C      
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-19
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-19
 
 
                          C      ;
@@ -1430,7 +1430,7 @@
   EC4B    0F             C               RRCA
   EC4C    0F             C               RRCA
   EC4D    0F             C               RRCA
-  EC4E    E6 1F          C               AND	01FH
+  EC4E    E6 1F          C               AND    01FH
   EC50    47             C               LD      B,A                   ;and now (B) is completed
                          C      ;
                          C      ;   use this as an offset into the disk space allocation table
@@ -1448,7 +1448,7 @@
                          C      ;   Set or clear the bit map such that block number (BC) will be marked as used
                          C      ;   On entry, if (E)=0 then this bit will be cleared, if it equals 1 then it will be set (don't use anyother values)
                          C      ;
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-20
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-20
 
 
   EC5C                   C      STBITMAP:
@@ -1517,7 +1517,7 @@
   ECA0    C3 EC75        C               JP      SETFL1
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-21
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-21
 
 
                          C      
@@ -1602,7 +1602,7 @@
   ED07    C5             C               PUSH    BC
   ED08    F5             C               PUSH    AF
   ED09    3A F3C5        C               LD      A,(EXTMASK)           ;get extent mask and use it to
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-22
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-22
 
 
   ED0C    2F             C               CPL                           ;to compare both extent numbers
@@ -1618,7 +1618,7 @@
   ED17    C9             C               RET                           ;restore (BC) and return
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-23
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-23
 
 
                          C      
@@ -1703,7 +1703,7 @@
   ED91    AF             C               XOR     A
   ED92    77             C               LD      (HL),A
   ED93    C9             C               RET
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-24
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-24
 
 
                          C      ;
@@ -1715,7 +1715,7 @@
   ED99    C3 E901        C               JP      SETSTAT
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-25
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-25
 
 
                          C      
@@ -1740,7 +1740,7 @@
   EDBB    C3 EDA4        C               JP      ERAFIL1               ;and repeat process
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-26
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-26
 
 
                          C      
@@ -1825,11 +1825,11 @@
   EDF9    21 0000        C               LD      HL,0                  ;set 'not found' status
   EDFC    C9             C               RET
                          C      
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-27
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-27
 
 
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-28
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-28
 
 
                          C      
@@ -1897,7 +1897,7 @@
   EE4E    C3 EE40        C               JP      SAVATR1               ;then continue until done
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-29
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-29
 
 
                          C      
@@ -1926,7 +1926,7 @@
   EE74    19             C               ADD     HL,DE
   EE75    4E             C               LD      C,(HL)                ;into (C)
   EE76    21 000F        C               LD      HL,15                 ;now get the record count byte into (B)
-  EE79    19             C               ADD	 HL,DE
+  EE79    19             C               ADD     HL,DE
   EE7A    46             C               LD      B,(HL)
   EE7B    E1             C               POP     HL                    ;keep the same extent as the user had originally
   EE7C    F1             C               POP     AF
@@ -1966,7 +1966,7 @@
   EEA1    C9             C               RET
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-30
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-30
 
 
                          C      
@@ -2051,14 +2051,14 @@
   EF1C    C3 EE10        C               JP      UPDATE1               ;update the directory now
   EF1F                   C      CLOSEIT7:
   EF1F    21 E945        C               LD      HL,STATUS             ;set return status and then return
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-31
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-31
 
 
   EF22    35             C               DEC     (HL)
   EF23    C9             C               RET
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-32
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-32
 
 
                          C      
@@ -2096,7 +2096,7 @@
   EF57    C3 EB78        C               JP      SETS2B7               ;set 's2' byte bit 7 (unmodified at present)
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-33
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-33
 
 
                          C      
@@ -2161,7 +2161,7 @@
   EFB9    C3 EB78        C               JP      SETS2B7               ;so this is not written on a close
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-34
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-34
 
 
                          C      
@@ -2202,7 +2202,7 @@
   EFFB    C3 E905        C               JP      IOERR1
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-35
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-35
 
 
                          C      
@@ -2287,7 +2287,7 @@
   F083    3D             C               DEC     A
   F084    C2 F0BB        C               JP      NZ,WTSEQ9
   F087    E5             C               PUSH    HL
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-36
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-36
 
 
   F088    2A F3B9        C               LD      HL,(DIRBUF)           ;zero out the directory buffer
@@ -2373,7 +2373,7 @@
   F100    C3 EAD2        C               JP      SETNREC               ;set next record to access
                          C      ;
                          C      ;   For random i/o, set the fcb for the desired record number based on the 'r0,r1,r2' bytes
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-37
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-37
 
 
                          C      ;   These bytes in the fcb are used as follows:
@@ -2459,7 +2459,7 @@
   F15F    19             C               ADD     HL,DE
   F160    70             C               LD      (HL),B
   F161    CD EE51        C               CALL    OPENIT                ;try and get this extent
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-38
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-38
 
 
   F164    3A E945        C               LD      A,(STATUS)            ;was it there?
@@ -2500,7 +2500,7 @@
   F190    C3 EB78        C               JP      SETS2B7
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-39
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-39
 
 
                          C      
@@ -2585,7 +2585,7 @@
   F1E0    23             C               INC     HL
   F1E1    72             C               LD      (HL),D
   F1E2    23             C               INC     HL
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-40
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-40
 
 
   F1E3    72             C               LD      (HL),D
@@ -2620,7 +2620,7 @@
   F20D    C9             C               RET                           ;return
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-41
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-41
 
 
                          C      
@@ -2705,7 +2705,7 @@
   F27D    C9             C               RET                           ;and return (all done)
                          C      
                          C      ;
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-42
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-42
 
 
                          C      ;   Function to return the current cp/m version number
@@ -2791,7 +2791,7 @@
                          C      ;
                          C      ;   Function to write the net sequential record
                          C      ;
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-43
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-43
 
 
   F2E6                   C      WRTSEQ:
@@ -2877,7 +2877,7 @@
   F330    FE FF          C               CP      0FFH                  ;get user number?
   F332    C2 F33B        C               JP      NZ,SETUSER
   F335    3A E941        C               LD      A,(USERNO)            ;yes, just do it
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-44
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-44
 
 
   F338    C3 E901        C               JP      SETSTAT
@@ -2963,7 +2963,7 @@
   F399    44             C               LD      B,H
   F39A    C9             C               RET                           ;and go back to user
                          C      
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-45
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-45
 
 
                          C      ;
@@ -2983,7 +2983,7 @@
   F3AB    C9             C               RET
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-46
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-46
 
 
                          C      
@@ -3056,8 +3056,8 @@
                          C      ;
   F3FC    00 00 00 00    C               DEFB    0,0,0,0
                          C      
-                         C      	PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-47
+                         C              PAGE
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-47
 
 
                          C      
@@ -3086,145 +3086,142 @@
                          C      
   F400                   C      BDOSEND  EQU     $
                          C      
-                         C      	.DEPHASE
+                         C              .DEPHASE
                          C      ;
                          C      ;*
                          C      ;******************   E N D   O F   C P / M   *****************
                          C      ;*
                          C      
-                         C      ;	END
+                         C      ;       END
                                 
-                                	TITLE ''
-                                	END
-''	MACRO-80 3.44	09-Dec-81	PAGE	S
+                                        TITLE ''
+                                        END
+''      MACRO-80 3.44   09-Dec-81       PAGE    S
 
 
 Macros:
 
 Symbols:
-E942 	ACTIVE          EB64 	ADDA2HL         F3CA 	ALLOC0          
-F3CC 	ALLOC1          F3BF 	ALOCVECT        F3DE 	AUTO            
-F3E0 	AUTOFLAG        F251 	AUTOSEL         F275 	AUTOSL1         
-E7A4 	BACKUP          E7AC 	BACKUP1         E609 	BADSCTR         
-E6CA 	BADSEC          E6D5 	BADSEL          E60B 	BADSLCT         
-E600 	BDOS            E6C6 	BDOSDRV         F400 	BDOSEND         
-E6BA 	BDOSERR         0007 	BELL            F3DD 	BIGDISK         
-ECA3 	BITMAP          ECB1 	BITMAP1         ECD2 	BITMAP2         
-ECF6 	BITMAP3         0020 	BLANK           F3C4 	BLKMASK         
-F3E5 	BLKNMBR         F3C3 	BLKSHFT         F400 	BOOT            
-0008 	BS              E90E 	CHARBUF         EB9E 	CHECKDIR        
-EAF7 	CHECKSUM        EE27 	CHGNAM1         EE16 	CHGNAMES        
-EA84 	CHKBLK          E714 	CHKCHAR         EBC4 	CHKDIR1         
-EB8C 	CHKNMBR         EB44 	CHKROFL         EAFD 	CHKSUM1         
-F3BD 	CHKVECT         EB54 	CHKWPRT         EC35 	CKBITMAP        
-EC56 	CKBMAP1         E742 	CKCON1          E745 	CKCON2          
-E723 	CKCONSOL        EBF5 	CKFILPOS        EB47 	CKROF1          
-F3EC 	CKSUMTBL        EB72 	CLEARS2         F2A5 	CLOSEFIL        
-F3D2 	CLOSEFLG        EEA2 	CLOSEIT         EECD 	CLOSEIT1        
-EEDB 	CLOSEIT2        EEE1 	CLOSEIT3        EEE8 	CLOSEIT4        
-EEFD 	CLOSEIT5        EF17 	CLOSEIT6        EF1F 	CLOSEIT7        
-EA77 	COMBLK          F1A5 	COMPRAND        F409 	CONIN           
-F40C 	CONOUT          F406 	CONST           F3D8 	COUNTER         
-000D 	CR              0003 	CTRLC           0005 	CTRLE           
-0010 	CTRLP           0012 	CTRLR           0013 	CTRLS           
-0015 	CTRLU           0018 	CTRLX           001A 	CTRLZ           
-E90C 	CURPOS          E94F 	DE2HL           E950 	DE2HL1          
-EBDA 	DEFDMA          007F 	DEL             F2D7 	DELFILE         
-F3B9 	DIRBUF          E8E0 	DIRC1           E8D4 	DIRCIO          
-EBE0 	DIRDMA          EBE3 	DIRDMA1         EBD4 	DIRREAD         
-F3C8 	DIRSIZE         EBC6 	DIRWRITE        F3BB 	DISKPB          
-E6E1 	DISKRO          E9B2 	DOREAD          E9B8 	DOWRITE         
-F3C6 	DSKSIZE         F3AC 	EMPTYFCB        F3D6 	EPARAM          
-EDA4 	ERAFIL1         ED9C 	ERAFILE         E699 	ERROR1          
-E6A5 	ERROR2          E6AB 	ERROR3          E6B1 	ERROR4          
-E6B4 	ERROR5          EA5E 	EXTBLK          EA71 	EXTBLK1         
-F3C5 	EXTMASK         E606 	FBASE           E611 	FBASE1          
-EB5E 	FCB2HL          F3E9 	FCBPOS          EDFD 	FCBSET          
-F2EC 	FCREATE         000F 	FF              F3EA 	FILEPOS         
-E6DC 	FILERO          F34D 	FILESIZE        ED18 	FINDFST         
-ED2D 	FINDNXT         ED4A 	FNDNXT1         ED53 	FNDNXT2         
-ED73 	FNDNXT3         ED7C 	FNDNXT4         ED83 	FNDNXT5         
-ED94 	FNDNXT6         EDC0 	FNDSPA1         EDD1 	FNDSPA2         
-EDEC 	FNDSPA3         EDF4 	FNDSPA4         EDBE 	FNDSPACE        
-F3D4 	FNDSTAT         E647 	FUNCTNS         F311 	GETALOC         
-EA45 	GETBLK1         EA53 	GETBLK2         EA5C 	GETBLK3         
-EA3E 	GETBLOCK        E6FB 	GETCHAR         E8C8 	GETCON          
-F304 	GETCRNT         E8FE 	GETCSTS         E706 	GETECHO         
-EF24 	GETEMPTY        F2AB 	GETFST          F2C2 	GETFST1         
-E8ED 	GETIOB          F2FE 	GETLOG          EF46 	GETMT1          
-EF5A 	GETNEXT         F2C8 	GETNXT          F326 	GETPARM         
-F329 	GETPRM1         E8CE 	GETRDR          F317 	GETROV          
-EB69 	GETS2           F32D 	GETUSER         F27E 	GETVER          
-EB1E 	GETWPRT         F374 	GOBACK          F391 	GOBACK1         
-EF83 	GTNEXT1         EF8E 	GTNEXT2         EFAC 	GTNEXT3         
-EFAF 	GTNEXT4         EFB6 	GTNEXT5         F418 	HOME            
-E9A1 	HOMEDRV         0003 	IOBYTE          E905 	IOERR1          
-E9BB 	IORET           E94A 	JUMPHL          000A 	LF              
-F40F 	LIST            EA8A 	LOGICAL         EA90 	LOGICL1         
-F3AF 	LOGIN           F221 	LOGINDRV        F353 	LOGOFF          
-F3E7 	LOGSECT         F3D5 	MODE            EB7F 	MOREFLS         
-EBE9 	MOVEDIR         EE94 	MOVEWORD        E7B1 	NEWLINE         
-E7B9 	NEWLN1          0029 	NFUNCTS         EC19 	NXENT1          
-EC20 	NXENT2          EC05 	NXENTRY         F3CE 	OFFSET          
-F3DF 	OLDDRV          F29C 	OPENFIL         EE51 	OPENIT          
-EE5A 	OPENIT1         EE8B 	OPENIT2         E748 	OUTCHAR         
-E762 	OUTCHR1         E779 	OUTCHR2         E790 	OUTCON          
-E796 	OUTCON1         E7C9 	OUTCRLF         E90A 	OUTFLAG         
-E943 	PARAMS          F103 	POSITION        F107 	POSITN1         
-F147 	POSITN2         F17F 	POSITN3         F184 	POSITN4         
-F18B 	POSITN5         003E 	PROMPT          F42D 	PRSTAT          
-E6E5 	PRTERR          E90D 	PRTFLAG         E7D3 	PRTMESG         
-E8F8 	PRTSTR          F412 	PUNCH           F30A 	PUTDMA          
-F1E4 	RANSIZ1         F206 	RANSIZ2         F20C 	RANSIZ3         
-F1D2 	RANSIZE         E7EF 	RDBUF1          E870 	RDBUF10         
-E878 	RDBUF11         E88A 	RDBUF12         E899 	RDBUF13         
-E8A6 	RDBUF14         E8A9 	RDBUF15         E8BD 	RDBUF16         
-E8C1 	RDBUF17         E7F1 	RDBUF2          E816 	RDBUF3          
-E826 	RDBUF4          E837 	RDBUF5          E848 	RDBUF6          
-''	MACRO-80 3.44	09-Dec-81	PAGE	S-1
+E942    ACTIVE          EB64    ADDA2HL         F3CA    ALLOC0          
+F3CC    ALLOC1          F3BF    ALOCVECT        F3DE    AUTO            
+F3E0    AUTOFLAG        F251    AUTOSEL         F275    AUTOSL1         
+E7A4    BACKUP          E7AC    BACKUP1         E609    BADSCTR         
+E6CA    BADSEC          E6D5    BADSEL          E60B    BADSLCT         
+E600    BDOS            E6C6    BDOSDRV         F400    BDOSEND         
+E6BA    BDOSERR         0007    BELL            F3DD    BIGDISK         
+ECA3    BITMAP          ECB1    BITMAP1         ECD2    BITMAP2         
+ECF6    BITMAP3         0020    BLANK           F3C4    BLKMASK         
+F3E5    BLKNMBR         F3C3    BLKSHFT         F400    BOOT            
+0008    BS              E90E    CHARBUF         EB9E    CHECKDIR        
+EAF7    CHECKSUM        EE27    CHGNAM1         EE16    CHGNAMES        
+EA84    CHKBLK          E714    CHKCHAR         EBC4    CHKDIR1         
+EB8C    CHKNMBR         EB44    CHKROFL         EAFD    CHKSUM1         
+F3BD    CHKVECT         EB54    CHKWPRT         EC35    CKBITMAP        
+EC56    CKBMAP1         E742    CKCON1          E745    CKCON2          
+E723    CKCONSOL        EBF5    CKFILPOS        EB47    CKROF1          
+F3EC    CKSUMTBL        EB72    CLEARS2         F2A5    CLOSEFIL        
+F3D2    CLOSEFLG        EEA2    CLOSEIT         EECD    CLOSEIT1        
+EEDB    CLOSEIT2        EEE1    CLOSEIT3        EEE8    CLOSEIT4        
+EEFD    CLOSEIT5        EF17    CLOSEIT6        EF1F    CLOSEIT7        
+EA77    COMBLK          F1A5    COMPRAND        F409    CONIN           
+F40C    CONOUT          F406    CONST           F3D8    COUNTER         
+000D    CR              0003    CTRLC           0005    CTRLE           
+0010    CTRLP           0012    CTRLR           0013    CTRLS           
+0015    CTRLU           0018    CTRLX           001A    CTRLZ           
+E90C    CURPOS          E94F    DE2HL           E950    DE2HL1          
+EBDA    DEFDMA          007F    DEL             F2D7    DELFILE         
+F3B9    DIRBUF          E8E0    DIRC1           E8D4    DIRCIO          
+EBE0    DIRDMA          EBE3    DIRDMA1         EBD4    DIRREAD         
+F3C8    DIRSIZE         EBC6    DIRWRITE        F3BB    DISKPB          
+E6E1    DISKRO          E9B2    DOREAD          E9B8    DOWRITE         
+F3C6    DSKSIZE         F3AC    EMPTYFCB        F3D6    EPARAM          
+EDA4    ERAFIL1         ED9C    ERAFILE         E699    ERROR1          
+E6A5    ERROR2          E6AB    ERROR3          E6B1    ERROR4          
+E6B4    ERROR5          EA5E    EXTBLK          EA71    EXTBLK1         
+F3C5    EXTMASK         E606    FBASE           E611    FBASE1          
+EB5E    FCB2HL          F3E9    FCBPOS          EDFD    FCBSET          
+F2EC    FCREATE         000F    FF              F3EA    FILEPOS         
+E6DC    FILERO          F34D    FILESIZE        ED18    FINDFST         
+ED2D    FINDNXT         ED4A    FNDNXT1         ED53    FNDNXT2         
+ED73    FNDNXT3         ED7C    FNDNXT4         ED83    FNDNXT5         
+ED94    FNDNXT6         EDC0    FNDSPA1         EDD1    FNDSPA2         
+EDEC    FNDSPA3         EDF4    FNDSPA4         EDBE    FNDSPACE        
+F3D4    FNDSTAT         E647    FUNCTNS         F311    GETALOC         
+EA45    GETBLK1         EA53    GETBLK2         EA5C    GETBLK3         
+EA3E    GETBLOCK        E6FB    GETCHAR         E8C8    GETCON          
+F304    GETCRNT         E8FE    GETCSTS         E706    GETECHO         
+EF24    GETEMPTY        F2AB    GETFST          F2C2    GETFST1         
+E8ED    GETIOB          F2FE    GETLOG          EF46    GETMT1          
+EF5A    GETNEXT         F2C8    GETNXT          F326    GETPARM         
+F329    GETPRM1         E8CE    GETRDR          F317    GETROV          
+EB69    GETS2           F32D    GETUSER         F27E    GETVER          
+EB1E    GETWPRT         F374    GOBACK          F391    GOBACK1         
+EF83    GTNEXT1         EF8E    GTNEXT2         EFAC    GTNEXT3         
+EFAF    GTNEXT4         EFB6    GTNEXT5         F418    HOME            
+E9A1    HOMEDRV         0003    IOBYTE          E905    IOERR1          
+E9BB    IORET           E94A    JUMPHL          000A    LF              
+F40F    LIST            EA8A    LOGICAL         EA90    LOGICL1         
+F3AF    LOGIN           F221    LOGINDRV        F353    LOGOFF          
+F3E7    LOGSECT         F3D5    MODE            EB7F    MOREFLS         
+EBE9    MOVEDIR         EE94    MOVEWORD        E7B1    NEWLINE         
+E7B9    NEWLN1          0029    NFUNCTS         EC19    NXENT1          
+EC20    NXENT2          EC05    NXENTRY         F3CE    OFFSET          
+F3DF    OLDDRV          F29C    OPENFIL         EE51    OPENIT          
+EE5A    OPENIT1         EE8B    OPENIT2         E748    OUTCHAR         
+E762    OUTCHR1         E779    OUTCHR2         E790    OUTCON          
+E796    OUTCON1         E7C9    OUTCRLF         E90A    OUTFLAG         
+E943    PARAMS          F103    POSITION        F107    POSITN1         
+F147    POSITN2         F17F    POSITN3         F184    POSITN4         
+F18B    POSITN5         003E    PROMPT          F42D    PRSTAT          
+E6E5    PRTERR          E90D    PRTFLAG         E7D3    PRTMESG         
+E8F8    PRTSTR          F412    PUNCH           F30A    PUTDMA          
+F1E4    RANSIZ1         F206    RANSIZ2         F20C    RANSIZ3         
+F1D2    RANSIZE         E7EF    RDBUF1          E870    RDBUF10         
+E878    RDBUF11         E88A    RDBUF12         E899    RDBUF13         
+E8A6    RDBUF14         E8A9    RDBUF15         E8BD    RDBUF16         
+E8C1    RDBUF17         E7F1    RDBUF2          E816    RDBUF3          
+E826    RDBUF4          E837    RDBUF5          E848    RDBUF6          
+''      MACRO-80 3.44   09-Dec-81       PAGE    S-1
 
 
-E84E 	RDBUF7          E85F 	RDBUF8          E86B 	RDBUF9          
-E7E1 	RDBUFF          F341 	RDRANDOM        EFBC 	RDSEQ           
-EFC1 	RDSEQ1          EFE6 	RDSEQ2          EFFB 	RDSEQ3          
-F3D3 	RDWRTFLG        F427 	READ            F415 	READER          
-F193 	READRAN         F2E0 	READSEQ         F3D7 	RELBLOCK        
-F2F5 	RENFILE         E60D 	RODISK          E60F 	ROFILE          
-F283 	RSTDSK          E904 	RTN             ED07 	SAMEXT          
-EE40 	SAVATR1         EE3B 	SAVEATTR        F3D9 	SAVEFCB         
-F3E2 	SAVEXT          F3E3 	SAVNREC         F3E1 	SAVNXT          
-F3B3 	SCRATCH1        F3B5 	SCRATCH2        F3B7 	SCRATCH3        
-F3C1 	SECTORS         F430 	SECTRN          F41B 	SELDSK          
-E959 	SELECT          E99D 	SELECT1         F31D 	SETATTR         
-EB0B 	SETBIT          EB9C 	SETDIR          F424 	SETDMA          
-F245 	SETDSK          EAA6 	SETEXT          EC6B 	SETFILE         
-EC75 	SETFL1          EC88 	SETFL2          EC8E 	SETFL3          
-EC9D 	SETFL4          EAAE 	SETHLDE         E8F3 	SETIOB          
-EAD2 	SETNREC         F20E 	SETRAN          EB78 	SETS2B7         
-F421 	SETSEC          E901 	SETSTAT         F41E 	SETTRK          
-F33B 	SETUSER         EB04 	SHIFTL          EB05 	SHIFTL1         
-EAEA 	SHIFTR          EAEB 	SHIFTR1         E77F 	SHOWIT          
-E947 	SLCTERR         E90B 	STARTING        E945 	STATUS          
-EC5C 	STBITMAP        EC64 	STBMAP1         EBFE 	STFILPOS        
-E941 	STKAREA         EADE 	STNREC1         EABB 	STRDATA         
-ED01 	STSTATUS        EB95 	SUBHL           0009 	TAB             
-0080 	TBUFF           E9C3 	TRKSEC          E9D1 	TRKSEC1         
-E9E4 	TRKSEC2         E9FA 	TRKSEC3         EA0F 	TRKSEC4         
-EE01 	UPDATE          EE10 	UPDATE1         F3B1 	USERDMA         
-E941 	USERNO          E90F 	USRSTACK        F403 	WBOOT           
-F42A 	WRITE           F19C 	WRITERAN        F3AD 	WRTPRT          
-EB2C 	WRTPRTD         F2E6 	WRTSEQ          F347 	WTRANDOM        
-EFFE 	WTSEQ           F003 	WTSEQ1          F0D2 	WTSEQ10         
-F0FE 	WTSEQ11         F100 	WTSEQ12         F03B 	WTSEQ2          
-F048 	WTSEQ3          F064 	WTSEQ4          F06C 	WTSEQ5          
-F06E 	WTSEQ6          F08C 	WTSEQ7          F09A 	WTSEQ8          
-F0BB 	WTSEQ9          F0DF 	WTSEQ99         F39B 	WTSPECL         
-F3D0 	XLATE           
+E84E    RDBUF7          E85F    RDBUF8          E86B    RDBUF9          
+E7E1    RDBUFF          F341    RDRANDOM        EFBC    RDSEQ           
+EFC1    RDSEQ1          EFE6    RDSEQ2          EFFB    RDSEQ3          
+F3D3    RDWRTFLG        F427    READ            F415    READER          
+F193    READRAN         F2E0    READSEQ         F3D7    RELBLOCK        
+F2F5    RENFILE         E60D    RODISK          E60F    ROFILE          
+F283    RSTDSK          E904    RTN             ED07    SAMEXT          
+EE40    SAVATR1         EE3B    SAVEATTR        F3D9    SAVEFCB         
+F3E2    SAVEXT          F3E3    SAVNREC         F3E1    SAVNXT          
+F3B3    SCRATCH1        F3B5    SCRATCH2        F3B7    SCRATCH3        
+F3C1    SECTORS         F430    SECTRN          F41B    SELDSK          
+E959    SELECT          E99D    SELECT1         F31D    SETATTR         
+EB0B    SETBIT          EB9C    SETDIR          F424    SETDMA          
+F245    SETDSK          EAA6    SETEXT          EC6B    SETFILE         
+EC75    SETFL1          EC88    SETFL2          EC8E    SETFL3          
+EC9D    SETFL4          EAAE    SETHLDE         E8F3    SETIOB          
+EAD2    SETNREC         F20E    SETRAN          EB78    SETS2B7         
+F421    SETSEC          E901    SETSTAT         F41E    SETTRK          
+F33B    SETUSER         EB04    SHIFTL          EB05    SHIFTL1         
+EAEA    SHIFTR          EAEB    SHIFTR1         E77F    SHOWIT          
+E947    SLCTERR         E90B    STARTING        E945    STATUS          
+EC5C    STBITMAP        EC64    STBMAP1         EBFE    STFILPOS        
+E941    STKAREA         EADE    STNREC1         EABB    STRDATA         
+ED01    STSTATUS        EB95    SUBHL           0009    TAB             
+0080    TBUFF           E9C3    TRKSEC          E9D1    TRKSEC1         
+E9E4    TRKSEC2         E9FA    TRKSEC3         EA0F    TRKSEC4         
+EE01    UPDATE          EE10    UPDATE1         F3B1    USERDMA         
+E941    USERNO          E90F    USRSTACK        F403    WBOOT           
+F42A    WRITE           F19C    WRITERAN        F3AD    WRTPRT          
+EB2C    WRTPRTD         F2E6    WRTSEQ          F347    WTRANDOM        
+EFFE    WTSEQ           F003    WTSEQ1          F0D2    WTSEQ10         
+F0FE    WTSEQ11         F100    WTSEQ12         F03B    WTSEQ2          
+F048    WTSEQ3          F064    WTSEQ4          F06C    WTSEQ5          
+F06E    WTSEQ6          F08C    WTSEQ7          F09A    WTSEQ8          
+F0BB    WTSEQ9          F0DF    WTSEQ99         F39B    WTSPECL         
+F3D0    XLATE           
 
 
 
 No Fatal error(s)
 
-
-    F19C 	WRITERAN        F3AD 	WRTPRT          
-EB2C 	WRTPRTD         F2E6 	WR

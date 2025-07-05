@@ -378,7 +378,7 @@ S1.LT1Z:
 	LD	A,(IX+0)
 	CP	L
 	RET	C
-	EX	AF,AF'
+	EX	AF,AF'	;'
 	CP	L
 	CCF
 	RET

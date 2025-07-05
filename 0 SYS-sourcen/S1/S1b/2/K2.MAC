@@ -1,0 +1,1192 @@
+	TITLE 'BAMOS/Emulator  ---  Kassettenmagnetband'
+	PAGE
+;****************************************************************
+;*               BAMOS/Emulator  ---  Kassettenmagnetband       *
+;* OS - Version  -----------------------------------------------*
+;*               Programmierer: Marcus Herbote                  *
+;* V 1 . 2       -----------------------------------------------*
+;*               Stand        : 18.November 2022                *
+;****************************************************************
+
+;****************************************************************
+;*               BAMOS/Robotron         Stand: 01.Januar 1981   *
+;*               -----------------------------------------------*
+;*               Geraetebedienroutine fuer Kassettenmagnetband  *
+;*               Anschluss von zwei Laufwerken K5200            *
+;*               an einer AKB K5020                             *
+;*               -----------------------------------------------*
+;*               E/A-Tabelle                                    *
+;*               Byte -2   HS-Bereich                           *
+;*               Byte -1   laenge der Daten im Puffer           *
+;*                         1, 10H, 20H, 80H                     *
+;*               -----------------------------------------------*
+;*               Byte  0   Status                               *
+;*               Byte  1   Fehlerschluessel                     *
+;*               Byte  2   Basisadresse der AKB                 *
+;*               Byte  3   Subadresse                           *
+;*               Byte  4   Kommando                             *
+;*               Byte  5   L-Teil Adresse Eintrittspunkt        *
+;*               Byte  6   H-Teil Adresse Eintrittspunkt        *
+;*               Byte  7   L-Teil Blockadresse                  *
+;*               Byte  8   H-Teil Blockadresse                  *
+;*               Byte  9   H-Teil Blocklaenge (Bit 15...Bit 8)  *
+;*               Byte 10   L-Teil Blocklaenge (Bit  7...Bit 0)  *
+;*                         n      bei suchen Bandmarke          *
+;*               Byte 11   Anzahl Lese-/Schreib wiederholen     *
+;*               Byte 12   Anzahl Blocklueckenverlaengerungen   *
+;****************************************************************
+;*               Bytes fuer die Uebergabe an den Z80-Emulator   *
+;*               -----------------------------------------------*
+;*               Byte 28 1 0F0H  Startbyte                      *
+;*               Byte 29 2       Kommando                       *
+;*               Byte 30 3       Subadresse                     *
+;*               Byte 31 4       Anzahl BM  bei 71, 75          *
+;*               Byte 31 4       'B'        bei 51              *
+;*               Byte 31 4       'S'        bei 61              *
+;*               Byte 31 4       HS-Bereich bei 02              *
+;*               Byte 31 4       Laenge     bei 08              *
+;*               Byte 31 4 0FFH             bei 31,41,21,11,15  *
+;*               Byte 32 5       H(Puffer)  bei 02              *
+;*               Byte 32 5       HS-Bereich bei 08              *
+;*               Byte 32 5 0FFH             bei 51,61,71,75     *
+;*               Byte 33 6       L(Puffer)  bei 02              *
+;*               Byte 33 6       H(Puffer)  bei 08              *
+;*               Byte 34 7       L(Puffer)  bei 08              *
+;*               Byte 34 7 0FFH             bei 02              *
+;*               Byte 35 8 0FFH             bei 08              *
+;****************************************************************
+;*               Kommandos:                                     *
+;*                 Hex   Kommando                               *
+;*                 02    naechsten Record einlesen              *
+;*                 08    naechsten Record schreiben             *
+;*                 11    einen Block vorsetzen                  *
+;*                 15    einen Block ruecksetzen                *
+;*                 21    umspulen                               *
+;*                 31    reservieren ein                        *
+;*                 41    reservieren aus                        *
+;*                 51    schreiben einer Bandmarke              *
+;*                 61    schreiben Schlussluecke                *
+;*                 71    suche n-te Bandmarke vorwaerts         *
+;*                 75    suche n-te Bandmarke rueckwaerts       *
+;****************************************************************
+	PAGE
+;****************************************************************
+;*               Status                                         *
+;*               Bit 0     0 Geraet frei                        *
+;*                         1 Geraet besetzt                     *
+;*               Bit 1     0                                    *
+;*                         1 Datentraegerende                   *
+;*               Bit 2     0 Aufzeichnen erlaubt                *
+;*                         1 Aufzeichnen verboten               *
+;*               Bit 3     0 Kassettenseite A                   *
+;*                         1 Kassettenseite B                   *
+;*               Bit 4     0 Geraet       bereit                *
+;*                         1 Geraet nicht bereit                *
+;*               Bit 5     0 Geraet nicht reserviert            *
+;*                         1 Geraet       reserviert            *
+;*               Bit 6     0 Aufzeichnungsverf.  38 CM*S**-1    *
+;*                         1 Aufzeichnungsverf.  19 CM*S**-1    *
+;*               Bit 7     0 Kommando fehlerfrei ausgefuehrt    *
+;*                         1 Fehler (siehe Fehlerschluessel)    *
+;*               -----------------------------------------------*
+;*               Fehlerschluessel                               *
+;*                 Hex   Fehler                                 *
+;*                 10    falsches Kommando                      *
+;*                 11    angewaehltes Geraet nicht reserviert   *
+;*                 12    Subadresse falsch                      *
+;*                 13    Pufferl. kleiner 12 oder groesser 256  *
+;*                 14    Ende der Aufzeichnungen auf dieser     *
+;*                       Kassettenseite (Lesen)                 *
+;*                 15    angewaehltes Geraet besetzt            *
+;*                 16    Ende/Anfang der Aufzeichnungen         *
+;*                       (Bandmarke suchen)                     *
+;*                 17    gelesener Block laenger 260 Byte       *
+;*                 18    Bandmarke nicht gefunden               *
+;*                 19    Aufzeichnen verboten                   *
+;*                       (mit Kommando: Aufzeichnen)            *
+;*               -----------------------------------------------*
+;*               nachfolgende Codes nicht bei DEG2000-Emulator  *
+;*                 21    Fehler nach festgelegter Anzahl        *
+;*                       Lesewiederholungen                     *
+;*                 22    Fehler nach festgelegter Anzahl        *
+;*                       Schreibwiederholungen                  *
+;*                 23    kein Echosignal vom Eingabekanal       *
+;*                       bei  RAW                               *
+;****************************************************************
+;*               Hinweise zur Arbeit mit der Geraetebedienr.    *
+;*                - E/A-Tabelle laden (Basisadresse AKB)        *
+;*                - Adresse E/A-Tabelle in IX laden             *
+;*                - laden Schluessel fuer Kommando , Subadresse *
+;*                    Adresse Eintrittspunkt                    *
+;*                - Aufruf Geraetebedienroutine immer mit       *
+;*                    CALL   KR.BRKMB                           *
+;*                - wird keine Parallelarbeit mit anderen       *
+;*                  Programmen gewuenscht , kann wie in         *
+;*                  folgendem Beispiel verfahren werden:        *
+;*                        ...                                   *
+;*                        CALL KR.BRKMB ;Aufruf                 *
+;*                  MARKE:HALT                                  *
+;*                        JR   MARKE-#                          *
+;*                  ADREP:............  ;Adresse Eintrittspunkt *
+;*                        ...                                   *
+;*                - bei Rueckkehr der Bedienroutine zum Ein-    *
+;*                  trittspunkt ist die Adresse des folgenden   *
+;*                  Befehls , bei dem der letzte Interrupt      *
+;*                  angenommen wurde , noch im SP .             *
+;*                  Wird , wie im obigen Beispiel , diese       *
+;*                  Adresse nicht mehr benoetigt , so ist der   *
+;*                  SP  um 2 zu erhoehen.                       *
+;****************************************************************
+	TITLE	'Steuerteil Geraetebedienroutine'
+	PAGE
+;****************************************************************
+;*               Steuerteil der Geraetebedienroutine            *
+;****************************************************************
+K1.BRKMB:
+    DI
+    CALL    RRET
+
+;****************************************************************
+;*               Analyse Kommando                               *
+;****************************************************************
+    LD  A,(IX+4)
+    CP  002H    ;naechsten Record einlesen
+    JP  Z,STT02
+    CP  008H    ;naechsten Record schreiben
+    JP  Z,STT08
+    CP  011H    ;einen Block vorsetzen
+    JP  Z,STT11
+    CP  015H    ;einen Block ruecksetzen
+    JP  Z,STT15
+    CP  021H    ;umspulen
+    JP  Z,STT21
+    CP  031H    ;reservieren ein
+    JP  Z,STT31
+    CP  041H    ;reservieren aus
+    JP  Z,STT41
+    CP  051H    ;schreiben einer Bandmarke
+    JP  Z,STT51
+    CP  061H    ;schreiben Schlussluecke
+    JP  Z,STT61
+    CP  071H    ;suche n-te Bandmarke vorwaerts
+    JP  Z,STT71
+    CP  075H    ;suche n-te Bandmarke rueckwaerts
+    JP  Z,STT75
+    JP  STF07   ;falsches Kommando
+
+;****************************************************************
+;*               Kernroutine MB                                 *
+;*               -----------------------------------------------*
+;*               Schnittstelle zum DEG2000 - Emulator           *
+;****************************************************************
+K1.KERN:
+    LD  (IX+28),0F0H
+    LD  A,(IX+4)    ;Kommando
+    LD  (IX+29),A
+    LD  A,(IX+3)    ;Subadresse
+    LD  (IX+30),A
+
+    LD  C,(IX+2)    ;Basisadresse der AKB
+    PUSH    IX
+    POP HL
+    LD  DE,28
+    ADD  HL,DE
+    OTIR            ;KM - Routine aufrufen
+    PUSH    IX
+    POP HL
+    DEC HL
+    DEC HL
+    LD  B,4
+    INIR            ;Status und Fehler holen
+    DEC HL          ;Laenge der Daten im Puffer holen
+    DEC HL
+    DEC HL
+    LD  (IX+9),0
+    LD  A,(HL)
+    LD  (IX+10),A
+    RET
+    TITLE   '4-/5-Byte IO-Kommandos'
+    PAGE
+;****************************************************************
+;*               reservieren ein / aus                          *
+;****************************************************************
+STT31:
+STT41:
+;****************************************************************
+;*               umspulen                                       *
+;****************************************************************
+STT21:
+;****************************************************************
+;*               vor-/ruecksetzen um einen Block                *
+;****************************************************************
+STT11:
+STT15:
+    LD  (IX+31),0FFH
+
+    LD  B,4
+    CALL K1.KERN
+    JP	KOMED	;Kommandoende
+
+;****************************************************************
+;*               schreiben einer Bandmarke                      *
+;****************************************************************
+STT51:
+    LD  A,'B'
+    JR  STT5
+;****************************************************************
+;*               schreiben einer Schlussluecke                  *
+;****************************************************************
+STT61:
+    LD  A,'S'
+    JR  STT5
+;****************************************************************
+;*               suche Bandmarke vorwaerts / rueckwaerts        *
+;****************************************************************
+STT71:
+STT75:
+    LD  A,(IX+7)
+
+STT5:
+    LD  (IX+31),A
+    LD  (IX+32),0FFH
+
+    LD  B,5
+    CALL K1.KERN
+    JP	KOMED	;Kommandoende
+
+    TITLE   '7-/8-Byte IO-Kommandos'
+    PAGE
+;****************************************************************
+;*               Eingabezweig                                   *
+;****************************************************************
+STT02:
+    LD  A,(K0.HSB)   ;HS-Bereich
+    LD  (IX+31),A
+
+    LD  A,(IX+8)
+    LD  (IX+32),A
+    LD  A,(IX+7)
+    LD  (IX+33),A
+
+    LD  (IX+34),0FFH
+
+    LD  B,7
+    CALL K1.KERN
+    JP	KOMED	;Kommandoende
+
+;****************************************************************
+;*               Aufzeichnungszweig                             *
+;****************************************************************
+STT08:
+    LD  A,(IX+10)            ;Laenge der Daten im Puffer
+    LD  (IX+31),A
+
+    LD  A,(K0.HSB)           ;HS-Bereich
+    LD  (IX+32),A
+
+    LD  A,(IX+8)
+    LD  (IX+33),A
+    LD  A,(IX+7)
+    LD  (IX+34),A
+
+    LD  (IX+35),0FFH
+
+    LD  DE,UE.PUF            ;Kassettenpuffer
+    LD  H,(IX+26)
+    LD  L,(IX+25)
+    LD  B,(IX+9)
+    LD  C,(IX+10)
+    LDIR
+
+    LD  B,8
+    CALL K1.KERN
+    JP	KOMED	;Kommandoende
+
+    PAGE
+;****************************************************************
+;*               Fehler                                         *
+;****************************************************************
+STF99:
+	LD	(IX+1),L	;Fehlerschluessel laden
+	SET	7,(IX+0)	;Fehlerbit setzen
+STFRS:
+	JP	KOMED	;Kommandoende
+
+STF07:
+	LD	L,10H	;falsches Kommando
+	JR	STF99
+
+    PAGE
+;****************************************************************
+;*               Register AF , BC , DE , HL retten in SP        *
+;****************************************************************
+RRET:
+    EX  (SP),HL
+	PUSH	DE
+	PUSH	BC
+	PUSH	AF
+    JP  (HL)
+;****************************************************************
+;*               Register AF , BC , DE , HL laden aus SP        *
+;****************************************************************
+RLAD:
+    EX  (SP),HL
+    INC SP
+    INC SP
+	POP	AF
+	POP	BC
+	POP	DE
+    EX  (SP),HL
+	RET
+
+;****************************************************************
+;*               Verzweigung aus Steuerteil zum Eintrittspunkt  *
+;*               des Steuerprogrammes                           *
+;****************************************************************
+KOMED:
+	DI
+	RES 0,(IX)
+	CALL	RLAD
+	EI
+	RET
+
+    PAGE
+;****************************************************************
+;*               CRC-Zeichen berechnen                          *
+;*               <B>  = Blocklaenge , 0 = 256                   *
+;*               <HL> = Pufferadresse                           *
+;*               in  DE  nach Aufruf CRC-Zeichen                *
+;*                <D> = 1.Byte , wird zuerst gesendet           *
+;*                <E> = 2.Byte , wird danach gesendet           *
+;****************************************************************
+K1.CRC:
+	LD	DE,0
+CRC0:
+	PUSH	BC	;Bytelaenge
+	LD	B,8
+	LD	C,(HL)
+CRC1:
+	LD	A,C
+	XOR	D
+	RRCA		;Ergebnis Antivalenz Wort-Byte/CRC-Byte,Bit 0
+	PUSH	AF
+	RR	E	;Verschiebung von DE um 1 Bit nach rechts
+	RR	D
+	POP	AF	;Rueckretten F
+	JR	NC,CRC2	;Sprung wenn Antivalenz 0 + 0 = 0
+	LD	A,D	;Korrektur = Umkehr Bit 13/Bit 0
+	XOR	1	;Maske fuer D
+	LD	D,A	;Korrektur  D
+	LD	A,E
+	XOR	20H	;Maske fuer E
+	LD	E,A	;Korrektur  E
+CRC2:
+	RRC	C	;Schieben Datenbyte
+	DJNZ	CRC1
+	POP	BC	;Byte abgearbeitet
+	DEC	BC
+	LD	A,C
+	OR	B
+	RET	Z
+	INC	HL
+	JR	CRC0
+
+;	END
+	TITLE	'Kassettengrundroutinen'
+	PAGE
+;****************************************************************
+;*               Anschlussroutinen fuer BAMOS/Emulator          *
+;* OS - Version  -----------------------------------------------*
+;*               Programmierer: Marcus Herbote                  *
+;* V 1 . 2       -----------------------------------------------*
+;*               Stand        : 18.November 2022                *
+;****************************************************************
+;	PN	KR
+;---------------------------------------------------------------------
+;        Kassettengrundroutinen
+;---------------------------------------------------------------------
+	DW	$
+	DB	'K1RE'
+KR.GR1:
+	LD	A,01H
+	JR	KR.GR3
+;
+	DW	$
+	DB	'K2RE'
+KR.GR2:
+	LD	A,02H
+KR.GR3:
+	CALL	U1.KTINI
+	LD	(IX+3),A
+	CALL	UR.KRE
+	RET
+;-------------------------------------------------------------------
+	DW	$
+	DB	'K1L+'
+	CALL	KR.GR1
+	JR	$+11
+;
+	DW	$
+	DB	'K2L+'
+	CALL	KR.GR2
+	LD	HL,1	; IX + 10 := 1 / Anzahl BM
+	CALL	XY.STDX
+	DB	9
+	CALL	UR.KLV
+	RET
+;---------------------------------------------------------------------
+	DW	$
+	DB	'K1L-'
+	CALL	KR.GR1
+	JR	$+11
+;
+	DW	$
+	DB	'K2L-'
+	CALL	KR.GR2
+	LD	HL,1	; IX + 10 := 1 / Anzahl BM
+	CALL	XY.STDX
+	DB	9
+	CALL	UR.KLR
+	RET
+;---------------------------------------------------------------------
+	DW	$
+	DB	'K1R+'
+	CALL	KR.GR1
+	JR	$+11
+;
+	DW	$
+	DB	'K2R+'
+	CALL	KR.GR2
+	CALL	UR.KBV
+	RET
+;--------------------------------------------------------------------
+	DW	$
+	DB	'K1R-'
+	CALL	KR.GR1
+	JR	$+11
+;
+	DW	$
+	DB	'K2R-'
+	CALL	KR.GR2
+	CALL	UR.KBR
+	RET
+;--------------------------------------------------------------------
+	DW	$
+	DB	'K1RW'
+	CALL	KR.GR1
+	JR	$+11
+;
+	DW	$
+	DB	'K2RW'
+	CALL	KR.GR2
+	CALL	UR.KRW
+	RET		;JR	KR.CKRA
+;---------------------------------------------------------------------
+	DW	$
+	DB	'K1RA'
+	CALL	KR.GR1
+	JR	$+11
+;
+	DW	$
+	DB	'K2RA'
+	CALL	KR.GR2
+KR.CKRA:
+	CALL	UR.KRA
+	RET
+;---------------------------------------------------------------------
+KR.KARO:
+	CALL	UE.BRKMB	;AUFRUF PHYS.KASS.ROUTINE
+	RET
+;----------------------------------------------------------------------
+KR.VORSP:
+	LD	DE,UE.BWSA + 10*80 +7	;327H
+	CALL	UC.CVDB
+	LD	B,L
+	LD	A,'F'
+	LD	(UB.PAR2),A
+	CALL	UR.KRE
+	CALL	UR.POSIK
+	RET
+;---------------------------------------------------------------------
+	DW	$
+	DB	'XKA1'
+	CALL	KR.GR1
+	JR	$+11
+;
+	DW	$
+	DB	'XKA2'
+	CALL	KR.GR2
+	CALL	KR.VORSP
+	CALL	FD.FDINP
+	CALL	UR.KRW
+	CALL	UR.KRA
+	RET
+;----------------------------------------------------------------------
+	DW	$
+	DB	'YKA1'
+	CALL	KR.GR1
+	JR	KR.YKA1	;$+11
+;
+	DW	$
+	DB	'YKA2'
+	CALL	KR.GR2
+KR.YKA1:
+	CALL	UR.KRE
+	LD	DE,UE.BWSA + 10*80 +7	;327H
+	CALL	UC.CVDB
+	DEC	L
+	JR	Z,KR.YKA2	;$+11
+	LD	(IX+7),L
+	CALL	KR.TYPT
+	CALL	UR.KLV
+KR.YKA2:
+	CALL	FD.FDOUT
+	RET
+;---------------------------------------------------------------------------
+	DW	$
+	DB	'K1CL'
+	CALL	KR.GR1
+	JR	KR.KCL	;$+11
+;
+	DW	$
+	DB	'K2CL'
+	CALL	KR.GR2
+KR.KCL:
+	CALL	UR.KBM
+	CALL	UR.KSL
+	CALL	UR.KRW
+	CALL	UR.KRA
+	JP	UE.SYSTB
+;--------------------------------------------------------------------
+KR.TYPT:
+	INC	DE
+	LD	A,(DE)
+	LD	(UB.PAR2),A
+	RET
+;--------------------------------------------------------------------
+;	END
+	TITLE	'Fehleranzeige und Behandlung'
+	PAGE
+;	PN	UF
+;***************************************************************
+;
+;      Fehleranzeige  UND  BEHANDLUNG
+;
+;***************************************************************
+UF.RET:
+	POP	AF
+	POP	BC
+	POP	DE
+	POP	HL
+	RET
+;---------------------Ausfhr. Kass.kommando lt.Steuerblock-------------
+UF.EXEC:
+	PUSH	HL
+	PUSH	DE
+	PUSH	BC
+	PUSH	AF
+	RES	7,(IX)
+	LD	(IX+1),0
+	;JP	KO.KO05
+
+	LD	A,1
+	LD	(K0.HSB),A	;HS-Bereich
+	LD	A,(IX+4)	;Kommando
+	CP	071H
+	JR	Z,UF.EXEC2
+	CP	075H
+	JR	Z,UF.EXEC2
+	LD	(IX+7),LOW(UE.PUF)
+	LD	(IX+8),HIGH(UE.PUF)
+UF.EXEC2:
+	CALL	KR.KARO
+UF.EXEC1:
+	BIT	7,(IX)	;Status
+	JR	Z,UF.RET
+	LD	A,(IX+1)	;Fehlerschlüssel
+;-------------------------Fehlerbehandlung---------------
+UF.ERANZ:
+	PUSH	HL
+	PUSH	DE
+	PUSH	BC
+	PUSH	AF
+	PUSH	AF
+	LD	A,19
+	LD	(UB.ZN),A
+	LD	HL,UA.ZKF	;IN: <A> Fehlerschluessel
+	CALL	UR.MIMO
+	POP	AF
+	PUSH	AF
+	EX	DE,HL
+	CALL	UC.CVBX+2
+	POP	AF
+	CP	17H
+	JP	Z,UF.FL17
+	CP	18H
+	JP	Z,UF.FL18
+	CP	00H
+	JP	Z,UF.BEHB
+	CP	11H
+	JP	Z,UF.BEHB
+	CP	19H
+	JR	Z,UF.AZVB
+	CP	14H
+	JP	Z,UF.FL14
+	CP	16H
+	JP	Z,UF.FL16
+	JP	UF.RET
+;----------------------------------------------------------------------
+UF.SYS:
+	LD	A,(IX+1)
+	LD	DE,UE.BWSA+5A8H
+	CALL	UC.CVBX+2
+	NOP
+	NOP
+	NOP
+UF.SYS1:
+	LD	SP,UE.STANF
+	RET
+;----------------------------------------------------------
+UF.AZVB:
+	RES	2,(IX)	;Aufzeichnen verboten
+	LD	(IX+4),41H
+	CALL	KR.KARO
+	BIT	7,(IX)
+	JR	NZ,UF.SYS
+	LD	HL,UA.FRZ
+	CALL	UR.MIMO
+	JR	C,UF.SYS1
+	LD	(IX+4),31H
+	CALL	KR.KARO
+	BIT	4,(IX+0)
+	JR	NZ,UF.SYS
+	BIT	7,(IX+0)
+	JR	NZ,UF.SYS
+	BIT	2,(IX+0)
+	JR	NZ,UF.SYS
+	JP	UF.BEHB1
+;----------------------------------------------------------
+UF.BEHB:
+	LD	HL,UA.FRZ
+	CALL	UR.MIMO
+	JR	C,UF.SYS1
+
+UF.BEHB1:
+KO.KO04:
+	LD	(IX+4),C	;FUER UF19
+	JP	UF.EXEC+4
+;---------------------------------------
+UF.FL18:
+	LD	HL,UA.BMGF
+	CALL	UR.MIMO
+	JP	C,UF.SYS1
+	JP	UF.RET
+;------------------------------------------
+UF.FL17:
+	JP	UF.RET
+;-------------------------------------
+UF.FL14:
+	JP	UF.RET
+
+UF.FL16:
+	LD	HL,UA.FRZ
+	CALL	UR.MIMO
+	JP	UF.RET
+;----------------------------------------------------------------------
+;	END
+	TITLE	'Ausschriften'
+	PAGE
+;	PN	UA01
+;----------------------------------------------------------------------
+;
+;     AUSSCHRIFTEN
+;
+;----------------------------------------------------------------------
+UA.DS:
+	DB	0
+	DB	1
+	DB	0
+	DB	1
+	DB	'  DS************   '
+	DB	1
+	DB	0
+	DB	0
+	DB	0
+	DB	0
+	DB	0
+	DB	0
+	DB	0
+	DB	0
+;----------------------------------------------------------------------
+UA.KNAME:
+	DB	06H
+	DB	16
+	DB	40H
+	DB	' KassettenName: '
+UA.NR:
+	DB	03H
+	DB	16
+	DB	40H
+	DB	' Kassetten-Nr.: '
+UA.KOMMT:
+	DB	0BH
+	DB	16
+	DB	80H
+	DB	'     Kommentar: '
+;----------------------------------------------------------------------
+UA.Z7E:
+	DB	'Eingabe      =====>     Ausgabe'
+UA.GER:
+	DB	'       Geraet: '
+;----------------------------------------------------------------------
+UA.KOPFR:
+	DB	01H
+	DB	51
+	DB	80H
+	DB	'                Datei               kopieren J/N ? '
+UA.EABFR:
+	DB	01H
+	DB	51
+	DB	80H
+	DB	'                Eingaben in Ordnung  ---->   J/N ? '
+UA.VORH:
+	DB	1
+	DB	51
+	DB	80H
+	DB	'************* Datei vorh.;SYS-Ende,kopieren  J/N ? '
+;----------------------------------------------------------------------
+UA.FRZ:
+	DB	2
+	DB	3
+	DB	80H
+	DB	'?? '
+UA.BMGF:
+	DB	01H
+	DB	7
+	DB	80H
+	DB	'BM ! ??'
+UA.DOK:
+	DB	0
+	DB	4
+	DB	80H
+	DB	'i.O.'
+UA.DF:
+	DB	0
+	DB	4
+	DB	80H
+	DB	'Fhl.'
+;----------------------------------------------------------------------
+UA.ZKDAT:
+	DB	6
+	DB	16
+	DB	40H
+	DB	'     Dateiname: '
+UA.ZKLAD:
+	DB	4
+	DB	16
+	DB	08H
+	DB	'   Ladeadresse: '
+;------------------------------------------------------------------
+UA.ZKBEG:
+	DB	4
+	DB	16
+	DB	08H
+	DB	'        Beginn: '
+UA.ZKEND:
+	DB	4
+	DB	16
+	DB	08H
+	DB	'          Ende: '
+UA.STADR:
+	DB	4
+	DB	16
+	DB	08H
+	DB	'  Startadresse: '
+UA.ZKDL:
+	DB	1
+	DB	16
+	DB	20H
+	DB	' Loeschen J/N : '
+UA.ZKF:
+	DB	0
+	DB	8
+	DB	0
+	DB	'Fehler: '
+;----------------------------------------------------------------------
+UA.ZKRES:
+	DB	3
+	DB	16
+	DB	10H
+	DB	'Reservebloecke: '
+UA.ZKSDT:
+	DB	4
+	DB	18
+	DB	40H
+	DB	'     Dateiname:   '
+UA.ZKBEL:
+	DB	0
+	DB	16
+	DB	0
+	DB	'Bloecke belegt: '
+UA.ZKBLG:
+	DB	0
+	DB	16
+	DB	0
+	DB	'Bloecke gesamt: '
+;----------------------------------------------------------------------
+UA.ZKBA:
+	DB	'Bandanfang'
+UA.ZKBM:
+	DB	'Bandmarke'
+UA.ZKSL:
+	DB	'Schlussluecke'
+UA.ZKEE:
+;----------------------------------------------------------------------
+UA.LD:
+	DB	38
+	DB	15
+	DB	80H
+	DB	'               '
+UA.ZRSCH:
+	DB	1
+	DB	22
+	DB	80H
+	DB	'Verz. schreiben J/N ? '
+UA.ANZWD:
+	DB	1
+	DB	22
+	DB	80H
+	DB	'Anzeige wdhln.  J/N ? '
+;----------------------------------------------------------------------
+UA.ALTR:
+	DB	' AUSGLEICH LAUFWERKSTOLERANZEN  '
+;----------------------------------------------------------------------
+;	END
+	TITLE 'Routinen fuer Kassette'
+	PAGE
+;----------------------------------------------------------------------
+;   Routinen fuer KASSETTE
+;----------------------------------------------------------------------
+UR.KRE:
+	LD	(IX+4),31H
+UR.KRE1:
+	CALL	UF.EXEC
+	RET
+UR.KRW:
+	LD	(IX+4),21H
+	JR	UR.KRE1	;Umspulen
+UR.KRWW:
+	CALL	UR.KRW
+	RET
+UR.KRA:
+	LD	(IX+4),41H
+	JR	UR.KRE1	;Reservieren aus
+UR.KLV:
+	LD	(IX+4),71H
+	JR	UR.KRE1	;Label vorsetzen
+UR.KLR:
+	LD	(IX+4),75H
+	JR	UR.KRE1	;LABEL RUECKSETZEN
+UR.KBM:
+	LD	(IX+4),51H
+	JR	UR.KRE1	;BANDMARKE SCHREIBEN
+UR.KSL:
+	LD	(IX+4),61H
+	JR	UR.KRE1	;SCHLUSSLUECKE SCHREIBEN
+UR.KBV:
+	LD	(IX+4),11H
+	JR	UR.KRE1	;Block vorsetzen
+UR.KBR:
+	LD	(IX+4),15H
+	JR	UR.KRE1
+;--------------------------------------------------------------------
+UR.RPOS:
+	PUSH	HL
+	PUSH	DE
+	PUSH	AF
+	PUSH	BC
+	XOR	A
+	DEC	A
+	LD	C,A
+	JR	POSIK1
+UR.POSIK:
+	PUSH	HL
+	PUSH	DE
+	PUSH	AF
+	PUSH	BC	;Positionieren
+	XOR	A
+	LD	C,A
+POSIK1:
+	LD	B,0
+	LD	DE,0
+UR.LES:
+	LD	(IX+4),02H
+	CALL	UF.EXEC	;BLOCK LESEN
+	LD	A,(IX+10)
+	CP	1	;BANDMARKE?
+	JR	Z,UR.BM
+	INC	B	;ANZAHL BLOECKE
+	LD	A,B
+	CP	4
+	JR	Z,UR.OK
+	LD	HL,0
+	CALL	XY.LIDX
+	DB	9	;HL<--BLOCKLAENGE
+	ADD	HL,DE
+	EX	DE,HL
+	LD	HL,300
+	OR	A
+	SBC	HL,DE
+	JR	C,UR.OK
+	JR	UR.LES
+UR.BM:
+	XOR	A
+	OR	C
+	JR	Z,$+6
+	POP	BC
+	INC	B
+	JR	UR.POSIK+3
+	POP	BC
+	DEC	B
+	JR	Z,UR.RSP
+	JR	UR.POSIK+3
+UR.OK:
+	XOR	A
+	OR	C
+	JR	Z,$+10
+	LD	(IX+10),B
+	CALL	UR.KLR
+	JR	UR.RSP
+	LD	(IX+4),15H
+	CALL	UF.EXEC
+	DJNZ	$-7
+	POP	BC
+	DEC	B
+	JR	Z,UR.RSP
+	LD	(IX+10),B
+	CALL	UR.KLV
+UR.RSP:
+	POP	AF
+	POP	DE
+	POP	HL
+	RET
+	TITLE	'Einzelzeicheneingabe fuer KMBG'
+	PAGE
+;	PN	UK
+;----------------------------------------------------------------------
+;
+;        Einzelzeicheneingabe fuer KMBG
+;
+;----------------------------------------------------------------------
+UK.GETK:
+	CALL	U1.RSAVE
+	CALL	XY.LIDX	;HL:= Blocklaenge
+	DB	9
+	PUSH	HL
+	CALL	XY.LDDX
+	DB	23
+	EX	DE,HL	;DE:= Pufferzaehler
+	XOR	A
+	POP	HL	;HL:= Blocklaenge
+	SBC	HL,DE
+	PUSH	HL	;Restbyteanzahl retten
+	LD	A,H
+	OR	L
+	CALL	Z,UK.KBW	;Block lesen
+	POP	HL
+	XOR	A
+	CP	H
+	JR	NZ,UK.GETK2
+	LD	A,L
+	CP	1
+	JR	Z,UK.GETK3	;---> letztes Datenbyte des
+UK.GETK2:
+	CALL	UK.GETK4
+	OR	A
+UK.GETK5:
+	CALL	U1.RRST
+	RET
+;
+;
+UK.GETK3:
+	CALL	UK.GETK4
+	SCF
+	JR	UK.GETK5
+;
+UK.GETK4:
+	CALL	XY.LDDX	;HL:= aktuelle Pufferadresse
+	DB	21
+	LD	A,(HL)	;Datenbyte laden
+	CALL	XY.INCDX	;Pufferzeiger erhoehen
+	DB	21
+	CALL	XY.INCDX	;Pufferzaehler erhoehen
+	DB	23
+	RET
+
+;******************************************************************
+;
+;        KMBG  Eingabepuffer bereitstellen
+;
+;*******************************************************************
+UK.KLPFB:
+	CALL	U1.RSAVE
+	CALL	U1.KTIN1
+	LD	HL,MaxBL     ;max. Blocklaenge Kassette (100H)
+	CALL	XY.STIDX     ;max. Blocklaenge initialisieren
+	DB	9
+	PUSH	HL
+	POP	BC           ;BC:= Blocklaenge
+	CALL	XY.STDX      ;Pufferzaehler "Leer"
+	DB	23
+	LD	HL,UE.PUF    ;Systempuffer Kassette
+	CALL	U1.CLRB      ;Systempuffer loeschen
+	LD	HL,UE.KPUFF
+	CALL	U1.CLRB
+	CALL	U1.RRST
+	RET
+
+;******************************************************************
+;
+;        Einlesen eines Blockes von Kassette
+;
+;         - Besonderheit gegenueber MBW: Blockinhalt wird vom
+;           Systempuffer in den E/A-Puffer uebertragen
+;
+;*******************************************************************
+UK.KBW:
+	CALL	U1.RSAVE
+	CALL	UK.KLPFB
+	LD	(IX+4),02H
+	CALL	UF.EXEC
+	;LD	A,(IX+9)
+	;OR	(IX+10)
+	LD	A,(IX+10)	;Laenge = 1, dann BM
+	CP	1
+	JR	Z,UK.KBW1	;EOF
+	CALL	XY.LDDX	;HL:= Blockadresse
+	DB	7
+	LD	B,(IX+9)	;BC:= Blocklaenge
+	LD	C,(IX+10)
+	PUSH	HL	;E/A-Puffer
+	CALL	XY.LDDX
+	DB	25
+	EX	DE,HL
+	POP	HL
+	LDIR		;Transport in E/A-Puffer
+	CALL	XY.LDDX
+	DB	25
+	CALL	XY.STDX	;Pufferzeiger auf Anfang
+	DB	21
+	LD	HL,0
+	CALL	XY.STDX	;Pufferzaehler rueckstellen
+	DB	23
+	CALL	XY.INCDX	;Blockzaehler incrementieren
+	DB	17
+UK.KBW2:
+	CALL	U1.RRST
+	RET
+;
+UK.KBW1:
+	CALL	XY.INCDX	;Labelzaehler incrementieren
+	DB	17
+	JR	UK.KBW2
+
+;********************************************************************
+;
+;        Einzelzeichenausgabe fuer KMBG
+;
+;*********************************************************************
+UK.PUTK:
+	CALL	U1.RSAVE
+	PUSH	AF	;Zeichen retten
+	CALL	XY.LDDX	;HL:= Pufferzaehler
+	DB	23
+	LD	BC,UE.KMPUL	;BC:= max. Pufferlaenge
+	OR	A
+	SBC	HL,BC
+	CCF
+	CALL	Z,UK.KBA	;---> Puffer voll
+	POP	AF	;Zeichen auskellern
+	CALL	XY.LDDX
+	DB	21
+	LD	(HL),A	;Zeichen in Puffer eintragen
+	CALL	XY.INCDX	;Pufferzeiger erhoehen
+	DB	21
+	CALL	XY.INCDX	;Pufferzaehler erhoehen
+	DB	23
+	CALL	U1.RRST
+	RET
+
+;******************************************************************
+;
+;        Ausgabepufferbereitstellung fuer KMBG
+;
+;*******************************************************************
+UK.KSPFB:
+	CALL	U1.RSAVE
+	CALL	U1.KTIN1
+	CALL	XY.LIDX
+	DB	9
+	PUSH	HL
+	POP	BC	;BC:= Blocklaenge
+	LD	HL,0
+	CALL	XY.STDX	;Pufferzaehler = 0
+	DB	23
+	CALL	XY.LDDX
+	DB	25
+	CALL	XY.STDX	;Pufferzeiger setzen
+	DB	21
+	LD	HL,UE.PUF
+	CALL	U1.CLRB
+	CALL	U1.RRST
+	RET
+
+;*******************************************************************
+;
+;        Ausgabe eines Blockes auf KMBG
+;
+;*******************************************************************
+UK.KBA:
+	CALL	U1.RSAVE
+	CALL	UK.KSPFB
+	CALL	XY.LDDX
+	DB	7
+	EX	DE,HL	;DE:= Blockadresse
+	PUSH	DE	;Blockadresse retten
+	CALL	XY.LIDX
+	DB	9
+	PUSH	HL
+	POP	BC	;BC:= Blocklaenge
+	POP	DE	;DE:= Blockadresse
+	PUSH	BC	;Blocklaenge retten
+	CALL	XY.LDDX	;HL:= E/A-Pufferanfang
+	DB	25
+	LDIR		;Block in Systempuffer
+	POP	BC	;BC:= Blocklaenge
+	PUSH	HL	;aktuelle Pufferadresse retten
+	LD	HL,UE.KMPUL	;HL:= max. Laenge
+	OR	A
+	SBC	HL,BC	;HL:= Restbyteanzahl
+	CALL	XY.STDX	;Pufferzaehler setzen
+	DB	23
+	PUSH	HL
+	POP	BC	;BC:= Restbyteanzahl
+	CALL	XY.LDDX	;HL:= aktuelle Pufferadresse
+	DB	25
+	EX	DE,HL	;DE:= Pufferanfang
+	POP	HL
+	LDIR
+	EX	DE,HL	;HL:= aktuelle Pufferadresse
+	CALL	XY.STDX	;Pufferzeiger setzen
+	DB	21
+	LD	(IX+4),08H
+	CALL	UF.EXEC	;physische Blockausgabe
+	PUSH	AF
+	CALL	XY.INCDX	;Blockzaehler erhoehen
+	DB	17
+	POP	AF
+	CALL	U1.RRST
+	RET
+;----------------------------------------------------------------------
+;	END
+

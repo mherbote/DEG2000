@@ -131,6 +131,7 @@ Public Class CPU1
         End Try
 
         op_halt = 0
+        If Haupt.BufferAnzeigenVis.Checked Then Call AnzeigeBuffer.AnzeigeBuffer()
     End Function '76   'op_halt
 #End Region
 
@@ -633,6 +634,7 @@ Public Class CPU1
         Call COMMON.vZ80cpu.PCplus1() : COMMON.vZ80cpu.STACK = COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.PC)
         Call COMMON.vZ80cpu.PCplus1() : COMMON.vZ80cpu.STACK = COMMON.vZ80cpu.STACK + COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.PC) * 256
         op_ldspnn = 10
+        If Haupt.BufferAnzeigenVis.Checked Then Call AnzeigeBuffer.AnzeigeBuffer()
     End Function '31    'op_ldspnn
 
     '------------------------------------     '2A 22 F9
@@ -659,6 +661,7 @@ Public Class CPU1
     Private Function op_ldsphl() As Integer                                     ' LD SP,HL                  'F9
         COMMON.vZ80cpu.STACK = COMMON.vZ80cpu.H * 256 + COMMON.vZ80cpu.L
         op_ldsphl = 6
+        If Haupt.BufferAnzeigenVis.Checked Then Call AnzeigeBuffer.AnzeigeBuffer()
     End Function 'F9    'op_ldsphl
 #End Region
 #End Region

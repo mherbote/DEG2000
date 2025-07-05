@@ -1,12 +1,12 @@
-                                	PAGE	87
-''	MACRO-80 3.44	09-Dec-81	PAGE	1
+                                        PAGE    87
+''      MACRO-80 3.44   09-Dec-81       PAGE    1
 
 
                                 
-                                ;	ORG		0DE00H
-                         C      	INCLUDE incCCP.MAC
+                                ;       ORG             0DE00H
+                         C              INCLUDE incCCP.MAC
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-1
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-1
 
 
                          C      
@@ -21,7 +21,7 @@
                          C      ;*               Stand        : 19. Juni 1984                   *
                          C      ;*  V 4 . 2      -----------------------------------------------*
                          C      ;*               Geaenderte Label und eingefuegte Kommentare    *
-                         C      ;*               Stand        : 05. Juni 2024                   *
+                         C      ;*               Stand        : 07. Juni 2024                   *
                          C      ;****************************************************************
                          C      
                          C      ;
@@ -39,7 +39,7 @@
   0100                   C      TBASE    EQU     00100H                ;transiant program storage area
                          C      
                          C      
-  000B                   C      D010	EQU	0000BH
+  000B                   C      D010    EQU     0000BH
                          C      
                          C      
                          C      ;  Dies sind Equates fC<r die verschiedenen ASCII-Zeichen
@@ -65,7 +65,7 @@
                          C      ;
                          C      ;   Set origin for CP/M
                          C      ;
-                         C      ;	ORG	(MEM-7)*1024   ==> 0DC00H
+                         C      ;       ORG     (MEM-7)*1024   ==> 0DC00H
                          C               .PHASE  0DE00H
   DE00                   C      CCP      EQU     $
                          C      ;
@@ -90,19 +90,19 @@
   DE10    78             C               DEFB    120                   ;ORG CBASE+88H
                          C      
                          C              ;  DEFB    'Copyright 1979 (c) by Digital Research      '
-                         C              ;  DEFB	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-2
+                         C              ;  DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-2
 
 
-                         C              ;  DEFB	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-                         C              ;  DEFB	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-                         C              ;  DEFB	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+                         C              ;  DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+                         C              ;  DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+                         C              ;  DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
                          C      
   DE11    DE08           C      INPOINT: DW      INBUFF+2              ;input line pointer
   DE13    0000           C      NAMEPNT: DW      0                     ;input line pointer used for error message
                          C                                             ;Points to start of name in error
                          C               PAGE 
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-3
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-3
 
 
                          C      
@@ -118,9 +118,9 @@
                          C      ;   Routine to print (A) on the console and to save (BC)
                          C      ;
   DE1B                   C      PRINTB:
-  DE1B    C5             C               PUSH	BC
-  DE1C    CD DE15        C               CALL	PRINT
-  DE1F    C1             C               POP	BC
+  DE1B    C5             C               PUSH   BC
+  DE1C    CD DE15        C               CALL   PRINT
+  DE1F    C1             C               POP    BC
   DE20    C9             C               RET
                          C      
                          C      ;
@@ -168,8 +168,8 @@
                          C      ;   Routine to select disk (A)
                          C      ;
   DE46                   C      DSKSEL:
-  DE46    5F             C               LD      E,A	               ;Bezugslaufwerk
-  DE47    0E 0E          C               LD      C,14	               ;Bezugslaufwerk festlegen
+  DE46    5F             C               LD      E,A                   ;Bezugslaufwerk
+  DE47    0E 0E          C               LD      C,14                  ;Bezugslaufwerk festlegen
   DE49    C3 0005        C               JP      ENTRY
                          C      
                          C      ;
@@ -187,7 +187,7 @@
                          C      ;
   DE54                   C      OPEN:
   DE54    0E 0F          C               LD      C,15                  ;Datei eroeffnen
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-4
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-4
 
 
   DE56    C3 DE4C        C               JP      ENTRY1
@@ -273,7 +273,7 @@
   DE92                   C      CREATE:
   DE92    0E 16          C               LD      C,22                  ;Datei erzeugen
   DE94    C3 DE4C        C               JP      ENTRY1
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-5
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-5
 
 
                          C      
@@ -302,11 +302,11 @@
                          C      ;   Routine to set the current drive byte at (TDRIVE)
                          C      ;
   DEA3                   C      SETCDRV:
-  DEA3    CD DE9C        C               CALL	GETUSR                 ;get user number
-  DEA6    87             C               ADD	A,A                    ;and shift into the upper 4 bits
-  DEA7    87             C               ADD	A,A
-  DEA8    87             C               ADD	A,A
-  DEA9    87             C               ADD	A,A
+  DEA3    CD DE9C        C               CALL   GETUSR                 ;get user number
+  DEA6    87             C               ADD    A,A                    ;and shift into the upper 4 bits
+  DEA7    87             C               ADD    A,A
+  DEA8    87             C               ADD    A,A
+  DEA9    87             C               ADD    A,A
   DEAA    21 E578        C               LD     HL,CDRIVE              ;now add in the current drive number
   DEAD    B6             C               OR     (HL)
   DEAE    32 0004        C               LD     (TDRIVE),A             ;and save
@@ -317,7 +317,7 @@
                          C      ;
   DEB2                   C      MOVECD:
   DEB2    3A E578        C               LD      A,(CDRIVE)
-  DEB5    32 0004        C               LD	     (TDRIVE),A
+  DEB5    32 0004        C               LD          (TDRIVE),A
   DEB8    C9             C               RET
                          C      
                          C      ;
@@ -332,7 +332,7 @@
   DEC1    C9             C               RET
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-6
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-6
 
 
                          C      
@@ -417,7 +417,7 @@
   DF37    CA DF43        C               JP      Z,GETINP4
   DF3A    7E             C               LD      A,(HL)                ;convert to upper case
   DF3B    CD DEB9        C               CALL    UPPER
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-7
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-7
 
 
   DF3E    77             C               LD      (HL),A
@@ -431,7 +431,7 @@
   DF4A    C9             C               RET
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-8
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-8
 
 
                          C      
@@ -516,7 +516,7 @@
   DF9F    CA DFAB        C               JP      Z,SYNERR2
   DFA2    E5             C               PUSH    HL
   DFA3    CD DE15        C               CALL    PRINT
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-9
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-9
 
 
   DFA6    E1             C               POP     HL
@@ -558,7 +558,7 @@
   DFD7    C9             C               RET
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-10
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-10
 
 
                          C      
@@ -643,7 +643,7 @@
   E02F    C3 E034        C               JP      CONVRT6
   E032                   C      CONVRT5:
   E032    77             C               LD      (HL),A
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-11
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-11
 
 
   E033    13             C               INC     DE
@@ -725,7 +725,7 @@
   E098    C9             C               RET
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-12
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-12
 
 
                          C      
@@ -742,7 +742,7 @@
                          C      ;
                          C      ;   The following six bytes must agree with those at (PATTRN2) or cp/m will HALT. Why?
                          C      ;
-                         C      ;PATTRN1:DEFB	0,22,0,0,0,0	;(* serial number bytes *)
+                         C      ;PATTRN1:DEFB   0,22,0,0,0,0    ;(* serial number bytes *)
   E0B1                   C       PATTRN1:
   E0B1                   C               DEFS    6,0
                          C      ;
@@ -783,7 +783,7 @@
   E0DE    C3 E0BC        C               JP      SEARCH1
                          C      
                          C               PAGE
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-13
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-13
 
 
                          C      
@@ -791,8 +791,8 @@
                          C      ;   Set the input buffer to empty and then start the command processor (ccp)
                          C      ;
   E0E1                   C      CLEARBUF:
-  E0E1    AF             C               XOR	A
-  E0E2    32 DE07        C               LD	(INBUFF+1),A               ;second byte is actual length
+  E0E1    AF             C               XOR    A
+  E0E2    32 DE07        C               LD     (INBUFF+1),A               ;second byte is actual length
                          C      
                          C      ;****************************************************************
                          C      ;* C C P  -   C o n s o l e   C o m m a n d   P r o c e s s o r *
@@ -805,7 +805,7 @@
   E0EB    1F             C               RRA
   E0EC    1F             C               RRA
   E0ED    1F             C               RRA
-  E0EE    E6 0F          C               AND	00FH                   ;isolate the user number
+  E0EE    E6 0F          C               AND    00FH                   ;isolate the user number
   E0F0    5F             C               LD     E,A
   E0F1    CD DE9E        C               CALL   GETSETUC               ;and set it
   E0F4    CD DE41        C               CALL   RESDSK                 ;reset the disk system
@@ -868,7 +868,7 @@
   E150    E336           C               DW      SAVE                  ;S A V E
   E152    E399           C               DW      RENAME                ;R E N
   E154    E417           C               DW      USER                  ;U S E R
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-14
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-14
 
 
   E156    E42E           C               DW      UNKNOWN
@@ -889,7 +889,7 @@
   E162    01 E168        C               LD      BC,RDERR
   E165    C3 DE30        C               JP      PLINE
                          C      
-  E168    52 45 41 44    C      RDERR:   DB	'READ ERROR',0
+  E168    52 45 41 44    C      RDERR:   DB     'READ ERROR',0
   E16C    20 45 52 52    C      
   E170    4F 52 00       C      
                          C      
@@ -954,7 +954,7 @@
   E1C7    78             C               LD      A,B                   ;set (A)=the numeric value entered
   E1C8    C9             C               RET
                          C      
-''	MACRO-80 3.44	09-Dec-81	PAGE	1-15
+''      MACRO-80 3.44   09-Dec-81       PAGE    1-15
 
 
                          C      ;
@@ -1015,9 +1015,9 @@
   E1FA    3A E578        C               LD      A,(CDRIVE)            ;yes, re-select our old drive
   E1FD    C3 DE46        C               JP      DSKSEL
                          C      
-                         C      		 TITLE 'C C P - Funktion:   D I R'
+                         C                       TITLE 'C C P - Funktion:   D I R'
                          C               PAGE
-'C C P - Funktion:   D I R'	MACRO-80 3.44	09-Dec-81	PAGE	1-16
+'C C P - Funktion:   D I R'     MACRO-80 3.44   09-Dec-81       PAGE    1-16
 
 
                          C      
@@ -1102,7 +1102,7 @@
   E287    FE 0C          C               CP      12                    ;end of the name?
   E289    D2 E297        C               JP      NC,DIRECT7
   E28C    FE 09          C               CP      9                     ;nope, starting extension?
-'C C P - Funktion:   D I R'	MACRO-80 3.44	09-Dec-81	PAGE	1-17
+'C C P - Funktion:   D I R'     MACRO-80 3.44   09-Dec-81       PAGE    1-17
 
 
   E28E    C2 E262        C               JP      NZ,DIRECT6
@@ -1121,9 +1121,9 @@
   E2A4    D1             C               POP     DE                    ;restore the stack and return to command level
   E2A5    C3 E50F        C               JP      GETBACK
                          C      
-                         C      		 TITLE 'C C P - Funktion:   E R A'
+                         C                       TITLE 'C C P - Funktion:   E R A'
                          C               PAGE
-'C C P - Funktion:   E R A'	MACRO-80 3.44	09-Dec-81	PAGE	1-18
+'C C P - Funktion:   E R A'     MACRO-80 3.44   09-Dec-81       PAGE    1-18
 
 
                          C      
@@ -1158,9 +1158,9 @@
   E2DF    28 59 2F 4E    C      
   E2E3    29 3F 00       C      
                          C      
-                         C      		 TITLE 'C C P - Funktion:   T Y P E'
+                         C                       TITLE 'C C P - Funktion:   T Y P E'
                          C               PAGE
-'C C P - Funktion:   T Y P E'	MACRO-80 3.44	09-Dec-81	PAGE	1-19
+'C C P - Funktion:   T Y P E'   MACRO-80 3.44   09-Dec-81       PAGE    1-19
 
 
                          C      
@@ -1210,9 +1210,9 @@
   E330    CD E1EF        C               CALL    RESETDR               ;and reset proper drive
   E333    C3 DF92        C               JP      SYNERR                ;now print file name with problem
                          C      
-                         C      		 TITLE 'C C P - Funktion:   S A V E'
+                         C                       TITLE 'C C P - Funktion:   S A V E'
                          C               PAGE
-'C C P - Funktion:   S A V E'	MACRO-80 3.44	09-Dec-81	PAGE	1-20
+'C C P - Funktion:   S A V E'   MACRO-80 3.44   09-Dec-81       PAGE    1-20
 
 
                          C      
@@ -1276,9 +1276,9 @@
   E394    50 41 43 45    C      
   E398    00             C      
                          C      
-                         C      		 TITLE 'C C P - Funktion:   R E N'
+                         C                       TITLE 'C C P - Funktion:   R E N'
                          C               PAGE
-'C C P - Funktion:   R E N'	MACRO-80 3.44	09-Dec-81	PAGE	1-21
+'C C P - Funktion:   R E N'     MACRO-80 3.44   09-Dec-81       PAGE    1-21
 
 
                          C      
@@ -1347,9 +1347,9 @@
   E40F    20 45 58 49    C      
   E413    53 54 53 00    C      
                          C      
-                         C      		 TITLE 'C C P - Funktion:   U S E R'
+                         C                       TITLE 'C C P - Funktion:   U S E R'
                          C               PAGE
-'C C P - Funktion:   U S E R'	MACRO-80 3.44	09-Dec-81	PAGE	1-22
+'C C P - Funktion:   U S E R'   MACRO-80 3.44   09-Dec-81       PAGE    1-22
 
 
                          C      
@@ -1367,9 +1367,9 @@
   E428    CD DE9E        C               CALL    GETSETUC              ;ok, set user code
   E42B    C3 E512        C               JP      GETBACK1
                          C      
-                         C      		 TITLE 'TRANSIANT PROGRAM COMMAND'
+                         C                       TITLE 'TRANSIANT PROGRAM COMMAND'
                          C               PAGE
-'TRANSIANT PROGRAM COMMAND'	MACRO-80 3.44	09-Dec-81	PAGE	1-23
+'TRANSIANT PROGRAM COMMAND'     MACRO-80 3.44   09-Dec-81       PAGE    1-23
 
 
                          C      
@@ -1454,7 +1454,7 @@
   E4B9                   C      UNKWN5:
   E4B9    7E             C               LD      A,(HL)                ;line down to (0080h). Look for a non blank
   E4BA    B7             C               OR      A                     ;or a null
-'TRANSIANT PROGRAM COMMAND'	MACRO-80 3.44	09-Dec-81	PAGE	1-24
+'TRANSIANT PROGRAM COMMAND'     MACRO-80 3.44   09-Dec-81       PAGE    1-24
 
 
   E4BB    CA E4C7        C               JP      Z,UNKWN6
@@ -1523,9 +1523,9 @@
   E51E    C2 DF92        C               JP      NZ,SYNERR
   E521    C3 E10B        C               JP      CMMND1                ;ok, return to command level
                          C      
-                         C      	TITLE	'Variablen-Bereiche'
-                         C      	PAGE
-'Variablen-Bereiche'	MACRO-80 3.44	09-Dec-81	PAGE	1-25
+                         C              TITLE   'Variablen-Bereiche'
+                         C              PAGE
+'Variablen-Bereiche'    MACRO-80 3.44   09-Dec-81       PAGE    1-25
 
 
                          C      
@@ -1576,88 +1576,85 @@
                          C      ;   Note that the following six bytes must match those at
                          C      ;   (PATTRN1) or cp/m will HALT. Why?
                          C      ;
-                         C      ;PATTRN2:DEFB	0,22,0,0,0,0	;(* serial number bytes *)
+                         C      ;PATTRN2:DEFB   0,22,0,0,0,0    ;(* serial number bytes *)
   E600                   C      PATTRN2  EQU     $                     ;Anfangsadresse vom  B D O S
                          C      
-                         C      	.DEPHASE
+                         C              .DEPHASE
                          C      
                          C      
-                         C      ;	END
+                         C      ;       END
                                 
-                                	TITLE ''
-                                	END
-''	MACRO-80 3.44	09-Dec-81	PAGE	S
+                                        TITLE ''
+                                        END
+''      MACRO-80 3.44   09-Dec-81       PAGE    S
 
 
 Macros:
 
 Symbols:
-DFE2 	ADDHL           E503 	BADLOAD         E534 	BATCH           
-E535 	BATCHFCB        0007 	BELL            0020 	BLANK           
-0008 	BS              DE00 	CBASE           DE00 	CCP             
-E534 	CCPSTACK        E578 	CDRIVE          DFB9 	CHECK           
-E579 	CHGDRV          DF4B 	CHKCON          E0E1 	CLEARBUF        
-DE63 	CLOSE           E14A 	CMDADR          E099 	CMDTBL          
-E10B 	CMMND1          E121 	CMMND2          E50C 	COMFILE         
-E0E5 	COMMAND         DFE9 	CONVERT         DFE7 	CONVFST         
-E012 	CONVRT1         E019 	CONVRT2         E01F 	CONVRT3         
-E021 	CONVRT4         E032 	CONVRT5         E034 	CONVRT6         
-E038 	CONVRT7         E042 	CONVRT8         000D 	CR              
-DE92 	CREATE          DE21 	CRLF            0003 	CTRLC           
-0005 	CTRLE           0010 	CTRLP           0012 	CTRLR           
-0013 	CTRLS           0015 	CTRLU           0018 	CTRLX           
-001A 	CTRLZ           000B 	D010            E181 	DECODE          
-E191 	DECODE1         E1B3 	DECODE2         E1BC 	DECODE3         
-E1C3 	DECODE4         007F 	DEL             DF66 	DELBATCH        
-DE78 	DELETE          E200 	DIRECT          E211 	DIRECT1         
-E218 	DIRECT2         E221 	DIRECT3         E255 	DIRECT4         
-E25D 	DIRECT5         E262 	DIRECT6         E297 	DIRECT7         
-E298 	DIRECT8         E2A4 	DIRECT9         DF61 	DMASET          
-E280 	DRECT63         E282 	DRECT65         E1DD 	DSELECT         
-DE46 	DSKSEL          0005 	ENTRY           DE4C 	ENTRY1          
-DE7D 	ENTRY2          E2A8 	ERASE           E2CB 	ERASE1          
-E40B 	EXISTS          E1D4 	EXTRACT         E556 	FCB             
-000F 	FF              E50F 	GETBACK         E512 	GETBACK1        
-DF59 	GETDSK          E049 	GETEXT          E051 	GETEXT1         
-E062 	GETEXT2         E064 	GETEXT3         E068 	GETEXT4         
-E072 	GETEXT5         E079 	GETEXT6         E07B 	GETEXT7         
-E08A 	GETEXT8         E092 	GETEXT9         DEC2 	GETINP          
-DF1F 	GETINP1         DF30 	GETINP2         DF34 	GETINP3         
-DF43 	GETINP4         DE9E 	GETSETUC        DE9C 	GETUSR          
-E158 	HALT            E1CB 	HL2DE           DE06 	INBUFF          
-DE11 	INPOINT         0003 	IOBYTE          000A 	LF              
-E1C9 	MOVE3           DEB2 	MOVECD          DE13 	NAMEPNT         
-E57A 	NBYTES          DFD8 	NONBLANK        E173 	NONE            
-E179 	NONE1           E390 	NOSPACE         0006 	NUMCMDS         
-DE54 	OPEN            DE59 	OPENFCB         E0B1 	PATTRN1         
-E600 	PATTRN2         DE30 	PLINE           DE35 	PLINE2          
-DE15 	PRINT           DE1B 	PRINTB          003E 	PROMPT          
-E168 	RDERR           E162 	RDERROR         DE82 	RDREC           
-DE87 	READFCB         DE97 	RENAM           E399 	RENAME          
-E3C8 	RENAME1         E3E2 	RENAME2         E3E7 	RENAME3         
-E3F6 	RENAME4         E3FC 	RENAME5         E402 	RENAME6         
-DE41 	RESDSK          E1EF 	RESETDR         E577 	RTNCODE         
-E336 	SAVE            E35D 	SAVE1           E37A 	SAVE2           
-E384 	SAVE3           E38A 	SAVE4           E0B7 	SEARCH          
-E0BC 	SEARCH1         E0C5 	SEARCH2         E0D8 	SEARCH3         
-E0DD 	SEARCH4         DEA3 	SETCDRV         DE2B 	SPACE           
-DE72 	SRCHFCB         DE68 	SRCHFST         DE6D 	SRCHNXT         
-DF5E 	STDDMA          DF92 	SYNERR          DF98 	SYNERR1         
-DFAB 	SYNERR2         0009 	TAB             0100 	TBASE           
-0080 	TBUFF           0004 	TDRIVE          005C 	TFCB            
-E2E6 	TYPE            E2FD 	TYPE1           E300 	TYPE2           
-E310 	TYPE3           E329 	TYPE4           E330 	TYPE5           
-E42E 	UNKNOWN         E4FA 	UNKWN0          E44D 	UNKWN1          
-E456 	UNKWN2          E46A 	UNKWN3          E48A 	UNKWN4          
-E4B9 	UNKWN5          E4C7 	UNKWN6          E4CC 	UNKWN7          
-E4D8 	UNKWN8          E4F4 	UNKWN9          DEB9 	UPPER           
-E417 	USER            DF7E 	VERIFY          DF86 	VERIFY1         
-DE8D 	WRTREC          E2DB 	YESNO           
+DFE2    ADDHL           E503    BADLOAD         E534    BATCH           
+E535    BATCHFCB        0007    BELL            0020    BLANK           
+0008    BS              DE00    CBASE           DE00    CCP             
+E534    CCPSTACK        E578    CDRIVE          DFB9    CHECK           
+E579    CHGDRV          DF4B    CHKCON          E0E1    CLEARBUF        
+DE63    CLOSE           E14A    CMDADR          E099    CMDTBL          
+E10B    CMMND1          E121    CMMND2          E50C    COMFILE         
+E0E5    COMMAND         DFE9    CONVERT         DFE7    CONVFST         
+E012    CONVRT1         E019    CONVRT2         E01F    CONVRT3         
+E021    CONVRT4         E032    CONVRT5         E034    CONVRT6         
+E038    CONVRT7         E042    CONVRT8         000D    CR              
+DE92    CREATE          DE21    CRLF            0003    CTRLC           
+0005    CTRLE           0010    CTRLP           0012    CTRLR           
+0013    CTRLS           0015    CTRLU           0018    CTRLX           
+001A    CTRLZ           000B    D010            E181    DECODE          
+E191    DECODE1         E1B3    DECODE2         E1BC    DECODE3         
+E1C3    DECODE4         007F    DEL             DF66    DELBATCH        
+DE78    DELETE          E200    DIRECT          E211    DIRECT1         
+E218    DIRECT2         E221    DIRECT3         E255    DIRECT4         
+E25D    DIRECT5         E262    DIRECT6         E297    DIRECT7         
+E298    DIRECT8         E2A4    DIRECT9         DF61    DMASET          
+E280    DRECT63         E282    DRECT65         E1DD    DSELECT         
+DE46    DSKSEL          0005    ENTRY           DE4C    ENTRY1          
+DE7D    ENTRY2          E2A8    ERASE           E2CB    ERASE1          
+E40B    EXISTS          E1D4    EXTRACT         E556    FCB             
+000F    FF              E50F    GETBACK         E512    GETBACK1        
+DF59    GETDSK          E049    GETEXT          E051    GETEXT1         
+E062    GETEXT2         E064    GETEXT3         E068    GETEXT4         
+E072    GETEXT5         E079    GETEXT6         E07B    GETEXT7         
+E08A    GETEXT8         E092    GETEXT9         DEC2    GETINP          
+DF1F    GETINP1         DF30    GETINP2         DF34    GETINP3         
+DF43    GETINP4         DE9E    GETSETUC        DE9C    GETUSR          
+E158    HALT            E1CB    HL2DE           DE06    INBUFF          
+DE11    INPOINT         0003    IOBYTE          000A    LF              
+E1C9    MOVE3           DEB2    MOVECD          DE13    NAMEPNT         
+E57A    NBYTES          DFD8    NONBLANK        E173    NONE            
+E179    NONE1           E390    NOSPACE         0006    NUMCMDS         
+DE54    OPEN            DE59    OPENFCB         E0B1    PATTRN1         
+E600    PATTRN2         DE30    PLINE           DE35    PLINE2          
+DE15    PRINT           DE1B    PRINTB          003E    PROMPT          
+E168    RDERR           E162    RDERROR         DE82    RDREC           
+DE87    READFCB         DE97    RENAM           E399    RENAME          
+E3C8    RENAME1         E3E2    RENAME2         E3E7    RENAME3         
+E3F6    RENAME4         E3FC    RENAME5         E402    RENAME6         
+DE41    RESDSK          E1EF    RESETDR         E577    RTNCODE         
+E336    SAVE            E35D    SAVE1           E37A    SAVE2           
+E384    SAVE3           E38A    SAVE4           E0B7    SEARCH          
+E0BC    SEARCH1         E0C5    SEARCH2         E0D8    SEARCH3         
+E0DD    SEARCH4         DEA3    SETCDRV         DE2B    SPACE           
+DE72    SRCHFCB         DE68    SRCHFST         DE6D    SRCHNXT         
+DF5E    STDDMA          DF92    SYNERR          DF98    SYNERR1         
+DFAB    SYNERR2         0009    TAB             0100    TBASE           
+0080    TBUFF           0004    TDRIVE          005C    TFCB            
+E2E6    TYPE            E2FD    TYPE1           E300    TYPE2           
+E310    TYPE3           E329    TYPE4           E330    TYPE5           
+E42E    UNKNOWN         E4FA    UNKWN0          E44D    UNKWN1          
+E456    UNKWN2          E46A    UNKWN3          E48A    UNKWN4          
+E4B9    UNKWN5          E4C7    UNKWN6          E4CC    UNKWN7          
+E4D8    UNKWN8          E4F4    UNKWN9          DEB9    UPPER           
+E417    USER            DF7E    VERIFY          DF86    VERIFY1         
+DE8D    WRTREC          E2DB    YESNO           
 
 
 
 No Fatal error(s)
 
-
-    E300 	TYPE2           
-E310 	TYPE3           E329 	TYPE4           E330 	TYPE5   

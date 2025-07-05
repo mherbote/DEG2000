@@ -85,6 +85,9 @@ Module ICEmonitor
             End If
             'Call cpu_err_msg()
             Call Haupt.PrintReg()
+
+            If Haupt.HSAnzeigenVis1.Checked Then AnzeigeHS.SpeicherAnzeigen()
+            If Haupt.BufferAnzeigenVis.Checked Then Call AnzeigeBuffer.AnzeigeBuffer()
         Catch ex As Exception
             MsgBox("ICEmonitor.dostep: " + ex.Message)
         End Try
@@ -826,6 +829,7 @@ ende:
                     COMMON.vZ80cpu.III = doregByte()
                 Case "SP"
                     COMMON.vZ80cpu.STACK = doregByte() * 256 + doregByte(3)
+                    If Haupt.BufferAnzeigenVis.Checked Then Call AnzeigeBuffer.AnzeigeBuffer()
 
                 Case "FS"
                 Case "FZ"
