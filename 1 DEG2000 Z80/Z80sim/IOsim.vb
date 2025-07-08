@@ -503,7 +503,8 @@ Public Class IOsim
                                     .CassetteRewind()
                                     Call SetStatus(ucKj, "init", port)
                                     Call SetStatus(ucKj, "ok", port)
-                                    'Call SetStatus(ucKj, "Bandende", port)
+                                ElseIf .BM.Text = "B  A  N  D  A N F A N G" Then
+                                    Call SetStatus(ucKj, "Bandanfang", port)
                                 Else
                                     .CassetteRecordBack()
                                     Call SetStatus(ucKj, "ok", port)

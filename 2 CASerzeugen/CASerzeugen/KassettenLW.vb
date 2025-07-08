@@ -53,7 +53,7 @@ Public Class KassettenLW
         FilePos = -1
     End Function ' Close_Kassette
 
-    Public Sub Schreiben_Block(Optional ByVal s As String = "", Optional ByVal anz As Byte = 0)
+    Public Sub Schreiben_Block(Optional ByVal s As String = "", Optional ByVal anz As Byte = 0, Optional w As String = "")
         Dim i As Byte
 
         Select Case UCase(s)
@@ -63,9 +63,12 @@ Public Class KassettenLW
                 Next
                 Buffer.B(0).z(1) = anz
         End Select
+        If w <> "" Then
+            Buffer.B(0).z(3) = Asc("W")
+        End If
         Select Case UCase(s)
             Case "V"
-                D = 0 : E = 0                
+                D = 0 : E = 0
             Case "N"
                 Buffer.B(0).z(14) = D
                 Buffer.B(0).z(15) = E

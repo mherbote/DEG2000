@@ -16,7 +16,7 @@ Imports System.Reflection
 <Assembly: System.Reflection.AssemblyCompanyAttribute("FontView"),  _
  Assembly: System.Reflection.AssemblyConfigurationAttribute("Debug"),  _
  Assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0"),  _
- Assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fe922d4196ccde89fbda1c841467e1ce9a3a761a"),  _
+ Assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ff5639b8fff15aac34cebce6d9e6ff263e67d8e7"),  _
  Assembly: System.Reflection.AssemblyProductAttribute("FontView"),  _
  Assembly: System.Reflection.AssemblyTitleAttribute("FontView"),  _
  Assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0"),  _

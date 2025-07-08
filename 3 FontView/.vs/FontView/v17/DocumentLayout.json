@@ -7,10 +7,6 @@
       "RelativeMoniker": "D:0:0:{F2710699-FD73-4E11-9A4A-0450B880E0C4}|FontView\\FontView.vbproj|solutionrelative:fontview\\fontview.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F2710699-FD73-4E11-9A4A-0450B880E0C4}|FontView\\FontView.vbproj|d:\\devel\\1 deg2000\\3 fontview\\fontview\\font.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
-      "RelativeMoniker": "D:0:0:{F2710699-FD73-4E11-9A4A-0450B880E0C4}|FontView\\FontView.vbproj|solutionrelative:fontview\\font.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{F2710699-FD73-4E11-9A4A-0450B880E0C4}|FontView\\FontView.vbproj|d:\\devel\\1 deg2000\\3 fontview\\fontview\\common.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
       "RelativeMoniker": "D:0:0:{F2710699-FD73-4E11-9A4A-0450B880E0C4}|FontView\\FontView.vbproj|solutionrelative:fontview\\common.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
     },
@@ -55,20 +51,24 @@
             {
               "$type": "Bookmark",
               "Name": "ST:129:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
             }
           ]
         },
         {
           "DockedWidth": 346,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 4,
           "Children": [
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
-            },
-            {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 4,
               "Title": "FontView.vb [Entwurf]",
               "DocumentMoniker": "D:\\devel\\1 DEG2000\\3 FontView\\FontView\\FontView.vb",
               "RelativeDocumentMoniker": "FontView\\FontView.vb",
@@ -80,7 +80,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "COMMON.vb",
               "DocumentMoniker": "D:\\devel\\1 DEG2000\\3 FontView\\FontView\\COMMON.vb",
               "RelativeDocumentMoniker": "FontView\\COMMON.vb",
@@ -92,7 +92,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 2,
               "Title": "Zeichen.vb",
               "DocumentMoniker": "D:\\devel\\1 DEG2000\\3 FontView\\FontView\\Zeichen.vb",
               "RelativeDocumentMoniker": "FontView\\Zeichen.vb",
@@ -104,7 +104,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 3,
               "Title": "AsciiTab.vb",
               "DocumentMoniker": "D:\\devel\\1 DEG2000\\3 FontView\\FontView\\AsciiTab.vb",
               "RelativeDocumentMoniker": "FontView\\AsciiTab.vb",
@@ -122,32 +122,9 @@
               "RelativeDocumentMoniker": "FontView\\FontView.vb",
               "ToolTip": "D:\\devel\\1 DEG2000\\3 FontView\\FontView\\FontView.vb",
               "RelativeToolTip": "FontView\\FontView.vb",
-              "ViewState": "AQIAABUAAAAAAAAAAAAowCsAAAAEAAAA",
+              "ViewState": "AgIAABUAAAAAAAAAAAAowCsAAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
               "WhenOpened": "2024-07-24T09:32:19.727Z",
-              "EditorCaption": ""
-            }
-          ]
-        },
-        {
-          "DockedWidth": 346,
-          "SelectedChildIndex": 1,
-          "Children": [
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Font.vb",
-              "DocumentMoniker": "D:\\devel\\1 DEG2000\\3 FontView\\FontView\\Font.vb",
-              "RelativeDocumentMoniker": "FontView\\Font.vb",
-              "ToolTip": "D:\\devel\\1 DEG2000\\3 FontView\\FontView\\Font.vb",
-              "RelativeToolTip": "FontView\\Font.vb",
-              "ViewState": "AQIAABMAAAAAAAAAAAAgwBcAAAAXAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
-              "WhenOpened": "2024-07-24T13:38:30.262Z",
               "EditorCaption": ""
             }
           ]

@@ -1,7 +1,7 @@
 ﻿Module Module1
     Private Const HEX As String = "0123456789ABCDEF"
-    Private Const Verzeichnis As String = "D:\Daten\Entwicklung\DEG2000\ORIG\CAS"
-    Private Const CasName As String = "LAD2B"
+    Private Const Verzeichnis As String = "T:\1"
+    Private Const CasName As String = "LAD2A"
 
     Private ReadOnly Kassette = New KassettenLW
     Private ReadOnly Inpdatei = New InpByteDatei
@@ -97,16 +97,17 @@
         Dim i2 As Integer
         Dim i3 As Integer
 
-        Call kassette.Schreiben_Block("V", &H20)
         For i2 = 1 To 2
-            Call inpdatei.Lesen_Block(i2)
+            Call Inpdatei.Lesen_Block(i2)
         Next
         If inpdatei.Buffer.B(2).Z(7) <> _j Then
+            Call Kassette.Schreiben_Block("V", &H20)
             For i3 = 0 To 15
-                inpdatei.Buffer.B(1).Z(i3) = &HA5
-                inpdatei.Buffer.B(2).Z(i3) = &HA5
+                Inpdatei.Buffer.B(1).Z(i3) = &HA5
+                Inpdatei.Buffer.B(2).Z(i3) = &HA5
             Next
         Else
+            Call Kassette.Schreiben_Block("V", &H20, "W")
             _dateianz = _dateianz + 1
             _dateiL(_dateianz) = inpdatei.Buffer.B(2).Z(10) * 256 + inpdatei.Buffer.B(2).Z(9)
             _dateiN(_dateianz) = ""
