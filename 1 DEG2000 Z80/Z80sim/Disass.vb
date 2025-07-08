@@ -47,7 +47,7 @@
             fun(&H25) = New Z80cpu.opfunc2(AddressOf opout) : txt(&H25) = "DEC  H"       ' &H25
             fun(&H26) = New Z80cpu.opfunc2(AddressOf nout) : txt(&H26) = "LD   H,"       ' &H26
             fun(&H27) = New Z80cpu.opfunc2(AddressOf opout) : txt(&H27) = "DAA  "        ' &H27
-            fun(&H28) = New Z80cpu.opfunc2(AddressOf rout) : txt(&H28) = "JR   Z"        ' &H28
+            fun(&H28) = New Z80cpu.opfunc2(AddressOf rout) : txt(&H28) = "JR   Z,"       ' &H28
             fun(&H29) = New Z80cpu.opfunc2(AddressOf opout) : txt(&H29) = "ADD  HL,HL"   ' &H29
             fun(&H2A) = New Z80cpu.opfunc2(AddressOf inout2) : txt(&H2A) = "LD   HL,("   ' &H2A
             fun(&H2B) = New Z80cpu.opfunc2(AddressOf opout) : txt(&H2B) = "DEC  HL"      ' &H2B
