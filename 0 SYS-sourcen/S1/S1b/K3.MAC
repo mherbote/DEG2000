@@ -612,7 +612,7 @@ KH.KSRW:
 	CALL	UF.EXEC
 	JP		KH.RDBA
 ;
-;	Z Y K L U S  über Tastatureingaben
+;	Z Y K L U S  ueber Tastatureingaben
 KH.RD3:	;Zyklus
 	LD	(IX+10),0	;Anzahl Bandmarken
 	CALL	UR.TAREP	;Tastaturabfrage
@@ -660,7 +660,7 @@ KH.KSRM:
 KH.KSRP:
  	LD	(IX+4),002H	;naechst Record lesen
 	CALL	UF.EXEC
-	LD	A,(IX+28)	;Lade die Laenge des Blockes
+	LD	A,(IX+10)	;Lade die Laenge des Blockes
 	CP	1	;Laenge = 1, dann BandMarke
 	JR	Z,KH.RDBM
 	CP	2	;Laenge = 2, dann Schlussluecke
@@ -861,8 +861,8 @@ KH.BILO:
 ;	PN	FD
 ;**********************************************************************
 ;
-;      Ein-/Ausgabe von Dateien im freien Format in bzw. aus demEditor-
-;      raum von bzw. auf MRES-Kassetten
+;      Ein-/Ausgabe von Dateien im freien Format in bzw. aus dem
+;      Editorraum von bzw. auf MRES-Kassetten
 ;
 ;**********************************************************************
 ;      Positionieren auf Datei, IN: <C>:= Labelnummer

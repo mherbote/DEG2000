@@ -244,8 +244,8 @@ STT61:
 ;****************************************************************
 STT71:
 STT75:
-    LD  A,(IX+10)
-    JR  STT5
+    LD  A,(IX+10)	;Anzahl Bandmarken
+
 STT5:
     LD  (IX+31),A
     LD  (IX+32),0FFH
@@ -263,9 +263,9 @@ STT02:
     LD  A,(K0.HSB)   ;HS-Bereich
     LD  (IX+31),A
 
-    LD  A,(IX+7)
-    LD  (IX+32),A
     LD  A,(IX+8)
+    LD  (IX+32),A
+    LD  A,(IX+7)
     LD  (IX+33),A
 
     LD  (IX+34),0FFH
@@ -278,18 +278,25 @@ STT02:
 ;*               Aufzeichnungszweig                             *
 ;****************************************************************
 STT08:
-    LD  A,(IX+10)   ;Laenge der Daten im Puffer
+    LD  A,(IX+10)            ;Laenge der Daten im Puffer
     LD  (IX+31),A
 
-    LD  A,(K0.HSB)   ;HS-Bereich
+    LD  A,(K0.HSB)           ;HS-Bereich
     LD  (IX+32),A
 
-    LD  A,(IX+7)
-    LD  (IX+33),A
     LD  A,(IX+8)
+    LD  (IX+33),A
+    LD  A,(IX+7)
     LD  (IX+34),A
 
     LD  (IX+35),0FFH
+
+;     LD  DE,UE.PUF            ;Kassettenpuffer
+;     LD  H,(IX+26)
+;     LD  L,(IX+25)
+;     LD  B,(IX+9)
+;     LD  C,(IX+10)
+;     LDIR
 
     LD  B,8
     CALL K1.KERN
@@ -424,7 +431,7 @@ KR.GR3:
 	CALL	KR.GR2
 	LD	HL,1	; IX + 10 := 1 / Anzahl BM
 	CALL	XY.STDX
-	DB	9
+	DB	10
 	CALL	UR.KLV
 	RET
 ;---------------------------------------------------------------------
@@ -438,7 +445,7 @@ KR.GR3:
 	CALL	KR.GR2
 	LD	HL,1	; IX + 10 := 1 / Anzahl BM
 	CALL	XY.STDX
-	DB	9
+	DB	10
 	CALL	UR.KLR
 	RET
 ;---------------------------------------------------------------------
@@ -473,7 +480,7 @@ KR.GR3:
 	DB	'K2RW'
 	CALL	KR.GR2
 	CALL	UR.KRW
-	JR	KR.CKRA
+	RET		;JR	KR.CKRA
 ;---------------------------------------------------------------------
 	DW	$
 	DB	'K1RA'
@@ -484,6 +491,7 @@ KR.GR3:
 	DB	'K2RA'
 	CALL	KR.GR2
 KR.CKRA:
+	CALL	UR.KRW
 	CALL	UR.KRA
 	RET
 ;---------------------------------------------------------------------
@@ -492,7 +500,7 @@ KR.KARO:
 	RET
 ;----------------------------------------------------------------------
 KR.VORSP:
-	LD	DE,UE.BWSA+327H
+	LD	DE,UE.BWSA + 10*80 +7	;327H
 	CALL	UC.CVDB
 	LD	B,L
 	LD	A,'F'
@@ -504,11 +512,13 @@ KR.VORSP:
 	DW	$
 	DB	'XKA1'
 	CALL	KR.GR1
-	JR	$+11
+	JR	KR.XKA1
 ;
 	DW	$
 	DB	'XKA2'
 	CALL	KR.GR2
+KR.XKA1:
+	CALL	UR.KRE
 	CALL	KR.VORSP
 	CALL	FD.FDINP
 	CALL	UR.KRW
@@ -525,7 +535,7 @@ KR.VORSP:
 	CALL	KR.GR2
 KR.YKA1:
 	CALL	UR.KRE
-	LD	DE,UE.BWSA+327H
+	LD	DE,UE.BWSA + 10*80 +7	;327H
 	CALL	UC.CVDB
 	DEC	L
 	JR	Z,KR.YKA2	;$+11
@@ -534,6 +544,7 @@ KR.YKA1:
 	CALL	UR.KLV
 KR.YKA2:
 	CALL	FD.FDOUT
+	JR	KR.KCL	;BM und SL schreiben; Rewind; RA
 	RET
 ;---------------------------------------------------------------------------
 	DW	$
@@ -589,8 +600,8 @@ UF.EXEC:
 	JR	Z,UF.EXEC2
 	CP	075H
 	JR	Z,UF.EXEC2
-	LD	(IX+7),HIGH(UE.PUF)
-	LD	(IX+8),LOW(UE.PUF)
+	LD	(IX+7),LOW(UE.PUF)
+	LD	(IX+8),HIGH(UE.PUF)
 UF.EXEC2:
 	CALL	KR.KARO
 UF.EXEC1:
@@ -1024,15 +1035,15 @@ UK.GETK4:
 UK.KLPFB:
 	CALL	U1.RSAVE
 	CALL	U1.KTIN1
-	LD	HL,MaxBL	;max. Blocklaenge Kassette (100H)
-	CALL	XY.STIDX	;max. Blocklaenge initialisieren
+	LD	HL,MaxBL     ;max. Blocklaenge Kassette (100H)
+	CALL	XY.STIDX     ;max. Blocklaenge initialisieren
 	DB	9
 	PUSH	HL
-	POP	BC	;BC:= Blocklaenge
-	CALL	XY.STDX	;Pufferzaehler "Leer"
+	POP	BC           ;BC:= Blocklaenge
+	CALL	XY.STDX      ;Pufferzaehler "Leer"
 	DB	23
-	LD	HL,UE.PUF	;Systempuffer Kassette
-	CALL	U1.CLRB	;Systempuffer loeschen
+	LD	HL,UE.PUF    ;Systempuffer Kassette
+	CALL	U1.CLRB      ;Systempuffer loeschen
 	LD	HL,UE.KPUFF
 	CALL	U1.CLRB
 	CALL	U1.RRST
