@@ -916,9 +916,12 @@ ende:
                 '        Loop Until eoj = 0
                 ICEmonitor.ICEmonitorEnable = False
                 If eoj = 0 Then
-                    My.Application.Log.WriteEntry("ICEmonitor:mon q-Command", TraceEventType.Information, 2)
-                    My.Application.Log.WriteEntry("Log-Datei schliessen", TraceEventType.Information, 2)
-                    My.Application.Log.DefaultFileLogWriter.Close()
+                    If COMMON.LOGfile Then
+                        My.Application.Log.WriteEntry("ICEmonitor:mon q-Command", TraceEventType.Information, 2)
+                        My.Application.Log.WriteEntry("Log-Datei schliessen", TraceEventType.Information, 2)
+                        My.Application.Log.DefaultFileLogWriter.Close()
+                    End If
+
                     Tastatur.ShiftLockClickAus()
                     End
                 End If

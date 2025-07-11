@@ -68,8 +68,9 @@ Module COMMON
 
     Public FontDateinameStart As String = ""                                    'ProgVerz + "FONT\\7024-0.FNT"
     Public BinVerzeichnis As String = ""                                        'ProgVerz + "ORIG\\"
-    Public MemVerzeichnis As String = ""
     Public COMVerzeichnis As String = ""
+    Public FontVerzeichnis As String = ""
+    Public MemVerzeichnis As String = ""
     Public TapeVerzeichnis As String = ""
     Public WavVerzeichnis As String = ""
 
@@ -129,6 +130,7 @@ Module COMMON
 
     Public PFebene As Integer                                                   'PF-Tastenebene 0...3
     Public PSTAS As Byte                                                        'PTAS or STAS
+    Public LOGfile As Boolean                                                   'soll LOGfile erstellt werden oder nicht
     Public NextCharTast0 As Integer                                             'aktuelle Anzahl Tastatur-Zeichen
     Public NextCharTast1(const_NextCharTast) As Boolean                         'zeigt an ob Zeichen gültig ist
     Public NextCharTast2(const_NextCharTast) As UInt16

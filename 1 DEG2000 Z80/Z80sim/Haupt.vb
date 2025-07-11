@@ -124,14 +124,6 @@ Public Class Haupt
     Private Sub Haupt_Load(sender As System.Object, e As System.EventArgs) Handles MyBase.Load
         Dim ParamStr As String()
 
-        ''Init LogFile
-        'My.Application.Log.DefaultFileLogWriter.BaseFileName = System.IO.Path.Combine(Application.StartupPath, "DEG200-LOG")
-        'My.Application.Log.DefaultFileLogWriter.Append = False
-        'My.Application.Log.DefaultFileLogWriter.AutoFlush = True
-        'My.Application.Log.WriteEntry("")
-        'My.Application.Log.WriteEntry("=================================================================", TraceEventType.Information, 1)
-        'My.Application.Log.WriteEntry("DEG200 gestartet", TraceEventType.Information, 1)
-
         ' Add any initialization after the InitializeComponent() call.
         regHistorieColors(0, 0) = System.Drawing.Color.AliceBlue                             ' PC
         regHistorieColors(0, 1) = System.Drawing.Color.Black
@@ -161,21 +153,45 @@ Public Class Haupt
         COMMON.USR_REL = System.String.Format("{0}.{1:00}", My.Application.Info.Version.Major, My.Application.Info.Version.Minor)
 
         ParamStr = Environment.GetCommandLineArgs()
-        If ParamStr.Length > 1 Then
-            ProgVerz = ParamStr(1)
+        COMMON.LOGfile = False
+        If ParamStr.Length > 2 Then
+            If ParamStr(2) = "-L" Then COMMON.LOGfile = True
+            ProgVerz = ParamStr(1) + "\"
+        ElseIf ParamStr.Length > 1 Then
+            ProgVerz = ParamStr(1) + "\"
         Else
             ProgVerz = System.Windows.Forms.Application.StartupPath + "\"
         End If
-
-        Call InitTastBuffer()
 
         COMMON.BinVerzeichnis = ProgVerz + My.Settings.BinVerzeichnis
         COMMON.MemVerzeichnis = ProgVerz + My.Settings.MemVerzeichnis
         COMMON.COMVerzeichnis = ProgVerz + My.Settings.COMVerzeichnis
         COMMON.TapeVerzeichnis = ProgVerz + My.Settings.TapeVerzeichnis
         COMMON.WavVerzeichnis = ProgVerz + My.Settings.WavVerzeichnis
+        COMMON.FontVerzeichnis = ProgVerz + My.Settings.FontVerzeichnis
         COMMON.FontDateinameStart = ProgVerz + My.Settings.FontVerzeichnis + "\" + My.Settings.FontDateiname
         COMMON.FontDateiname = COMMON.FontDateinameStart
+
+        If COMMON.LOGfile Then
+            'Init LogFile
+            My.Application.Log.DefaultFileLogWriter.BaseFileName = System.IO.Path.Combine(Application.StartupPath, "DEG2000")
+            My.Application.Log.DefaultFileLogWriter.Append = False
+            My.Application.Log.DefaultFileLogWriter.AutoFlush = True
+            My.Application.Log.WriteEntry("", TraceEventType.Information, 0)
+            My.Application.Log.WriteEntry("=================================================================", TraceEventType.Information, 1)
+            My.Application.Log.WriteEntry("DEG200 gestartet", TraceEventType.Information, 1)
+
+            My.Application.Log.WriteEntry("ProgVerzeichnis: " + ProgVerz, TraceEventType.Information, 1)
+            My.Application.Log.WriteEntry("BinVerzeichnis : " + COMMON.BinVerzeichnis, TraceEventType.Information, 1)
+            My.Application.Log.WriteEntry("COMVerzeichnis : " + COMMON.COMVerzeichnis, TraceEventType.Information, 1)
+            My.Application.Log.WriteEntry("FontVerzeichnis: " + COMMON.FontVerzeichnis, TraceEventType.Information, 1)
+            My.Application.Log.WriteEntry("FontDateiname  : " + COMMON.FontDateiname, TraceEventType.Information, 1)
+            My.Application.Log.WriteEntry("MemVerzeichnis : " + COMMON.MemVerzeichnis, TraceEventType.Information, 1)
+            My.Application.Log.WriteEntry("TapeVerzeichnis: " + COMMON.TapeVerzeichnis, TraceEventType.Information, 1)
+            My.Application.Log.WriteEntry("WavVerzeichnis : " + COMMON.WavVerzeichnis, TraceEventType.Information, 1)
+        End If
+
+        Call InitTastBuffer()
 
         'MsgBox(ProgVerz & vbCrLf &
         '       COMMON.COMVerzeichnis & vbCrLf &
