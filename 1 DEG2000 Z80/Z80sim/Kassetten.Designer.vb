@@ -23,214 +23,214 @@ Partial Class Kassetten
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Kassetten))
-        Me.TabControl1 = New System.Windows.Forms.TabControl()
-        Me.AKB1 = New System.Windows.Forms.TabPage()
-        Me.LabelK2 = New System.Windows.Forms.Label()
-        Me.LabelK1 = New System.Windows.Forms.Label()
-        Me.AKB2 = New System.Windows.Forms.TabPage()
-        Me.Label3 = New System.Windows.Forms.Label()
-        Me.Label2 = New System.Windows.Forms.Label()
-        Me.AKB3 = New System.Windows.Forms.TabPage()
-        Me.Label5 = New System.Windows.Forms.Label()
-        Me.Label4 = New System.Windows.Forms.Label()
-        Me.ucK2 = New DEG2000.ucKassette()
-        Me.ucK1 = New DEG2000.ucKassette()
-        Me.ucK4 = New DEG2000.ucKassette()
-        Me.ucK3 = New DEG2000.ucKassette()
-        Me.ucK6 = New DEG2000.ucKassette()
-        Me.ucK5 = New DEG2000.ucKassette()
-        Me.TabControl1.SuspendLayout()
-        Me.AKB1.SuspendLayout()
-        Me.AKB2.SuspendLayout()
-        Me.AKB3.SuspendLayout()
-        Me.SuspendLayout()
+        TabControl1 = New System.Windows.Forms.TabControl()
+        AKB1 = New System.Windows.Forms.TabPage()
+        LabelK2 = New System.Windows.Forms.Label()
+        LabelK1 = New System.Windows.Forms.Label()
+        AKB2 = New System.Windows.Forms.TabPage()
+        Label3 = New System.Windows.Forms.Label()
+        Label2 = New System.Windows.Forms.Label()
+        AKB3 = New System.Windows.Forms.TabPage()
+        Label5 = New System.Windows.Forms.Label()
+        Label4 = New System.Windows.Forms.Label()
+        ucK2 = New DEG2000.ucKassette()
+        ucK1 = New DEG2000.ucKassette()
+        ucK4 = New DEG2000.ucKassette()
+        ucK3 = New DEG2000.ucKassette()
+        ucK6 = New DEG2000.ucKassette()
+        ucK5 = New DEG2000.ucKassette()
+        TabControl1.SuspendLayout()
+        AKB1.SuspendLayout()
+        AKB2.SuspendLayout()
+        AKB3.SuspendLayout()
+        SuspendLayout()
         '
         'TabControl1
         '
-        Me.TabControl1.Controls.Add(Me.AKB1)
-        Me.TabControl1.Controls.Add(Me.AKB2)
-        Me.TabControl1.Controls.Add(Me.AKB3)
-        Me.TabControl1.Location = New System.Drawing.Point(0, 0)
-        Me.TabControl1.Name = "TabControl1"
-        Me.TabControl1.SelectedIndex = 0
-        Me.TabControl1.Size = New System.Drawing.Size(687, 582)
-        Me.TabControl1.TabIndex = 0
+        TabControl1.Controls.Add(AKB1)
+        TabControl1.Controls.Add(AKB2)
+        TabControl1.Controls.Add(AKB3)
+        TabControl1.Location = New System.Drawing.Point(0, 0)
+        TabControl1.Name = "TabControl1"
+        TabControl1.SelectedIndex = 0
+        TabControl1.Size = New System.Drawing.Size(687, 582)
+        TabControl1.TabIndex = 0
         '
         'AKB1
         '
-        Me.AKB1.Controls.Add(Me.LabelK2)
-        Me.AKB1.Controls.Add(Me.LabelK1)
-        Me.AKB1.Controls.Add(Me.ucK2)
-        Me.AKB1.Controls.Add(Me.ucK1)
-        Me.AKB1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.AKB1.Location = New System.Drawing.Point(4, 22)
-        Me.AKB1.Name = "AKB1"
-        Me.AKB1.Padding = New System.Windows.Forms.Padding(3)
-        Me.AKB1.Size = New System.Drawing.Size(679, 556)
-        Me.AKB1.TabIndex = 0
-        Me.AKB1.Text = "Kassette 1,2 AKB=30H"
-        Me.AKB1.UseVisualStyleBackColor = True
+        AKB1.Controls.Add(LabelK2)
+        AKB1.Controls.Add(LabelK1)
+        AKB1.Controls.Add(ucK2)
+        AKB1.Controls.Add(ucK1)
+        AKB1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        AKB1.Location = New System.Drawing.Point(4, 22)
+        AKB1.Name = "AKB1"
+        AKB1.Padding = New System.Windows.Forms.Padding(3)
+        AKB1.Size = New System.Drawing.Size(679, 556)
+        AKB1.TabIndex = 0
+        AKB1.Text = "Kassette 1,2 AKB=30H"
+        AKB1.UseVisualStyleBackColor = True
         '
         'LabelK2
         '
-        Me.LabelK2.BackColor = System.Drawing.Color.LightBlue
-        Me.LabelK2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.LabelK2.Font = New System.Drawing.Font("Arial Rounded MT Bold", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LabelK2.Location = New System.Drawing.Point(0, 300)
-        Me.LabelK2.Name = "LabelK2"
-        Me.LabelK2.Size = New System.Drawing.Size(677, 23)
-        Me.LabelK2.TabIndex = 3
-        Me.LabelK2.Text = "Kassette 2 - C for SYS 4"
-        Me.LabelK2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        LabelK2.BackColor = System.Drawing.Color.LightBlue
+        LabelK2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        LabelK2.Font = New System.Drawing.Font("Arial Rounded MT Bold", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        LabelK2.Location = New System.Drawing.Point(0, 300)
+        LabelK2.Name = "LabelK2"
+        LabelK2.Size = New System.Drawing.Size(677, 23)
+        LabelK2.TabIndex = 3
+        LabelK2.Text = "Kassette 2 - C for SYS 4"
+        LabelK2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'LabelK1
         '
-        Me.LabelK1.BackColor = System.Drawing.Color.LightBlue
-        Me.LabelK1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.LabelK1.Font = New System.Drawing.Font("Arial Rounded MT Bold", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LabelK1.Location = New System.Drawing.Point(0, 2)
-        Me.LabelK1.Name = "LabelK1"
-        Me.LabelK1.Size = New System.Drawing.Size(677, 23)
-        Me.LabelK1.TabIndex = 2
-        Me.LabelK1.Text = "Kassette 1 - B for SYS 4"
-        Me.LabelK1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        LabelK1.BackColor = System.Drawing.Color.LightBlue
+        LabelK1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        LabelK1.Font = New System.Drawing.Font("Arial Rounded MT Bold", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        LabelK1.Location = New System.Drawing.Point(0, 2)
+        LabelK1.Name = "LabelK1"
+        LabelK1.Size = New System.Drawing.Size(677, 23)
+        LabelK1.TabIndex = 2
+        LabelK1.Text = "Kassette 1 - B for SYS 4"
+        LabelK1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'AKB2
         '
-        Me.AKB2.Controls.Add(Me.Label3)
-        Me.AKB2.Controls.Add(Me.Label2)
-        Me.AKB2.Controls.Add(Me.ucK4)
-        Me.AKB2.Controls.Add(Me.ucK3)
-        Me.AKB2.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.AKB2.Location = New System.Drawing.Point(4, 22)
-        Me.AKB2.Name = "AKB2"
-        Me.AKB2.Padding = New System.Windows.Forms.Padding(3)
-        Me.AKB2.Size = New System.Drawing.Size(679, 556)
-        Me.AKB2.TabIndex = 1
-        Me.AKB2.Text = "Kassette 3,4 AKB=38H"
-        Me.AKB2.UseVisualStyleBackColor = True
+        AKB2.Controls.Add(Label3)
+        AKB2.Controls.Add(Label2)
+        AKB2.Controls.Add(ucK4)
+        AKB2.Controls.Add(ucK3)
+        AKB2.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        AKB2.Location = New System.Drawing.Point(4, 22)
+        AKB2.Name = "AKB2"
+        AKB2.Padding = New System.Windows.Forms.Padding(3)
+        AKB2.Size = New System.Drawing.Size(679, 556)
+        AKB2.TabIndex = 1
+        AKB2.Text = "Kassette 3,4 AKB=38H"
+        AKB2.UseVisualStyleBackColor = True
         '
         'Label3
         '
-        Me.Label3.BackColor = System.Drawing.Color.LightBlue
-        Me.Label3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Label3.Font = New System.Drawing.Font("Arial Rounded MT Bold", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.Location = New System.Drawing.Point(0, 300)
-        Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(677, 23)
-        Me.Label3.TabIndex = 5
-        Me.Label3.Text = "Kassette 4 - E for SYS 4"
-        Me.Label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Label3.BackColor = System.Drawing.Color.LightBlue
+        Label3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Label3.Font = New System.Drawing.Font("Arial Rounded MT Bold", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Label3.Location = New System.Drawing.Point(0, 300)
+        Label3.Name = "Label3"
+        Label3.Size = New System.Drawing.Size(677, 23)
+        Label3.TabIndex = 5
+        Label3.Text = "Kassette 4 - E for SYS 4"
+        Label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'Label2
         '
-        Me.Label2.BackColor = System.Drawing.Color.LightBlue
-        Me.Label2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Label2.Font = New System.Drawing.Font("Arial Rounded MT Bold", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label2.Location = New System.Drawing.Point(0, 2)
-        Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(677, 23)
-        Me.Label2.TabIndex = 4
-        Me.Label2.Text = "Kassette 3 - D for SYS 4"
-        Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Label2.BackColor = System.Drawing.Color.LightBlue
+        Label2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Label2.Font = New System.Drawing.Font("Arial Rounded MT Bold", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Label2.Location = New System.Drawing.Point(0, 2)
+        Label2.Name = "Label2"
+        Label2.Size = New System.Drawing.Size(677, 23)
+        Label2.TabIndex = 4
+        Label2.Text = "Kassette 3 - D for SYS 4"
+        Label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'AKB3
         '
-        Me.AKB3.Controls.Add(Me.Label5)
-        Me.AKB3.Controls.Add(Me.Label4)
-        Me.AKB3.Controls.Add(Me.ucK6)
-        Me.AKB3.Controls.Add(Me.ucK5)
-        Me.AKB3.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.AKB3.Location = New System.Drawing.Point(4, 22)
-        Me.AKB3.Name = "AKB3"
-        Me.AKB3.Size = New System.Drawing.Size(679, 556)
-        Me.AKB3.TabIndex = 2
-        Me.AKB3.Text = "Kassette 5,6 AKB=58H"
-        Me.AKB3.UseVisualStyleBackColor = True
+        AKB3.Controls.Add(Label5)
+        AKB3.Controls.Add(Label4)
+        AKB3.Controls.Add(ucK6)
+        AKB3.Controls.Add(ucK5)
+        AKB3.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        AKB3.Location = New System.Drawing.Point(4, 22)
+        AKB3.Name = "AKB3"
+        AKB3.Size = New System.Drawing.Size(679, 556)
+        AKB3.TabIndex = 2
+        AKB3.Text = "Kassette 5,6 AKB=58H"
+        AKB3.UseVisualStyleBackColor = True
         '
         'Label5
         '
-        Me.Label5.BackColor = System.Drawing.Color.LightBlue
-        Me.Label5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Label5.Font = New System.Drawing.Font("Arial Rounded MT Bold", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label5.Location = New System.Drawing.Point(0, 300)
-        Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(677, 23)
-        Me.Label5.TabIndex = 5
-        Me.Label5.Text = "Kassette 6 - G for SYS 4"
-        Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Label5.BackColor = System.Drawing.Color.LightBlue
+        Label5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Label5.Font = New System.Drawing.Font("Arial Rounded MT Bold", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Label5.Location = New System.Drawing.Point(0, 300)
+        Label5.Name = "Label5"
+        Label5.Size = New System.Drawing.Size(677, 23)
+        Label5.TabIndex = 5
+        Label5.Text = "Kassette 6 - G for SYS 4"
+        Label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'Label4
         '
-        Me.Label4.BackColor = System.Drawing.Color.LightBlue
-        Me.Label4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Label4.Font = New System.Drawing.Font("Arial Rounded MT Bold", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label4.Location = New System.Drawing.Point(0, 2)
-        Me.Label4.Name = "Label4"
-        Me.Label4.Size = New System.Drawing.Size(677, 23)
-        Me.Label4.TabIndex = 4
-        Me.Label4.Text = "Kassette 5 - F for SYS 4"
-        Me.Label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Label4.BackColor = System.Drawing.Color.LightBlue
+        Label4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Label4.Font = New System.Drawing.Font("Arial Rounded MT Bold", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Label4.Location = New System.Drawing.Point(0, 2)
+        Label4.Name = "Label4"
+        Label4.Size = New System.Drawing.Size(677, 23)
+        Label4.TabIndex = 4
+        Label4.Text = "Kassette 5 - F for SYS 4"
+        Label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'ucK2
         '
-        Me.ucK2.Location = New System.Drawing.Point(0, 323)
-        Me.ucK2.Name = "ucK2"
-        Me.ucK2.Size = New System.Drawing.Size(678, 236)
-        Me.ucK2.TabIndex = 1
+        ucK2.Location = New System.Drawing.Point(0, 323)
+        ucK2.Name = "ucK2"
+        ucK2.Size = New System.Drawing.Size(678, 236)
+        ucK2.TabIndex = 1
         '
         'ucK1
         '
-        Me.ucK1.Location = New System.Drawing.Point(0, 25)
-        Me.ucK1.Name = "ucK1"
-        Me.ucK1.Size = New System.Drawing.Size(678, 236)
-        Me.ucK1.TabIndex = 0
+        ucK1.Location = New System.Drawing.Point(0, 25)
+        ucK1.Name = "ucK1"
+        ucK1.Size = New System.Drawing.Size(678, 236)
+        ucK1.TabIndex = 0
         '
         'ucK4
         '
-        Me.ucK4.Location = New System.Drawing.Point(0, 323)
-        Me.ucK4.Name = "ucK4"
-        Me.ucK4.Size = New System.Drawing.Size(678, 236)
-        Me.ucK4.TabIndex = 1
+        ucK4.Location = New System.Drawing.Point(0, 323)
+        ucK4.Name = "ucK4"
+        ucK4.Size = New System.Drawing.Size(678, 236)
+        ucK4.TabIndex = 1
         '
         'ucK3
         '
-        Me.ucK3.Location = New System.Drawing.Point(0, 25)
-        Me.ucK3.Name = "ucK3"
-        Me.ucK3.Size = New System.Drawing.Size(678, 236)
-        Me.ucK3.TabIndex = 0
+        ucK3.Location = New System.Drawing.Point(0, 25)
+        ucK3.Name = "ucK3"
+        ucK3.Size = New System.Drawing.Size(678, 236)
+        ucK3.TabIndex = 0
         '
         'ucK6
         '
-        Me.ucK6.Location = New System.Drawing.Point(0, 323)
-        Me.ucK6.Name = "ucK6"
-        Me.ucK6.Size = New System.Drawing.Size(678, 236)
-        Me.ucK6.TabIndex = 1
+        ucK6.Location = New System.Drawing.Point(0, 323)
+        ucK6.Name = "ucK6"
+        ucK6.Size = New System.Drawing.Size(678, 236)
+        ucK6.TabIndex = 1
         '
         'ucK5
         '
-        Me.ucK5.Location = New System.Drawing.Point(0, 25)
-        Me.ucK5.Name = "ucK5"
-        Me.ucK5.Size = New System.Drawing.Size(678, 236)
-        Me.ucK5.TabIndex = 0
+        ucK5.Location = New System.Drawing.Point(0, 25)
+        ucK5.Name = "ucK5"
+        ucK5.Size = New System.Drawing.Size(678, 236)
+        ucK5.TabIndex = 0
         '
         'Kassetten
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
-        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(686, 582)
-        Me.ControlBox = False
-        Me.Controls.Add(Me.TabControl1)
-        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-        Me.Name = "Kassetten"
-        Me.ShowInTaskbar = False
-        Me.StartPosition = System.Windows.Forms.FormStartPosition.Manual
-        Me.Text = "Kassetten anzeigen"
-        Me.TabControl1.ResumeLayout(False)
-        Me.AKB1.ResumeLayout(False)
-        Me.AKB2.ResumeLayout(False)
-        Me.AKB3.ResumeLayout(False)
-        Me.ResumeLayout(False)
+        AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
+        AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        ClientSize = New System.Drawing.Size(686, 582)
+        ControlBox = False
+        Controls.Add(TabControl1)
+        Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+        Name = "Kassetten"
+        ShowInTaskbar = False
+        StartPosition = System.Windows.Forms.FormStartPosition.Manual
+        Text = "Kassetten anzeigen"
+        TabControl1.ResumeLayout(False)
+        AKB1.ResumeLayout(False)
+        AKB2.ResumeLayout(False)
+        AKB3.ResumeLayout(False)
+        ResumeLayout(False)
 
     End Sub
 

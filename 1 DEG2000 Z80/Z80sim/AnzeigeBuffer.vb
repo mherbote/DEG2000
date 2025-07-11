@@ -1,4 +1,6 @@
-﻿Public Class AnzeigeBuffer
+﻿Imports System.Drawing
+
+Public Class AnzeigeBuffer
     Private AnzeigeSeg As UShort
     Private AnzeigeStart As Integer
     Private BereichsIndex As Byte
@@ -12,7 +14,7 @@
 #Region "PCstack"
         segAdr = 0 ' COMMON.vZ80cpu.STACK - &H40
         Call COMMON.initGrid(PCstack, System.Drawing.Color.LightGray, System.Drawing.Color.LightGray, System.Drawing.Color.Black, System.Drawing.Color.Black)
-        With Me.PCstack
+        With PCstack
             For j = 0 To 7
                 hilf1 = {HexAnzeige_WordByte(segAdr + j * 16, "B"),
                                              "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
@@ -29,7 +31,7 @@
 #Region "BufferKassettenSteuerung"
         segAdr = &H2B03 - 2
         Call COMMON.initGrid(BufferKassettenSteuerung, System.Drawing.Color.LightGray, System.Drawing.Color.LightGray, System.Drawing.Color.Black, System.Drawing.Color.Black)
-        With Me.BufferKassettenSteuerung
+        With BufferKassettenSteuerung
             For j = 0 To 2
                 hilf1 = {HexAnzeige_WordByte(segAdr + j, "B"),
                                              "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
@@ -44,7 +46,7 @@
 #Region "BufferKassette"
         segAdr = &HE65
         Call COMMON.initGrid(BufferKassette, System.Drawing.Color.LightGray, System.Drawing.Color.LightGray, System.Drawing.Color.Black, System.Drawing.Color.Black)
-        With Me.BufferKassette
+        With BufferKassette
             For j = 0 To 7
                 hilf1 = {HexAnzeige_WordByte(segAdr + j, "B"),
                                              "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
@@ -59,15 +61,16 @@
 #Region "BufferKassetten"
         segAdr = &H2B03 - 2
         Call COMMON.initGrid(BufferKassetten, System.Drawing.Color.LightGray, System.Drawing.Color.LightGray, System.Drawing.Color.Black, System.Drawing.Color.Black)
-        With Me.BufferKassetten
-            With Me.BufferKassetten
-                For j = 0 To 37
-                    hilf1 = {HexAnzeige_WordByte(segAdr + j, "B"), j - 2, "", "", "", "", ""}
-                    .Rows.Add(hilf1)
-                    .Rows(.Rows.Count - 1).Height = 20
-                Next
-                '                .Columns(18).DefaultCellStyle.Font = New System.Drawing.Font("Courier New", 12, System.Drawing.FontStyle.Regular)
-            End With
+        With BufferKassetten
+            For j = 0 To 37
+                hilf1 = {HexAnzeige_WordByte(segAdr + j, "B"), j - 2, "", "", "", "", ""}
+                .Rows.Add(hilf1)
+                .Rows(.Rows.Count - 1).Height = 20
+            Next
+            '                .Columns(18).DefaultCellStyle.Font = New System.Drawing.Font("Courier New", 12, System.Drawing.FontStyle.Regular)
+            For j = 0 To 4
+                BufferKassetten.Rows(29).Cells(j).Style.BackColor = Color.LightBlue
+            Next
         End With
 #End Region
     End Sub ' AnzeigeHS_Load
@@ -88,8 +91,8 @@
             BereichsIndex = 1                                                                   'abhängig vom System!!!
 
 
-            Me.PC.Text = HexAnzeige_WordByte(COMMON.vZ80cpu.STACK, "B")
-            With Me.PCstack
+            PC.Text = HexAnzeige_WordByte(COMMON.vZ80cpu.STACK, "B")
+            With PCstack
                 c = AnzeigeStart And &HF
                 For i = 0 To 15
                     Select Case c
@@ -141,7 +144,7 @@
         AnzeigeStart = &H2B03 - 2
         BereichsIndex = 1
 
-        With Me.BufferKassettenSteuerung
+        With BufferKassettenSteuerung
             .Enabled = True
             Try
                 For j = 0 To 2
@@ -170,7 +173,7 @@
         'BereichsIndex = Convert.ToByte(BereichsWahl.Rows(AnzeigeSeg).Cells(1).Value)
         BereichsIndex = 1
 
-        With Me.BufferKassette
+        With BufferKassette
             .Enabled = True
             Try
                 For j = 0 To 7
@@ -197,7 +200,7 @@
         AnzeigeStart = &H2B03 - 2
         BereichsIndex = 1
 
-        With Me.BufferKassetten
+        With BufferKassetten
             .Enabled = True
             Try
                 For j = 0 To 37
@@ -298,20 +301,20 @@
                             .Rows(j).Cells(3).Value = ""
                             .Rows(j).Cells(4).Value = ""
                         Case 30
-                            .Rows(j).Cells(3).Value = "09-1"
+                            .Rows(j).Cells(3).Value = " 1"
                             .Rows(j).Cells(4).Value = "StartByte"
                         Case 31
-                            .Rows(j).Cells(3).Value = "10-2"
+                            .Rows(j).Cells(3).Value = " 2"
                             .Rows(j).Cells(4).Value = "Kommando"
                         Case 32
-                            .Rows(j).Cells(3).Value = "11-3"
+                            .Rows(j).Cells(3).Value = " 3"
                             .Rows(j).Cells(4).Value = "Subadresse"
                         Case 33, 34, 35, 36, 37
                             Select Case c
                                 Case &H31, &H41, &H21, &H11, &H15
                                     Select Case j
                                         Case 33
-                                            .Rows(j).Cells(3).Value = "12-4"
+                                            .Rows(j).Cells(3).Value = " 4"
                                             .Rows(j).Cells(4).Value = "Endebyte"
                                         Case 34, 35, 36, 37
                                             .Rows(j).Cells(3).Value = "---"
@@ -320,10 +323,10 @@
                                 Case &H71, &H75
                                     Select Case j
                                         Case 33
-                                            .Rows(j).Cells(3).Value = "12-4"
+                                            .Rows(j).Cells(3).Value = " 4"
                                             .Rows(j).Cells(4).Value = "Anzahl BM"
                                         Case 34
-                                            .Rows(j).Cells(3).Value = "13-5"
+                                            .Rows(j).Cells(3).Value = " 5"
                                             .Rows(j).Cells(4).Value = "Endebyte"
                                         Case 35, 36, 37
                                             .Rows(j).Cells(3).Value = "---"
@@ -332,10 +335,10 @@
                                 Case &H51
                                     Select Case j
                                         Case 33
-                                            .Rows(j).Cells(3).Value = "12-4"
+                                            .Rows(j).Cells(3).Value = " 4"
                                             .Rows(j).Cells(4).Value = "'B'"
                                         Case 34
-                                            .Rows(j).Cells(3).Value = "13-5"
+                                            .Rows(j).Cells(3).Value = " 5"
                                             .Rows(j).Cells(4).Value = "Endebyte"
                                         Case 35, 36, 37
                                             .Rows(j).Cells(3).Value = "---"
@@ -344,10 +347,10 @@
                                 Case &H52
                                     Select Case j
                                         Case 33
-                                            .Rows(j).Cells(3).Value = "12-4"
+                                            .Rows(j).Cells(3).Value = " 4"
                                             .Rows(j).Cells(4).Value = "'S'"
                                         Case 34
-                                            .Rows(j).Cells(3).Value = "13-5"
+                                            .Rows(j).Cells(3).Value = " 5"
                                             .Rows(j).Cells(4).Value = "Endebyte"
                                         Case 35, 36, 37
                                             .Rows(j).Cells(3).Value = "---"
@@ -356,55 +359,55 @@
                                 Case &H2
                                     Select Case j
                                         Case 33
-                                            .Rows(j).Cells(3).Value = "12-4"
+                                            .Rows(j).Cells(3).Value = " 4"
                                             .Rows(j).Cells(4).Value = "HS-Bereich"
                                         Case 34
-                                            .Rows(j).Cells(3).Value = "13-5"
+                                            .Rows(j).Cells(3).Value = " 5"
                                             .Rows(j).Cells(4).Value = "H(Puffer)"
                                         Case 35
-                                            .Rows(j).Cells(3).Value = "14-6"
+                                            .Rows(j).Cells(3).Value = " 6"
                                             .Rows(j).Cells(4).Value = "L(Puffer)"
-                                        Case 35
-                                            .Rows(j).Cells(3).Value = "15-7"
+                                        Case 36
+                                            .Rows(j).Cells(3).Value = " 7"
                                             .Rows(j).Cells(4).Value = "Endebyte"
                                         Case 37
-                                            .Rows(j).Cells(3).Value = "16-8"
+                                            .Rows(j).Cells(3).Value = " 8"
                                             .Rows(j).Cells(4).Value = "---"
                                     End Select
                                 Case &H8
                                     Select Case j
                                         Case 33
-                                            .Rows(j).Cells(3).Value = "12-4"
+                                            .Rows(j).Cells(3).Value = " 4"
                                             .Rows(j).Cells(4).Value = "Länge"
                                         Case 34
-                                            .Rows(j).Cells(3).Value = "13-5"
+                                            .Rows(j).Cells(3).Value = " 5"
                                             .Rows(j).Cells(4).Value = "HS-Bereich"
                                         Case 35
-                                            .Rows(j).Cells(3).Value = "14-6"
+                                            .Rows(j).Cells(3).Value = " 6"
                                             .Rows(j).Cells(4).Value = "H(Puffer)"
-                                        Case 35
-                                            .Rows(j).Cells(3).Value = "15-7"
+                                        Case 36
+                                            .Rows(j).Cells(3).Value = " 7"
                                             .Rows(j).Cells(4).Value = "L(Puffer)"
                                         Case 37
-                                            .Rows(j).Cells(3).Value = "16-8"
+                                            .Rows(j).Cells(3).Value = " 8"
                                             .Rows(j).Cells(4).Value = "Endebyte"
                                     End Select
                                 Case Else
                                     Select Case j
                                         Case 33
-                                            .Rows(j).Cells(3).Value = "12-4"
+                                            .Rows(j).Cells(3).Value = " 4"
                                             .Rows(j).Cells(4).Value = "---"
                                         Case 34
-                                            .Rows(j).Cells(3).Value = "13-5"
+                                            .Rows(j).Cells(3).Value = " 5"
                                             .Rows(j).Cells(4).Value = "---"
                                         Case 35
-                                            .Rows(j).Cells(3).Value = "14-6"
+                                            .Rows(j).Cells(3).Value = " 6"
                                             .Rows(j).Cells(4).Value = "---"
                                         Case 36
-                                            .Rows(j).Cells(3).Value = "15-7"
+                                            .Rows(j).Cells(3).Value = " 7"
                                             .Rows(j).Cells(4).Value = "---"
                                         Case 37
-                                            .Rows(j).Cells(3).Value = "16-8"
+                                            .Rows(j).Cells(3).Value = " 8"
                                             .Rows(j).Cells(4).Value = "---"
                                     End Select
                             End Select
@@ -417,13 +420,16 @@
     End Sub ' AnzeigenBufferKassetten
 
     Private Sub AnzeigeBuffer_Click(sender As Object, e As EventArgs)
-        Call AnzeigeBuffer()
+        Call AnzeigeBuffer1()
     End Sub
 
-    Public Sub AnzeigeBuffer()
+    Public Sub AnzeigeBuffer1()
         Call AnzeigenPCstack()
         Call AnzeigeBufferKassettenSteuerung()
         Call AnzeigenBuffer()
+        Call AnzeigenBufferKassetten()
+    End Sub
+    Public Sub AnzeigeBuffer2()
         Call AnzeigenBufferKassetten()
     End Sub
 #End Region

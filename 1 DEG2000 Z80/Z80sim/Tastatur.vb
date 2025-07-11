@@ -42,8 +42,8 @@ Public Class Tastatur
         ShiftAusEin = False
         ShiftKeyDown = False
         KleinGross = Klein
-        Me.KG.Text = Klein
-        Me.ShiftEA.Text = ShiftAusEin
+        KG.Text = Klein
+        ShiftEA.Text = ShiftAusEin
         Call ShiftLockClickAus()    ' UmschalterWeiss()
         Call NumLockClickEin()
         Call ScrollLockClickAus()
@@ -65,7 +65,7 @@ Public Class Tastatur
         Dim hilf2 As String
         Dim B As UShort
         Try
-            With Me.TastBuffer
+            With TastBuffer
                 ' alten Inhalt löschen
                 For i = .RowCount - 1 To 0 Step -1
                     .Rows.RemoveAt(i)
@@ -137,10 +137,10 @@ Public Class Tastatur
     Private Sub Buffer_Click(sender As Object, e As EventArgs) Handles Button123.Click
         Select Case Button123.Text
             Case "Buffer On"
-                Me.Height = 565
+                Height = 565
                 Button123.Text = "Buffer Off"
             Case "Buffer Off"
-                Me.Height = 328
+                Height = 328
                 Button123.Text = "Buffer On"
             Case Else
         End Select
@@ -898,7 +898,7 @@ Public Class Tastatur
 #Region "Umschalter für Klein- / Gross- Buchstaben"
     Private Sub UmschaltKlein()
         KleinGross = Klein
-        Me.KG.Text = Klein
+        KG.Text = Klein
 
         Select Case COMMON.PSTAS
             Case COMMON.STAS
@@ -968,7 +968,7 @@ Public Class Tastatur
     End Sub
     Private Sub UmschaltGross()
         KleinGross = Gross
-        Me.KG.Text = Gross
+        KG.Text = Gross
 
         Select Case COMMON.PSTAS
             Case COMMON.STAS
@@ -1048,11 +1048,11 @@ Public Class Tastatur
 #Region "Umschalter für Shift"
     Private Sub ShiftAus()
         ShiftAusEin = False
-        Me.ShiftEA.Text = ShiftAusEin
+        ShiftEA.Text = ShiftAusEin
     End Sub
     Private Sub ShiftEin()
         ShiftAusEin = True
-        Me.ShiftEA.Text = ShiftAusEin
+        ShiftEA.Text = ShiftAusEin
     End Sub
 #End Region
 #Region "Toggle ShiftLock, NumLock und ScrollLock phys. Tastatur"

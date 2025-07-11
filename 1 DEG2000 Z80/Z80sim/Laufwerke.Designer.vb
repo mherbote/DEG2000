@@ -31,32 +31,32 @@ Partial Class Laufwerke
         Dim DataGridViewCellStyle7 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle8 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Laufwerke))
-        Me.Kassetten1 = New System.Windows.Forms.DataGridView()
-        Me.MiniDisk = New System.Windows.Forms.DataGridView()
-        Me.StandardDisk = New System.Windows.Forms.DataGridView()
-        Me.Label1 = New System.Windows.Forms.Label()
-        Me.Label2 = New System.Windows.Forms.Label()
-        Me.Label3 = New System.Windows.Forms.Label()
-        Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
-        Me.DataGridViewTextBoxColumn1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.DataGridViewTextBoxColumn2 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.DataGridViewTextBoxColumn3 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.DataGridViewTextBoxColumn4 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.DataGridViewTextBoxColumn7 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.DataGridViewTextBoxColumn10 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.AnzeigeKassetten = New System.Windows.Forms.Button()
-        CType(Me.Kassetten1, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.MiniDisk, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.StandardDisk, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.SuspendLayout()
+        Kassetten1 = New System.Windows.Forms.DataGridView()
+        MiniDisk = New System.Windows.Forms.DataGridView()
+        StandardDisk = New System.Windows.Forms.DataGridView()
+        Label1 = New System.Windows.Forms.Label()
+        Label2 = New System.Windows.Forms.Label()
+        Label3 = New System.Windows.Forms.Label()
+        OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
+        DataGridViewTextBoxColumn1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        DataGridViewTextBoxColumn2 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        DataGridViewTextBoxColumn3 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        DataGridViewTextBoxColumn4 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        DataGridViewTextBoxColumn7 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        DataGridViewTextBoxColumn10 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        AnzeigeKassetten = New System.Windows.Forms.Button()
+        CType(Kassetten1, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(MiniDisk, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(StandardDisk, System.ComponentModel.ISupportInitialize).BeginInit()
+        SuspendLayout()
         '
         'Kassetten1
         '
-        Me.Kassetten1.AllowUserToAddRows = False
-        Me.Kassetten1.AllowUserToDeleteRows = False
-        Me.Kassetten1.AllowUserToResizeColumns = False
-        Me.Kassetten1.AllowUserToResizeRows = False
-        Me.Kassetten1.BackgroundColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
+        Kassetten1.AllowUserToAddRows = False
+        Kassetten1.AllowUserToDeleteRows = False
+        Kassetten1.AllowUserToResizeColumns = False
+        Kassetten1.AllowUserToResizeRows = False
+        Kassetten1.BackgroundColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
         DataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
         DataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control
         DataGridViewCellStyle1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -64,24 +64,24 @@ Partial Class Laufwerke
         DataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight
         DataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText
         DataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.Kassetten1.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle1
-        Me.Kassetten1.ColumnHeadersHeight = 22
-        Me.Kassetten1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
-        Me.Kassetten1.Location = New System.Drawing.Point(1, 20)
-        Me.Kassetten1.Name = "Kassetten1"
-        Me.Kassetten1.RowHeadersVisible = False
-        Me.Kassetten1.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing
-        Me.Kassetten1.ScrollBars = System.Windows.Forms.ScrollBars.None
-        Me.Kassetten1.Size = New System.Drawing.Size(641, 154)
-        Me.Kassetten1.TabIndex = 0
+        Kassetten1.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle1
+        Kassetten1.ColumnHeadersHeight = 22
+        Kassetten1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
+        Kassetten1.Location = New System.Drawing.Point(1, 20)
+        Kassetten1.Name = "Kassetten1"
+        Kassetten1.RowHeadersVisible = False
+        Kassetten1.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing
+        Kassetten1.ScrollBars = System.Windows.Forms.ScrollBars.None
+        Kassetten1.Size = New System.Drawing.Size(641, 154)
+        Kassetten1.TabIndex = 0
         '
         'MiniDisk
         '
-        Me.MiniDisk.AllowUserToAddRows = False
-        Me.MiniDisk.AllowUserToDeleteRows = False
-        Me.MiniDisk.AllowUserToResizeColumns = False
-        Me.MiniDisk.AllowUserToResizeRows = False
-        Me.MiniDisk.BackgroundColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
+        MiniDisk.AllowUserToAddRows = False
+        MiniDisk.AllowUserToDeleteRows = False
+        MiniDisk.AllowUserToResizeColumns = False
+        MiniDisk.AllowUserToResizeRows = False
+        MiniDisk.BackgroundColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
         DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
         DataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control
         DataGridViewCellStyle2.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -89,23 +89,23 @@ Partial Class Laufwerke
         DataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight
         DataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText
         DataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.MiniDisk.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle2
-        Me.MiniDisk.ColumnHeadersHeight = 22
-        Me.MiniDisk.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
-        Me.MiniDisk.Location = New System.Drawing.Point(1, 210)
-        Me.MiniDisk.Name = "MiniDisk"
-        Me.MiniDisk.RowHeadersVisible = False
-        Me.MiniDisk.ScrollBars = System.Windows.Forms.ScrollBars.None
-        Me.MiniDisk.Size = New System.Drawing.Size(641, 110)
-        Me.MiniDisk.TabIndex = 1
+        MiniDisk.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle2
+        MiniDisk.ColumnHeadersHeight = 22
+        MiniDisk.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
+        MiniDisk.Location = New System.Drawing.Point(1, 210)
+        MiniDisk.Name = "MiniDisk"
+        MiniDisk.RowHeadersVisible = False
+        MiniDisk.ScrollBars = System.Windows.Forms.ScrollBars.None
+        MiniDisk.Size = New System.Drawing.Size(641, 110)
+        MiniDisk.TabIndex = 1
         '
         'StandardDisk
         '
-        Me.StandardDisk.AllowUserToAddRows = False
-        Me.StandardDisk.AllowUserToDeleteRows = False
-        Me.StandardDisk.AllowUserToResizeColumns = False
-        Me.StandardDisk.AllowUserToResizeRows = False
-        Me.StandardDisk.BackgroundColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
+        StandardDisk.AllowUserToAddRows = False
+        StandardDisk.AllowUserToDeleteRows = False
+        StandardDisk.AllowUserToResizeColumns = False
+        StandardDisk.AllowUserToResizeRows = False
+        StandardDisk.BackgroundColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
         DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
         DataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control
         DataGridViewCellStyle3.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -113,127 +113,127 @@ Partial Class Laufwerke
         DataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight
         DataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText
         DataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.StandardDisk.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle3
-        Me.StandardDisk.ColumnHeadersHeight = 22
-        Me.StandardDisk.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
-        Me.StandardDisk.Location = New System.Drawing.Point(1, 345)
-        Me.StandardDisk.Name = "StandardDisk"
-        Me.StandardDisk.RowHeadersVisible = False
-        Me.StandardDisk.ScrollBars = System.Windows.Forms.ScrollBars.None
-        Me.StandardDisk.Size = New System.Drawing.Size(641, 66)
-        Me.StandardDisk.TabIndex = 2
+        StandardDisk.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle3
+        StandardDisk.ColumnHeadersHeight = 22
+        StandardDisk.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
+        StandardDisk.Location = New System.Drawing.Point(1, 345)
+        StandardDisk.Name = "StandardDisk"
+        StandardDisk.RowHeadersVisible = False
+        StandardDisk.ScrollBars = System.Windows.Forms.ScrollBars.None
+        StandardDisk.Size = New System.Drawing.Size(641, 66)
+        StandardDisk.TabIndex = 2
         '
         'Label1
         '
-        Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(0, 0)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(574, 20)
-        Me.Label1.TabIndex = 3
-        Me.Label1.Text = "Kassetten"
-        Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Label1.Location = New System.Drawing.Point(0, 0)
+        Label1.Name = "Label1"
+        Label1.Size = New System.Drawing.Size(574, 20)
+        Label1.TabIndex = 3
+        Label1.Text = "Kassetten"
+        Label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'Label2
         '
-        Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label2.Location = New System.Drawing.Point(-2, 190)
-        Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(574, 20)
-        Me.Label2.TabIndex = 4
-        Me.Label2.Text = "Mini Disketten"
-        Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Label2.Location = New System.Drawing.Point(-2, 190)
+        Label2.Name = "Label2"
+        Label2.Size = New System.Drawing.Size(574, 20)
+        Label2.TabIndex = 4
+        Label2.Text = "Mini Disketten"
+        Label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'Label3
         '
-        Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.Location = New System.Drawing.Point(0, 325)
-        Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(574, 20)
-        Me.Label3.TabIndex = 5
-        Me.Label3.Text = "Standard Disketten"
-        Me.Label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Label3.Location = New System.Drawing.Point(0, 325)
+        Label3.Name = "Label3"
+        Label3.Size = New System.Drawing.Size(574, 20)
+        Label3.TabIndex = 5
+        Label3.Text = "Standard Disketten"
+        Label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'OpenFileDialog1
         '
-        Me.OpenFileDialog1.FileName = "OpenFileDialog1"
+        OpenFileDialog1.FileName = "OpenFileDialog1"
         '
         'DataGridViewTextBoxColumn1
         '
         DataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.DataGridViewTextBoxColumn1.DefaultCellStyle = DataGridViewCellStyle4
-        Me.DataGridViewTextBoxColumn1.HeaderText = "Art"
-        Me.DataGridViewTextBoxColumn1.Name = "DataGridViewTextBoxColumn1"
-        Me.DataGridViewTextBoxColumn1.Width = 20
+        DataGridViewTextBoxColumn1.DefaultCellStyle = DataGridViewCellStyle4
+        DataGridViewTextBoxColumn1.HeaderText = "Art"
+        DataGridViewTextBoxColumn1.Name = "DataGridViewTextBoxColumn1"
+        DataGridViewTextBoxColumn1.Width = 20
         '
         'DataGridViewTextBoxColumn2
         '
         DataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.DataGridViewTextBoxColumn2.DefaultCellStyle = DataGridViewCellStyle5
-        Me.DataGridViewTextBoxColumn2.HeaderText = "Nr"
-        Me.DataGridViewTextBoxColumn2.Name = "DataGridViewTextBoxColumn2"
-        Me.DataGridViewTextBoxColumn2.Width = 50
+        DataGridViewTextBoxColumn2.DefaultCellStyle = DataGridViewCellStyle5
+        DataGridViewTextBoxColumn2.HeaderText = "Nr"
+        DataGridViewTextBoxColumn2.Name = "DataGridViewTextBoxColumn2"
+        DataGridViewTextBoxColumn2.Width = 50
         '
         'DataGridViewTextBoxColumn3
         '
         DataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        Me.DataGridViewTextBoxColumn3.DefaultCellStyle = DataGridViewCellStyle6
-        Me.DataGridViewTextBoxColumn3.HeaderText = "SYS 4"
-        Me.DataGridViewTextBoxColumn3.Name = "DataGridViewTextBoxColumn3"
-        Me.DataGridViewTextBoxColumn3.Width = 430
+        DataGridViewTextBoxColumn3.DefaultCellStyle = DataGridViewCellStyle6
+        DataGridViewTextBoxColumn3.HeaderText = "SYS 4"
+        DataGridViewTextBoxColumn3.Name = "DataGridViewTextBoxColumn3"
+        DataGridViewTextBoxColumn3.Width = 430
         '
         'DataGridViewTextBoxColumn4
         '
         DataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.DataGridViewTextBoxColumn4.DefaultCellStyle = DataGridViewCellStyle7
-        Me.DataGridViewTextBoxColumn4.HeaderText = "Zurodnung"
-        Me.DataGridViewTextBoxColumn4.Name = "DataGridViewTextBoxColumn4"
-        Me.DataGridViewTextBoxColumn4.Width = 70
+        DataGridViewTextBoxColumn4.DefaultCellStyle = DataGridViewCellStyle7
+        DataGridViewTextBoxColumn4.HeaderText = "Zurodnung"
+        DataGridViewTextBoxColumn4.Name = "DataGridViewTextBoxColumn4"
+        DataGridViewTextBoxColumn4.Width = 70
         '
         'DataGridViewTextBoxColumn7
         '
         DataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.DataGridViewTextBoxColumn7.DefaultCellStyle = DataGridViewCellStyle8
-        Me.DataGridViewTextBoxColumn7.HeaderText = "Nr"
-        Me.DataGridViewTextBoxColumn7.Name = "DataGridViewTextBoxColumn7"
-        Me.DataGridViewTextBoxColumn7.Width = 20
+        DataGridViewTextBoxColumn7.DefaultCellStyle = DataGridViewCellStyle8
+        DataGridViewTextBoxColumn7.HeaderText = "Nr"
+        DataGridViewTextBoxColumn7.Name = "DataGridViewTextBoxColumn7"
+        DataGridViewTextBoxColumn7.Width = 20
         '
         'DataGridViewTextBoxColumn10
         '
-        Me.DataGridViewTextBoxColumn10.HeaderText = "Show"
-        Me.DataGridViewTextBoxColumn10.Name = "DataGridViewTextBoxColumn10"
-        Me.DataGridViewTextBoxColumn10.Width = 70
+        DataGridViewTextBoxColumn10.HeaderText = "Show"
+        DataGridViewTextBoxColumn10.Name = "DataGridViewTextBoxColumn10"
+        DataGridViewTextBoxColumn10.Width = 70
         '
         'AnzeigeKassetten
         '
-        Me.AnzeigeKassetten.BackColor = System.Drawing.Color.FromArgb(CType(CType(192, Byte), Integer), CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.AnzeigeKassetten.Location = New System.Drawing.Point(574, 0)
-        Me.AnzeigeKassetten.Name = "AnzeigeKassetten"
-        Me.AnzeigeKassetten.Size = New System.Drawing.Size(70, 20)
-        Me.AnzeigeKassetten.TabIndex = 6
-        Me.AnzeigeKassetten.Text = "An"
-        Me.AnzeigeKassetten.UseVisualStyleBackColor = False
+        AnzeigeKassetten.BackColor = System.Drawing.Color.FromArgb(CType(CType(192, Byte), Integer), CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer))
+        AnzeigeKassetten.Location = New System.Drawing.Point(574, 0)
+        AnzeigeKassetten.Name = "AnzeigeKassetten"
+        AnzeigeKassetten.Size = New System.Drawing.Size(70, 20)
+        AnzeigeKassetten.TabIndex = 6
+        AnzeigeKassetten.Text = "An"
+        AnzeigeKassetten.UseVisualStyleBackColor = False
         '
         'Laufwerke
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
-        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(644, 413)
-        Me.ControlBox = False
-        Me.Controls.Add(Me.AnzeigeKassetten)
-        Me.Controls.Add(Me.Label3)
-        Me.Controls.Add(Me.Label2)
-        Me.Controls.Add(Me.Label1)
-        Me.Controls.Add(Me.StandardDisk)
-        Me.Controls.Add(Me.MiniDisk)
-        Me.Controls.Add(Me.Kassetten1)
-        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
-        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-        Me.Name = "Laufwerke"
-        Me.Text = "Laufwerke"
-        CType(Me.Kassetten1, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.MiniDisk, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.StandardDisk, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.ResumeLayout(False)
+        AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
+        AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        ClientSize = New System.Drawing.Size(644, 413)
+        ControlBox = False
+        Controls.Add(AnzeigeKassetten)
+        Controls.Add(Label3)
+        Controls.Add(Label2)
+        Controls.Add(Label1)
+        Controls.Add(StandardDisk)
+        Controls.Add(MiniDisk)
+        Controls.Add(Kassetten1)
+        FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
+        Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+        Name = "Laufwerke"
+        Text = "Laufwerke"
+        CType(Kassetten1, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(MiniDisk, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(StandardDisk, System.ComponentModel.ISupportInitialize).EndInit()
+        ResumeLayout(False)
 
     End Sub
 

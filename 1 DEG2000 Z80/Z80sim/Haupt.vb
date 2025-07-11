@@ -155,8 +155,8 @@ Public Class Haupt
 
         start = True
 
-        AddHandler Me.CMDliste.MouseWheel, AddressOf CMDliste_MouseWheel
-        AddHandler Me.regHistory.MouseWheel, AddressOf regHistory_MouseWheel
+        AddHandler CMDliste.MouseWheel, AddressOf CMDliste_MouseWheel
+        AddHandler regHistory.MouseWheel, AddressOf regHistory_MouseWheel
 
         COMMON.USR_REL = System.String.Format("{0}.{1:00}", My.Application.Info.Version.Major, My.Application.Info.Version.Minor)
 
@@ -223,8 +223,8 @@ Public Class Haupt
         End If
 
         With BWS
-            .Top = Me.Top
-            .Left = Me.Left + Me.Width - 14
+            .Top = Top
+            .Left = Left + Width - 14
             .Init(COMMON.const_BWSspalten, COMMON.const_BWSzeilen, COMMON.FontDateiname)
         End With
 
@@ -269,9 +269,9 @@ Public Class Haupt
         Call COMMON.PrintGrid(regBL, {"D", "", "E", ""}) : Call COMMON.PrintGrid(regBL_, {"D'", "", "E'", ""})
         Call COMMON.PrintGrid(regBL, {"H", "", "L", ""}) : Call COMMON.PrintGrid(regBL_, {"H'", "", "L'", ""})
 
-        Call Me.cpuState(COMMON.STOPPED)
-        Call Me.cpuError(COMMON.NONE)
-        Call Me.intMode(COMMON.INT_NONE)
+        Call cpuState(COMMON.STOPPED)
+        Call cpuError(COMMON.NONE)
+        Call intMode(COMMON.INT_NONE)
         Call PrintReg()
         Call ToolStripStatusAnzeigen()
         Call ICEmonitor.EnableICE(False)
@@ -329,18 +329,18 @@ Public Class Haupt
     End Sub ' init_CMDliste
 
     Private Sub CMDliste_MouseWheel(ByVal sender As Object, ByVal e As Windows.Forms.MouseEventArgs)
-        Me.CMDliste.Select()
+        CMDliste.Select()
 
         If e.Delta < 0 Then
             '+
-            Me.CMDliste.FirstDisplayedScrollingRowIndex = Me.CMDliste.FirstDisplayedScrollingRowIndex + 1
+            CMDliste.FirstDisplayedScrollingRowIndex = CMDliste.FirstDisplayedScrollingRowIndex + 1
         Else
             '-
-            If Me.CMDliste.FirstDisplayedScrollingRowIndex > 0 Then
-                Me.CMDliste.FirstDisplayedScrollingRowIndex = Me.CMDliste.FirstDisplayedScrollingRowIndex - 1
+            If CMDliste.FirstDisplayedScrollingRowIndex > 0 Then
+                CMDliste.FirstDisplayedScrollingRowIndex = CMDliste.FirstDisplayedScrollingRowIndex - 1
             End If
         End If
-        Me.CMDliste.Refresh()
+        CMDliste.Refresh()
     End Sub
 #End Region
 
@@ -452,12 +452,12 @@ Public Class Haupt
 
         If RegisterAnzeigen.Checked = True Then
             '                                                                       Output all CPU registers
-            If (COMMON.vZ80cpu.F And COMMON.S_FLAG) = COMMON.S_FLAG Then Me.flagS.CheckState = Windows.Forms.CheckState.Checked Else Me.flagS.CheckState = Windows.Forms.CheckState.Unchecked
-            If (COMMON.vZ80cpu.F And COMMON.Z_FLAG) = COMMON.Z_FLAG Then Me.flagZ.CheckState = Windows.Forms.CheckState.Checked Else Me.flagZ.CheckState = Windows.Forms.CheckState.Unchecked
-            If (COMMON.vZ80cpu.F And COMMON.H_FLAG) = COMMON.H_FLAG Then Me.flagH.CheckState = Windows.Forms.CheckState.Checked Else Me.flagH.CheckState = Windows.Forms.CheckState.Unchecked
-            If (COMMON.vZ80cpu.F And COMMON.P_FLAG) = COMMON.P_FLAG Then Me.flagP.CheckState = Windows.Forms.CheckState.Checked Else Me.flagP.CheckState = Windows.Forms.CheckState.Unchecked
-            If (COMMON.vZ80cpu.F And COMMON.N_FLAG) = COMMON.N_FLAG Then Me.flagN.CheckState = Windows.Forms.CheckState.Checked Else Me.flagN.CheckState = Windows.Forms.CheckState.Unchecked
-            If (COMMON.vZ80cpu.F And COMMON.C_FLAG) = COMMON.C_FLAG Then Me.flagC.CheckState = Windows.Forms.CheckState.Checked Else Me.flagC.CheckState = Windows.Forms.CheckState.Unchecked
+            If (COMMON.vZ80cpu.F And COMMON.S_FLAG) = COMMON.S_FLAG Then flagS.CheckState = Windows.Forms.CheckState.Checked Else flagS.CheckState = Windows.Forms.CheckState.Unchecked
+            If (COMMON.vZ80cpu.F And COMMON.Z_FLAG) = COMMON.Z_FLAG Then flagZ.CheckState = Windows.Forms.CheckState.Checked Else flagZ.CheckState = Windows.Forms.CheckState.Unchecked
+            If (COMMON.vZ80cpu.F And COMMON.H_FLAG) = COMMON.H_FLAG Then flagH.CheckState = Windows.Forms.CheckState.Checked Else flagH.CheckState = Windows.Forms.CheckState.Unchecked
+            If (COMMON.vZ80cpu.F And COMMON.P_FLAG) = COMMON.P_FLAG Then flagP.CheckState = Windows.Forms.CheckState.Checked Else flagP.CheckState = Windows.Forms.CheckState.Unchecked
+            If (COMMON.vZ80cpu.F And COMMON.N_FLAG) = COMMON.N_FLAG Then flagN.CheckState = Windows.Forms.CheckState.Checked Else flagN.CheckState = Windows.Forms.CheckState.Unchecked
+            If (COMMON.vZ80cpu.F And COMMON.C_FLAG) = COMMON.C_FLAG Then flagC.CheckState = Windows.Forms.CheckState.Checked Else flagC.CheckState = Windows.Forms.CheckState.Unchecked
 
             regAF.Rows(0).Cells(1).Value = COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.A) : regAF.Rows(1).Cells(1).Value = COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.A_)
             regAF.Rows(0).Cells(3).Value = COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.F) : regAF.Rows(1).Cells(3).Value = COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.F_)
@@ -470,7 +470,7 @@ Public Class Haupt
             regBL.Rows(2).Cells(3).Value = COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.L) : regBL_.Rows(2).Cells(3).Value = COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.L_)
 
 
-            'Me.reg.Text = COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.III)
+            'reg.Text = COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.III)
 
             regXY.Rows(0).Cells(1).Value = COMMON.HexAnzeige_WordByte(COMMON.vZ80cpu.PC, "B ")
             regXY.Rows(1).Cells(1).Value = COMMON.HexAnzeige_WordByte(COMMON.vZ80cpu.STACK, "B ")
@@ -496,7 +496,7 @@ Public Class Haupt
                 COMMON.HexAnzeige_WordByte(COMMON.vZ80cpu.STACK, "B")
                }
 
-        Call COMMON.PrintGrid(Me.regHistory, hilf, 20)
+        Call COMMON.PrintGrid(regHistory, hilf, 20)
     End Sub ' Print_RegAktListe
     Private Function PrintFlag(ByVal flag As String) As String
         Select Case UCase(flag)
@@ -530,18 +530,18 @@ Public Class Haupt
     End Function ' Print_IFF
 
     Private Sub regHistory_MouseWheel(ByVal sender As Object, ByVal e As Windows.Forms.MouseEventArgs)
-        Me.regHistory.Select()
+        regHistory.Select()
 
         If e.Delta < 0 Then
             '+
-            Me.regHistory.FirstDisplayedScrollingRowIndex = Me.regHistory.FirstDisplayedScrollingRowIndex + 1
+            regHistory.FirstDisplayedScrollingRowIndex = regHistory.FirstDisplayedScrollingRowIndex + 1
         Else
             '-
-            If Me.regHistory.FirstDisplayedScrollingRowIndex > 0 Then
-                Me.regHistory.FirstDisplayedScrollingRowIndex = Me.regHistory.FirstDisplayedScrollingRowIndex - 1
+            If regHistory.FirstDisplayedScrollingRowIndex > 0 Then
+                regHistory.FirstDisplayedScrollingRowIndex = regHistory.FirstDisplayedScrollingRowIndex - 1
             End If
         End If
-        Me.regHistory.Refresh()
+        regHistory.Refresh()
     End Sub
 #End Region
 
@@ -954,7 +954,7 @@ Public Class Haupt
     Private Sub FensterEin(anzahl As Int32)
         If LaufwerkeV Then
             With Laufwerke
-                .Top = Me.Top
+                .Top = Top
                 If BWS.Visible Then
                     .Top = .Top + BWS.Height - 7
                 End If
@@ -964,7 +964,7 @@ Public Class Haupt
         End If
         If KassettenV Then
             With Kassetten
-                .Top = Me.Top
+                .Top = Top
                 If BWS.Visible Then
                     .Top = .Top + BWS.Height - 7
                 End If
@@ -1045,8 +1045,8 @@ Public Class Haupt
                 BWS.Hide()
             Case False
                 BWSvis.Checked = True
-                BWS.Top = Me.Top
-                BWS.Left = Me.Left + Me.Width
+                BWS.Top = Top
+                BWS.Left = Left + Width
                 BWS.Show()
         End Select
     End Sub ' BWSvis_Click
@@ -1057,16 +1057,16 @@ Public Class Haupt
                 KeyboardVis.Checked = False
                 Tastatur.Hide()
                 If HSAnzeigenVis1.Checked = True Then
-                    AnzeigeHS.Top = Me.Top + Me.Height - 7
+                    AnzeigeHS.Top = Top + Height - 7
                 End If
             Case True
                 KeyboardVis.Checked = True
                 Tastatur.Show()
-                Tastatur.Top = Me.Top + Me.Height - 7
+                Tastatur.Top = Top + Height - 7
                 If HSAnzeigenVis1.Checked = True Then
                     Tastatur.Top = Tastatur.Top + AnzeigeHS.Height - 7
                 End If
-                Tastatur.Left = Me.Left - (Tastatur.Width - Me.Width)
+                Tastatur.Left = Left - (Tastatur.Width - Width)
         End Select
     End Sub
 
@@ -1085,7 +1085,7 @@ Public Class Haupt
                 AnzeigeBuffer.Show()
                 AnzeigeBuffer.Top = BWS.Top
                 AnzeigeBuffer.Left = BWS.Left + BWS.Width - 10
-                Call AnzeigeBuffer.AnzeigeBuffer()
+                Call AnzeigeBuffer.AnzeigeBuffer1()
             Case True
                 BufferAnzeigenVis.Checked = False
                 AnzeigeBuffer.Hide()
@@ -1100,11 +1100,11 @@ Public Class Haupt
                 HSAnzeigenVis1.Checked = True
                 With AnzeigeHS
                     .Show()
-                    .Top = Me.Top + Me.Height - 7
+                    .Top = Top + Height - 7
                     If KeyboardVis.Checked = True Then
                         Tastatur.Top = Tastatur.Top + .Height - 7
                     End If
-                    .Left = Me.Left + (Me.Width - .Width)
+                    .Left = Left + (Width - .Width)
                     .Select()
                 End With
         End Select
@@ -1169,14 +1169,14 @@ Public Class Haupt
             Case True
                 LaufwerkeVis.Checked = True
                 Laufwerke.Show()
-                Laufwerke.Top = Me.Top
+                Laufwerke.Top = Top
                 If BWSvis.Checked = True Then
                     Laufwerke.Top = Laufwerke.Top + BWS.Height - 7
                 End If
                 If HSAnzeigenVis1.Checked = True Then
                     Laufwerke.Top = Laufwerke.Top + AnzeigeHS.Height - 7
                 End If
-                Laufwerke.Left = Me.Left + Me.Width - 7
+                Laufwerke.Left = Left + Width - 7
             Case False
                 LaufwerkeVis.Checked = False
                 Laufwerke.Hide()
@@ -1195,14 +1195,14 @@ Public Class Haupt
                 KassetteAnzeigen.Checked = True
                 With Kassetten
                     .Show()
-                    .Top = Me.Top
+                    .Top = Top
                     If BWS.Visible Then
                         .Top = .Top + BWS.Height - 7
                     End If
                     If Laufwerke.Visible Then
                         .Top = .Top + Laufwerke.Height
                     End If
-                    .Left = Me.Left + Me.Width - 14
+                    .Left = Left + Width - 14
                 End With
         End Select
     End Sub
@@ -1246,7 +1246,7 @@ Public Class Haupt
     Public Sub CPUbreak()
         RegisterAnzeigen.Checked = True
         Call RegisterAnzeigenChange()
-        Call Me.cpuState(COMMON.SINGLE_STEP)
+        Call cpuState(COMMON.SINGLE_STEP)
         'Call PrintReg()
         Call PrintRegListe()
     End Sub
@@ -1259,8 +1259,8 @@ Public Class Haupt
                 BWS.Select()
             End If
         End If
-        Call Me.cpuState(COMMON.CONTIN_RUN)
-        Call Me.cpuError(COMMON.NONE)
+        Call cpuState(COMMON.CONTIN_RUN)
+        Call cpuError(COMMON.NONE)
         Call cpu.cpu()
     End Sub
 #End Region
@@ -1297,7 +1297,7 @@ Public Class Haupt
         '.CurrentCell = .Rows(0).Cells(0)
         '.BeginEdit(False)
         'End With
-        Me.start = False
+        start = False
         CommandLine.Focus()
     End Sub
 #End Region
@@ -1309,32 +1309,32 @@ Public Class Haupt
         If FensterToolStripMenuItem.Checked Then
             With AnzeigeHS
                 If .Visible Then
-                    .Top = Me.Top + Me.Height - 7
-                    .Left = Me.Left + (Me.Width - .Width)
+                    .Top = Top + Height - 7
+                    .Left = Left + (Width - .Width)
                 End If
             End With
 
             With Tastatur
                 If .Visible Then
-                    Tastatur.Top = Me.Top + Me.Height - 7
+                    Tastatur.Top = Top + Height - 7
                     If HSAnzeigenVis1.Checked = True Then
                         Tastatur.Top = Tastatur.Top + AnzeigeHS.Height - 7
                     End If
-                    .Left = Me.Left - (Tastatur.Width - Me.Width)
+                    .Left = Left - (Tastatur.Width - Width)
                 End If
             End With
 
             With BWS
                 If .Visible Then
-                    .Top = Me.Top
-                    .Left = Me.Left + Me.Width - 14
+                    .Top = Top
+                    .Left = Left + Width - 14
                     .Refresh()
                 End If
             End With
 
             With Laufwerke
                 If .Visible Then
-                    .Top = Me.Top
+                    .Top = Top
                     If BWS.Visible Then
                         .Top = .Top + BWS.Height - 7
                     End If
@@ -1344,7 +1344,7 @@ Public Class Haupt
 
             With Kassetten
                 If .Visible Then
-                    .Top = Me.Top
+                    .Top = Top
                     If BWS.Visible Then
                         .Top = .Top + BWS.Height - 7
                     End If

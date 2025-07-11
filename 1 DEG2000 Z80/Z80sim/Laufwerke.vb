@@ -135,7 +135,7 @@ Public Class Laufwerke
     '    Select Case e.ColumnIndex
     '        Case 3                                                  ' bestehende Kassettendatei öffnen
     '        Case 4                                                  ' Neue Kassettendatei erstellen
-    '            If Me.Kassetten1.Rows(e.RowIndex).Cells("CheckCreateK").Value = False Then
+    '            If Kassetten1.Rows(e.RowIndex).Cells("CheckCreateK").Value = False Then
     '            End If
     '    End Select
     'End Sub
@@ -161,17 +161,17 @@ Public Class Laufwerke
                         If buttonCell.Enabled Then
                             Select Case e.RowIndex
                                 Case 0
-                                    Call Kassetten.ucK1.OpenKassette2(Me.Kassetten1.Rows(e.RowIndex).Cells("ChangeK").Value, e.RowIndex, 1)
+                                    Call Kassetten.ucK1.OpenKassette2(Kassetten1.Rows(e.RowIndex).Cells("ChangeK").Value, e.RowIndex, 1)
                                 Case 1
-                                    Call Kassetten.ucK2.OpenKassette2(Me.Kassetten1.Rows(e.RowIndex).Cells("ChangeK").Value, e.RowIndex, 1)
+                                    Call Kassetten.ucK2.OpenKassette2(Kassetten1.Rows(e.RowIndex).Cells("ChangeK").Value, e.RowIndex, 1)
                                 Case 2
-                                    Call Kassetten.ucK3.OpenKassette2(Me.Kassetten1.Rows(e.RowIndex).Cells("ChangeK").Value, e.RowIndex, 2)
+                                    Call Kassetten.ucK3.OpenKassette2(Kassetten1.Rows(e.RowIndex).Cells("ChangeK").Value, e.RowIndex, 2)
                                 Case 3
-                                    Call Kassetten.ucK4.OpenKassette2(Me.Kassetten1.Rows(e.RowIndex).Cells("ChangeK").Value, e.RowIndex, 2)
+                                    Call Kassetten.ucK4.OpenKassette2(Kassetten1.Rows(e.RowIndex).Cells("ChangeK").Value, e.RowIndex, 2)
                                 Case 4
-                                    Call Kassetten.ucK5.OpenKassette2(Me.Kassetten1.Rows(e.RowIndex).Cells("ChangeK").Value, e.RowIndex, 3)
+                                    Call Kassetten.ucK5.OpenKassette2(Kassetten1.Rows(e.RowIndex).Cells("ChangeK").Value, e.RowIndex, 3)
                                 Case 5
-                                    Call Kassetten.ucK6.OpenKassette2(Me.Kassetten1.Rows(e.RowIndex).Cells("ChangeK").Value, e.RowIndex, 3)
+                                    Call Kassetten.ucK6.OpenKassette2(Kassetten1.Rows(e.RowIndex).Cells("ChangeK").Value, e.RowIndex, 3)
                             End Select
                         End If
                     End If
@@ -182,17 +182,17 @@ Public Class Laufwerke
                         If buttonCell.Enabled Then
                             Select Case e.RowIndex
                                 Case 0
-                                    Call Kassetten.ucK1.CreateKassette2(Me.Kassetten1.Rows(e.RowIndex).Cells("CreateK").Value, e.RowIndex, 1)
+                                    Call Kassetten.ucK1.CreateKassette2(Kassetten1.Rows(e.RowIndex).Cells("CreateK").Value, e.RowIndex, 1)
                                 Case 1
-                                    Call Kassetten.ucK1.CreateKassette2(Me.Kassetten1.Rows(e.RowIndex).Cells("CreateK").Value, e.RowIndex, 1)
+                                    Call Kassetten.ucK1.CreateKassette2(Kassetten1.Rows(e.RowIndex).Cells("CreateK").Value, e.RowIndex, 1)
                                 Case 2
-                                    Call Kassetten.ucK1.CreateKassette2(Me.Kassetten1.Rows(e.RowIndex).Cells("CreateK").Value, e.RowIndex, 2)
+                                    Call Kassetten.ucK1.CreateKassette2(Kassetten1.Rows(e.RowIndex).Cells("CreateK").Value, e.RowIndex, 2)
                                 Case 3
-                                    Call Kassetten.ucK1.CreateKassette2(Me.Kassetten1.Rows(e.RowIndex).Cells("CreateK").Value, e.RowIndex, 2)
+                                    Call Kassetten.ucK1.CreateKassette2(Kassetten1.Rows(e.RowIndex).Cells("CreateK").Value, e.RowIndex, 2)
                                 Case 4
-                                    Call Kassetten.ucK1.CreateKassette2(Me.Kassetten1.Rows(e.RowIndex).Cells("CreateK").Value, e.RowIndex, 3)
+                                    Call Kassetten.ucK1.CreateKassette2(Kassetten1.Rows(e.RowIndex).Cells("CreateK").Value, e.RowIndex, 3)
                                 Case 5
-                                    Call Kassetten.ucK1.CreateKassette2(Me.Kassetten1.Rows(e.RowIndex).Cells("CreateK").Value, e.RowIndex, 3)
+                                    Call Kassetten.ucK1.CreateKassette2(Kassetten1.Rows(e.RowIndex).Cells("CreateK").Value, e.RowIndex, 3)
                             End Select
                         End If
                     End If
@@ -240,8 +240,8 @@ Public Class Laufwerke
                 If BWS.Visible Then
                     .Top = .Top + BWS.Height - 7
                 End If
-                If Me.Visible Then
-                    .Top = .Top + Me.Height
+                If Visible Then
+                    .Top = .Top + Height
                 End If
                 .Left = Haupt.Left + Haupt.Width - 14
             End With
@@ -253,7 +253,7 @@ Public Class DataGridViewDisableButtonColumn
     Inherits DataGridViewButtonColumn
 
     Public Sub New()
-        Me.CellTemplate = New DataGridViewDisableButtonCell()
+        CellTemplate = New DataGridViewDisableButtonCell()
     End Sub
 End Class
 
@@ -273,12 +273,12 @@ Public Class DataGridViewDisableButtonCell
 
     Public Overrides Function Clone() As Object
         Dim cell As DataGridViewDisableButtonCell = CType(MyBase.Clone(), DataGridViewDisableButtonCell)
-        cell.Enabled = Me.Enabled
+        cell.Enabled = Enabled
         Return cell
     End Function
 
     Public Sub New()
-        Me.enabledValue = True
+        enabledValue = True
     End Sub
 
     Protected Overrides Sub Paint(ByVal graphics As Graphics,
@@ -293,7 +293,7 @@ Public Class DataGridViewDisableButtonCell
                                   ByVal advancedBorderStyle As DataGridViewAdvancedBorderStyle,
                                   ByVal paintParts As DataGridViewPaintParts)
         Try
-            If Not Me.enabledValue Then
+            If Not enabledValue Then
                 If (paintParts And DataGridViewPaintParts.Background) = DataGridViewPaintParts.Background Then
                     Dim cellBackground As SolidBrush = New SolidBrush(cellStyle.BackColor)
                     graphics.FillRectangle(cellBackground, cellBounds)
@@ -305,14 +305,14 @@ Public Class DataGridViewDisableButtonCell
                 End If
 
                 Dim buttonArea As Rectangle = cellBounds
-                Dim buttonAdjustment As Rectangle = Me.BorderWidths(advancedBorderStyle)
+                Dim buttonAdjustment As Rectangle = BorderWidths(advancedBorderStyle)
                 buttonArea.X += buttonAdjustment.X
                 buttonArea.Y += buttonAdjustment.Y
                 buttonArea.Height -= buttonAdjustment.Height
                 buttonArea.Width -= buttonAdjustment.Width
                 ButtonRenderer.DrawButton(graphics, buttonArea, PushButtonState.Disabled)
-                If TypeOf Me.FormattedValue Is String Then
-                    TextRenderer.DrawText(graphics, CStr(Me.FormattedValue), Me.DataGridView.Font, buttonArea, SystemColors.GrayText)
+                If TypeOf formattedValue Is String Then
+                    TextRenderer.DrawText(graphics, CStr(formattedValue), DataGridView.Font, buttonArea, SystemColors.GrayText)
                 End If
             Else
                 MyBase.Paint(graphics, clipBounds, cellBounds, rowIndex, elementState, value,

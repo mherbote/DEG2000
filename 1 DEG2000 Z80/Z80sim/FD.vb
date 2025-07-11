@@ -427,7 +427,7 @@ Module FD
     Private Function op_ldspy() As Integer                                      '&HF9         'LD SP,IY
         COMMON.vZ80cpu.STACK = COMMON.vZ80cpu.IY
         op_ldspy = 10
-        If Haupt.BufferAnzeigenVis.Checked Then Call AnzeigeBuffer.AnzeigeBuffer()
+        If Haupt.BufferAnzeigenVis.Checked Then Call AnzeigeBuffer.AnzeigeBuffer2()
     End Function 'F9    'op_ldspy
 #End Region
 

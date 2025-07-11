@@ -18,7 +18,7 @@ Public Class AnzeigeHS
 
         segAdr = 0 * 1024 * 4
         Call COMMON.initGrid(HSanzeige, System.Drawing.Color.LightGray, System.Drawing.Color.LightGray, System.Drawing.Color.Black, System.Drawing.Color.Black)
-        With Me.HSanzeige
+        With HSanzeige
             For j = 0 To 15
                 hilf1 = {HexAnzeige_WordByte(segAdr + j * 16, "B"),
                                              "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
@@ -34,10 +34,10 @@ Public Class AnzeigeHS
         c.HeaderText = "Bereich"
         c.Width = 60
         c.SortMode = DataGridViewColumnSortMode.NotSortable
-        Me.BereichsWahl.Columns.Add(c)
+        BereichsWahl.Columns.Add(c)
 
         Call COMMON.initGrid(BereichsWahl, System.Drawing.Color.LightGray, System.Drawing.Color.LightGray, System.Drawing.Color.Black, System.Drawing.Color.Black)
-        With Me.BereichsWahl
+        With BereichsWahl
             For j = 0 To 15
                 Select Case j
                     Case 10
@@ -68,7 +68,7 @@ Public Class AnzeigeHS
         End With
 
         Call COMMON.initGrid(BereichAll, System.Drawing.Color.LightGray, System.Drawing.Color.LightGray, System.Drawing.Color.Black, System.Drawing.Color.Black)
-        With Me.BereichAll
+        With BereichAll
             For j = 0 To Z80cpu.cSeg_HS + 3
                 Select Case j
                     Case Z80cpu.cSeg_HS + 1
@@ -105,7 +105,7 @@ Public Class AnzeigeHS
                 BereichsIndex = Convert.ToByte(BereichsWahl.Rows(AnzeigeSeg).Cells(1).Value)
         End Select
 
-        With Me.HSanzeige
+        With HSanzeige
             .Enabled = True
 
             Try
@@ -130,18 +130,18 @@ Public Class AnzeigeHS
     End Sub
 
     Private Sub HSanzeige_MouseWheel(ByVal sender As Object, ByVal e As Windows.Forms.MouseEventArgs)
-        Me.HSanzeige.Select()
+        HSanzeige.Select()
 
         If e.Delta < 0 Then
             '+
-            Me.AnzeigeStart = Me.AnzeigeStart + &H100
-            If Me.AnzeigeStart > &HFFFF Then Me.AnzeigeStart = Me.AnzeigeStart And &HFFFF
+            AnzeigeStart = AnzeigeStart + &H100
+            If AnzeigeStart > &HFFFF Then AnzeigeStart = AnzeigeStart And &HFFFF
         Else
             '-
-            Me.AnzeigeStart = Me.AnzeigeStart - &H100
-            If Me.AnzeigeStart < 0 Then Me.AnzeigeStart = &H10000 + Me.AnzeigeStart
+            AnzeigeStart = AnzeigeStart - &H100
+            If AnzeigeStart < 0 Then AnzeigeStart = &H10000 + AnzeigeStart
         End If
-        Call Me.SpeicherAnzeigen(100)
+        Call SpeicherAnzeigen(100)
     End Sub
 
     Private Sub HSanzeige_KeyDown(sender As Object, e As System.Windows.Forms.KeyEventArgs) Handles HSanzeige.KeyDown
@@ -149,57 +149,57 @@ Public Class AnzeigeHS
             Case True
                 Select Case e.KeyCode
                     Case Windows.Forms.Keys.Up
-                        Me.AnzeigeStart = Me.AnzeigeStart - 16
-                        If Me.AnzeigeStart < 0 Then Me.AnzeigeStart = &H10000 + Me.AnzeigeStart
+                        AnzeigeStart = AnzeigeStart - 16
+                        If AnzeigeStart < 0 Then AnzeigeStart = &H10000 + AnzeigeStart
                     Case Windows.Forms.Keys.Down
-                        Me.AnzeigeStart = Me.AnzeigeStart + 16
-                        If Me.AnzeigeStart > &HFFFF Then Me.AnzeigeStart = Me.AnzeigeStart And &HFFFF
+                        AnzeigeStart = AnzeigeStart + 16
+                        If AnzeigeStart > &HFFFF Then AnzeigeStart = AnzeigeStart And &HFFFF
 
                     Case Windows.Forms.Keys.D0
-                        Me.AnzeigeStart = &H1000 * 0
+                        AnzeigeStart = &H1000 * 0
                     Case Windows.Forms.Keys.D1
-                        Me.AnzeigeStart = &H1000 * 1
+                        AnzeigeStart = &H1000 * 1
                     Case Windows.Forms.Keys.D2
-                        Me.AnzeigeStart = &H1000 * 2
+                        AnzeigeStart = &H1000 * 2
                     Case Windows.Forms.Keys.D3
-                        Me.AnzeigeStart = &H1000 * 3
+                        AnzeigeStart = &H1000 * 3
                     Case Windows.Forms.Keys.D4
-                        Me.AnzeigeStart = &H1000 * 4
+                        AnzeigeStart = &H1000 * 4
                     Case Windows.Forms.Keys.D5
-                        Me.AnzeigeStart = &H1000 * 5
+                        AnzeigeStart = &H1000 * 5
                     Case Windows.Forms.Keys.D6
-                        Me.AnzeigeStart = &H1000 * 6
+                        AnzeigeStart = &H1000 * 6
                     Case Windows.Forms.Keys.D7
-                        Me.AnzeigeStart = &H1000 * 7
+                        AnzeigeStart = &H1000 * 7
                     Case Windows.Forms.Keys.D8
-                        Me.AnzeigeStart = &H1000 * 8
+                        AnzeigeStart = &H1000 * 8
                     Case Windows.Forms.Keys.D9
-                        Me.AnzeigeStart = &H1000 * 9
+                        AnzeigeStart = &H1000 * 9
                     Case Windows.Forms.Keys.A
-                        Me.AnzeigeStart = &H1000 * 10
+                        AnzeigeStart = &H1000 * 10
                     Case Windows.Forms.Keys.B
-                        Me.AnzeigeStart = &H1000 * 11
+                        AnzeigeStart = &H1000 * 11
                     Case Windows.Forms.Keys.C
-                        Me.AnzeigeStart = &H1000 * 12
+                        AnzeigeStart = &H1000 * 12
                     Case Windows.Forms.Keys.D
-                        Me.AnzeigeStart = &H1000 * 13
+                        AnzeigeStart = &H1000 * 13
                     Case Windows.Forms.Keys.E
-                        Me.AnzeigeStart = &H1000 * 14
+                        AnzeigeStart = &H1000 * 14
                     Case Windows.Forms.Keys.F
-                        Me.AnzeigeStart = &H1000 * 15
+                        AnzeigeStart = &H1000 * 15
                 End Select
             Case False
                 Select Case e.KeyCode
                     Case Windows.Forms.Keys.PageUp
-                        Me.AnzeigeStart = Me.AnzeigeStart - 256
-                        If Me.AnzeigeStart < 0 Then Me.AnzeigeStart = &H10000 + Me.AnzeigeStart
+                        AnzeigeStart = AnzeigeStart - 256
+                        If AnzeigeStart < 0 Then AnzeigeStart = &H10000 + AnzeigeStart
                     Case Windows.Forms.Keys.PageDown
-                        Me.AnzeigeStart = Me.AnzeigeStart + 256
-                        If Me.AnzeigeStart > &HFFFF Then Me.AnzeigeStart = Me.AnzeigeStart And &HFFFF
+                        AnzeigeStart = AnzeigeStart + 256
+                        If AnzeigeStart > &HFFFF Then AnzeigeStart = AnzeigeStart And &HFFFF
                 End Select
         End Select
         '
-        Call Me.SpeicherAnzeigen(100)
+        Call SpeicherAnzeigen(100)
     End Sub ' HSanzeige_KeyDown
 
     Private Sub HSanzeige_CellClick(sender As Object, e As System.Windows.Forms.DataGridViewCellEventArgs) Handles HSanzeige.CellClick
@@ -218,25 +218,25 @@ Public Class AnzeigeHS
                 Select Case e.RowIndex
                     Case Z80cpu.cSeg_HS + 1                                             ' Global
                         For i = 0 To 15
-                            With Me.BereichsWahl
+                            With BereichsWahl
                                 .Rows(i).Cells(1).Value = COMMON.vZ80cpu.Seg_HS(i)
                             End With
                         Next i
                     Case Z80cpu.cSeg_HS + 2                                             ' SYS4 System
                         For i = 0 To 15
-                            With Me.BereichsWahl
+                            With BereichsWahl
                                 .Rows(i).Cells(1).Value = Haupt.IOsim.UM1(i)
                             End With
                         Next i
                     Case Z80cpu.cSeg_HS + 3                                             ' SYS3 Anwender
                         For i = 0 To 15
-                            With Me.BereichsWahl
+                            With BereichsWahl
                                 .Rows(i).Cells(1).Value = Haupt.IOsim.UM2(i)
                             End With
                         Next i
                     Case Else
                         For i = 0 To 15
-                            With Me.BereichsWahl
+                            With BereichsWahl
                                 .Rows(i).Cells(1).Value = e.RowIndex
                             End With
                         Next
@@ -270,7 +270,7 @@ Public Class AnzeigeHS
                   MsgBoxStyle.YesNo,
                  "Bereichsübernahme ===> Global") = MsgBoxResult.Yes Then
             For i = 0 To 15
-                COMMON.vZ80cpu.Seg_HS(i) = Me.BereichsWahl.Rows(i).Cells(1).Value
+                COMMON.vZ80cpu.Seg_HS(i) = BereichsWahl.Rows(i).Cells(1).Value
             Next
         End If
     End Sub
@@ -324,7 +324,7 @@ Public Class NumericUpDownCell
     Inherits DataGridViewTextBoxCell
 
     Public Sub New()
-        Me.Style.Format = "F0"           '"#.##"
+        Style.Format = "F0"           '"#.##"
     End Sub
 
     Public Overrides Sub InitializeEditingControl(ByVal rowIndex As Integer,
@@ -334,7 +334,7 @@ Public Class NumericUpDownCell
 
         Dim ctl As NumericUpDownEditingControl = CType(DataGridView.EditingControl, NumericUpDownEditingControl)
 
-        ctl.Value = CType(Me.Value, Decimal)
+        ctl.Value = CType(Value, Decimal)
     End Sub
 
     Public Overrides ReadOnly Property EditType() As Type
@@ -368,33 +368,33 @@ Class NumericUpDownEditingControl
     Private rowIndexNum As Integer
 
     Public Sub New()
-        Me.DecimalPlaces = 0                '2
-        Me.Minimum = 0
-        Me.Maximum = Z80cpu.cSeg_HS
+        DecimalPlaces = 0                '2
+        Minimum = 0
+        Maximum = Z80cpu.cSeg_HS
     End Sub
 
     Public Property EditingControlFormattedValue() As Object Implements IDataGridViewEditingControl.EditingControlFormattedValue
         Get
-            Return Me.Value.ToString("F0")      '"#.##'
+            Return Value.ToString("F0")      '"#.##'
         End Get
         Set(ByVal value As Object)
             If TypeOf value Is Decimal Then
-                Me.Value = Decimal.Parse(value) 'value.ToString() 
+                value = Decimal.Parse(value) 'value.ToString() 
             End If
         End Set
     End Property
 
     Public Function GetEditingControlFormattedValue(ByVal context As DataGridViewDataErrorContexts) As Object _
         Implements IDataGridViewEditingControl.GetEditingControlFormattedValue
-        Return Me.Value.ToString()          '"#.##'
+        Return Value.ToString()          '"#.##'
     End Function
 
     Public Sub ApplyCellStyleToEditingControl(ByVal dataGridViewCellStyle As DataGridViewCellStyle) _
         Implements IDataGridViewEditingControl.ApplyCellStyleToEditingControl
 
-        Me.Font = dataGridViewCellStyle.Font
-        Me.ForeColor = dataGridViewCellStyle.ForeColor
-        Me.BackColor = dataGridViewCellStyle.BackColor
+        Font = dataGridViewCellStyle.Font
+        ForeColor = dataGridViewCellStyle.ForeColor
+        BackColor = dataGridViewCellStyle.BackColor
     End Sub
 
     Public Property EditingControlRowIndex() As Integer Implements IDataGridViewEditingControl.EditingControlRowIndex
@@ -455,7 +455,7 @@ Class NumericUpDownEditingControl
     Protected Overrides Sub OnValueChanged(ByVal eventargs As EventArgs)
         ' Notify the DataGridView that the contents of the cell have changed.
         valueIsChanged = True
-        Me.EditingControlDataGridView.NotifyCurrentCellDirty(True)
+        EditingControlDataGridView.NotifyCurrentCellDirty(True)
         MyBase.OnValueChanged(eventargs)
     End Sub
 End Class

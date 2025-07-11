@@ -427,7 +427,7 @@ Module DD
     Private Function op_ldspx() As Integer                                      '&HF9         'LD SP,IX
         COMMON.vZ80cpu.STACK = COMMON.vZ80cpu.IX
         op_ldspx = 10
-        If Haupt.BufferAnzeigenVis.Checked Then Call AnzeigeBuffer.AnzeigeBuffer()
+        If Haupt.BufferAnzeigenVis.Checked Then Call AnzeigeBuffer.AnzeigeBuffer2()
     End Function 'F9    'op_ldspx
 #End Region
 

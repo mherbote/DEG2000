@@ -202,8 +202,8 @@ Public Class BWS
 
         Call CreateBWS(0)
 
-        Me.Height = PIy * Zy * BWSy + 39                '39
-        Me.Width = PIx * Zx * BWSx + 2 + 14             '14
+        Height = PIy * Zy * BWSy + 39                '39
+        Width = PIx * Zx * BWSx + 2 + 14             '14
     End Sub
     Public Sub Init(ByVal x1 As Integer, ByVal y1 As Integer)
         BWSx = x1
@@ -211,8 +211,8 @@ Public Class BWS
 
         Call CreateBWS(0)
 
-        Me.Height = PIy * Zy * BWSy + 39                '39
-        Me.Width = PIx * Zx * BWSx + 2 + 14             '14
+        Height = PIy * Zy * BWSy + 39                '39
+        Width = PIx * Zx * BWSx + 2 + 14             '14
     End Sub
     Public Sub Init1()                                          ' Standard für BWS Back-/Fore-Color und Cursor setzen
         BackColorBWS = cBack
@@ -265,7 +265,7 @@ Public Class BWS
                             .Size = New System.Drawing.Size(PIx * Zx, PIy * Zy),
                             .BorderStyle = BorderStyle.None
                         }
-                    Me.Controls.Add(PB)
+                    Controls.Add(PB)
                     PictureBoxDict.Add(y * BWSx + x, PB)
 
                     Zeichen1 = New Zeichen With
@@ -321,20 +321,20 @@ Public Class BWS
         Try
             Select Case PIx
                 Case 1
-                    Me.Width = PIx * Zx * BWSx + 2 + 14
+                    Width = PIx * Zx * BWSx + 2 + 14
                 Case 2
-                    Me.Width = PIx * Zx * BWSx + 2 + 14
+                    Width = PIx * Zx * BWSx + 2 + 14
                 Case 3
-                    Me.Width = PIx * Zx * BWSx + 2 + 14
+                    Width = PIx * Zx * BWSx + 2 + 14
             End Select
 
             Select Case PIy
                 Case 1
-                    Me.Height = PIy * Zy * BWSy + 39
+                    Height = PIy * Zy * BWSy + 39
                 Case 2
-                    Me.Height = PIy * Zy * BWSy + 39
+                    Height = PIy * Zy * BWSy + 39
                 Case 3
-                    Me.Height = PIy * Zy * BWSy + 39
+                    Height = PIy * Zy * BWSy + 39
             End Select
 
             Call changeBWS()
@@ -448,13 +448,13 @@ Public Class BWS
             Case 1                                                                                                                                  ' Test Charset
                 Call InitCharset()
                 'Call Mem2BWS(System.Drawing.Color.Cornsilk, System.Drawing.Color.Black, System.Drawing.Color.Red)
-                Me.Refresh()
+                Refresh()
                 testbildWahl = 2
             Case 2                                                                                                                                  ' Test mit String "1234-6789+
                 Call InitTestString()
                 'Call Mem2BWS(System.Drawing.Color.Beige, System.Drawing.Color.Black, System.Drawing.Color.Red)
                 testbildWahl = 1
-                Me.Refresh()
+                Refresh()
             Case 9                                                                                                                                  ' ClrScr
                 Call InitClrScr()
                 'Call Mem2BWS(System.Drawing.Color.Blue, System.Drawing.Color.Yellow, System.Drawing.Color.Red)
@@ -588,12 +588,12 @@ Public Class BWS
     End Sub
 
     Public Sub SetCursorTyp(CursorTypVar As eCursorTyp)
-        Me.CursorTyp = CursorTypVar
+        CursorTyp = CursorTypVar
     End Sub
     Public Sub SetCursor(X As Int16, Y As Int16)
         Dim Zeichen1 As Zeichen
 
-        If Me.IsCursor Then                             'Wenn ein Cursor gesetzt, dann löschen
+        If IsCursor Then                             'Wenn ein Cursor gesetzt, dann löschen
             ResetCursor()
         End If
 
@@ -601,8 +601,8 @@ Public Class BWS
         CursorY = Y
         Zeichen1 = ZeichenDict(Y * BWSx + X)
 
-        Me.IsCursor = True
-        Me.CursorStatus = eCursorTyp.None
+        IsCursor = True
+        CursorStatus = eCursorTyp.None
         tCursor.Enabled = True
         tCursor.Interval = cCursorTime
     End Sub
@@ -614,56 +614,56 @@ Public Class BWS
 
         Zeichen1 = ZeichenDict(CursorY * BWSx + CursorX)
         PB = PictureBoxDict(CursorY * BWSx + CursorX)
-        Me.IsCursor = False
+        IsCursor = False
 
-        If Me.IsCursorActiv Then
+        If IsCursorActiv Then
             Call ChangeImage(Zeichen1)
-            Me.IsCursorActiv = False
+            IsCursorActiv = False
         End If
         PB.Image = Zeichen1.Image
         PB.Refresh()
     End Sub
     Private Sub ChangeImage(ByRef Zeichen1 As Zeichen)
-        If Me.IsCursor Then
-            Select Case Me.CursorTyp
+        If IsCursor Then
+            Select Case CursorTyp
                 Case eCursorTyp.Normal
-                    Select Case Me.CursorStatus
+                    Select Case CursorStatus
                         Case eCursorTyp.None
                             Zeichen1.Image = Zeichen1.ImageNormal
-                            Me.CursorStatus = eCursorTyp.Normal
-                            Me.IsCursorActiv = True
+                            CursorStatus = eCursorTyp.Normal
+                            IsCursorActiv = True
                         Case Else
                             Zeichen1.Image = Zeichen1.ImageNone
-                            Me.CursorStatus = eCursorTyp.None
-                            Me.IsCursorActiv = False
+                            CursorStatus = eCursorTyp.None
+                            IsCursorActiv = False
                     End Select
                 Case eCursorTyp.Invers
-                    Select Case Me.CursorStatus
+                    Select Case CursorStatus
                         Case eCursorTyp.None
                             Zeichen1.Image = Zeichen1.ImageInvers
-                            Me.CursorStatus = eCursorTyp.Invers
-                            Me.IsCursorActiv = True
+                            CursorStatus = eCursorTyp.Invers
+                            IsCursorActiv = True
                         Case Else
                             Zeichen1.Image = Zeichen1.ImageNone
-                            Me.CursorStatus = eCursorTyp.None
-                            Me.IsCursorActiv = False
+                            CursorStatus = eCursorTyp.None
+                            IsCursorActiv = False
                     End Select
                 Case eCursorTyp.Full
-                    Select Case Me.CursorStatus
+                    Select Case CursorStatus
                         Case eCursorTyp.None
                             Zeichen1.Image = Zeichen1.ImageFull
-                            Me.CursorStatus = eCursorTyp.Full
-                            Me.IsCursorActiv = True
+                            CursorStatus = eCursorTyp.Full
+                            IsCursorActiv = True
                         Case Else
                             Zeichen1.Image = Zeichen1.ImageNone
-                            Me.CursorStatus = eCursorTyp.None
-                            Me.IsCursorActiv = False
+                            CursorStatus = eCursorTyp.None
+                            IsCursorActiv = False
                     End Select
             End Select
         Else
             Zeichen1.Image = Zeichen1.ImageNone
-            Me.CursorStatus = eCursorTyp.None
-            Me.IsCursorActiv = False
+            CursorStatus = eCursorTyp.None
+            IsCursorActiv = False
         End If
     End Sub
 #End Region
@@ -733,7 +733,7 @@ Public Class BWS
     Private Sub Uhr_Tick(sender As Object, e As EventArgs) Handles Uhrzeit.Tick
         Dim Time_str As String
 
-        If Not Me.Visible Then Exit Sub
+        If Not Visible Then Exit Sub
         If BWSy < 32 Then Exit Sub
         Time_str = Format$(Now, "HH:mm:ss")
         Call TextToControlArray(Time_str, 32, 36)

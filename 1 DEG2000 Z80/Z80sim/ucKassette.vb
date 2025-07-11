@@ -491,7 +491,7 @@ Public Class ucKassette
         Anz = 0
         Kassette.MBtyp = &HEE
         Call RecordAnzeigen()
-        '#        Me.Refresh()
+        '#        Refresh()
     End Sub
 
     Public Sub CassetteRecordVor()
@@ -537,25 +537,25 @@ Public Class ucKassette
 
 #Region "MouseHover für die Button"
     Private Sub Rewind_MouseHover(sender As Object, e As EventArgs) Handles Rewind.MouseHover
-        If Rewind.Enabled Then ToolTip1.Show("     Bandanfang", Me.Rewind)
+        If Rewind.Enabled Then ToolTip1.Show("     Bandanfang", Rewind)
     End Sub
     Private Sub BMback_MouseHover(sender As Object, e As EventArgs) Handles BMback.MouseHover
-        If BMback.Enabled Then ToolTip1.Show("     vorherige Bandmarke", Me.BMback)
+        If BMback.Enabled Then ToolTip1.Show("     vorherige Bandmarke", BMback)
     End Sub
     Private Sub RecordBack_MouseHover(sender As Object, e As EventArgs) Handles RecordBack.MouseHover
-        If RecordBack.Enabled Then ToolTip1.Show("     vorheriger Record", Me.RecordBack)
+        If RecordBack.Enabled Then ToolTip1.Show("     vorheriger Record", RecordBack)
     End Sub
     Private Sub Verzeichnis_MouseHover(sender As Object, e As EventArgs) Handles Verzeichnis.MouseHover
-        If Verzeichnis.Enabled Then ToolTip1.Show("     MRES-Directory", Me.Verzeichnis)
+        If Verzeichnis.Enabled Then ToolTip1.Show("     MRES-Directory", Verzeichnis)
     End Sub
     Private Sub Datei_MouseHover(sender As Object, e As EventArgs) Handles Datei.MouseHover
-        If Datei.Enabled Then ToolTip1.Show("     MRES-Datei", Me.Datei)
+        If Datei.Enabled Then ToolTip1.Show("     MRES-Datei", Datei)
     End Sub
     Private Sub RecordVor_MouseHover(sender As Object, e As EventArgs) Handles RecordVor.MouseHover
-        If RecordVor.Enabled Then ToolTip1.Show("     nächster Record", Me.RecordVor)
+        If RecordVor.Enabled Then ToolTip1.Show("     nächster Record", RecordVor)
     End Sub
     Private Sub BMvor_MouseHover(sender As Object, e As EventArgs) Handles BMvor.MouseHover
-        If BMvor.Enabled Then ToolTip1.Show("     nächste Bandmarke", Me.BMvor)
+        If BMvor.Enabled Then ToolTip1.Show("     nächste Bandmarke", BMvor)
     End Sub
 #End Region
 #End Region

@@ -94,13 +94,13 @@
         Dim i, j As Integer
 
         For i = 0 To 15                                                         'Alle Speicher-Bereiche auf "1" einstellen
-            Me.Seg_HS(i) = 1                                                    '     Grundstellung für DEG2000 Emulator Version 1.2
+            Seg_HS(i) = 1                                                    '     Grundstellung für DEG2000 Emulator Version 1.2
         Next i
 
         For j = 0 To cSeg_HS                                                    '64 kByte Speicher-Bereiche
             For i = 0 To 15                                                     'HS Blöcke zu 4 kByte
                 Try
-                    Me.HS(i, j) = New Hauptspeicher
+                    HS(i, j) = New Hauptspeicher
                 Catch ex As Exception
                     MsgBox("Z80cpu.Speicher_bereitstellen: " + "Not enough memory for 'Hauptspeicher' " + Format(i) + "," + Format(j) + ".")
                 End Try
@@ -115,8 +115,8 @@
 
 #If SBSIZE0 = 1 Then
         For i = 0 To SBSIZE
-            Me.soft(i) = New softbreak
-            Me.sb_next = 0
+            soft(i) = New softbreak
+            sb_next = 0
         Next
 #End If
         '                                                                       'Register löschen
@@ -124,7 +124,7 @@
         A_ = 0 : F_ = 0 : B_ = 0 : C_ = 0 : D_ = 0 : E_ = 0 : H_ = 0 : L_ = 0
         IX = 0 : IY = 0 : PC = 0 : STACK = 0 : III = 0 : IFF = 0 : R = 0
 
-        '        Me.BWS = New BildSpeicher
+        '        BWS = New BildSpeicher
 
         ' Table to get parritys as fast as possible 
         '0
@@ -421,62 +421,62 @@
 
 #Region "BMK Flagroutinen"
     Public Sub FlagCflag1(ByVal test As Boolean)                                            '0
-        If test Then Me.F = Me.F Or COMMON.C_FLAG Else Me.F = Me.F And Not COMMON.C_FLAG
+        If test Then F = F Or COMMON.C_FLAG Else F = F And Not COMMON.C_FLAG
     End Sub ' Flag_Cflag1
     Public Sub FlagCflag2(ByVal test As Boolean)
-        If test Then Me.F = Me.F And Not COMMON.C_FLAG Else Me.F = Me.F Or COMMON.C_FLAG
+        If test Then F = F And Not COMMON.C_FLAG Else F = F Or COMMON.C_FLAG
     End Sub ' Flag_Cflag2
 
     Public Sub FlagNflag1()                                                                 '1
-        Me.F = Me.F Or COMMON.N_FLAG
+        F = F Or COMMON.N_FLAG
     End Sub ' Flag_Nflag1
     Public Sub FlagNflag2()
-        Me.F = Me.F And Not COMMON.N_FLAG
+        F = F And Not COMMON.N_FLAG
     End Sub ' Flag_Nflag2
 
     Public Sub FlagPflag1(ByVal test As Boolean)                                            '2
-        If test Then Me.F = Me.F Or COMMON.P_FLAG Else Me.F = Me.F And Not COMMON.P_FLAG
+        If test Then F = F Or COMMON.P_FLAG Else F = F And Not COMMON.P_FLAG
     End Sub ' Flag_Pflag1
     Public Sub FlagPflag2(ByVal test As Boolean)
-        If test Then Me.F = Me.F And Not COMMON.P_FLAG Else Me.F = Me.F Or COMMON.P_FLAG
+        If test Then F = F And Not COMMON.P_FLAG Else F = F Or COMMON.P_FLAG
     End Sub ' Flag_Pflag2
 
     Public Sub FlagF3flag1()                                                                 '3
-        Me.F = Me.F Or COMMON.F3_FLAG
+        F = F Or COMMON.F3_FLAG
     End Sub ' Flag_Nflag1
     Public Sub FlagF3flag2()
-        Me.F = Me.F And Not COMMON.F3_FLAG
+        F = F And Not COMMON.F3_FLAG
     End Sub ' Flag_Nflag2
 
     Public Sub FlagHflag1(ByVal test As Boolean)                                            '4
-        If test Then Me.F = Me.F Or COMMON.H_FLAG Else Me.F = Me.F And Not COMMON.H_FLAG
+        If test Then F = F Or COMMON.H_FLAG Else F = F And Not COMMON.H_FLAG
     End Sub ' Flag_Hflag1
     Public Sub FlagHflag2(ByVal test As Boolean)
-        If test Then Me.F = Me.F And Not COMMON.H_FLAG Else Me.F = Me.F Or COMMON.H_FLAG
+        If test Then F = F And Not COMMON.H_FLAG Else F = F Or COMMON.H_FLAG
     End Sub ' Flag_Hflag2
 
     Public Sub FlagF5flag1()                                                                 '5
-        Me.F = Me.F Or COMMON.F5_FLAG
+        F = F Or COMMON.F5_FLAG
     End Sub ' Flag_Nflag1
     Public Sub FlagF5flag2()
-        Me.F = Me.F And Not COMMON.F5_FLAG
+        F = F And Not COMMON.F5_FLAG
     End Sub ' Flag_Nflag2
 
     Public Sub FlagZflag1(ByVal test As Boolean)                                            '6
-        If test Then Me.F = Me.F Or COMMON.Z_FLAG Else Me.F = Me.F And Not COMMON.Z_FLAG
+        If test Then F = F Or COMMON.Z_FLAG Else F = F And Not COMMON.Z_FLAG
     End Sub ' Flag_Zflag1
     Public Sub FlagZflag2(ByVal test As Boolean)
-        If test Then Me.F = Me.F And Not COMMON.Z_FLAG Else Me.F = Me.F Or COMMON.Z_FLAG
+        If test Then F = F And Not COMMON.Z_FLAG Else F = F Or COMMON.Z_FLAG
     End Sub ' Flag_Zflag2
     Public Sub FlagZPflag(ByVal test As Boolean)
-        If test Then Me.F = Me.F And Not (COMMON.Z_FLAG Or COMMON.P_FLAG) Else Me.F = Me.F Or (COMMON.Z_FLAG Or COMMON.P_FLAG)
+        If test Then F = F And Not (COMMON.Z_FLAG Or COMMON.P_FLAG) Else F = F Or (COMMON.Z_FLAG Or COMMON.P_FLAG)
     End Sub ' Flag_Zflag2
 
     Public Sub FlagSflag1(ByVal test As Boolean)                                            '7
-        If test Then Me.F = Me.F Or COMMON.S_FLAG Else Me.F = Me.F And Not COMMON.S_FLAG
+        If test Then F = F Or COMMON.S_FLAG Else F = F And Not COMMON.S_FLAG
     End Sub ' Flag_Sflag1
     Public Sub FlagSflag2(ByVal test As Boolean)
-        If test Then Me.F = Me.F And Not COMMON.S_FLAG Else Me.F = Me.F Or COMMON.S_FLAG
+        If test Then F = F And Not COMMON.S_FLAG Else F = F Or COMMON.S_FLAG
     End Sub ' Flag_Sflag2
 #End Region
 

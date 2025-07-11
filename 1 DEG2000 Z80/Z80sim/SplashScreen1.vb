@@ -38,7 +38,7 @@
     Private Sub DEG2000_Click(sender As System.Object, e As System.EventArgs) Handles DEG2000.Click, MainLayoutPanel.Click, Version.Click, DetailsLayoutPanel.Click, Copyright.Click
         Haupt.SplashScreenStarttime.Enabled = False
         Haupt.TestbildChange.Enabled = False
-        Me.Hide()
+        Hide()
         BWS.TestBild(0)
     End Sub
 End Class

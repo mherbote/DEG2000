@@ -29,16 +29,17 @@ Public Class IOsim
 
 #Region "Local variables"
     Delegate Function op_funcb(ByVal adr As Byte) As Byte
-    Private port(0 To 255, 0 To 1) As op_funcb
     Private op_f As op_funcb
-    Private data_n As Byte
     Private KeyProc As Boolean
 
-    Private Memory_buffer(6) As Byte
-    Private Cursor_buffer(7) As Byte
+    Private ReadOnly data_n As Byte
+    Private ReadOnly port(0 To 255, 0 To 1) As op_funcb
 
-    Private Kassette_buffer(9) As Byte
-    Private Kassette_Status(4) As Byte                                                                  '0 ... Position für Input Status/Fehlerschlüssel
+    Private ReadOnly Memory_buffer(6) As Byte
+    Private ReadOnly Cursor_buffer(7) As Byte
+
+    Private ReadOnly Kassette_buffer(9) As Byte
+    Private ReadOnly Kassette_Status(4) As Byte                                                         '0 ... Position für Input Status/Fehlerschlüssel
     '                                                                                                   '1 ... HS-Bereich
     '                                                                                                   '2 ... Länge der Daten  im Puffer
     '                                                                                                   '3 ... Status
@@ -54,8 +55,8 @@ Public Class IOsim
 
 
     'Private MEMswitch(4, 16) As Byte
-    Private Date_buffer(3) As Byte
-    Private Time_buffer(8) As Byte
+    Private ReadOnly Date_buffer(3) As Byte
+    Private ReadOnly Time_buffer(8) As Byte
 #End Region
 
 #Region "Global Routinen"
@@ -68,20 +69,20 @@ Public Class IOsim
         Time_buffer(0) = 0
     End Sub
 
-    Public Function io_in(adr As Byte)
+    Public Function Io_in(adr As Byte)
         op_f = port(adr, 0)
-        io_in = op_f(data_n)
+        Io_in = op_f(data_n)
     End Function
 
-    Public Function io_out(ByVal adr As Byte, ByVal data As Byte)
+    Public Function Io_out(ByVal adr As Byte, ByVal data As Byte)
         op_f = port(adr, 1)
-        io_out = op_f(data)
+        Io_out = op_f(data)
     End Function
 #End Region
 
 #Region "Locale routinen"
 #Region "init_io, io_trap"
-    Private Sub init_io()
+    Private Sub Init_io()
         Dim i As Integer
         For i = 0 To &HFF
             port(i, 0) = New op_funcb(AddressOf io_trap)                        ' for input
@@ -144,9 +145,9 @@ Public Class IOsim
 
         KeyProc = False
     End Sub
-    Private Function io_trap(ByVal Data As Byte) As Byte
-        io_trap = Data
-        io_trap = 0
+    Private Function Io_trap(ByVal Data As Byte) As Byte
+        Io_trap = Data
+        Io_trap = 0
     End Function
 #End Region
 
@@ -673,28 +674,28 @@ Public Class IOsim
                                 Adresse = Kassette_buffer(5) * 256 + Kassette_buffer(6)
                                 Do
                                     B = COMMON.vZ80cpu.Speicher_lesen_Byte1(Adresse, HSbereich)
-                                    Adresse = Adresse + 1
-                                    j = j + 1
+                                    Adresse += 1
+                                    j += 1
                                     Select Case B
                                         Case &H20
                                             Select Case i
                                                 Case 0
-                                                    Name = Name + "-"
-                                                    i = i + 1
+                                                    Name += "-"
+                                                    i += 1
                                                 Case 1
                                                     Select Case j
                                                         Case 6
-                                                            i = i + 1
+                                                            i += 1
                                                         Case Else
                                                     End Select
                                                 Case 2
                                                     B = 0
                                             End Select
                                         Case Else
-                                            Name = Name + Chr(B)
+                                            Name += Chr(B)
                                     End Select
                                     If j = 6 And i = 0 Then
-                                        Name = Name + "-"
+                                        Name += "-"
                                         i = 2
                                     End If
                                 Loop Until B = 0
@@ -778,7 +779,7 @@ Public Class IOsim
                     GetChar = COMMON.NextCharTast2(i)
                     COMMON.NextCharTast1(i) = False
                     If COMMON.NextCharTast0 > 0 Then
-                        COMMON.NextCharTast0 = COMMON.NextCharTast0 - 1
+                        COMMON.NextCharTast0 -= 1
                         Call Haupt.ToolStripStatusAnzeigen()
                     End If
                     For j = 1 To COMMON.NextCharTast0
@@ -1217,12 +1218,12 @@ Public Class IOsim
                         BWSA = Cursor_buffer(4) * 256 + Cursor_buffer(3)
                         HL = Cursor_buffer(6) * 256 + Cursor_buffer(5)
                         If HL <= (BWSA + 80 * 32) Then
-                            HL = HL - BWSA
+                            HL -= BWSA
                             X = 0
                             Y = 0
                             While HL > 80
-                                HL = HL - 80
-                                Y = Y + 1
+                                HL -= 80
+                                Y += 1
                             End While
                             X = HL
                             BWS.SetCursor(X, Y)
