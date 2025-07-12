@@ -290,7 +290,7 @@ Public Class KassettenLW
             FilePosOut = FilePos
             fs_out = fi.OpenWrite()
             fs_out.Position = FilePosOut
-            Call SpezialBlockSchreiben("V", Laenge,, True)
+            Call SpezialBlockSchreiben("V", Laenge, , mres)
 
             If mres Then
                 ' Für MRES-Verzeichnis Datum einfügen
