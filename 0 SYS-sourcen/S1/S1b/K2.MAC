@@ -59,6 +59,7 @@
 ;*                 Hex   Kommando                               *
 ;*                 02    naechsten Record einlesen              *
 ;*                 08    naechsten Record schreiben             *
+;*                 18    MRES-Verzeichniseintrag schreiben      *
 ;*                 11    einen Block vorsetzen                  *
 ;*                 15    einen Block ruecksetzen                *
 ;*                 21    umspulen                               *
@@ -153,6 +154,8 @@ K1.BRKMB:
     CP  002H    ;naechsten Record einlesen
     JP  Z,STT02
     CP  008H    ;naechsten Record schreiben
+    JP  Z,STT08
+    CP  018H    ;MRES-Verzeichniseintrag schreiben
     JP  Z,STT08
     CP  011H    ;einen Block vorsetzen
     JP  Z,STT11
@@ -607,7 +610,7 @@ UF.EXEC2:
 UF.EXEC1:
 	BIT	7,(IX)	;Status
 	JR	Z,UF.RET
-	LD	A,(IX+1)	;Fehlerschlüssel
+	LD	A,(IX+1)	;Fehlerschluessel
 ;-------------------------Fehlerbehandlung---------------
 UF.ERANZ:
 	PUSH	HL

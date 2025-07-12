@@ -46,7 +46,7 @@ KI.KN:
 	CALL	UR.MIMO
 	RET	C
 ;---\
-	PUSH	HL
+	PUSH	HL	;KassettenName fuer Umbenenung im Emulator merken
 	PUSH	BC
 	LD	DE,PUF.KASS
 	LD	BC,6
@@ -62,7 +62,7 @@ KI.NMR:
 	CALL	UR.MIMO
 	JR	C,KI.KN	;BEI SYS-TASTE ZU VORHERIGER
 ;---\
-	PUSH	HL
+	PUSH	HL	;Kassetten-Nr fuer Umbenenung im Emulator merken
 	PUSH	BC
 	LD	DE,PUF.KASS+6
 	LD	BC,3
@@ -107,6 +107,7 @@ KI.VERZ:
 	DJNZ	KI.VERZ
 	CALL	UR.KBM
 	CALL	U1.VS1	;1.DATEIVORSATZ -->PUFFER
+	LD	(IX+10),020H
 	LD	(IX+4),08H
 	CALL	UF.EXEC
 	CALL	UR.KSL	;SCHLUSSLUECKE SCHREIBEN
@@ -1228,6 +1229,7 @@ FD.FOUT1:
 	PUSH	AF
 	LD	(IX+4),08H
 	CALL	UF.EXEC
+	CALL	UR.KSL
 	CALL	UR.KRWW
 	CALL	U1.DSVG
 	CALL	UR.KBR
@@ -1244,8 +1246,9 @@ FD.FOUT1:
 	CALL	UR.KBR
 	POP	HL
 	LD	(UE.PUF+25),HL
-	LD	(IX+4),08H
+	LD	(IX+4),018H
 	CALL	UF.EXEC
+FD.FOUT2:
 FD.END:
 	CALL	UR.KRW
 	CALL	UR.KRA
@@ -1262,7 +1265,7 @@ FD.FOLWR:
 	CALL	FD.DSPBB
 	CALL	FD.RDEND
 	CALL	FD.DSPBG
-	JR	$-33
+	JR	FD.FOUT2
 ;**********************************************************************
 ;      Eingabeprogramm
 ;**********************************************************************

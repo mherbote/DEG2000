@@ -237,7 +237,7 @@ Public Class KassettenLW
         Record = 0
     End Sub ' Rewind
 
-    Public Sub SpezialBlockSchreiben(ByVal s As String, ByVal Laenge As Byte, Optional ByVal FirstBM As Boolean = False)
+    Public Sub SpezialBlockSchreiben(ByVal s As String, ByVal Laenge As Byte, Optional ByVal FirstBM As Boolean = False, Optional mres As Boolean = False)
         Dim i As Byte
 
         Try
@@ -247,6 +247,9 @@ Public Class KassettenLW
             buffer.b(0).z(1) = Laenge
             If FirstBM Then
                 buffer.b(0).z(15) = &HFF
+            End If
+            If mres And s = "V" And Laenge = &H20 Then
+                buffer.b(0).z(3) = Asc("W")
             End If
             If s = "N" And (Laenge = &H20 Or Laenge = &H80) Then
                 buffer.b(0).z(14) = D
@@ -281,13 +284,24 @@ Public Class KassettenLW
         End Try
     End Sub ' SpezialRecordSchreiben
 
-    Public Sub RecordSchreiben(ByVal Laenge As Byte)
+    Public Sub RecordSchreiben(ByVal Laenge As Byte, Optional mres As Boolean = False)
         Try
             fs.Close()
             FilePosOut = FilePos
             fs_out = fi.OpenWrite()
             fs_out.Position = FilePosOut
-            Call SpezialBlockSchreiben("V", Laenge)
+            Call SpezialBlockSchreiben("V", Laenge,, True)
+
+            If mres Then
+                ' Für MRES-Verzeichnis Datum einfügen
+                Dim DateString As String = Now.Date.ToString("ddMMyy")
+                buffer.b(1).z(14) = Asc(DateString.Substring(0, 1))
+                buffer.b(1).z(15) = Asc(DateString.Substring(1, 1))
+                buffer.b(2).z(0) = Asc(DateString.Substring(2, 1))
+                buffer.b(2).z(1) = Asc(DateString.Substring(3, 1))
+                buffer.b(2).z(2) = Asc(DateString.Substring(4, 1))
+                buffer.b(2).z(3) = Asc(DateString.Substring(5, 1))
+            End If
 
             Anz = Laenge \ 16
             For i = 1 To Anz

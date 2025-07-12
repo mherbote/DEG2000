@@ -226,6 +226,7 @@ Public Class IOsim
         '4) Record schreiben
         '   1.Byte:    F0 Startbyte
         '   2.Byte:    08 nächsten Record schreiben
+        '              18 MRES-Verzeichniseintrag schreiben
         '   3.Byte:       Laufwerk 1 oder 2
         '   4.Byte:       Länge der Daten  (20H | 80H)
         '   5.Byte:       HS-Bereich
@@ -254,7 +255,8 @@ Public Class IOsim
                        Data = &H51 Or Data = &H61 Or
                        Data = &H71 Or Data = &H75 Or
                        Data = &H21 Or Data = &H2 Or
-                       Data = &H8 Or Data = &H44 Then
+                       Data = &H8 Or Data = &H18 Or
+                       Data = &H44 Then
                         Kassette_buffer(Kassette_buffer(0)) = Data
                     Else
                         Kassette_buffer(0) = 0
@@ -266,7 +268,7 @@ Public Class IOsim
                              &H71, &H75,                                                                '           n-te  BM    vor-/rück- setzen
                              &H51, &H61,                                                                '           BM / Schlusslücke schreiben
                              &H21, &H44,                                                                '           Rewind / Name ändern
-                             &H2, &H8                                                                   '           nächsten Record einlesen / schreiben
+                             &H2, &H8, &H18                                                             '           nächsten Record einlesen / schreiben
                             If Data = 1 Or Data = 2 Then                                                '               Laufwerk 1 oder 2
                                 Kassette_buffer(Kassette_buffer(0)) = Data
                             Else
@@ -294,7 +296,7 @@ Public Class IOsim
                         Case &H2,                                                                       '       nächsten Record einlesen
                              &H44                                                                       '       Name ändern
                             Kassette_buffer(Kassette_buffer(0)) = Data                                  '           HS-Seg
-                        Case &H8                                                                        '       nächsten Record schreiben
+                        Case &H8, &H18                                                                  '       nächsten Record schreiben
                             If Data = &H20 Or Data = &H80 Then                                          '           Länge der Daten
                                 Kassette_buffer(Kassette_buffer(0)) = Data
                             Else
@@ -316,7 +318,7 @@ Public Class IOsim
                         Case &H2,                                                                       '       nächsten Record einlesen
                              &H44                                                                       '       Name ändern
                             Kassette_buffer(Kassette_buffer(0)) = Data                                  '           H-Teil Pufferadresse
-                        Case &H8                                                                        '       nächsten Record schreiben
+                        Case &H8, &H18                                                                  '       nächsten Record schreiben
                             Kassette_buffer(Kassette_buffer(0)) = Data                                  '           HS-Seg
                         Case Else
                             Kassette_buffer(0) = 0
@@ -326,7 +328,7 @@ Public Class IOsim
                         Case &H2,                                                                       '       nächsten Record einlesen
                              &H44                                                                       '       Name ändern
                             Kassette_buffer(Kassette_buffer(0)) = Data                                  '           L-Teil Pufferadresse
-                        Case &H8                                                                        '       nächsten Record schreiben
+                        Case &H8, &H18                                                                  '       nächsten Record schreiben
                             Kassette_buffer(Kassette_buffer(0)) = Data                                  '           H-Teil Pufferadresse
                         Case Else
                             Kassette_buffer(0) = 0
@@ -341,14 +343,14 @@ Public Class IOsim
                             Else
                                 Kassette_buffer(0) = 0
                             End If
-                        Case &H8                                                                        '       nächsten Record schreiben
+                        Case &H8, &H18                                                                  '       nächsten Record schreiben
                             Kassette_buffer(Kassette_buffer(0)) = Data                                  '           L-Teil Pufferadresse
                         Case Else
                             Kassette_buffer(0) = 0
                     End Select
                 Case 8
                     Select Case Kassette_buffer(2)
-                        Case &H8                                                                        '       nächsten Record schreiben
+                        Case &H8, &H18                                                                  '       nächsten Record schreiben
                             If Data = &HFF Then
                                 Kassette_buffer(Kassette_buffer(0)) = Data
                                 weiter = True
@@ -491,6 +493,7 @@ Public Class IOsim
                                 Else
                                     .CassetteRecordVor()
                                     Call SetStatus(ucKj, "ok", port)
+                                    Call SetPufferlaenge(ucKj)
                                 End If
                             Else
                                 '1.a
@@ -509,6 +512,7 @@ Public Class IOsim
                                 Else
                                     .CassetteRecordBack()
                                     Call SetStatus(ucKj, "ok", port)
+                                    Call SetPufferlaenge(ucKj)
                                 End If
                             Else
                                 '1.a
@@ -595,7 +599,7 @@ Public Class IOsim
                                     Next j
 
                                     Adresse = Kassette_buffer(5) * 256 + Kassette_buffer(6)
-                                    Select Case ucKj.Anz
+                                    Select Case .Anz
                                         Case 1
                                             For i = 0 To 15                                             'Daten in den Puffer schreiben
                                                 B = ucKj.Kassette.buffer.b(1).z(i)
@@ -612,29 +616,15 @@ Public Class IOsim
                                     End Select
 
                                     Call SetStatus(ucKj, "ok", port)
-                                    Select Case ucKj.Anz
-                                        Case 1
-                                            Select Case Chr(ucKj.Kassette.buffer.b(1).z(0))
-                                                Case "B"
-                                                    Kassette_Status(2) = 1
-                                                Case "S"
-                                                    Kassette_Status(2) = 2
-                                                Case Else
-                                                    Kassette_Status(2) = &H10
-                                            End Select
-                                        Case 2
-                                            Kassette_Status(2) = &H20
-                                        Case 8
-                                            Kassette_Status(2) = &H80
-                                    End Select
+                                    Call SetPufferlaenge(ucKj)
                                 End If
                             Else
                                 Call SetStatus(ucKj, "kein RE", port)
                             End If
                         End With
 #End Region
-#Region "Record schreiben (08H)"
-                    Case &H8                                                                            'nächsten Record schreiben
+#Region "Record schreiben (08H/18H)"
+                    Case &H8, &H18                                                                     'nächsten Record schreiben
                         With ucKj
                             If .Aktiv Then
                                 If .Kassette.RO Then
@@ -653,7 +643,12 @@ Public Class IOsim
                                         Next i
                                         Call ucKj.Kassette.CRC(ucKj.Kassette.buffer.b(j))
                                     Next j
-                                    Call .CassetteWriteRecord(Kassette_buffer(4))
+                                    Select Case Kassette_buffer(2)
+                                        Case &H8
+                                            Call .CassetteWriteRecord(Kassette_buffer(4))
+                                        Case &H18
+                                            Call .CassetteWriteRecord(Kassette_buffer(4), True)
+                                    End Select
                                     Call SetStatus(ucKj, "ok", port)
                                     Kassette_Status(2) = Kassette_buffer(4)
                                 End If
@@ -718,6 +713,23 @@ Public Class IOsim
         AKBiA_out = 0
         Return AKBiA_out
     End Function
+    Private Sub SetPufferlaenge(ucKj As ucKassette)
+        Select Case ucKj.Anz
+            Case 1
+                Select Case Chr(ucKj.Kassette.buffer.b(1).z(0))
+                    Case "B"
+                        Kassette_Status(2) = 1
+                    Case "S"
+                        Kassette_Status(2) = 2
+                    Case Else
+                        Kassette_Status(2) = &H10
+                End Select
+            Case 2
+                Kassette_Status(2) = &H20
+            Case 8
+                Kassette_Status(2) = &H80
+        End Select
+    End Sub
     Private Sub SetStatus(ucKj As ucKassette, ByVal Command As String, ByVal port As Byte)
         If IsDBNull(ucKj) Then
             MsgBox("IOsim.SetStatus: ucKj darf nicht NULL sein!")

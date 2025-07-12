@@ -13,7 +13,7 @@
   56C8                          UC.CVAXB  EQU   UC.CVABX + 0002FH
   571C                          UC.CVBD2  EQU   UC.CVABX + 00083H
   5761                          UC.CVDB   EQU   UC.CVABX + 000C8H
-  67DF                          KH.BILO   EQU   067DFH
+  67E8                          KH.BILO   EQU   067E8H
                                 
                                 	PAGE	87
 'Definitionen zum Betriebssystem'	MACRO-80 3.44	09-Dec-81	PAGE	1-2
@@ -4908,7 +4908,7 @@
   2117*   21 0000        C      	LD	HL,0
   211A*   22 2BE7*       C      	LD	(ME.PUZEI),HL
   211D*                  C      ME.INSLN:
-  211D*   CD 67DF        C      	CALL	KH.BILO
+  211D*   CD 67E8        C      	CALL	KH.BILO
   2120*   CD 1D5E*       C      	CALL	ME.AZBLD
   2123*   CD 1E01*       C      	CALL	ME.BSADS
   2126*   CD 2323*       C      	CALL	ME.DSPAD
@@ -9607,7 +9607,7 @@ Symbols:
 1064*	ED.MEL2         1027*	ED.MEL21        1025*	ED.MEL22        
 1094*	ED.MEL3         1006*	ED.MELAN        109E*	ED.MELNL        
 10B4*	ED.QUELL        1169*	ED.UMLKP        10C7*	ED.VOLLF        
-1224*	ED.ZED1         67DF 	KH.BILO         4066*	KMBINI          
+1224*	ED.ZED1         67E8 	KH.BILO         4066*	KMBINI          
 4060*	KMBROB          4063*	KMBRUC          451D*	LR.ILBL         
 44AF*	LR.ILBS         4476*	LR.IRLB         4585*	LR.IRLBL        
 4505*	LR.IRLBS        447A*	LR.KONV         448A*	LR.KONV1        

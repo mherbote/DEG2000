@@ -521,8 +521,8 @@ Public Class ucKassette
         Anz = Kassette.RecordLesen
         Call RecordAnzeigen()
     End Sub
-    Public Sub CassetteWriteRecord(ByVal Laenge As Byte)
-        Call Kassette.RecordSchreiben(Laenge)
+    Public Sub CassetteWriteRecord(ByVal Laenge As Byte, Optional mres As Boolean = False)
+        Call Kassette.RecordSchreiben(Laenge, mres)
         Call CassetteDisplayAfterWrite()
     End Sub
     Public Sub CassetteWriteSpezialRecord(ByVal Kennung As String, ByVal Laenge As Byte, Optional ByVal FirstBM As Boolean = False)
