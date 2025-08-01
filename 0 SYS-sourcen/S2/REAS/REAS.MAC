@@ -1,0 +1,1000 @@
+;--------------------------\            ; Vorspann fuer BIN-Datei
+            DB      0EFH                ; Startbyte ---> 
+            DS      12,0
+            DB      002H                ; HS-Bereich : 2
+            DW      09000H              ; Ladeadresse: 9000H
+;--------------------------/
+
+            INCLUDE S21EQU1.MAC
+            INCLUDE S21EQU2.MAC
+
+            .PHASE  09000H
+;           PN      D207.REAS
+;****************************************************************
+;*               Reassembler I  ---  R I O - Format             *
+;*  Version      -----------------------------------------------*
+;*               Programmierer: M. Herbote --- K EAW  ZFT (WFT) *
+;*  V 2 . 1      -----------------------------------------------*
+;*               Stand        : 08.Dezember 1982                *
+;****************************************************************
+
+D2.ZK1:     DB      'RLCRRCRL RR SLASRASLISRL'
+D2.ZK2:     DB      'BITRESSET'
+D2.ZK3:     DB      'INCDEC'
+D2.ZK4:     DB      'BCDEHL?A'
+D2.ZK5:     DB      'ADDADCSUBSBCANDXOROR CP '
+D2.ZK6:     DB      'BCDEHLSP'
+D2.ZK7:     DB      'EX JP ???LD '
+D2.ZK8:     DB      'I,AR,AA,IA,RRRDRLD'
+D2.ZK9:     DB      'LDCPINOT'
+
+D2.ZK10:    DB      000H
+            DB      027H
+            DB      037H
+            DB      02FH
+            DB      03FH
+            DB      076H
+            DB      0D9H
+            DB      0F3H
+            DB      0FBH
+
+D2.ZK11:    DB      'NOPDAASCFCPLCCFHLTEXXDI EI '
+D2.ZK12:    DB      'NZ ZNC CPOPE P M'
+
+            PAGE
+            DW      $
+            DB      'REAS'
+
+            CALL    S1.INPTR
+            CALL    S1.HBKON
+            LD      E,A
+            INC     HL
+            CALL    S1.HBKON
+            LD      B,A
+            CALL    S1.HBKON
+            LD      C,A
+            LD      (S2.PAR1),DE
+            LD      (S2.DL),BC
+            LD      A,5                 ;Bildschirm loeschen
+            LD      (MS.CMD),A
+            CALL    D2.MONI
+            CALL    S1.ANZEI
+            DW      00B00H              ;ZPOS= 1 , SPOS=12
+            DB      40
+            DB      'Reassembler I                Version 2.1'
+            DB      0
+            LD      HL,S0.BWSA+1920
+            LD      (S2.ZP),HL
+            LD      HL,0301CH
+            LD      (S2.SP2),HL
+            CALL    D2.TLOES
+            LD      HL,S1.SYSTB
+            LD      (TS.TAB3+6),HL
+            LD      HL,D2.P1
+            LD      (TS.TAB1),HL
+            LD      HL,D2.P2
+            LD      (TS.TAB1+2),HL
+            LD      HL,TS.SPMER
+            LD      (HL),0FEH
+D2.RE02:    LD      HL,(S2.PAR1)
+            LD      (S2.AADR),HL
+            LD      HL,(S2.DL)
+            LD      (S2.KADR),HL
+            JR      D2.P1EE
+
+            PAGE
+D2.P1:      LD      HL,(S2.ZP)          ;Fkt.taste P1 Mnemonikanzeige
+            EXX
+            CALL    D2.MNEMO
+D2.P1A:     LD      HL,S0.BWSA+240      ; 4.Zeile
+            LD      DE,S0.BWSA+160      ; 3.Zeile
+            LD      BC,1600             ;20 Zeilen hochrollen
+            LDIR
+            LD      HL,(S2.ZP)          ;Mnemonik-Zeile auf BWSA uebernehmen
+            LD      DE,S0.BWSA+1680
+            LD      BC,S0.SPANZ
+            LDIR
+D2.P1EE:    LD      HL,(S2.ZP)          ;Pufferzeile loeschen
+            LD      (HL),' '
+            PUSH    HL
+            POP     DE
+            INC     DE
+            LD      BC,S0.SPANZ-1
+            LDIR
+            CALL    D2.BWSUS
+            LD      A,(S2.SP3)          ;Cursorpos. auf Kommentarfeld
+            LD      H,A
+            LD      L,S0.ZANZ-3
+            LD      (MS.ZPOS),HL
+            RET
+
+D2.P2:      LD      HL,(S2.ZP)          ;Fkt.taste P2 Daten   anzeige
+            EXX
+D2.RE01:    LD      HL,(S2.AADR)
+            LD      B,1
+            CALL    D2.BEF
+            CALL    D2.WRITE
+            DB      'DB   '
+            DB      30H+80H
+            LD      A,(HL)
+            CALL    D2.WRIAC
+            LD      A,'H'
+            CALL    D2.OPA1
+            LD      A,(S2.SP3)
+            LD      C,A
+            CALL    D2.TAB1
+            LD      A,';'
+            CALL    D2.OPA1
+            LD      A,(HL)
+            CALL    D2.OPA1
+            INC     HL
+            LD      (S2.AADR),HL
+            JR      D2.P1A
+
+D2.UP1:     CALL    D2.WRITE            ;Anzeige: (x+e)   x = IX bzw. IY
+            DB      028H+80H            ;"("
+            CALL    D2.IXIY1
+            CALL    D2.WRITE
+            DB      02BH+80H            ;"+"
+D2.UP2:     LD      A,'0'
+            CALL    D2.OPA1
+            LD      A,(HL)
+            CALL    D2.WRIAC
+            LD      A,'H'
+            CALL    D2.OPA1
+D2.UP3:     CALL    D2.WRITE
+            DB      029H+80H            ;")"
+            RET
+            PAGE
+D2.MNEMO:   LD      HL,(S2.AADR)        ;OP - Code des Befehles testen
+            PUSH    HL                  ;Ausschreiben von akt. Adresse ,
+            POP     DE                  ;Befehlsbytes und mnemonischen Text
+            LD      A,(HL)
+            AND     0DFH
+            CP      0DDH
+            JP      NZ,D2.M29
+            INC     HL
+            LD      A,(HL)
+            CP      0CBH
+            LD      B,4
+            DEC     HL
+            JR      NZ,D2.M4
+            CALL    D2.BEF
+            INC     HL
+            INC     HL
+            INC     HL
+            CALL    D2.CBBEF
+            DEC     HL
+            CALL    D2.UP1
+
+D2.M1:      INC     HL
+D2.M2:      INC     HL
+            CALL    D2.TAB
+D2.M3:      LD      (S2.AADR),HL        ;Adresse des naechsten Befehls
+            RET
+
+D2.M4:      CP      021H
+            JR      NZ,D2.M7
+            CALL    D2.LDBEF
+            CALL    D2.IXIY1
+            INC     HL
+D2.M5:      CALL    D2.KOMMA
+D2.M6:      INC     HL
+            CALL    D2.IXIY3
+            JR      D2.M2               ;===> UP beenden
+
+D2.M7:      AND     0FEH
+            DEC     B
+            CP      034H
+            JR      NZ,D2.M9
+            CALL    D2.BEF
+            INC     HL
+            CALL    D2.INDEC
+D2.M8:      INC     HL
+            CALL    D2.UP1
+            JR      D2.M2               ;===> UP beenden
+
+            PAGE
+D2.M9:      AND     0F8H
+            CP      070H
+            JR      NZ,D2.M10
+            CALL    D2.LDBEF
+            INC     HL
+            INC     HL
+            CALL    D2.UP1
+            CALL    D2.KOMMA
+            DEC     HL
+            LD      A,(HL)
+            CALL    D2.REG2
+            JR      D2.M1               ;===> UP beenden
+D2.M10:     INC     HL
+            LD      A,(HL)
+            DEC     HL
+            INC     B
+            CP      036H
+            JR      NZ,D2.M15
+            CALL    D2.LDBEF
+            INC     HL
+            INC     HL
+            CALL    D2.UP1
+D2.M11:     CALL    D2.KOMMA
+D2.M12:     INC     HL
+            LD      A,'0'
+            CALL    D2.OPA1
+            LD      A,(HL)
+D2.M13:     CALL    D2.WRIAC
+            LD      A,'H'
+            CALL    D2.OPA1
+D2.M14:     JR      D2.M2               ;===> UP beenden
+D2.M15:     AND     0C7H
+            CP      002H
+            JR      NZ,D2.M20
+            CALL    D2.LDBEF
+            INC     HL
+            BIT     3,(HL)
+            INC     HL
+            JR      Z,D2.M17
+            CALL    D2.IXIY1
+D2.M16:     CALL    D2.KOMMA
+            CALL    D2.DIADR
+            JR      D2.M14              ;===> UP beenden
+D2.M17:     CALL    D2.DIADR
+D2.M18:     CALL    D2.KOMMA
+D2.M19:     CALL    D2.IXIY1
+            JR      D2.M14              ;===> UP beenden
+D2.M20:     DEC     B
+            CP      086H
+            JR      NZ,D2.M21
+            CALL    D2.BEF
+            INC     HL
+            CALL    D2.RART
+            JR      D2.M8               ;===>
+D2.M21:     CP      046H
+            JR      NZ,D2.M22
+            CALL    D2.LDBEF
+            INC     HL
+            LD      A,(HL)
+            CALL    D2.REG
+            CALL    D2.KOMMA
+            JP      D2.M8               ;===>
+
+
+D2.M22:     LD      B,2
+            CP      001H
+            JR      NZ,D2.M24
+            CALL    D2.BEF
+            CALL    D2.WRITE
+            DB      'ADD '
+            DB      020H+80H            ;" "
+            CALL    D2.IXIY1
+            INC     HL
+            INC     DE
+D2.M23:     CALL    D2.KOMMA
+            CALL    D2.REGPA
+            JR      D2.M14
+D2.M24:     CP      003H
+            JR      NZ,D2.M25
+            CALL    D2.BEF
+            INC     HL
+            LD      A,(HL)
+            RRCA
+            RRCA
+            RRCA
+            CALL    D2.ID1
+            JR      D2.M19              ;===>
+D2.M25:     CALL    D2.BEF
+            INC     HL
+            LD      A,(HL)
+            RES     2,A
+            CP      0E1H
+            JR      NZ,D2.M26
+            CALL    D2.PUPOP
+            JR      D2.M19              ;===>
+D2.M26:     CALL    D2.LDEXJ
+            BIT     3,(HL)
+            JR      Z,D2.M28
+            BIT     4,(HL)
+            JR      Z,D2.M19
+            CALL    D2.WRITE
+            DB      'S'
+            DB      050H+80H            ;"P"
+D2.M27:     JR      D2.M18              ;===>
+D2.M28:     CALL    D2.WRITE
+            DB      '(SP'
+            DB      029H+80H            ;")"
+            JR      D2.M27              ;===>
+D2.M29:     LD      A,(HL)
+            CP      0CBH
+            LD      B,2
+            JR      NZ,D2.M32
+            CALL    D2.BEF
+            INC     HL
+D2.M30:     CALL    D2.CBBEF
+            LD      A,(HL)
+            CALL    D2.REG2
+D2.M31:     JP      D2.M2               ;===> UP beenden
+
+            PAGE
+D2.M32:     CP      0EDH
+            JP      NZ,D2.M49
+            INC     HL
+            LD      A,(HL)
+            AND     0C7H
+            CP      043H
+            DEC     HL
+            JR      NZ,D2.M35
+            LD      B,4
+            CALL    D2.LDBEF
+            INC     HL
+            INC     DE
+D2.M33:     BIT     3,(HL)
+            INC     HL
+            JR      Z,D2.M34
+            CALL    D2.REG4
+            JP      D2.M16              ;===>
+D2.M34:     CALL    D2.DIADR
+            JR      D2.M40
+D2.M35:     PUSH    AF
+            CALL    D2.BEF
+            POP     AF
+            CP      040H
+            INC     HL
+            JR      NZ,D2.M36
+            CALL    D2.IN
+            CALL    D2.REG3
+            CALL    D2.CKL
+            JR      D2.M31              ;===> UP beenden
+D2.M36:     CP      041H
+            JR      NZ,D2.M37
+            CALL    D2.OUT
+            CALL    D2.CKL1
+            CALL    D2.KOMMA
+            CALL    D2.IN1
+            CALL    D2.REG3
+            JR      D2.M31              ;===> UP beenden
+D2.M37:     INC     DE
+            CP      042H
+            JR      NZ,D2.M41
+            BIT     3,(HL)
+            JR      Z,D2.M38
+            CALL    D2.WRITE
+            DB      'A'
+            DB      044H+80H            ;"D"
+            JR      D2.M39
+D2.M38:     CALL    D2.WRITE
+            DB      'S'
+            DB      042H+80H            ;"B"
+D2.M39:     CALL    D2.WRITE
+            DB      'C  H'
+            DB      04CH+80H            ;"L"
+D2.M40:     JP      D2.M23
+D2.M41:     CP      044H
+            JR      NZ,D2.M43
+            CALL    D2.WRITE
+            DB      'NE'
+            DB      047H+80H            ;"G"
+D2.M42:     JP      D2.M2               ;===> UP beenden
+
+            PAGE
+D2.M43:     CP      045H
+            JR      NZ,D2.M44
+            CALL    D2.RET
+            BIT     3,(HL)
+            PUSH    AF
+            LD      A,'N'
+            CALL    Z,D2.OPA1
+            POP     AF
+            LD      A,'I'
+            CALL    NZ,D2.OPA1
+            JR      D2.M42              ;===> UP beenden
+D2.M44:     CP      046H
+            JR      NZ,D2.M46
+            CALL    D2.WRITE
+            DB      'I'
+            DB      04DH+80H            ;"M"
+            CALL    D2.IN1
+            JR      Z,D2.M45
+            DEC     A
+D2.M45:     CALL    D2.WRI1
+            JR      D2.M42              ;===> UP beenden
+D2.M46:     CP      047H
+            JR      NZ,D2.M48
+            CALL    D2.IN1
+            PUSH    AF
+            BIT     5,(HL)
+            CALL    Z,D2.LD
+            POP     AF
+            INC     A
+            LD      B,A
+            LD      A,LOW(D2.ZK8)
+D2.M47:     CALL    D2.TTAB
+            JR      D2.M42              ;===> UP beenden
+D2.M48:     AND     007H
+            INC     A
+            LD      B,A
+            LD      A,LOW(D2.ZK9)
+            LD      C,002H
+            CALL    D2.TTAB1
+            BIT     3,(HL)
+            PUSH    AF
+            LD      A,'I'
+            CALL    Z,D2.OPA1
+            POP     AF
+            LD      A,'D'
+            CALL    NZ,D2.OPA1
+            BIT     4,(HL)
+            LD      A,'R'
+            CALL    NZ,D2.OPA1
+            JR      D2.M42              ;===> UP beenden
+
+            PAGE
+D2.M49:     PUSH    HL
+            LD      HL,D2.ZK10
+            LD      BC,9
+            CPIR
+            POP     HL
+            JR      NZ,D2.M50
+            INC     B
+            PUSH    BC
+            CALL    D2.BEF
+            POP     BC
+            LD      A,9
+            SUB     C
+            LD      B,A
+            LD      A,LOW(D2.ZK11)
+            JR      D2.M47              ;===>
+
+D2.M50:     INC     B
+            AND     0C0H
+            CP      040H
+            JR      NZ,D2.M53
+            CALL    D2.LDBEF
+            LD      A,(HL)
+            CALL    D2.REG
+            CALL    D2.KOMMA
+D2.M51:     LD      A,(HL)
+            CALL    D2.REG2
+D2.M52:     JP      D2.M2               ;===> UP beenden
+
+D2.M53:     CP      080H
+            JR      NZ,D2.M55
+            CALL    D2.BEF
+            CALL    D2.RART
+            JR      D2.M51              ;===>
+D2.M54:     LD      A,(HL)
+            CALL    D2.REG
+            JR      D2.M52              ;===> UP beenden
+
+D2.M55:     LD      A,(HL)
+            AND     0C7H
+            JR      NZ,D2.M61
+            LD      A,(HL)
+            CP      008H
+            JR      NZ,D2.M57
+            CALL    D2.BEF
+            CALL    D2.WRITE
+            DB      'EX   AF,AF'
+            DB      027H+80H            ;"'"
+D2.M56:     JR      D2.M52              ;===> UP beenden
+
+            PAGE
+D2.M57:     INC     B
+            CALL    D2.BEF
+            LD      A,(HL)
+            CP      010H
+            JR      NZ,D2.M60
+            CALL    D2.WRITE
+            DB      'DJNZ'
+            DB      020H+80H            ;" "
+            JR      D2.M58A
+D2.M58:     CALL    D2.KOMMA
+D2.M58A:    INC     HL
+            LD      A,'0'
+            CALL    D2.OPA1
+            LD      A,(HL)
+            CALL    D2.WRIAC
+            LD      A,'H'
+            CALL    D2.OPA1
+            LD      L,(HL)
+            LD      H,0
+            BIT     7,L
+            JR      Z,D2.M59
+            DEC     H
+D2.M59:     ADD     HL,DE
+            INC     HL
+            INC     HL
+            CALL    D2.TAB
+            LD      A,';'
+            CALL    D2.OPA1
+            CALL    D2.KWRHL
+            EX      DE,HL
+            INC     HL
+            INC     HL
+            JP      D2.M3
+D2.M60:     CALL    D2.WRITE
+            DB      'JR  '
+            DB      020H+80H            ;" "
+            LD      A,(HL)
+            CP      018H
+            JR      Z,D2.M58A
+            RES     5,A
+            CALL    D2.TEST1
+            JR      D2.M58
+D2.M61:     DEC     A
+            JR      NZ,D2.M64
+            BIT     3,(HL)
+            JR      NZ,D2.M62
+            LD      B,3
+            CALL    D2.LDBEF
+            CALL    D2.REG4
+            JP      D2.M5
+D2.M62:     CALL    D2.BEF
+            CALL    D2.WRITE
+            DB      'ADD  HL'
+            DB      02CH+80H            ;","
+D2.M63:     CALL    D2.REG4
+            JR      D2.M56
+
+            PAGE
+D2.M64:     DEC     A
+            JR      NZ,D2.M69
+            BIT     5,(HL)
+            JR      Z,D2.M65
+            LD      B,3
+D2.M65:     CALL    D2.LDBEF
+            LD      A,(HL)
+            AND     0F7H
+            CP      022H
+            JP      Z,D2.M33
+            BIT     3,(HL)
+            JR      Z,D2.M67
+            CALL    D2.WRITE
+            DB      'A,'
+            DB      028H+80H
+            CALL    D2.BCDEN
+D2.M66:     JP      D2.M2
+D2.M67:     CALL    D2.WRITE
+            DB      028H+80H            ;"("
+            CALL    D2.BCDEN
+D2.M68:     CALL    D2.WRITE
+            DB      ','
+            DB      041H+80H            ;"A"
+            JR      D2.M66
+D2.M69:     CP      004H
+            JR      NZ,D2.M70
+            INC     B
+            CALL    D2.LDBEF
+            LD      A,(HL)
+            CALL    D2.REG
+            JP      D2.M11
+
+            PAGE
+D2.M70:     CP      006H
+            JR      NC,D2.M72
+            PUSH    AF
+            CALL    D2.BEF
+            POP     AF
+            DEC     A
+            JR      NZ,D2.M71
+            LD      A,(HL)
+            RRCA
+            RRCA
+            RRCA
+            CALL    D2.ID1
+            JR      D2.M63
+D2.M71:     CP      004H
+            JP      Z,D2.M30
+            CALL    D2.INDEC
+            JP      D2.M54
+D2.M72:     LD      A,(HL)
+            AND     007H
+            JR      NZ,D2.M74
+            CALL    D2.BEF
+            CALL    D2.RET
+            CALL    D2.L2
+            CALL    D2.TEST
+D2.M73:     JR      D2.M66
+D2.M74:     DEC     A
+            DEC     A
+            LD      B,3
+            JR      NZ,D2.M76
+            CALL    D2.BEF
+            CALL    D2.JP
+D2.M75:     CALL    D2.TEST
+            JP      D2.M5
+D2.M76:     DEC     A
+            DEC     A
+            JR      NZ,D2.M77
+            CALL    D2.BEF
+            CALL    D2.CALL
+            JR      D2.M75
+D2.M77:     DEC     A
+            DEC     A
+            JR      NZ,D2.M78
+            DEC     B
+            CALL    D2.BEF
+            CALL    D2.RART
+            JP      D2.M12
+
+            PAGE
+D2.M78:     LD      A,(HL)
+            CP      0C3H
+            JR      NZ,D2.M80
+D2.M79:     CALL    D2.BEF
+            BIT     3,(HL)
+            CALL    Z,D2.JP
+            BIT     3,(HL)
+            CALL    NZ,D2.CALL
+            JP      D2.M6
+D2.M80:     CP      0CDH
+            JR      Z,D2.M79
+            RES     3,A
+            DEC     B
+            CP      0D3H
+            JR      NZ,D2.M83
+            CALL    D2.BEF
+            BIT     3,(HL)
+            INC     HL
+            JR      Z,D2.M82
+            CALL    D2.IN
+            CALL    D2.WRITE
+            DB      'A,'
+            DB      028H+80H            ;"("
+            CALL    D2.UP2
+D2.M81:     JR      D2.M73
+D2.M82:     CALL    D2.OUT
+            CALL    D2.WRITE
+            DB      028H+80H            ;"("
+            CALL    D2.UP2
+            JP      D2.M68
+D2.M83:     DEC     B
+            PUSH    AF
+            CALL    D2.BEF
+            POP     AF
+            CP      0E3H
+            JR      NZ,D2.M86
+            CALL    D2.WRITE
+            DB      'EX  '
+            DB      020H+80H            ;" "
+            BIT     3,(HL)
+            JR      NZ,D2.M85
+            CALL    D2.WRITE
+            DB      '(SP'
+            DB      029H+80H            ;")"
+D2.M84:     CALL    D2.WRITE
+            DB      ',H'
+            DB      04CH+80H            ;"L"
+            JR      D2.M81
+D2.M85:     CALL    D2.WRITE
+            DB      'D'
+            DB      045H+80H            ;"E"
+            JR      D2.M84
+
+            PAGE
+D2.M86:     LD      A,(HL)
+            CP      0E9H
+            JR      NZ,D2.M87
+            CALL    D2.JP
+            CALL    D2.WRITE
+            DB      'H'
+            DB      04CH+80H            ;"L"
+            JR      D2.M81
+D2.M87:     CP      0F9H
+            JR      NZ,D2.M88
+            CALL    D2.LD
+            CALL    D2.WRITE
+            DB      'S'
+            DB      050H+80H            ;"P"
+            JR      D2.M84
+D2.M88:     CP      0C9H
+            JR      NZ,D2.M90
+            CALL    D2.RET
+D2.M89:     JR      D2.M81
+D2.M90:     BIT     1,(HL)
+            JR      Z,D2.M92
+            CALL    D2.WRITE
+            DB      'RST '
+            DB      020H+80H            ;" "
+            CALL    D2.IN1
+            LD      B,A
+            INC     B
+            LD      A,0F8H
+D2.M91:     ADD     A,008H
+            DJNZ    D2.M91
+            PUSH    AF
+            LD      A,'0'
+            CALL    D2.OPA1
+            POP     AF
+            JP      D2.M13
+D2.M92:     CALL    D2.PUPOP
+            LD      A,(HL)
+            AND     030H
+            CP      030H
+            JP      NZ,D2.M63
+            CALL    D2.WRITE
+            DB      'A'
+            DB      046H+80H            ;"F"
+            JR      D2.M89
+
+            PAGE
+D2.CALL:    CALL    D2.WRITE            ;Anzeige: CALL
+            DB      'CALL'
+            DB      020H+80H            ;" "
+            RET
+D2.KOMMA:   CALL    D2.WRITE            ;Anzeige: ,
+            DB      02CH+80H            ;","
+            RET
+D2.TAB:     LD      A,(S2.SP3)          ;Cursor in Spaltenposition
+            LD      C,A
+D2.TAB1:    LD      B,0
+            PUSH    BC
+            EXX
+            LD      HL,(S2.ZP)
+            POP     BC
+            ADD     HL,BC
+            EXX
+            RET
+;
+D2.LD:      CALL    D2.WRITE            ;Anzeige: LD
+            DB      'LD  '
+            DB      020H+80H            ;" "
+            RET
+;
+D2.IXIY:    DEC     DE                  ;Anzeige: IX bzw. IY
+D2.IXIY1:   LD      A,(DE)
+            CP      0FDH
+            JR      Z,D2.IXIY2
+            CALL    D2.WRITE
+            DB      'I'
+            DB      058H+80H            ;"X"
+            RET
+D2.IXIY2:   CALL    D2.WRITE
+            DB      'I'
+            DB      059H+80H            ;"Y"
+            RET
+;
+D2.IXIY3:   PUSH    DE                  ;Zahlenwert bei dir. Adr. und 16-Bit-Ladeop.
+            LD      E,(HL)
+            INC     HL
+            LD      D,(HL)
+            EX      DE,HL
+            LD      A,'0'
+            CALL    D2.OPA1
+            CALL    D2.WRIHL
+            LD      A,'H'
+            CALL    D2.OPA1
+            EX      DE,HL
+            POP     DE
+            RET
+D2.INDEC:   LD      A,(HL)              ;Anzeige: INC bzw. DEC
+D2.ID1:     AND     001H
+            LD      B,A
+            INC     B
+            LD      A,LOW(D2.ZK3)
+D2.ID2:     JP      D2.L4
+
+            PAGE
+D2.REG:     RRCA                        ;Anzeige des Registers B bis A
+            RRCA
+            RRCA
+D2.REG2:    AND     007H
+            CP      006H
+            JR      Z,D2.REG1
+D2.REG3:    LD      B,A
+            LD      C,1
+            LD      A,LOW(D2.ZK4)
+D2.REG6:    INC     B
+            CALL    D2.TTAB1
+            RET
+D2.REG1:    CALL    D2.WRITE
+            DB      '(HL'
+            DB      029H+80H            ;")"
+            RET
+D2.RART:    LD      A,(HL)              ;Anzeige der Rechenart
+            AND     038H
+            RRCA
+            RRCA
+            RRCA
+            LD      B,A
+            LD      A,LOW(D2.ZK5)
+            INC     B
+            CALL    D2.TTAB
+            CALL    D2.WRITE
+            DB      '  A'
+            DB      02CH+80H            ;","
+            RET
+D2.REGPA:   LD      A,(DE)              ;Anzeige des Registerpaares
+            CP      029H
+            JR      Z,D2.IXIY
+D2.REG4:    LD      A,(DE)
+            RRCA
+            RRCA
+            RRCA
+            RRCA
+            AND     003H
+            LD      B,A
+            LD      A,LOW(D2.ZK6)
+D2.REG5:    LD      C,2
+            JR      D2.REG6
+D2.PUPOP:   BIT     2,(HL)              ;Anzeige: PUSH bzw. POP
+            JR      Z,D2.PUP1
+            CALL    D2.WRITE
+            DB      'PUSH'
+            DB      020H+80H            ;" "
+            RET
+D2.PUP1:    CALL    D2.WRITE
+            DB      'POP '
+            DB      020H+80H            ;" "
+            RET
+
+            PAGE
+D2.LDEXJ:   LD      A,(HL)              ;Anzeige: LD , EX bzw. JP
+            AND     018H
+            RRCA
+            RRCA
+            RRCA
+            LD      B,A
+            INC     B
+            LD      A,LOW(D2.ZK7)
+            JR      D2.ID2
+D2.LDBEF:   CALL    D2.BEF              ;Anzeige von Adr. , Befehl und LD
+            CALL    D2.LD
+            RET
+D2.DIADR:   CALL    D2.WRITE            ;Anzeige: (nn)
+            DB      028H+80H            ;"("
+            CALL    D2.IXIY3
+            JP      D2.UP3
+D2.IN:      CALL    D2.WRITE            ;Anzeige: IN
+            DB      'IN  '
+            DB      020H+80H            ;" "
+D2.IN1:     LD      A,(HL)
+D2.IN2:     RRCA
+            RRCA
+            RRCA
+            AND     007H
+            RET
+D2.CKL:     CALL    D2.KOMMA            ;Anzeige: ,(C)
+D2.CKL1:    CALL    D2.WRITE
+            DB      '(C'
+            DB      029H+80H            ;")"
+            RET
+D2.OUT:     CALL    D2.WRITE            ;Anzeige: OUT
+            DB      'OUT '
+            DB      020H+80H            ;" "
+            RET
+D2.RET:     CALL    D2.WRITE            ;Anzeige: RET
+            DB      'RE'
+            DB      054H+80H            ;"T"
+            RET
+D2.KWRHL:   PUSH    HL                  ;Anzeige des HL-Reg. mit Korr.-adr.
+            PUSH    DE
+            LD      DE,(S2.KADR)
+            ADD     HL,DE
+            CALL    D2.WRIHL
+            POP     DE
+            POP     HL
+            RET
+D2.TEST:    LD      A,(HL)              ;Anzeige Bedingung bei Spruengen und UP-Aufr.
+D2.TEST1:   CALL    D2.IN2
+            LD      B,A
+            LD      A,LOW(D2.ZK12)
+            JP      D2.REG5
+D2.BCDEN:   BIT     5,(HL)              ;erkennen und schreiben des Registerpaares
+            CALL    Z,D2.REG4           ;oder der direkten Adresse
+            BIT     5,(HL)
+            JR      Z,$+06
+            INC     HL
+            CALL    D2.IXIY3
+            CALL    D2.UP3
+            RET
+D2.JP:      CALL    D2.WRITE            ;Anzeige: JP
+            DB      'JP  '
+            DB      020H+80H            ;" "
+            RET
+
+D2.CBBEF:   LD      A,(HL)              ;Dekodierung der CB-Befehle
+            CP      040H
+            JR      NC,D2.L3
+            AND     038H
+            RRCA
+            RRCA
+            RRCA
+            INC     A
+            LD      B,A
+            LD      A,LOW(D2.ZK1)
+D2.L4:      CALL    D2.TTAB
+D2.L2:      CALL    D2.WRITE            ;Anzeige von zwei blank
+            DB      ' '
+            DB      020H+80H            ;" "
+            RET
+D2.L3:      AND     0C0H
+            RLCA
+            RLCA
+            LD      B,A
+            LD      A,LOW(D2.ZK2)
+            CALL    D2.TTAB
+            CALL    D2.L2
+            LD      A,(HL)
+            AND     038H
+            RRCA
+            RRCA
+            RRCA
+            CALL    D2.WRI1
+            JP      D2.KOMMA
+D2.TTAB:    LD      C,3                 ;errechnen der gewuenschten Tabellenadr.
+D2.TTAB1:   SUB     C                   ;und Anzeige der dort stehenden Werte
+D2.TTAB2:   ADD     A,C
+            DJNZ    D2.TTAB2
+            LD      B,C
+            PUSH    HL
+            LD      H,HIGH(D2.ZK1)
+            LD      L,A
+D2.TTAB3:   LD      A,(HL)
+            CALL    D2.OPA1
+            INC     HL
+            DJNZ    D2.TTAB3
+            POP     HL
+            RET
+D2.BEF:     PUSH    HL                  ;Anzeige korr. Adr. und Befehlsbyts
+            CALL    D2.KWRHL
+            CALL    D2.L2
+D2.BEF1:    LD      A,(HL)
+            CALL    D2.WRIAC
+            INC     HL
+            DJNZ    D2.BEF1
+            POP     HL
+            LD      A,(S2.SP2)
+            LD      C,A
+            JP      D2.TAB1
+
+            PAGE
+D2.WRITE:   EX      (SP),HL             ;Vektor auf Bildschirm schreiben
+D2.WR1:     LD      A,(HL)
+            RES     7,A
+            CALL    D2.OPA1
+            LD      A,(HL)
+            INC     HL
+            BIT     7,A
+            JR      Z,D2.WR1
+D2.WR2:     EX      (SP),HL
+            RET
+;
+D2.WRIAC:   PUSH    AF                  ;schreibt Reg. A in Hex-Format auf Schirm
+            RRA
+            RRA
+            RRA
+            RRA
+            CALL    D2.WRI1
+            POP     AF
+D2.WRI1:    PUSH    AF
+            AND     0FH
+            ADD     A,30H
+            CP      3AH
+            JR      C,D2.WR3
+            ADD     A,07H
+D2.WR3:     CALL    D2.OPA1
+            POP     AF
+            RET
+;
+D2.WRIHL:   LD      A,H                 ;schreibt Reg.HL in Hex-Format auf Schirm
+            CALL    D2.WRIAC
+            LD      A,L
+            CALL    D2.WRIAC
+            RET
+;
+D2.OPA1:    EXX                         ;schreibt Reg. A in ASCII auf Schirm
+            LD      (HL),A
+            INC     HL
+            EXX
+            RET
+
+D2.MONI:    JP      MO.MONI             ;S1.MO
+D2.BWSUS:   JP      MO.BWSUS            ;S1.MO+6
+D2.TLOES:   JP      TA.LOE              ;S1.TA+9
+
+;
+            .DEPHASE
+;
+
+            END
+

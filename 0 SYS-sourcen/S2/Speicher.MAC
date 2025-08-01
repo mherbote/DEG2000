@@ -1,0 +1,330 @@
+;           PN      KS
+            TITLE   'Arbeitsbereich zur Geraetebedienroutine KMBG'
+            PAGE
+;****************************************************************
+;*               Arbeitsbereich zur Geraetebedienroutine KMBG   *
+;****************************************************************
+KS.AEATB:   DW      0                   ;Adresse E/A-Tabelle
+KS.PZAUS:   DW      0                   ;Pufferzeiger Ausgabe
+KS.PZEIN:   DW      0                   ;Pufferzeiger Eingabe
+KS.ZAUS:    DW      0                   ;Zaehler Ausgabe
+KS.ZEIN:    DW      0                   ;Zaehler Eingabe
+KS.Z1:      DB      0                   ;Zaehler Schreib-/Lese wdhg.
+KS.Z2:      DB      0                   ;Zaehler Blocklueckenverl.
+KS.CRCZ:    DW      0                   ;CRC-Zeichen
+KS.FEHLZ:   DB      0                   ;Interner Fehleranzeiger
+;****************************************************************
+;*               Bedeutung des internen Fehleranzeigers         *
+;*               Bit     Fehler                                 *
+;*               -----------------------------------------------*
+;*               0     kein Echosignal vom Eingabekanal bei RAW *
+;*               1     letzter Interrupt nicht gekommen bei RAW *
+;*               2     Status waehrend der Datenuebertragung    *
+;*               3     CRC-Zeichen fehlerhaft beim Lesen        *
+;*               4     RAW-Fehler                               *
+;****************************************************************
+KS.POS:     DW      0                   ;Position des Fehlers im Datensatz
+KS.SDAT:    DB      0                   ;Solldaten
+KS.IDAT:    DB      0                   ;Istdaten
+KS.PUFFS:   DS      260,0               ;Pufferspeicher
+;****************************************************************
+;*               Arbeitszellen fuer CRC-Routine                 *
+;****************************************************************
+KS.KOMDO:   DB      0                   ;Kommando
+KS.ZEITK:   DB      0                   ;Zeitkonstante
+KS.ADR:     DW      0                   ;Adresse
+KS.CONTR:   DB      0                   ;Ereigniskontrolle
+;
+;           END
+;           PN      K209
+            TITLE   'Steuervektor zum Programm K1'
+            PAGE
+;****************************************************************
+;*               Steuervektor zum Programm K1                   *
+;*  Version      -----------------------------------------------*
+;*               Programmierer: M. Herbote --- K EAW  ZFT (WFT) *
+;*  V 2 . 1      -----------------------------------------------*
+;*               Stand        : 24.November 1983                *
+;****************************************************************
+
+K2.RCZ:     DW      0                   ;record - counter
+K2.BLK:     DW      0                   ;block  - counter
+K2.BLZ:     DW      0                   ;aktuelle Blocklaenge Text
+K2.RCZB:    DW      0                   ;bearbeitete Satzanzahl
+K2.TXOP:    DW      0                   ;aktuelle Adresse Textanfang
+K2.TXANF:   DW      0                   ;Adresse  Textanfang
+K2.TXEND:   DW      0                   ;Adresse  Textende
+K2.GNW1:    DW      0                   ;Adresse  Geraetesatzzaehler
+K2.PTADR:   DW      0                   ;Anzahl zu suchender BM
+K2.ADREA:   DW      0                   ;Adresse  E/A-Tabelle
+K2.GADR:    DW      0                   ;Geraeteadresse
+K2.FKADR:   DW      0                   ;Fehlerausschriftadresse
+K2.SKADR:   DW      0                   ;Statusausschriftadresse
+K2.FRADR:   DW      0                   ;Rueckkehradresse bei Fehler
+K2.LRECL:   DW      0                   ;physische Satzlaenge
+
+K2.ADRK:    DS      40,0
+K2.RBER:    DS      40,0                ;Rettebereich Monitorsteuervekor
+
+;           END
+;           PN      MS05
+            TITLE   'Steuervektor Monitorroutine'
+            PAGE
+;****************************************************************
+;*               Steuervektor Monitorroutine                    *
+;****************************************************************
+MS.ZPOL:    DB      0                   ;Zeilennr.  Leseposition
+MS.SPOL:    DB      0                   ;Spaltennr. Leseposition
+MS.ZPOS:    DB      0                   ;Zeilennr.  Schreibposition
+MS.SPOS:    DB      0                   ;Spaltennr. Schreibposition
+MS.ZMIN:    DB      0                   ;Merker Anfangszeile
+MS.SMIN:    DB      0                   ;Merker Anfangsspalte
+MS.ZMAX:    DB      0                   ;Merker Endzeile
+MS.SMAX:    DB      0                   ;Merker Endspalte
+MS.ZANZ:    DB      0                   ;Merker Zeilenanzahl  BWS
+MS.SPANZ:   DB      0                   ;Merker Spaltenanzahl BWS
+MS.BWSA:    DW      0                   ;Anf.adr. Bildwiederholspeicher
+MS.DIREL:   DB      0                   ;Kommando forts. Lesepos.
+MS.DIRES:   DB      0                   ;Kommando forts. Schreibpos.
+MS.CMD:     DB      0                   ;Routinenkommando
+MS.TK:      DB      0                   ;zu schreibendes bzw. zu lesendes Zeichen
+MS.RADR:    DW      0                   ;Benutzeradresse Rollfunktion
+;
+MS.MCZ:     DB      0                   ;Zeichenmerker Cursorposition
+MS.MCUR:    DB      0                   ;Merker zum Cursor
+                                        ;MCUR = 0   Cursor aus
+                                        ;MCUR = 1   Cursor ein und gesetzt
+                                        ;MCUR = 2   Cursor ein und Zeichen
+MS.CZEIT:   DB      0                   ;Zeitvariable Cursorblinken
+
+
+;           END
+;           PN      TS06
+            TITLE   'Funktionsadresstabellen'
+            PAGE
+;****************************************************************
+;*               Tabellen der Funktionsadressen                 *
+;****************************************************************
+TS.TAB1:    DW      0                   ;P1
+            DW      0                   ;P2
+            DW      0                   ;P3
+            DW      0                   ;P4
+            DW      0                   ;P5
+            DW      0                   ;P6
+            DW      0                   ;P7
+            DW      0                   ;P8
+            DW      0                   ;P9
+            DW      0                   ;P10
+            DW      0                   ;P11
+            DW      0                   ;P12
+            DW      0                   ;P13
+            DW      0                   ;P14
+            DW      0                   ;P15
+            DW      0                   ;P16
+            DW      0                   ;P17
+            DW      0                   ;P18
+            DW      0                   ;P19
+            DW      0                   ;P20
+            DW      0                   ;P21
+            DW      0                   ;P22
+            DW      0                   ;P23
+            DW      0                   ;P24
+            DW      0                   ;P25
+            DW      0                   ;P26
+            DW      0                   ;P27
+            DW      0                   ;P28
+            DW      0                   ;P29
+            DW      0                   ;P30
+            DW      0                   ;P31
+            DW      0                   ;P32
+            DW      0                   ;P33
+            DW      0                   ;P34
+            DW      0                   ;P35
+            DW      0                   ;P36
+            DW      0                   ;P37
+            DW      0                   ;P38
+            DW      0                   ;P39
+            DW      0                   ;P40
+            DW      0                   ;P41
+            DW      0                   ;P42
+            DW      0                   ;P43
+            DW      0                   ;P44
+            DW      0                   ;P45
+            DW      0                   ;P46
+            DW      0                   ;P47
+            DW      0                   ;P48
+            PAGE
+TS.TAB2:    DW      0                   ;INS MOD
+            DW      0                   ;DEL
+            DW      0                   ;INS LINE
+            DW      0                   ;DEL LINE
+            DW      0                   ;SCH LINKS
+            DW      0                   ;C HOCH
+            DW      0                   ;SCH RECHTS
+            DW      0                   ;C LINKS
+            DW      0                   ;HOME Fkt.
+            DW      0                   ;C RECHTS
+            DW      0                   ;C naechste Zeile Anfang
+            DW      0                   ;C RUNTER
+TS.TAB3:    DW      0                   ;00
+            DW      0                   ;000
+            DW      0                   ;NEG QUIT
+            DW      0                   ;SYS
+            DW      0                   ;END
+            DW      0                   ;ABS
+TS.TAB4:    DW      0                   ;POS QUIT
+            DW      0                   ;TABS
+            DW      0                   ;TABL
+            DW      0                   ;CI
+            DW      0                   ;M
+TS.EINA:    DW      0                   ;Auswerten Alphataste
+TS.TABU:    DW      0                   ;Auswerten ET2 :=: Tabulator
+TS.NEWL:    DW      0                   ;Auswerten ET1 :=: new line
+TS.TAB5:    DW      0                   ;Ebene 0
+            DW      0                   ;Ebene 1
+            DW      0                   ;Ebene 2
+            DW      0                   ;Ebene 3
+;****************************************************************
+;*               Tastaturmerker                                 *
+;****************************************************************
+TS.PTAST:   DB      0                   ;I/O-Adresse der Tastatur
+TS.TK:      DB      0                   ;Speicher Tastencode
+TS.PTK:     DB      0                   ;Speicher P-Tastennummer
+TS.EMERK:   DB      0                   ;Funktionstasten-Ebenen-Merker
+TS.SPMER:   DB      0                   ;Tastaturgruppenmerker
+TS.UMERK:   DB      0                   ;Merker  INS MOD ein/aus
+TS.KGMER:   DB      0                   ;Merker  Programmier-/Schreibmasch.Tast.
+TS.ZSMER:   DB      0                   ;Merker  Z-Schnellschreiben
+TS.ZEIT1:   DB      0                   ;Zeitkonstante 1
+TS.ZEIT2:   DB      0                   ;Zeitkonstante 2
+TS.ZEI21:   DB      0                   ;Zwsp. ZEIT2-ZEIT1
+TS.ZSTC:    DB      0                   ;Zaehler Z-Schnell 0,5 s
+TS.MIO:     DB      0                   ;memory - I/O - Schalter
+TS.MBF:     DB      0                   ;Merker Bedienfolge ein/aus
+TS.BFOL1:   DW      0                   ;Pointer Bedienfolgesp. bei Erzeugung
+TS.BFOL2:   DW      0                   ;Pointer Bedienfolgesp. bei Abarbeitung
+TS.STACK:   DW      0                   ;Zeiger zum aktuellen Keller
+;
+;           END
+;           PN      S213
+            TITLE   'Variablen'
+            PAGE
+;****************************************************************
+;*               Systemvariable                                 *
+;****************************************************************
+S2.TPA:     DW      0                   ;Textpufferanfang
+S2.TPE:     DW      0                   ;Textpufferende
+S2.WINA:    DW      0                   ;Windowanfang
+S2.WINE:    DW      0                   ;Windowende
+S2.END:     DW      0                   ;Ende des belegten Textpuffers
+S2.POIE:    DW      0                   ;Pointer Eingabepuffer
+S2.POIA:    DW      0                   ;Pointer Ausgabepuffer
+S2.RADR:    DW      0                   ;Rueckkehradresse bei UP - Routinen
+;****************************************************************
+;*             Variablen fuer S9                                *
+;****************************************************************
+S2.IM:      DB      0                   ;Merker fuer Input -Eroeffnung
+S2.OM:      DB      0                   ;Merker fuer Output-Eroeffnung
+S2.VZM:     DB      0                   ;Merker Anzahl Verzeichniseintr.
+S2.ZZ:      DB      0                   ;Zeilenzaehler SL 6001
+S2.CST:     DB      0                   ;Merker , ob eine Taste gedrueckt wurde
+S2.IOC:     DB      0                   ;Erweiterung fuer SWITCH
+;****************************************************************
+;*             Variablen fuer LO                                *
+;****************************************************************
+S2.PRGN:    DB      '      '
+S2.DNR:     DB      0                   ;Dateinummer
+S2.RBBR:    DW      0
+;****************************************************************
+;*             Variablen fuer   D E B U G                       *
+;****************************************************************
+S2.AADR:    DW      0                   ;Anzeigeadresse     D2 (REAS)
+S2.KADR:    DW      0                   ;Korrekturadresse   D2 (REAS)
+S2.ZP:      DB      0                   ;Zeilenposition     D2 (REAS)
+S2.SP1:     DB      0                   ;Spaltenposition 1  D2 (REAS)
+S2.SP2:     DB      0                   ;Spaltenposition 2  D2 (REAS)
+S2.SP3:     DB      0                   ;Spaltenposition 3  D2 (REAS)
+S2.TRB:     DS      20,0                ;Merker fuer die letzten 20 Befehle
+S2.AFOR:    DB      0                   ;Anzeigeformat im Eingabebereich
+S2.BZ:      DB      0                   ;Bytezahl der Anzeige : 1 bzw. 2
+S2.TE:      DW      0                   ;Hilfsvariable
+S2.DL:      DB      0
+S2.DH:      DB      0
+S2.PAR1:    DW      0                   ;Zwischenspeicher fuer 1.Parameter
+S2.DMANF:   DW      0                   ;erstes angezeigtes Byte bei MeDC
+S2.DMCUR:   DW      0                   ;Cursorposition              MeDC
+S2.DMBA:    DW      0                   ;Bereichdefinition Anfang    MeDC
+S2.DMBE:    DW      0                   ;Bereichdefinition Ende      MeDC
+S2.DM1:     DS      16,0                ;Zwischenspeicher
+S2.DM2:     DB      0
+S2.DMH:     DB      0
+S2.DML:     DB      0
+S2.SMHL:    DW      0
+S2.S1:      DB      0                   ;Zusatzspeichermerker SYS0/bit 4
+S2.S2:      DS      8,0                 ;Zusatzspeichermerker SYS2
+
+            TITLE   'Variablen fuer die  USER - CPU '
+            PAGE
+;****************************************************************
+;*             Interruptmerker                       USER - CPU *
+;****************************************************************
+S2.DDEI:    DB      0                   ;Merker  = 0 DI  /  = FFH EI
+S2.DDIM:    DB      0                   ;Merker  IM0 , IM1 , IM2
+S2.DDI:     DB      0                   ;I-Register
+S2.DDR:     DB      0                   ;R-Register
+;****************************************************************
+;*             Befehlszaehler                        USER - CPU *
+;****************************************************************
+S2.DDPC:    DW      0
+;****************************************************************
+;*             Stackpointer                          USER - CPU *
+;****************************************************************
+S2.DDSP:    DW      0
+;****************************************************************
+;*             Indexregister                         USER - CPU *
+;****************************************************************
+S2.DDIX:    DW      0
+S2.DDIY:    DW      0
+;****************************************************************
+;*             Zweitregistersatz                     USER - CPU *
+;****************************************************************
+S2.DDBCS    EQU     $                   ;BC'
+S2.DDCS:    DB      0
+S2.DDBS:    DB      0
+;
+S2.DDDES    EQU     $                   ;DE'
+S2.DDES:    DB      0
+S2.DDDS:    DB      0
+;
+S2.DDHLS    EQU     $                   ;HL'
+S2.DDLS:    DB      0
+S2.DDHS:    DB      0
+;
+S2.DDAFS    EQU     $                   ;AF'
+S2.DDFS:    DB      0
+S2.DDAS:    DB      0
+;****************************************************************
+;*             Erstregistersatz                      USER - CPU *
+;****************************************************************
+S2.DDBC     EQU     $                   ;BC
+S2.DDC:     DB      0
+S2.DDB:     DB      0
+;
+S2.DDDE     EQU     $                   ;DE
+S2.DDE:     DB      0
+S2.DDD:     DB      0
+;
+S2.DDHL     EQU     $                   ;HL
+S2.DDL:     DB      0
+S2.DDH:     DB      0
+;
+S2.DDAF     EQU     $                   ;AF
+S2.DDF:     DB      0
+S2.DDA:     DB      0
+
+S2.STACK    EQU     $
+
+            DS      0C000H-S2.STACK,0
+
+;           END
+

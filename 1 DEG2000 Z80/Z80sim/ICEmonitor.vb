@@ -383,6 +383,17 @@ ende:
                 wrk_ram = 0
                 err = loadmos(BINfile, 1, 1, &HFF)
                 Call BWS.Init2()
+            Case &HEF                                                           ' Einzeldatei in beliebigen Speicher laden
+                HSbereich = fb(13)                                              ' HS-Bereich laden
+                If HSbereich > Z80cpu.cSeg_HS Or HSbereich < 0 Then
+                    MsgBox("ICEmonitor.MostekLaden: " + "HS-Bereich to great " + HSbereich.ToString() & vbCrLf & "in '" + BINfile + "'")
+                    err = 22
+                    GoTo ende
+                End If
+
+                err = loadmos(BINfile, 12, HSbereich, &HF0)                     ' Daten einlesen
+                If err > 0 Then GoTo ende                                       ' Bei Fehler --> Abbruch
+
             Case &HFE                                                           ' abgeändert M.Herbote für Programm-Parameter
                 Select Case fb(1)                                               ' PixelAnz = 1 | 2 | 3
                     Case 1, 2, 3

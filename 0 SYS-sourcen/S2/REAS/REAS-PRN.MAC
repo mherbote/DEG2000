@@ -1,0 +1,1308 @@
+	MACRO-80 3.44	09-Dec-81	PAGE	1
+
+
+                                ;--------------------------\            ; Vorspann fuer BIN-Datei
+  0000*   EF                                DB      0EFH                ; Startbyte ---> 
+  0001*                                     DS      12,0
+  000D*   02                                DB      002H                ; HS-Bereich : 2
+  000E*   9000                              DW      09000H              ; Ladeadresse: 9000H
+                                ;--------------------------/
+                                
+                         C                  INCLUDE S21EQU1.MAC
+  00E0                   C      S0.PROM     EQU     0E0H
+  0050                   C      S0.SPANZ    EQU     80
+  0018                   C      S0.ZANZ     EQU     24
+  A000                   C      S0.BWSA     EQU     0A000H
+                         C      ;
+  B18A                   C      MS.ZPOL     EQU     0B18AH
+  B18B                   C      MS.SPOL     EQU     0B18BH
+  B18C                   C      MS.ZPOS     EQU     0B18CH
+  B18D                   C      MS.SPOS     EQU     0B18DH
+  B18E                   C      MS.ZMIN     EQU     0B18EH
+  B190                   C      MS.ZMAX     EQU     0B190H
+  B197                   C      MS.DIRES    EQU     0B197H
+  B198                   C      MS.CMD      EQU     0B198H
+  B199                   C      MS.TK       EQU     0B199H
+  B19A                   C      MS.RADR     EQU     0B19AH
+  B19C                   C      MS.MCZ      EQU     0B19CH
+  B19D                   C      MS.MCUR     EQU     0B19DH
+  B19E                   C      MS.CZEIT    EQU     0B19EH
+                         C      ;
+  B19F                   C      TS.TAB1     EQU     0B19FH
+  B1FF                   C      TS.TAB2     EQU     0B1FFH
+  B217                   C      TS.TAB3     EQU     0B217H
+  B223                   C      TS.TAB4     EQU     0B223H
+  B22D                   C      TS.EINA     EQU     0B22DH
+  B22F                   C      TS.TABU     EQU     0B22FH
+  B231                   C      TS.NEWL     EQU     0B231H
+  B233                   C      TS.TAB5     EQU     0B233H
+  B23B                   C      TS.PTAST    EQU     0B23BH
+  B23C                   C      TS.TK       EQU     0B23CH
+  B23D                   C      TS.PTK      EQU     0B23DH
+  B23E                   C      TS.EMERK    EQU     0B23EH
+  B23F                   C      TS.SPMER    EQU     0B23FH
+  B240                   C      TS.UMERK    EQU     0B240H
+  B241                   C      TS.KGMER    EQU     0B241H
+  B242                   C      TS.ZSMER    EQU     0B242H
+  B243                   C      TS.ZEIT1    EQU     0B243H
+  B244                   C      TS.ZEIT2    EQU     0B244H
+  B245                   C      TS.ZEI21    EQU     0B245H
+  B246                   C      TS.ZSTC     EQU     0B246H
+  B247                   C      TS.MIO      EQU     0B247H
+  B248                   C      TS.MBF      EQU     0B248H
+  B249                   C      TS.BFOL1    EQU     0B249H
+  B24B                   C      TS.BFOL2    EQU     0B24BH
+                         C      ;
+  B26E                   C      S2.AADR     EQU     0B26EH
+  B270                   C      S2.KADR     EQU     0B270H
+  B272                   C      S2.ZP       EQU     0B272H
+  B273                   C      S2.SP1      EQU     0B273H
+  B274                   C      S2.SP2      EQU     0B274H
+  B275                   C      S2.SP3      EQU     0B275H
+  B28A                   C      S2.AFOR     EQU     0B28AH
+  B28B                   C      S2.BZ       EQU     0B28BH
+  B28C                   C      S2.TE       EQU     0B28CH
+  B28E                   C      S2.DL       EQU     0B28EH
+	MACRO-80 3.44	09-Dec-81	PAGE	1-1
+
+
+  B28F                   C      S2.DH       EQU     0B28FH
+  B290                   C      S2.PAR1     EQU     0B290H
+  B29A                   C      S2.DM1      EQU     0B29AH
+                         C      ;
+                         C                  INCLUDE S21EQU2.MAC
+  CB10                   C      MO.MONI     EQU     0CB10H
+  CB3F                   C      MO.BWSUS    EQU     0CB3FH
+  CD99                   C      MO.ROLL     EQU     0CD99H
+                         C      
+  C114                   C      S1.SYSTB    EQU     0C114H
+  C2B4                   C      S1.CNRS     EQU     0C2B4H
+  C2D3                   C      S1.CNLS     EQU     0C2D3H
+  C328                   C      S1.AEIN     EQU     0C328H
+  C334                   C      S1.NN       EQU     0C334H
+  C345                   C      S1.NNN      EQU     0C345H
+  C3BF                   C      S1.ANZEI    EQU     0C3BFH
+  C532                   C      S1.INPTR    EQU     0C532H
+  C54E                   C      S1.HDI      EQU     0C54EH
+  C592                   C      S1.IDH      EQU     0C592H
+  C5CC                   C      S1.HBKON    EQU     0C5CCH
+  C5FF                   C      S1.BHKON    EQU     0C5FFH
+                         C      
+  D408                   C      TA.LOE      EQU     0D408H
+                         C      
+  E657                   C      S9.CIN      EQU     0E657H
+  E68B                   C      S9.CSTSX    EQU     0E68BH
+  E6A6                   C      S9.CON      EQU     0E6A6H
+  EE58                   C      S9.SAVE     EQU     0EE58H
+  EE78                   C      S9.LOAD     EQU     0EE78H
+                                
+                                            .PHASE  09000H
+                                ;           PN      D207.REAS
+                                ;****************************************************************
+                                ;*               Reassembler I  ---  R I O - Format             *
+                                ;*  Version      -----------------------------------------------*
+                                ;*               Programmierer: M. Herbote --- K EAW  ZFT (WFT) *
+                                ;*  V 2 . 1      -----------------------------------------------*
+                                ;*               Stand        : 08.Dezember 1982                *
+                                ;****************************************************************
+                                
+  9000    52 4C 43 52           D2.ZK1:     DB      'RLCRRCRL RR SLASRASLISRL'
+  9004    52 43 52 4C           
+  9008    20 52 52 20           
+  900C    53 4C 41 53           
+  9010    52 41 53 4C           
+  9014    49 53 52 4C           
+  9018    42 49 54 52           D2.ZK2:     DB      'BITRESSET'
+  901C    45 53 53 45           
+  9020    54                    
+  9021    49 4E 43 44           D2.ZK3:     DB      'INCDEC'
+  9025    45 43                 
+  9027    42 43 44 45           D2.ZK4:     DB      'BCDEHL?A'
+  902B    48 4C 3F 41           
+  902F    41 44 44 41           D2.ZK5:     DB      'ADDADCSUBSBCANDXOROR CP '
+  9033    44 43 53 55           
+  9037    42 53 42 43           
+  903B    41 4E 44 58           
+  903F    4F 52 4F 52           
+  9043    20 43 50 20           
+  9047    42 43 44 45           D2.ZK6:     DB      'BCDEHLSP'
+  904B    48 4C 53 50           
+  904F    45 58 20 4A           D2.ZK7:     DB      'EX JP ???LD '
+	MACRO-80 3.44	09-Dec-81	PAGE	1-2
+
+
+  9053    50 20 3F 3F           
+  9057    3F 4C 44 20           
+  905B    49 2C 41 52           D2.ZK8:     DB      'I,AR,AA,IA,RRRDRLD'
+  905F    2C 41 41 2C           
+  9063    49 41 2C 52           
+  9067    52 52 44 52           
+  906B    4C 44                 
+  906D    4C 44 43 50           D2.ZK9:     DB      'LDCPINOT'
+  9071    49 4E 4F 54           
+                                
+  9075    00                    D2.ZK10:    DB      000H
+  9076    27                                DB      027H
+  9077    37                                DB      037H
+  9078    2F                                DB      02FH
+  9079    3F                                DB      03FH
+  907A    76                                DB      076H
+  907B    D9                                DB      0D9H
+  907C    F3                                DB      0F3H
+  907D    FB                                DB      0FBH
+                                
+  907E    4E 4F 50 44           D2.ZK11:    DB      'NOPDAASCFCPLCCFHLTEXXDI EI '
+  9082    41 41 53 43           
+  9086    46 43 50 4C           
+  908A    43 43 46 48           
+  908E    4C 54 45 58           
+  9092    58 44 49 20           
+  9096    45 49 20              
+  9099    4E 5A 20 5A           D2.ZK12:    DB      'NZ ZNC CPOPE P M'
+  909D    4E 43 20 43           
+  90A1    50 4F 50 45           
+  90A5    20 50 20 4D           
+                                
+                                            PAGE
+	MACRO-80 3.44	09-Dec-81	PAGE	1-3
+
+
+                                
+  90A9    90A9                              DW      $
+  90AB    52 45 41 53                       DB      'REAS'
+                                
+  90AF    CD C532                           CALL    S1.INPTR
+  90B2    CD C5CC                           CALL    S1.HBKON
+  90B5    5F                                LD      E,A
+  90B6    23                                INC     HL
+  90B7    CD C5CC                           CALL    S1.HBKON
+  90BA    47                                LD      B,A
+  90BB    CD C5CC                           CALL    S1.HBKON
+  90BE    4F                                LD      C,A
+  90BF    ED 53 B290                        LD      (S2.PAR1),DE
+  90C3    ED 43 B28E                        LD      (S2.DL),BC
+  90C7    3E 05                             LD      A,5                 ;Bildschirm loeschen
+  90C9    32 B198                           LD      (MS.CMD),A
+  90CC    CD 97D9                           CALL    D2.MONI
+  90CF    CD C3BF                           CALL    S1.ANZEI
+  90D2    0B00                              DW      00B00H              ;ZPOS= 1 , SPOS=12
+  90D4    28                                DB      40
+  90D5    52 65 61 73                       DB      'Reassembler I                Version 2.1'
+  90D9    73 65 6D 62           
+  90DD    6C 65 72 20           
+  90E1    49 20 20 20           
+  90E5    20 20 20 20           
+  90E9    20 20 20 20           
+  90ED    20 20 20 20           
+  90F1    20 56 65 72           
+  90F5    73 69 6F 6E           
+  90F9    20 32 2E 31           
+  90FD    00                                DB      0
+  90FE    21 A780                           LD      HL,S0.BWSA+1920
+  9101    22 B272                           LD      (S2.ZP),HL
+  9104    21 301C                           LD      HL,0301CH
+  9107    22 B274                           LD      (S2.SP2),HL
+  910A    CD 97DF                           CALL    D2.TLOES
+  910D    21 C114                           LD      HL,S1.SYSTB
+  9110    22 B21D                           LD      (TS.TAB3+6),HL
+  9113    21 9132                           LD      HL,D2.P1
+  9116    22 B19F                           LD      (TS.TAB1),HL
+  9119    21 9169                           LD      HL,D2.P2
+  911C    22 B1A1                           LD      (TS.TAB1+2),HL
+  911F    21 B23F                           LD      HL,TS.SPMER
+  9122    36 FE                             LD      (HL),0FEH
+  9124    2A B290               D2.RE02:    LD      HL,(S2.PAR1)
+  9127    22 B26E                           LD      (S2.AADR),HL
+  912A    2A B28E                           LD      HL,(S2.DL)
+  912D    22 B270                           LD      (S2.KADR),HL
+  9130    18 1D                             JR      D2.P1EE
+                                
+                                            PAGE
+	MACRO-80 3.44	09-Dec-81	PAGE	1-4
+
+
+                                
+  9132    2A B272               D2.P1:      LD      HL,(S2.ZP)          ;Fkt.taste P1 Mnemonikanzeige
+  9135    D9                                EXX
+  9136    CD 91BB                           CALL    D2.MNEMO
+  9139    21 A0F0               D2.P1A:     LD      HL,S0.BWSA+240      ; 4.Zeile
+  913C    11 A0A0                           LD      DE,S0.BWSA+160      ; 3.Zeile
+  913F    01 0640                           LD      BC,1600             ;20 Zeilen hochrollen
+  9142    ED B0                             LDIR
+  9144    2A B272                           LD      HL,(S2.ZP)          ;Mnemonik-Zeile auf BWSA uebernehmen
+  9147    11 A690                           LD      DE,S0.BWSA+1680
+  914A    01 0050                           LD      BC,S0.SPANZ
+  914D    ED B0                             LDIR
+  914F    2A B272               D2.P1EE:    LD      HL,(S2.ZP)          ;Pufferzeile loeschen
+  9152    36 20                             LD      (HL),' '
+  9154    E5                                PUSH    HL
+  9155    D1                                POP     DE
+  9156    13                                INC     DE
+  9157    01 004F                           LD      BC,S0.SPANZ-1
+  915A    ED B0                             LDIR
+  915C    CD 97DC                           CALL    D2.BWSUS
+  915F    3A B275                           LD      A,(S2.SP3)          ;Cursorpos. auf Kommentarfeld
+  9162    67                                LD      H,A
+  9163    2E 15                             LD      L,S0.ZANZ-3
+  9165    22 B18C                           LD      (MS.ZPOS),HL
+  9168    C9                                RET
+                                
+  9169    2A B272               D2.P2:      LD      HL,(S2.ZP)          ;Fkt.taste P2 Daten   anzeige
+  916C    D9                                EXX
+  916D    2A B26E               D2.RE01:    LD      HL,(S2.AADR)
+  9170    06 01                             LD      B,1
+  9172    CD 978D                           CALL    D2.BEF
+  9175    CD 97A3                           CALL    D2.WRITE
+  9178    44 42 20 20                       DB      'DB   '
+  917C    20                    
+  917D    B0                                DB      30H+80H
+  917E    7E                                LD      A,(HL)
+  917F    CD 97B2                           CALL    D2.WRIAC
+  9182    3E 48                             LD      A,'H'
+  9184    CD 97D4                           CALL    D2.OPA1
+  9187    3A B275                           LD      A,(S2.SP3)
+  918A    4F                                LD      C,A
+  918B    CD 9634                           CALL    D2.TAB1
+  918E    3E 3B                             LD      A,';'
+  9190    CD 97D4                           CALL    D2.OPA1
+  9193    7E                                LD      A,(HL)
+  9194    CD 97D4                           CALL    D2.OPA1
+  9197    23                                INC     HL
+  9198    22 B26E                           LD      (S2.AADR),HL
+  919B    18 9C                             JR      D2.P1A
+                                
+  919D    CD 97A3               D2.UP1:     CALL    D2.WRITE            ;Anzeige: (x+e)   x = IX bzw. IY
+  91A0    A8                                DB      028H+80H            ;"("
+  91A1    CD 9649                           CALL    D2.IXIY1
+  91A4    CD 97A3                           CALL    D2.WRITE
+  91A7    AB                                DB      02BH+80H            ;"+"
+  91A8    3E 30                 D2.UP2:     LD      A,'0'
+  91AA    CD 97D4                           CALL    D2.OPA1
+  91AD    7E                                LD      A,(HL)
+  91AE    CD 97B2                           CALL    D2.WRIAC
+  91B1    3E 48                             LD      A,'H'
+  91B3    CD 97D4                           CALL    D2.OPA1
+	MACRO-80 3.44	09-Dec-81	PAGE	1-5
+
+
+  91B6    CD 97A3               D2.UP3:     CALL    D2.WRITE
+  91B9    A9                                DB      029H+80H            ;")"
+  91BA    C9                                RET
+                                            PAGE
+	MACRO-80 3.44	09-Dec-81	PAGE	1-6
+
+
+                                
+  91BB    2A B26E               D2.MNEMO:   LD      HL,(S2.AADR)        ;OP - Code des Befehles testen
+  91BE    E5                                PUSH    HL                  ;Ausschreiben von akt. Adresse ,
+  91BF    D1                                POP     DE                  ;Befehlsbytes und mnemonischen Text
+  91C0    7E                                LD      A,(HL)
+  91C1    E6 DF                             AND     0DFH
+  91C3    FE DD                             CP      0DDH
+  91C5    C2 92EA                           JP      NZ,D2.M29
+  91C8    23                                INC     HL
+  91C9    7E                                LD      A,(HL)
+  91CA    FE CB                             CP      0CBH
+  91CC    06 04                             LD      B,4
+  91CE    2B                                DEC     HL
+  91CF    20 16                             JR      NZ,D2.M4
+  91D1    CD 978D                           CALL    D2.BEF
+  91D4    23                                INC     HL
+  91D5    23                                INC     HL
+  91D6    23                                INC     HL
+  91D7    CD 9749                           CALL    D2.CBBEF
+  91DA    2B                                DEC     HL
+  91DB    CD 919D                           CALL    D2.UP1
+                                
+  91DE    23                    D2.M1:      INC     HL
+  91DF    23                    D2.M2:      INC     HL
+  91E0    CD 9630                           CALL    D2.TAB
+  91E3    22 B26E               D2.M3:      LD      (S2.AADR),HL        ;Adresse des naechsten Befehls
+  91E6    C9                                RET
+                                
+  91E7    FE 21                 D2.M4:      CP      021H
+  91E9    20 10                             JR      NZ,D2.M7
+  91EB    CD 96DE                           CALL    D2.LDBEF
+  91EE    CD 9649                           CALL    D2.IXIY1
+  91F1    23                                INC     HL
+  91F2    CD 962B               D2.M5:      CALL    D2.KOMMA
+  91F5    23                    D2.M6:      INC     HL
+  91F6    CD 965A                           CALL    D2.IXIY3
+  91F9    18 E4                             JR      D2.M2               ;===> UP beenden
+                                
+  91FB    E6 FE                 D2.M7:      AND     0FEH
+  91FD    05                                DEC     B
+  91FE    FE 34                             CP      034H
+  9200    20 0D                             JR      NZ,D2.M9
+  9202    CD 978D                           CALL    D2.BEF
+  9205    23                                INC     HL
+  9206    CD 966F                           CALL    D2.INDEC
+  9209    23                    D2.M8:      INC     HL
+  920A    CD 919D                           CALL    D2.UP1
+  920D    18 D0                             JR      D2.M2               ;===> UP beenden
+                                
+                                            PAGE
+	MACRO-80 3.44	09-Dec-81	PAGE	1-7
+
+
+                                
+  920F    E6 F8                 D2.M9:      AND     0F8H
+  9211    FE 70                             CP      070H
+  9213    20 12                             JR      NZ,D2.M10
+  9215    CD 96DE                           CALL    D2.LDBEF
+  9218    23                                INC     HL
+  9219    23                                INC     HL
+  921A    CD 919D                           CALL    D2.UP1
+  921D    CD 962B                           CALL    D2.KOMMA
+  9220    2B                                DEC     HL
+  9221    7E                                LD      A,(HL)
+  9222    CD 967C                           CALL    D2.REG2
+  9225    18 B7                             JR      D2.M1               ;===> UP beenden
+  9227    23                    D2.M10:     INC     HL
+  9228    7E                                LD      A,(HL)
+  9229    2B                                DEC     HL
+  922A    04                                INC     B
+  922B    FE 36                             CP      036H
+  922D    20 1C                             JR      NZ,D2.M15
+  922F    CD 96DE                           CALL    D2.LDBEF
+  9232    23                                INC     HL
+  9233    23                                INC     HL
+  9234    CD 919D                           CALL    D2.UP1
+  9237    CD 962B               D2.M11:     CALL    D2.KOMMA
+  923A    23                    D2.M12:     INC     HL
+  923B    3E 30                             LD      A,'0'
+  923D    CD 97D4                           CALL    D2.OPA1
+  9240    7E                                LD      A,(HL)
+  9241    CD 97B2               D2.M13:     CALL    D2.WRIAC
+  9244    3E 48                             LD      A,'H'
+  9246    CD 97D4                           CALL    D2.OPA1
+  9249    18 94                 D2.M14:     JR      D2.M2               ;===> UP beenden
+  924B    E6 C7                 D2.M15:     AND     0C7H
+  924D    FE 02                             CP      002H
+  924F    20 1F                             JR      NZ,D2.M20
+  9251    CD 96DE                           CALL    D2.LDBEF
+  9254    23                                INC     HL
+  9255    CB 5E                             BIT     3,(HL)
+  9257    23                                INC     HL
+  9258    28 0B                             JR      Z,D2.M17
+  925A    CD 9649                           CALL    D2.IXIY1
+  925D    CD 962B               D2.M16:     CALL    D2.KOMMA
+  9260    CD 96E5                           CALL    D2.DIADR
+  9263    18 E4                             JR      D2.M14              ;===> UP beenden
+  9265    CD 96E5               D2.M17:     CALL    D2.DIADR
+  9268    CD 962B               D2.M18:     CALL    D2.KOMMA
+  926B    CD 9649               D2.M19:     CALL    D2.IXIY1
+  926E    18 D9                             JR      D2.M14              ;===> UP beenden
+  9270    05                    D2.M20:     DEC     B
+  9271    FE 86                             CP      086H
+  9273    20 09                             JR      NZ,D2.M21
+  9275    CD 978D                           CALL    D2.BEF
+  9278    23                                INC     HL
+  9279    CD 9694                           CALL    D2.RART
+  927C    18 8B                             JR      D2.M8               ;===>
+  927E    FE 46                 D2.M21:     CP      046H
+  9280    20 0E                             JR      NZ,D2.M22
+  9282    CD 96DE                           CALL    D2.LDBEF
+  9285    23                                INC     HL
+  9286    7E                                LD      A,(HL)
+  9287    CD 9679                           CALL    D2.REG
+	MACRO-80 3.44	09-Dec-81	PAGE	1-8
+
+
+  928A    CD 962B                           CALL    D2.KOMMA
+  928D    C3 9209                           JP      D2.M8               ;===>
+                                
+                                
+  9290    06 02                 D2.M22:     LD      B,2
+  9292    FE 01                             CP      001H
+  9294    20 18                             JR      NZ,D2.M24
+  9296    CD 978D                           CALL    D2.BEF
+  9299    CD 97A3                           CALL    D2.WRITE
+  929C    41 44 44 20                       DB      'ADD '
+  92A0    A0                                DB      020H+80H            ;" "
+  92A1    CD 9649                           CALL    D2.IXIY1
+  92A4    23                                INC     HL
+  92A5    13                                INC     DE
+  92A6    CD 962B               D2.M23:     CALL    D2.KOMMA
+  92A9    CD 96A9                           CALL    D2.REGPA
+  92AC    18 9B                             JR      D2.M14
+  92AE    FE 03                 D2.M24:     CP      003H
+  92B0    20 0D                             JR      NZ,D2.M25
+  92B2    CD 978D                           CALL    D2.BEF
+  92B5    23                                INC     HL
+  92B6    7E                                LD      A,(HL)
+  92B7    0F                                RRCA
+  92B8    0F                                RRCA
+  92B9    0F                                RRCA
+  92BA    CD 9670                           CALL    D2.ID1
+  92BD    18 AC                             JR      D2.M19              ;===>
+  92BF    CD 978D               D2.M25:     CALL    D2.BEF
+  92C2    23                                INC     HL
+  92C3    7E                                LD      A,(HL)
+  92C4    CB 97                             RES     2,A
+  92C6    FE E1                             CP      0E1H
+  92C8    20 05                             JR      NZ,D2.M26
+  92CA    CD 96BC                           CALL    D2.PUPOP
+  92CD    18 9C                             JR      D2.M19              ;===>
+  92CF    CD 96D2               D2.M26:     CALL    D2.LDEXJ
+  92D2    CB 5E                             BIT     3,(HL)
+  92D4    28 0B                             JR      Z,D2.M28
+  92D6    CB 66                             BIT     4,(HL)
+  92D8    28 91                             JR      Z,D2.M19
+  92DA    CD 97A3                           CALL    D2.WRITE
+  92DD    53                                DB      'S'
+  92DE    D0                                DB      050H+80H            ;"P"
+  92DF    18 87                 D2.M27:     JR      D2.M18              ;===>
+  92E1    CD 97A3               D2.M28:     CALL    D2.WRITE
+  92E4    28 53 50                          DB      '(SP'
+  92E7    A9                                DB      029H+80H            ;")"
+  92E8    18 F5                             JR      D2.M27              ;===>
+  92EA    7E                    D2.M29:     LD      A,(HL)
+  92EB    FE CB                             CP      0CBH
+  92ED    06 02                             LD      B,2
+  92EF    20 0E                             JR      NZ,D2.M32
+  92F1    CD 978D                           CALL    D2.BEF
+  92F4    23                                INC     HL
+  92F5    CD 9749               D2.M30:     CALL    D2.CBBEF
+  92F8    7E                                LD      A,(HL)
+  92F9    CD 967C                           CALL    D2.REG2
+  92FC    C3 91DF               D2.M31:     JP      D2.M2               ;===> UP beenden
+                                
+                                            PAGE
+	MACRO-80 3.44	09-Dec-81	PAGE	1-9
+
+
+                                
+  92FF    FE ED                 D2.M32:     CP      0EDH
+  9301    C2 93DF                           JP      NZ,D2.M49
+  9304    23                                INC     HL
+  9305    7E                                LD      A,(HL)
+  9306    E6 C7                             AND     0C7H
+  9308    FE 43                             CP      043H
+  930A    2B                                DEC     HL
+  930B    20 17                             JR      NZ,D2.M35
+  930D    06 04                             LD      B,4
+  930F    CD 96DE                           CALL    D2.LDBEF
+  9312    23                                INC     HL
+  9313    13                                INC     DE
+  9314    CB 5E                 D2.M33:     BIT     3,(HL)
+  9316    23                                INC     HL
+  9317    28 06                             JR      Z,D2.M34
+  9319    CD 96AE                           CALL    D2.REG4
+  931C    C3 925D                           JP      D2.M16              ;===>
+  931F    CD 96E5               D2.M34:     CALL    D2.DIADR
+  9322    18 47                             JR      D2.M40
+  9324    F5                    D2.M35:     PUSH    AF
+  9325    CD 978D                           CALL    D2.BEF
+  9328    F1                                POP     AF
+  9329    FE 40                             CP      040H
+  932B    23                                INC     HL
+  932C    20 0B                             JR      NZ,D2.M36
+  932E    CD 96EF                           CALL    D2.IN
+  9331    CD 9682                           CALL    D2.REG3
+  9334    CD 96FE                           CALL    D2.CKL
+  9337    18 C3                             JR      D2.M31              ;===> UP beenden
+  9339    FE 41                 D2.M36:     CP      041H
+  933B    20 11                             JR      NZ,D2.M37
+  933D    CD 9708                           CALL    D2.OUT
+  9340    CD 9701                           CALL    D2.CKL1
+  9343    CD 962B                           CALL    D2.KOMMA
+  9346    CD 96F7                           CALL    D2.IN1
+  9349    CD 9682                           CALL    D2.REG3
+  934C    18 AE                             JR      D2.M31              ;===> UP beenden
+  934E    13                    D2.M37:     INC     DE
+  934F    FE 42                             CP      042H
+  9351    20 1B                             JR      NZ,D2.M41
+  9353    CB 5E                             BIT     3,(HL)
+  9355    28 07                             JR      Z,D2.M38
+  9357    CD 97A3                           CALL    D2.WRITE
+  935A    41                                DB      'A'
+  935B    C4                                DB      044H+80H            ;"D"
+  935C    18 05                             JR      D2.M39
+  935E    CD 97A3               D2.M38:     CALL    D2.WRITE
+  9361    53                                DB      'S'
+  9362    C2                                DB      042H+80H            ;"B"
+  9363    CD 97A3               D2.M39:     CALL    D2.WRITE
+  9366    43 20 20 48                       DB      'C  H'
+  936A    CC                                DB      04CH+80H            ;"L"
+  936B    C3 92A6               D2.M40:     JP      D2.M23
+  936E    FE 44                 D2.M41:     CP      044H
+  9370    20 09                             JR      NZ,D2.M43
+  9372    CD 97A3                           CALL    D2.WRITE
+  9375    4E 45                             DB      'NE'
+  9377    C7                                DB      047H+80H            ;"G"
+  9378    C3 91DF               D2.M42:     JP      D2.M2               ;===> UP beenden
+                                
+	MACRO-80 3.44	09-Dec-81	PAGE	1-10
+
+
+                                            PAGE
+	MACRO-80 3.44	09-Dec-81	PAGE	1-11
+
+
+                                
+  937B    FE 45                 D2.M43:     CP      045H
+  937D    20 13                             JR      NZ,D2.M44
+  937F    CD 9711                           CALL    D2.RET
+  9382    CB 5E                             BIT     3,(HL)
+  9384    F5                                PUSH    AF
+  9385    3E 4E                             LD      A,'N'
+  9387    CC 97D4                           CALL    Z,D2.OPA1
+  938A    F1                                POP     AF
+  938B    3E 49                             LD      A,'I'
+  938D    C4 97D4                           CALL    NZ,D2.OPA1
+  9390    18 E6                             JR      D2.M42              ;===> UP beenden
+  9392    FE 46                 D2.M44:     CP      046H
+  9394    20 10                             JR      NZ,D2.M46
+  9396    CD 97A3                           CALL    D2.WRITE
+  9399    49                                DB      'I'
+  939A    CD                                DB      04DH+80H            ;"M"
+  939B    CD 96F7                           CALL    D2.IN1
+  939E    28 01                             JR      Z,D2.M45
+  93A0    3D                                DEC     A
+  93A1    CD 97BB               D2.M45:     CALL    D2.WRI1
+  93A4    18 D2                             JR      D2.M42              ;===> UP beenden
+  93A6    FE 47                 D2.M46:     CP      047H
+  93A8    20 13                             JR      NZ,D2.M48
+  93AA    CD 96F7                           CALL    D2.IN1
+  93AD    F5                                PUSH    AF
+  93AE    CB 6E                             BIT     5,(HL)
+  93B0    CC 963F                           CALL    Z,D2.LD
+  93B3    F1                                POP     AF
+  93B4    3C                                INC     A
+  93B5    47                                LD      B,A
+  93B6    3E 5B                             LD      A,LOW(D2.ZK8)
+  93B8    CD 9779               D2.M47:     CALL    D2.TTAB
+  93BB    18 BB                             JR      D2.M42              ;===> UP beenden
+  93BD    E6 07                 D2.M48:     AND     007H
+  93BF    3C                                INC     A
+  93C0    47                                LD      B,A
+  93C1    3E 6D                             LD      A,LOW(D2.ZK9)
+  93C3    0E 02                             LD      C,002H
+  93C5    CD 977B                           CALL    D2.TTAB1
+  93C8    CB 5E                             BIT     3,(HL)
+  93CA    F5                                PUSH    AF
+  93CB    3E 49                             LD      A,'I'
+  93CD    CC 97D4                           CALL    Z,D2.OPA1
+  93D0    F1                                POP     AF
+  93D1    3E 44                             LD      A,'D'
+  93D3    C4 97D4                           CALL    NZ,D2.OPA1
+  93D6    CB 66                             BIT     4,(HL)
+  93D8    3E 52                             LD      A,'R'
+  93DA    C4 97D4                           CALL    NZ,D2.OPA1
+  93DD    18 99                             JR      D2.M42              ;===> UP beenden
+                                
+                                            PAGE
+	MACRO-80 3.44	09-Dec-81	PAGE	1-12
+
+
+                                
+  93DF    E5                    D2.M49:     PUSH    HL
+  93E0    21 9075                           LD      HL,D2.ZK10
+  93E3    01 0009                           LD      BC,9
+  93E6    ED B1                             CPIR
+  93E8    E1                                POP     HL
+  93E9    20 0E                             JR      NZ,D2.M50
+  93EB    04                                INC     B
+  93EC    C5                                PUSH    BC
+  93ED    CD 978D                           CALL    D2.BEF
+  93F0    C1                                POP     BC
+  93F1    3E 09                             LD      A,9
+  93F3    91                                SUB     C
+  93F4    47                                LD      B,A
+  93F5    3E 7E                             LD      A,LOW(D2.ZK11)
+  93F7    18 BF                             JR      D2.M47              ;===>
+                                
+  93F9    04                    D2.M50:     INC     B
+  93FA    E6 C0                             AND     0C0H
+  93FC    FE 40                             CP      040H
+  93FE    20 11                             JR      NZ,D2.M53
+  9400    CD 96DE                           CALL    D2.LDBEF
+  9403    7E                                LD      A,(HL)
+  9404    CD 9679                           CALL    D2.REG
+  9407    CD 962B                           CALL    D2.KOMMA
+  940A    7E                    D2.M51:     LD      A,(HL)
+  940B    CD 967C                           CALL    D2.REG2
+  940E    C3 91DF               D2.M52:     JP      D2.M2               ;===> UP beenden
+                                
+  9411    FE 80                 D2.M53:     CP      080H
+  9413    20 0E                             JR      NZ,D2.M55
+  9415    CD 978D                           CALL    D2.BEF
+  9418    CD 9694                           CALL    D2.RART
+  941B    18 ED                             JR      D2.M51              ;===>
+  941D    7E                    D2.M54:     LD      A,(HL)
+  941E    CD 9679                           CALL    D2.REG
+  9421    18 EB                             JR      D2.M52              ;===> UP beenden
+                                
+  9423    7E                    D2.M55:     LD      A,(HL)
+  9424    E6 C7                             AND     0C7H
+  9426    20 6D                             JR      NZ,D2.M61
+  9428    7E                                LD      A,(HL)
+  9429    FE 08                             CP      008H
+  942B    20 13                             JR      NZ,D2.M57
+  942D    CD 978D                           CALL    D2.BEF
+  9430    CD 97A3                           CALL    D2.WRITE
+  9433    45 58 20 20                       DB      'EX   AF,AF'
+  9437    20 41 46 2C           
+  943B    41 46                 
+  943D    A7                                DB      027H+80H            ;"'"
+  943E    18 CE                 D2.M56:     JR      D2.M52              ;===> UP beenden
+                                
+                                            PAGE
+	MACRO-80 3.44	09-Dec-81	PAGE	1-13
+
+
+                                
+  9440    04                    D2.M57:     INC     B
+  9441    CD 978D                           CALL    D2.BEF
+  9444    7E                                LD      A,(HL)
+  9445    FE 10                             CP      010H
+  9447    20 38                             JR      NZ,D2.M60
+  9449    CD 97A3                           CALL    D2.WRITE
+  944C    44 4A 4E 5A                       DB      'DJNZ'
+  9450    A0                                DB      020H+80H            ;" "
+  9451    18 03                             JR      D2.M58A
+  9453    CD 962B               D2.M58:     CALL    D2.KOMMA
+  9456    23                    D2.M58A:    INC     HL
+  9457    3E 30                             LD      A,'0'
+  9459    CD 97D4                           CALL    D2.OPA1
+  945C    7E                                LD      A,(HL)
+  945D    CD 97B2                           CALL    D2.WRIAC
+  9460    3E 48                             LD      A,'H'
+  9462    CD 97D4                           CALL    D2.OPA1
+  9465    6E                                LD      L,(HL)
+  9466    26 00                             LD      H,0
+  9468    CB 7D                             BIT     7,L
+  946A    28 01                             JR      Z,D2.M59
+  946C    25                                DEC     H
+  946D    19                    D2.M59:     ADD     HL,DE
+  946E    23                                INC     HL
+  946F    23                                INC     HL
+  9470    CD 9630                           CALL    D2.TAB
+  9473    3E 3B                             LD      A,';'
+  9475    CD 97D4                           CALL    D2.OPA1
+  9478    CD 9718                           CALL    D2.KWRHL
+  947B    EB                                EX      DE,HL
+  947C    23                                INC     HL
+  947D    23                                INC     HL
+  947E    C3 91E3                           JP      D2.M3
+  9481    CD 97A3               D2.M60:     CALL    D2.WRITE
+  9484    4A 52 20 20                       DB      'JR  '
+  9488    A0                                DB      020H+80H            ;" "
+  9489    7E                                LD      A,(HL)
+  948A    FE 18                             CP      018H
+  948C    28 C8                             JR      Z,D2.M58A
+  948E    CB AF                             RES     5,A
+  9490    CD 9726                           CALL    D2.TEST1
+  9493    18 BE                             JR      D2.M58
+  9495    3D                    D2.M61:     DEC     A
+  9496    20 22                             JR      NZ,D2.M64
+  9498    CB 5E                             BIT     3,(HL)
+  949A    20 0B                             JR      NZ,D2.M62
+  949C    06 03                             LD      B,3
+  949E    CD 96DE                           CALL    D2.LDBEF
+  94A1    CD 96AE                           CALL    D2.REG4
+  94A4    C3 91F2                           JP      D2.M5
+  94A7    CD 978D               D2.M62:     CALL    D2.BEF
+  94AA    CD 97A3                           CALL    D2.WRITE
+  94AD    41 44 44 20                       DB      'ADD  HL'
+  94B1    20 48 4C              
+  94B4    AC                                DB      02CH+80H            ;","
+  94B5    CD 96AE               D2.M63:     CALL    D2.REG4
+  94B8    18 84                             JR      D2.M56
+                                
+                                            PAGE
+	MACRO-80 3.44	09-Dec-81	PAGE	1-14
+
+
+                                
+  94BA    3D                    D2.M64:     DEC     A
+  94BB    20 2F                             JR      NZ,D2.M69
+  94BD    CB 6E                             BIT     5,(HL)
+  94BF    28 02                             JR      Z,D2.M65
+  94C1    06 03                             LD      B,3
+  94C3    CD 96DE               D2.M65:     CALL    D2.LDBEF
+  94C6    7E                                LD      A,(HL)
+  94C7    E6 F7                             AND     0F7H
+  94C9    FE 22                             CP      022H
+  94CB    CA 9314                           JP      Z,D2.M33
+  94CE    CB 5E                             BIT     3,(HL)
+  94D0    28 0C                             JR      Z,D2.M67
+  94D2    CD 97A3                           CALL    D2.WRITE
+  94D5    41 2C                             DB      'A,'
+  94D7    A8                                DB      028H+80H
+  94D8    CD 972F                           CALL    D2.BCDEN
+  94DB    C3 91DF               D2.M66:     JP      D2.M2
+  94DE    CD 97A3               D2.M67:     CALL    D2.WRITE
+  94E1    A8                                DB      028H+80H            ;"("
+  94E2    CD 972F                           CALL    D2.BCDEN
+  94E5    CD 97A3               D2.M68:     CALL    D2.WRITE
+  94E8    2C                                DB      ','
+  94E9    C1                                DB      041H+80H            ;"A"
+  94EA    18 EF                             JR      D2.M66
+  94EC    FE 04                 D2.M69:     CP      004H
+  94EE    20 0B                             JR      NZ,D2.M70
+  94F0    04                                INC     B
+  94F1    CD 96DE                           CALL    D2.LDBEF
+  94F4    7E                                LD      A,(HL)
+  94F5    CD 9679                           CALL    D2.REG
+  94F8    C3 9237                           JP      D2.M11
+                                
+                                            PAGE
+	MACRO-80 3.44	09-Dec-81	PAGE	1-15
+
+
+                                
+  94FB    FE 06                 D2.M70:     CP      006H
+  94FD    30 1C                             JR      NC,D2.M72
+  94FF    F5                                PUSH    AF
+  9500    CD 978D                           CALL    D2.BEF
+  9503    F1                                POP     AF
+  9504    3D                                DEC     A
+  9505    20 09                             JR      NZ,D2.M71
+  9507    7E                                LD      A,(HL)
+  9508    0F                                RRCA
+  9509    0F                                RRCA
+  950A    0F                                RRCA
+  950B    CD 9670                           CALL    D2.ID1
+  950E    18 A5                             JR      D2.M63
+  9510    FE 04                 D2.M71:     CP      004H
+  9512    CA 92F5                           JP      Z,D2.M30
+  9515    CD 966F                           CALL    D2.INDEC
+  9518    C3 941D                           JP      D2.M54
+  951B    7E                    D2.M72:     LD      A,(HL)
+  951C    E6 07                             AND     007H
+  951E    20 0E                             JR      NZ,D2.M74
+  9520    CD 978D                           CALL    D2.BEF
+  9523    CD 9711                           CALL    D2.RET
+  9526    CD 975A                           CALL    D2.L2
+  9529    CD 9725                           CALL    D2.TEST
+  952C    18 AD                 D2.M73:     JR      D2.M66
+  952E    3D                    D2.M74:     DEC     A
+  952F    3D                                DEC     A
+  9530    06 03                             LD      B,3
+  9532    20 0C                             JR      NZ,D2.M76
+  9534    CD 978D                           CALL    D2.BEF
+  9537    CD 9740                           CALL    D2.JP
+  953A    CD 9725               D2.M75:     CALL    D2.TEST
+  953D    C3 91F2                           JP      D2.M5
+  9540    3D                    D2.M76:     DEC     A
+  9541    3D                                DEC     A
+  9542    20 08                             JR      NZ,D2.M77
+  9544    CD 978D                           CALL    D2.BEF
+  9547    CD 9622                           CALL    D2.CALL
+  954A    18 EE                             JR      D2.M75
+  954C    3D                    D2.M77:     DEC     A
+  954D    3D                                DEC     A
+  954E    20 0A                             JR      NZ,D2.M78
+  9550    05                                DEC     B
+  9551    CD 978D                           CALL    D2.BEF
+  9554    CD 9694                           CALL    D2.RART
+  9557    C3 923A                           JP      D2.M12
+                                
+                                            PAGE
+	MACRO-80 3.44	09-Dec-81	PAGE	1-16
+
+
+                                
+  955A    7E                    D2.M78:     LD      A,(HL)
+  955B    FE C3                             CP      0C3H
+  955D    20 10                             JR      NZ,D2.M80
+  955F    CD 978D               D2.M79:     CALL    D2.BEF
+  9562    CB 5E                             BIT     3,(HL)
+  9564    CC 9740                           CALL    Z,D2.JP
+  9567    CB 5E                             BIT     3,(HL)
+  9569    C4 9622                           CALL    NZ,D2.CALL
+  956C    C3 91F5                           JP      D2.M6
+  956F    FE CD                 D2.M80:     CP      0CDH
+  9571    28 EC                             JR      Z,D2.M79
+  9573    CB 9F                             RES     3,A
+  9575    05                                DEC     B
+  9576    FE D3                             CP      0D3H
+  9578    20 23                             JR      NZ,D2.M83
+  957A    CD 978D                           CALL    D2.BEF
+  957D    CB 5E                             BIT     3,(HL)
+  957F    23                                INC     HL
+  9580    28 0E                             JR      Z,D2.M82
+  9582    CD 96EF                           CALL    D2.IN
+  9585    CD 97A3                           CALL    D2.WRITE
+  9588    41 2C                             DB      'A,'
+  958A    A8                                DB      028H+80H            ;"("
+  958B    CD 91A8                           CALL    D2.UP2
+  958E    18 9C                 D2.M81:     JR      D2.M73
+  9590    CD 9708               D2.M82:     CALL    D2.OUT
+  9593    CD 97A3                           CALL    D2.WRITE
+  9596    A8                                DB      028H+80H            ;"("
+  9597    CD 91A8                           CALL    D2.UP2
+  959A    C3 94E5                           JP      D2.M68
+  959D    05                    D2.M83:     DEC     B
+  959E    F5                                PUSH    AF
+  959F    CD 978D                           CALL    D2.BEF
+  95A2    F1                                POP     AF
+  95A3    FE E3                             CP      0E3H
+  95A5    20 22                             JR      NZ,D2.M86
+  95A7    CD 97A3                           CALL    D2.WRITE
+  95AA    45 58 20 20                       DB      'EX  '
+  95AE    A0                                DB      020H+80H            ;" "
+  95AF    CB 5E                             BIT     3,(HL)
+  95B1    20 0F                             JR      NZ,D2.M85
+  95B3    CD 97A3                           CALL    D2.WRITE
+  95B6    28 53 50                          DB      '(SP'
+  95B9    A9                                DB      029H+80H            ;")"
+  95BA    CD 97A3               D2.M84:     CALL    D2.WRITE
+  95BD    2C 48                             DB      ',H'
+  95BF    CC                                DB      04CH+80H            ;"L"
+  95C0    18 CC                             JR      D2.M81
+  95C2    CD 97A3               D2.M85:     CALL    D2.WRITE
+  95C5    44                                DB      'D'
+  95C6    C5                                DB      045H+80H            ;"E"
+  95C7    18 F1                             JR      D2.M84
+                                
+                                            PAGE
+	MACRO-80 3.44	09-Dec-81	PAGE	1-17
+
+
+                                
+  95C9    7E                    D2.M86:     LD      A,(HL)
+  95CA    FE E9                             CP      0E9H
+  95CC    20 0A                             JR      NZ,D2.M87
+  95CE    CD 9740                           CALL    D2.JP
+  95D1    CD 97A3                           CALL    D2.WRITE
+  95D4    48                                DB      'H'
+  95D5    CC                                DB      04CH+80H            ;"L"
+  95D6    18 B6                             JR      D2.M81
+  95D8    FE F9                 D2.M87:     CP      0F9H
+  95DA    20 0A                             JR      NZ,D2.M88
+  95DC    CD 963F                           CALL    D2.LD
+  95DF    CD 97A3                           CALL    D2.WRITE
+  95E2    53                                DB      'S'
+  95E3    D0                                DB      050H+80H            ;"P"
+  95E4    18 D4                             JR      D2.M84
+  95E6    FE C9                 D2.M88:     CP      0C9H
+  95E8    20 05                             JR      NZ,D2.M90
+  95EA    CD 9711                           CALL    D2.RET
+  95ED    18 9F                 D2.M89:     JR      D2.M81
+  95EF    CB 4E                 D2.M90:     BIT     1,(HL)
+  95F1    28 1D                             JR      Z,D2.M92
+  95F3    CD 97A3                           CALL    D2.WRITE
+  95F6    52 53 54 20                       DB      'RST '
+  95FA    A0                                DB      020H+80H            ;" "
+  95FB    CD 96F7                           CALL    D2.IN1
+  95FE    47                                LD      B,A
+  95FF    04                                INC     B
+  9600    3E F8                             LD      A,0F8H
+  9602    C6 08                 D2.M91:     ADD     A,008H
+  9604    10 FC                             DJNZ    D2.M91
+  9606    F5                                PUSH    AF
+  9607    3E 30                             LD      A,'0'
+  9609    CD 97D4                           CALL    D2.OPA1
+  960C    F1                                POP     AF
+  960D    C3 9241                           JP      D2.M13
+  9610    CD 96BC               D2.M92:     CALL    D2.PUPOP
+  9613    7E                                LD      A,(HL)
+  9614    E6 30                             AND     030H
+  9616    FE 30                             CP      030H
+  9618    C2 94B5                           JP      NZ,D2.M63
+  961B    CD 97A3                           CALL    D2.WRITE
+  961E    41                                DB      'A'
+  961F    C6                                DB      046H+80H            ;"F"
+  9620    18 CB                             JR      D2.M89
+                                
+                                            PAGE
+	MACRO-80 3.44	09-Dec-81	PAGE	1-18
+
+
+                                
+  9622    CD 97A3               D2.CALL:    CALL    D2.WRITE            ;Anzeige: CALL
+  9625    43 41 4C 4C                       DB      'CALL'
+  9629    A0                                DB      020H+80H            ;" "
+  962A    C9                                RET
+  962B    CD 97A3               D2.KOMMA:   CALL    D2.WRITE            ;Anzeige: ,
+  962E    AC                                DB      02CH+80H            ;","
+  962F    C9                                RET
+  9630    3A B275               D2.TAB:     LD      A,(S2.SP3)          ;Cursor in Spaltenposition
+  9633    4F                                LD      C,A
+  9634    06 00                 D2.TAB1:    LD      B,0
+  9636    C5                                PUSH    BC
+  9637    D9                                EXX
+  9638    2A B272                           LD      HL,(S2.ZP)
+  963B    C1                                POP     BC
+  963C    09                                ADD     HL,BC
+  963D    D9                                EXX
+  963E    C9                                RET
+                                ;
+  963F    CD 97A3               D2.LD:      CALL    D2.WRITE            ;Anzeige: LD
+  9642    4C 44 20 20                       DB      'LD  '
+  9646    A0                                DB      020H+80H            ;" "
+  9647    C9                                RET
+                                ;
+  9648    1B                    D2.IXIY:    DEC     DE                  ;Anzeige: IX bzw. IY
+  9649    1A                    D2.IXIY1:   LD      A,(DE)
+  964A    FE FD                             CP      0FDH
+  964C    28 06                             JR      Z,D2.IXIY2
+  964E    CD 97A3                           CALL    D2.WRITE
+  9651    49                                DB      'I'
+  9652    D8                                DB      058H+80H            ;"X"
+  9653    C9                                RET
+  9654    CD 97A3               D2.IXIY2:   CALL    D2.WRITE
+  9657    49                                DB      'I'
+  9658    D9                                DB      059H+80H            ;"Y"
+  9659    C9                                RET
+                                ;
+  965A    D5                    D2.IXIY3:   PUSH    DE                  ;Zahlenwert bei dir. Adr. und 16-Bit-Ladeop.
+  965B    5E                                LD      E,(HL)
+  965C    23                                INC     HL
+  965D    56                                LD      D,(HL)
+  965E    EB                                EX      DE,HL
+  965F    3E 30                             LD      A,'0'
+  9661    CD 97D4                           CALL    D2.OPA1
+  9664    CD 97CB                           CALL    D2.WRIHL
+  9667    3E 48                             LD      A,'H'
+  9669    CD 97D4                           CALL    D2.OPA1
+  966C    EB                                EX      DE,HL
+  966D    D1                                POP     DE
+  966E    C9                                RET
+  966F    7E                    D2.INDEC:   LD      A,(HL)              ;Anzeige: INC bzw. DEC
+  9670    E6 01                 D2.ID1:     AND     001H
+  9672    47                                LD      B,A
+  9673    04                                INC     B
+  9674    3E 21                             LD      A,LOW(D2.ZK3)
+  9676    C3 9757               D2.ID2:     JP      D2.L4
+                                
+                                            PAGE
+	MACRO-80 3.44	09-Dec-81	PAGE	1-19
+
+
+                                
+  9679    0F                    D2.REG:     RRCA                        ;Anzeige des Registers B bis A
+  967A    0F                                RRCA
+  967B    0F                                RRCA
+  967C    E6 07                 D2.REG2:    AND     007H
+  967E    FE 06                             CP      006H
+  9680    28 0A                             JR      Z,D2.REG1
+  9682    47                    D2.REG3:    LD      B,A
+  9683    0E 01                             LD      C,1
+  9685    3E 27                             LD      A,LOW(D2.ZK4)
+  9687    04                    D2.REG6:    INC     B
+  9688    CD 977B                           CALL    D2.TTAB1
+  968B    C9                                RET
+  968C    CD 97A3               D2.REG1:    CALL    D2.WRITE
+  968F    28 48 4C                          DB      '(HL'
+  9692    A9                                DB      029H+80H            ;")"
+  9693    C9                                RET
+  9694    7E                    D2.RART:    LD      A,(HL)              ;Anzeige der Rechenart
+  9695    E6 38                             AND     038H
+  9697    0F                                RRCA
+  9698    0F                                RRCA
+  9699    0F                                RRCA
+  969A    47                                LD      B,A
+  969B    3E 2F                             LD      A,LOW(D2.ZK5)
+  969D    04                                INC     B
+  969E    CD 9779                           CALL    D2.TTAB
+  96A1    CD 97A3                           CALL    D2.WRITE
+  96A4    20 20 41                          DB      '  A'
+  96A7    AC                                DB      02CH+80H            ;","
+  96A8    C9                                RET
+  96A9    1A                    D2.REGPA:   LD      A,(DE)              ;Anzeige des Registerpaares
+  96AA    FE 29                             CP      029H
+  96AC    28 9A                             JR      Z,D2.IXIY
+  96AE    1A                    D2.REG4:    LD      A,(DE)
+  96AF    0F                                RRCA
+  96B0    0F                                RRCA
+  96B1    0F                                RRCA
+  96B2    0F                                RRCA
+  96B3    E6 03                             AND     003H
+  96B5    47                                LD      B,A
+  96B6    3E 47                             LD      A,LOW(D2.ZK6)
+  96B8    0E 02                 D2.REG5:    LD      C,2
+  96BA    18 CB                             JR      D2.REG6
+  96BC    CB 56                 D2.PUPOP:   BIT     2,(HL)              ;Anzeige: PUSH bzw. POP
+  96BE    28 09                             JR      Z,D2.PUP1
+  96C0    CD 97A3                           CALL    D2.WRITE
+  96C3    50 55 53 48                       DB      'PUSH'
+  96C7    A0                                DB      020H+80H            ;" "
+  96C8    C9                                RET
+  96C9    CD 97A3               D2.PUP1:    CALL    D2.WRITE
+  96CC    50 4F 50 20                       DB      'POP '
+  96D0    A0                                DB      020H+80H            ;" "
+  96D1    C9                                RET
+                                
+                                            PAGE
+	MACRO-80 3.44	09-Dec-81	PAGE	1-20
+
+
+                                
+  96D2    7E                    D2.LDEXJ:   LD      A,(HL)              ;Anzeige: LD , EX bzw. JP
+  96D3    E6 18                             AND     018H
+  96D5    0F                                RRCA
+  96D6    0F                                RRCA
+  96D7    0F                                RRCA
+  96D8    47                                LD      B,A
+  96D9    04                                INC     B
+  96DA    3E 4F                             LD      A,LOW(D2.ZK7)
+  96DC    18 98                             JR      D2.ID2
+  96DE    CD 978D               D2.LDBEF:   CALL    D2.BEF              ;Anzeige von Adr. , Befehl und LD
+  96E1    CD 963F                           CALL    D2.LD
+  96E4    C9                                RET
+  96E5    CD 97A3               D2.DIADR:   CALL    D2.WRITE            ;Anzeige: (nn)
+  96E8    A8                                DB      028H+80H            ;"("
+  96E9    CD 965A                           CALL    D2.IXIY3
+  96EC    C3 91B6                           JP      D2.UP3
+  96EF    CD 97A3               D2.IN:      CALL    D2.WRITE            ;Anzeige: IN
+  96F2    49 4E 20 20                       DB      'IN  '
+  96F6    A0                                DB      020H+80H            ;" "
+  96F7    7E                    D2.IN1:     LD      A,(HL)
+  96F8    0F                    D2.IN2:     RRCA
+  96F9    0F                                RRCA
+  96FA    0F                                RRCA
+  96FB    E6 07                             AND     007H
+  96FD    C9                                RET
+  96FE    CD 962B               D2.CKL:     CALL    D2.KOMMA            ;Anzeige: ,(C)
+  9701    CD 97A3               D2.CKL1:    CALL    D2.WRITE
+  9704    28 43                             DB      '(C'
+  9706    A9                                DB      029H+80H            ;")"
+  9707    C9                                RET
+  9708    CD 97A3               D2.OUT:     CALL    D2.WRITE            ;Anzeige: OUT
+  970B    4F 55 54 20                       DB      'OUT '
+  970F    A0                                DB      020H+80H            ;" "
+  9710    C9                                RET
+  9711    CD 97A3               D2.RET:     CALL    D2.WRITE            ;Anzeige: RET
+  9714    52 45                             DB      'RE'
+  9716    D4                                DB      054H+80H            ;"T"
+  9717    C9                                RET
+  9718    E5                    D2.KWRHL:   PUSH    HL                  ;Anzeige des HL-Reg. mit Korr.-adr.
+  9719    D5                                PUSH    DE
+  971A    ED 5B B270                        LD      DE,(S2.KADR)
+  971E    19                                ADD     HL,DE
+  971F    CD 97CB                           CALL    D2.WRIHL
+  9722    D1                                POP     DE
+  9723    E1                                POP     HL
+  9724    C9                                RET
+  9725    7E                    D2.TEST:    LD      A,(HL)              ;Anzeige Bedingung bei Spruengen und UP-Aufr.
+  9726    CD 96F8               D2.TEST1:   CALL    D2.IN2
+  9729    47                                LD      B,A
+  972A    3E 99                             LD      A,LOW(D2.ZK12)
+  972C    C3 96B8                           JP      D2.REG5
+  972F    CB 6E                 D2.BCDEN:   BIT     5,(HL)              ;erkennen und schreiben des Registerpaares
+  9731    CC 96AE                           CALL    Z,D2.REG4           ;oder der direkten Adresse
+  9734    CB 6E                             BIT     5,(HL)
+  9736    28 04                             JR      Z,$+06
+  9738    23                                INC     HL
+  9739    CD 965A                           CALL    D2.IXIY3
+  973C    CD 91B6                           CALL    D2.UP3
+  973F    C9                                RET
+  9740    CD 97A3               D2.JP:      CALL    D2.WRITE            ;Anzeige: JP
+	MACRO-80 3.44	09-Dec-81	PAGE	1-21
+
+
+  9743    4A 50 20 20                       DB      'JP  '
+  9747    A0                                DB      020H+80H            ;" "
+  9748    C9                                RET
+                                
+  9749    7E                    D2.CBBEF:   LD      A,(HL)              ;Dekodierung der CB-Befehle
+  974A    FE 40                             CP      040H
+  974C    30 12                             JR      NC,D2.L3
+  974E    E6 38                             AND     038H
+  9750    0F                                RRCA
+  9751    0F                                RRCA
+  9752    0F                                RRCA
+  9753    3C                                INC     A
+  9754    47                                LD      B,A
+  9755    3E 00                             LD      A,LOW(D2.ZK1)
+  9757    CD 9779               D2.L4:      CALL    D2.TTAB
+  975A    CD 97A3               D2.L2:      CALL    D2.WRITE            ;Anzeige von zwei blank
+  975D    20                                DB      ' '
+  975E    A0                                DB      020H+80H            ;" "
+  975F    C9                                RET
+  9760    E6 C0                 D2.L3:      AND     0C0H
+  9762    07                                RLCA
+  9763    07                                RLCA
+  9764    47                                LD      B,A
+  9765    3E 18                             LD      A,LOW(D2.ZK2)
+  9767    CD 9779                           CALL    D2.TTAB
+  976A    CD 975A                           CALL    D2.L2
+  976D    7E                                LD      A,(HL)
+  976E    E6 38                             AND     038H
+  9770    0F                                RRCA
+  9771    0F                                RRCA
+  9772    0F                                RRCA
+  9773    CD 97BB                           CALL    D2.WRI1
+  9776    C3 962B                           JP      D2.KOMMA
+  9779    0E 03                 D2.TTAB:    LD      C,3                 ;errechnen der gewuenschten Tabellenadr.
+  977B    91                    D2.TTAB1:   SUB     C                   ;und Anzeige der dort stehenden Werte
+  977C    81                    D2.TTAB2:   ADD     A,C
+  977D    10 FD                             DJNZ    D2.TTAB2
+  977F    41                                LD      B,C
+  9780    E5                                PUSH    HL
+  9781    26 90                             LD      H,HIGH(D2.ZK1)
+  9783    6F                                LD      L,A
+  9784    7E                    D2.TTAB3:   LD      A,(HL)
+  9785    CD 97D4                           CALL    D2.OPA1
+  9788    23                                INC     HL
+  9789    10 F9                             DJNZ    D2.TTAB3
+  978B    E1                                POP     HL
+  978C    C9                                RET
+  978D    E5                    D2.BEF:     PUSH    HL                  ;Anzeige korr. Adr. und Befehlsbyts
+  978E    CD 9718                           CALL    D2.KWRHL
+  9791    CD 975A                           CALL    D2.L2
+  9794    7E                    D2.BEF1:    LD      A,(HL)
+  9795    CD 97B2                           CALL    D2.WRIAC
+  9798    23                                INC     HL
+  9799    10 F9                             DJNZ    D2.BEF1
+  979B    E1                                POP     HL
+  979C    3A B274                           LD      A,(S2.SP2)
+  979F    4F                                LD      C,A
+  97A0    C3 9634                           JP      D2.TAB1
+                                
+                                            PAGE
+	MACRO-80 3.44	09-Dec-81	PAGE	1-22
+
+
+                                
+  97A3    E3                    D2.WRITE:   EX      (SP),HL             ;Vektor auf Bildschirm schreiben
+  97A4    7E                    D2.WR1:     LD      A,(HL)
+  97A5    CB BF                             RES     7,A
+  97A7    CD 97D4                           CALL    D2.OPA1
+  97AA    7E                                LD      A,(HL)
+  97AB    23                                INC     HL
+  97AC    CB 7F                             BIT     7,A
+  97AE    28 F4                             JR      Z,D2.WR1
+  97B0    E3                    D2.WR2:     EX      (SP),HL
+  97B1    C9                                RET
+                                ;
+  97B2    F5                    D2.WRIAC:   PUSH    AF                  ;schreibt Reg. A in Hex-Format auf Schirm
+  97B3    1F                                RRA
+  97B4    1F                                RRA
+  97B5    1F                                RRA
+  97B6    1F                                RRA
+  97B7    CD 97BB                           CALL    D2.WRI1
+  97BA    F1                                POP     AF
+  97BB    F5                    D2.WRI1:    PUSH    AF
+  97BC    E6 0F                             AND     0FH
+  97BE    C6 30                             ADD     A,30H
+  97C0    FE 3A                             CP      3AH
+  97C2    38 02                             JR      C,D2.WR3
+  97C4    C6 07                             ADD     A,07H
+  97C6    CD 97D4               D2.WR3:     CALL    D2.OPA1
+  97C9    F1                                POP     AF
+  97CA    C9                                RET
+                                ;
+  97CB    7C                    D2.WRIHL:   LD      A,H                 ;schreibt Reg.HL in Hex-Format auf Schirm
+  97CC    CD 97B2                           CALL    D2.WRIAC
+  97CF    7D                                LD      A,L
+  97D0    CD 97B2                           CALL    D2.WRIAC
+  97D3    C9                                RET
+                                ;
+  97D4    D9                    D2.OPA1:    EXX                         ;schreibt Reg. A in ASCII auf Schirm
+  97D5    77                                LD      (HL),A
+  97D6    23                                INC     HL
+  97D7    D9                                EXX
+  97D8    C9                                RET
+                                
+  97D9    C3 CB10               D2.MONI:    JP      MO.MONI             ;S1.MO
+  97DC    C3 CB3F               D2.BWSUS:   JP      MO.BWSUS            ;S1.MO+6
+  97DF    C3 D408               D2.TLOES:   JP      TA.LOE              ;S1.TA+9
+                                
+                                ;
+                                            .DEPHASE
+                                ;
+                                
+                                            END
+	MACRO-80 3.44	09-Dec-81	PAGE	S
+
+
+Macros:
+
+Symbols:
+972F 	D2.BCDEN        978D 	D2.BEF          9794 	D2.BEF1         
+97DC 	D2.BWSUS        9622 	D2.CALL         9749 	D2.CBBEF        
+96FE 	D2.CKL          9701 	D2.CKL1         96E5 	D2.DIADR        
+9670 	D2.ID1          9676 	D2.ID2          96EF 	D2.IN           
+96F7 	D2.IN1          96F8 	D2.IN2          966F 	D2.INDEC        
+9648 	D2.IXIY         9649 	D2.IXIY1        9654 	D2.IXIY2        
+965A 	D2.IXIY3        9740 	D2.JP           962B 	D2.KOMMA        
+9718 	D2.KWRHL        975A 	D2.L2           9760 	D2.L3           
+9757 	D2.L4           963F 	D2.LD           96DE 	D2.LDBEF        
+96D2 	D2.LDEXJ        91DE 	D2.M1           9227 	D2.M10          
+9237 	D2.M11          923A 	D2.M12          9241 	D2.M13          
+9249 	D2.M14          924B 	D2.M15          925D 	D2.M16          
+9265 	D2.M17          9268 	D2.M18          926B 	D2.M19          
+91DF 	D2.M2           9270 	D2.M20          927E 	D2.M21          
+9290 	D2.M22          92A6 	D2.M23          92AE 	D2.M24          
+92BF 	D2.M25          92CF 	D2.M26          92DF 	D2.M27          
+92E1 	D2.M28          92EA 	D2.M29          91E3 	D2.M3           
+92F5 	D2.M30          92FC 	D2.M31          92FF 	D2.M32          
+9314 	D2.M33          931F 	D2.M34          9324 	D2.M35          
+9339 	D2.M36          934E 	D2.M37          935E 	D2.M38          
+9363 	D2.M39          91E7 	D2.M4           936B 	D2.M40          
+936E 	D2.M41          9378 	D2.M42          937B 	D2.M43          
+9392 	D2.M44          93A1 	D2.M45          93A6 	D2.M46          
+93B8 	D2.M47          93BD 	D2.M48          93DF 	D2.M49          
+91F2 	D2.M5           93F9 	D2.M50          940A 	D2.M51          
+940E 	D2.M52          9411 	D2.M53          941D 	D2.M54          
+9423 	D2.M55          943E 	D2.M56          9440 	D2.M57          
+9453 	D2.M58          9456 	D2.M58A         946D 	D2.M59          
+91F5 	D2.M6           9481 	D2.M60          9495 	D2.M61          
+94A7 	D2.M62          94B5 	D2.M63          94BA 	D2.M64          
+94C3 	D2.M65          94DB 	D2.M66          94DE 	D2.M67          
+94E5 	D2.M68          94EC 	D2.M69          91FB 	D2.M7           
+94FB 	D2.M70          9510 	D2.M71          951B 	D2.M72          
+952C 	D2.M73          952E 	D2.M74          953A 	D2.M75          
+9540 	D2.M76          954C 	D2.M77          955A 	D2.M78          
+955F 	D2.M79          9209 	D2.M8           956F 	D2.M80          
+958E 	D2.M81          9590 	D2.M82          959D 	D2.M83          
+95BA 	D2.M84          95C2 	D2.M85          95C9 	D2.M86          
+95D8 	D2.M87          95E6 	D2.M88          95ED 	D2.M89          
+920F 	D2.M9           95EF 	D2.M90          9602 	D2.M91          
+9610 	D2.M92          91BB 	D2.MNEMO        97D9 	D2.MONI         
+97D4 	D2.OPA1         9708 	D2.OUT          9132 	D2.P1           
+9139 	D2.P1A          914F 	D2.P1EE         9169 	D2.P2           
+96C9 	D2.PUP1         96BC 	D2.PUPOP        9694 	D2.RART         
+916D 	D2.RE01         9124 	D2.RE02         9679 	D2.REG          
+968C 	D2.REG1         967C 	D2.REG2         9682 	D2.REG3         
+96AE 	D2.REG4         96B8 	D2.REG5         9687 	D2.REG6         
+96A9 	D2.REGPA        9711 	D2.RET          9630 	D2.TAB          
+9634 	D2.TAB1         9725 	D2.TEST         9726 	D2.TEST1        
+97DF 	D2.TLOES        9779 	D2.TTAB         977B 	D2.TTAB1        
+977C 	D2.TTAB2        9784 	D2.TTAB3        919D 	D2.UP1          
+91A8 	D2.UP2          91B6 	D2.UP3          97A4 	D2.WR1          
+97B0 	D2.WR2          97C6 	D2.WR3          97BB 	D2.WRI1         
+97B2 	D2.WRIAC        97CB 	D2.WRIHL        97A3 	D2.WRITE        
+9000 	D2.ZK1          9075 	D2.ZK10         907E 	D2.ZK11         
+9099 	D2.ZK12         9018 	D2.ZK2          9021 	D2.ZK3          
+9027 	D2.ZK4          902F 	D2.ZK5          9047 	D2.ZK6          
+904F 	D2.ZK7          905B 	D2.ZK8          906D 	D2.ZK9          
+	MACRO-80 3.44	09-Dec-81	PAGE	S-1
+
+
+CB3F 	MO.BWSUS        CB10 	MO.MONI         CD99 	MO.ROLL         
+B198 	MS.CMD          B19E 	MS.CZEIT        B197 	MS.DIRES        
+B19D 	MS.MCUR         B19C 	MS.MCZ          B19A 	MS.RADR         
+B18B 	MS.SPOL         B18D 	MS.SPOS         B199 	MS.TK           
+B190 	MS.ZMAX         B18E 	MS.ZMIN         B18A 	MS.ZPOL         
+B18C 	MS.ZPOS         A000 	S0.BWSA         00E0 	S0.PROM         
+0050 	S0.SPANZ        0018 	S0.ZANZ         C328 	S1.AEIN         
+C3BF 	S1.ANZEI        C5FF 	S1.BHKON        C2D3 	S1.CNLS         
+C2B4 	S1.CNRS         C5CC 	S1.HBKON        C54E 	S1.HDI          
+C592 	S1.IDH          C532 	S1.INPTR        C334 	S1.NN           
+C345 	S1.NNN          C114 	S1.SYSTB        B26E 	S2.AADR         
+B28A 	S2.AFOR         B28B 	S2.BZ           B28F 	S2.DH           
+B28E 	S2.DL           B29A 	S2.DM1          B270 	S2.KADR         
+B290 	S2.PAR1         B273 	S2.SP1          B274 	S2.SP2          
+B275 	S2.SP3          B28C 	S2.TE           B272 	S2.ZP           
+E657 	S9.CIN          E6A6 	S9.CON          E68B 	S9.CSTSX        
+EE78 	S9.LOAD         EE58 	S9.SAVE         D408 	TA.LOE          
+B249 	TS.BFOL1        B24B 	TS.BFOL2        B22D 	TS.EINA         
+B23E 	TS.EMERK        B241 	TS.KGMER        B248 	TS.MBF          
+B247 	TS.MIO          B231 	TS.NEWL         B23B 	TS.PTAST        
+B23D 	TS.PTK          B23F 	TS.SPMER        B19F 	TS.TAB1         
+B1FF 	TS.TAB2         B217 	TS.TAB3         B223 	TS.TAB4         
+B233 	TS.TAB5         B22F 	TS.TABU         B23C 	TS.TK           
+B240 	TS.UMERK        B245 	TS.ZEI21        B243 	TS.ZEIT1        
+B244 	TS.ZEIT2        B242 	TS.ZSMER        B246 	TS.ZSTC         
+
+
+
+No Fatal error(s)
+
+

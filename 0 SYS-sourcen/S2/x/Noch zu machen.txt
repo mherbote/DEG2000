@@ -1,0 +1,33 @@
+Noch zu machen
+
+ 1. Tastatur
+ 2. KMBG
+ 3. Speicher umschalten
+ 4. 'S1  ' und 'S2  '
+
+
+
+TA.TAST     MACRO
+=================
+S0.TAZU
+S2.STACK
+
+
+S0.EM11:    ;Sys_21 SYS2            ;S2.STACK
+S0.EM12:    ;Sys_22 SYS2 mit SYS1   ;S0.TAZU
+
+
+
+S0.BWSUS
+S0.BWSUZ
+
+
+1) STACK in Abhängigkeit von BEREICH !!!
+2a)  TR.TTBL2:  INS MOD
+2b)  TA.E0IN:  in System.MAC
+
+Cursor !!!
+
+Aufbau MEM-Dateien ===> Übersicht Excel 
+
+Emulator:   Speicherbereich bei BREAK-Points ?

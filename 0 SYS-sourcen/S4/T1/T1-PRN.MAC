@@ -1,0 +1,67 @@
+'T e s t M o d u l'	MACRO-80 3.44	09-Dec-81	PAGE	1
+
+
+                                            TITLE   'T e s t M o d u l'
+                                            PAGE    87
+'T e s t M o d u l'	MACRO-80 3.44	09-Dec-81	PAGE	1-1
+
+
+                                
+                                
+                                            .PHASE  00100H-3
+                                ;--------------------------\            ; Vorspann fuer BIN-Datei
+  00FD    FF                                DB      0FFH                ; Startbyte ---> 
+  00FE    0100                              DW      00100H              ; Ladeadresse: 0100H
+                                ;--------------------------/
+  0100    FD 21 014C                        LD      IY,SP2
+  0104    FD 7E FA                          LD      A,(IY-6)
+  0107    FD CB FA 76                       BIT     6,(IY-6)
+  010B    FD CB FA 7E                       BIT     7,(IY-6)
+                                
+  010F    FD 7E FB                          LD      A,(IY-5)
+  0112    FD CB FB 76                       BIT     6,(IY-5)
+  0116    FD CB FB 7E                       BIT     7,(IY-5)
+                                
+  011A    FD 7E FC                          LD      A,(IY-4)
+  011D    FD CB FC 76                       BIT     6,(IY-4)
+  0121    FD CB FC 7E                       BIT     7,(IY-4)
+                                
+  0125    FD 7E FD                          LD      A,(IY-3)
+  0128    FD CB FD 76                       BIT     6,(IY-3)
+  012C    FD CB FD 7E                       BIT     7,(IY-3)
+                                
+  0130    FD 7E FE                          LD      A,(IY-2)
+  0133    FD CB FE 76                       BIT     6,(IY-2)
+  0137    FD CB FE 7E                       BIT     7,(IY-2)
+                                
+  013B    FD 7E FF                          LD      A,(IY-1)
+  013E    FD CB FF 76                       BIT     6,(IY-1)
+  0142    FD CB FF 7E                       BIT     7,(IY-1)
+                                
+  0146    08                    SP1:        DB      8
+  0147    88                                DB      8+080H
+  0148    48                                DB      8+040H
+  0149    0E                                DB      14
+  014A    8E                                DB      080H+14
+  014B    4E                                DB      040H+14
+  014C    41 41 41 41           SP2:        DB      'AAAA'
+  0150                                      DS      100H,0
+                                
+  0250                          XXXX        EQU     $
+                                            .DEPHASE
+                                
+                                            TITLE   'Symbolliste Test Modul'
+                                            END
+'Symbolliste Test Modul'	MACRO-80 3.44	09-Dec-81	PAGE	S
+
+
+Macros:
+
+Symbols:
+0146 	SP1             014C 	SP2             0250 	XXXX            
+
+
+
+No Fatal error(s)
+
+

@@ -1,0 +1,24 @@
+;           PN      LR99
+            TITLE   'Lochbandverbindungsadressen Version 1.2'
+            PAGE
+;****************************************************************
+;*                  Lochbandverbindungsadressen Version 1.2     *
+;*  Version         --------------------------------------------*
+;*                  Programmierer: M. Herbote  K EAW  ZFT (WFV) *
+;*  V 2 . 1         --------------------------------------------*
+;*                  Stand        : 07.Maerz 1985                *
+;****************************************************************
+
+LR.LBL      EQU     07000H
+LR.LBS      EQU     07003H
+
+LR.KONV     EQU     07014H
+
+
+LR.SKTBI    EQU     07200H
+LR.SKTBO    EQU     07300H
+
+
+                                        ;(C) Marcus Herbote    K EAW / wfvm
+;           END
+

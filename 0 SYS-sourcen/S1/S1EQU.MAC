@@ -1,0 +1,21 @@
+SYSTB       EQU     0000BH              ;SY.SYSTB
+SD.BWSA     EQU     03000H
+
+SM.ZPOS     EQU     00DB4H
+
+TA1         EQU     04003H              ;06F03H
+TA2         EQU     04006H              ;06F06H
+PRIO        EQU     04049H              ;07C00H
+
+SY.IFKT2    EQU     00196H              ;IN.FKT2 (CNZA) ???
+SY.SETC     EQU     001DDH
+SY.RESC     EQU     00217H
+SY.BILO     EQU     00374H
+SY.AEIN     EQU     00432H
+TA.FKT2     EQU     0428BH              ;IN.FKT2 (CNZA) ???
+
+; 00FF9H
+; 00FFAH
+;S2.DDEI     EQU     00H
+
+

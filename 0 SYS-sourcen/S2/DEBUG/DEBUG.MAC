@@ -1,0 +1,1415 @@
+;--------------------------\            ; Vorspann fuer BIN-Datei
+            DB      0EFH                ; Startbyte ---> 
+            DS      12,0
+            DB      002H                ; HS-Bereich : 2
+            DW      09000H              ; Ladeadresse: 9000H
+;--------------------------/
+
+            INCLUDE S21EQU1.MAC
+            INCLUDE S21EQU2.MAC
+
+            .PHASE  09000H
+;           PN      D010
+;****************************************************************
+;*	             D  E  B  U  G   ---   Steuerprogramm           *
+;*  Version      -----------------------------------------------*
+;*               Programmierer: Marcus Herbote   --- IfR - OE-S *
+;*  V 1 . 0      -----------------------------------------------*
+;                Stand        : 11.Januar 1983                  *
+;****************************************************************
+            JR      D0.DD
+            DB      'V1.0/110183'
+            DW      $
+            DB      'DBUG'
+            DI
+            LD      A,5                 ;Zeile 1 bis 22 loeschen
+            LD      (MS.CMD),A
+            CALL    MO.MONI
+D0.DD:      LD      A,2
+            LD      (MS.CMD),A
+            CALL    MO.MONI
+            LD      HL,D0.DDPTB-4       ;Anzeige der aktiven P-Tasten
+            LD      DE,D0.DDPT
+            LD      BC,36
+            CALL    D0.TA02
+            LD      HL,0                ;ZPOS = 0 , SPOS = 0
+            LD      (MS.ZPOS),HL
+            LD      B,41
+            LD      HL,$+8
+            CALL    MO.MONI             ;Anzeige der DEBUG-Version
+            JR      DD1                 ;$+43
+            DB      'DEBUG --- Version 1.0     '
+            DB      'Auswahlanzeige'
+DD1:        LD      A,20
+            LD      (MS.CMD),A
+            LD      HL,03412H           ;ZPOS = 18 , SPOS = 52
+            LD      BC,01A02H           ;Laenge:26 , Breite: 2
+            CALL    D0.DDU18            ;Fensterrahmen fuer Eingabebereich aufb.
+            LD      HL,04014H           ;ZMIN = 20 , SMIN = 64
+            LD      (MS.ZMIN),HL
+            LD      HL,04F15H           ;ZMAX = 21 , SMAX = 79
+            LD      (MS.ZMAX),HL
+            LD      HL,03513H           ;ZPOS = 19 , SPOS = 53
+            LD      (MS.ZPOS),HL
+            LD      A,0C0H
+            LD      (MS.DIRES),A
+            LD      HL,S1.SYSTB         ;SYS - Taste
+            LD      (TS.TAB3+6),HL
+            LD      A,080H              ;Funktionstasten aktivieren
+            LD      (TS.SPMER),A
+            RET
+            TITLE    'Tastaturtabellen'
+            PAGE
+;****************************************************************
+;*	                     Tastaturtabellen                       *
+;****************************************************************
+D0.DDPT:    DW      D0.MEDC
+            DW      D0.RCDC
+            DW      D0.RGDC
+            DW      D0.LOAD
+            DW      D0.SAVE
+            DW      D0.UCPU
+            DW      D0.RAMT
+            DW      D0.ROMT
+            DW      D0.REAS
+            DW      0
+            DW      D0.PROM
+            DW      0
+            DW      D0.IN
+            DW      D0.OUT
+            DW      0
+            DW      D0.ADD
+            DW      D0.SUB
+;            
+D0.DDPT2:   DW      D0.AW
+            DW      D0.AW
+            DW      D0.AW
+            DW      D0.AW
+            DW      D0.AW
+;
+D0.DDPT3:   DB      'HexaDeziOct Bin Alfa----'
+            DB      '------------------------'
+            DB      '------------------------'
+            DB      '------------------------'
+            DB      '------------------------'
+            DB      '------------------------'
+            DB      '------------------------'
+            DB      '------------------------'
+;
+D0.DDPTB:   DB      'MeDCRcDCRgDCLOADSAVEuCPU'
+            DB      'RAMTROMTREAS----PROM----'
+            DB      'IN  OUT ----ADD SUB ----'
+            DB      '------------------------'
+            DB      '------------------------'
+            DB      '------------------------'
+            DB      '------------------------'
+            DB      '------------------------'
+
+            TITLE   'Funktion : IN '
+            PAGE
+;****************************************************************
+;*	                     D E B U G   -   Funktion :  IN         *
+;****************************************************************
+D0.TIN1:    DB      'IN -Adr '
+D0.TPQ:     DB      ': '
+D0.IN:      CALL    D0.TA03
+            LD      HL,D0.INPQ
+            LD      DE,D0.TIN1
+;            
+D0.IN1:     LD      (TS.TAB4),HL
+            LD      (S2.TE),DE
+            LD      HL ,0
+D0.IN2:     LD      (S2.DL),HL
+            CALL    D0.AL
+            CALL    D0.TA01
+            LD      HL,D0.DD
+            LD      (TS.TAB3+6),HL
+            RET
+;
+;
+;
+D0.INPQ:    LD      B,8
+            LD      HL,D0.TIN1
+            CALL    D0.PQ14
+            LD      HL,MS.SPOS
+            INC     (HL)
+            INC     (HL)
+            LD      B,8
+            LD      HL,D0.TIO1
+            CALL    MO.MONI
+            LD      B,2
+            LD      HL,D0.TPQ
+            CALL    MO.MONI
+;
+            LD      BC,(S2.PAR1)
+            IN      A,(C)
+;
+            LD      HL,S2.DM1
+            CALL    S1.BHKON
+            LD      B,2
+            LD      HL,S2.DM1
+            CALL    MO.MONI
+            JR      D0.IN
+
+            TITLE   'Funktion :   OUT '
+            PAGE
+;****************************************************************
+;*	                     D E B U G   -   Funktion :  OUT        *
+;****************************************************************
+D0.TOUT1:   DB      'OUT-Adr '
+D0.TIO1:    DB      'Daten   '
+D0.OUT:     CALL    D0.TA03
+            LD      HL,D0.OUPQ1
+            LD      DE,D0.TOUT1
+D0.OUT1:    JR	    D0.IN1
+;
+;
+;
+D0.OUPQ1:   LD      B,8
+            LD      HL,D0.TOUT1
+            CALL    D0.PQ14
+            LD      HL,D0.OUPQ2
+            LD      DE,D0.TIO1
+            LD      (TS.TAB4),HL
+            LD      (S2.TE),DE
+            LD      HL,0
+            LD      (S2.DL),HL
+            XOR     A
+            LD      (S2.AFOR),A
+            INC     A
+            LD      (S2.BZ),A
+            CALL    D0.AL
+            RET
+;
+;
+;
+D0.OUPQ2:   CALL    D0.AS               ;ZPOS = 10 , SPOS = 16
+            LD      HL,0100AH	
+            CALL    D0.DDU19	
+            LD      B,8	
+            LD      HL,D0.TIO1	
+            CALL    MO.MONI	
+            LD      B,2	
+            LD      HL,D0.TPQ	
+            CALL    MO.MONI
+            CALL    D0.AH1
+;
+            LD      BC,(S2.PAR1)
+            LD      A,(S2.DL)
+            OUT     (C),A
+;
+            JR      D0.OUT
+
+            TITLE   'Funktion :   ADD '
+            PAGE
+;****************************************************************
+;*	                     D E B U G   -   Funktion :  ADD        *
+;****************************************************************
+D0.TAD1:    DB      'ADD    A'
+D0.TAD2:    DB      'ADD   +B='
+D0.ADD:     CALL    D0.TA03
+            LD      HL,D0.ADPQ1
+            LD      DE,D0.TAD1
+D0.ADD1:    JR      D0.OUT1
+;
+;
+;
+D0.ADPQ1:   LD      B,7
+            LD      HL,D0.TAD1
+            CALL    D0.PQ14
+            LD      B,1
+            LD      HL,D0.TAD2+6
+            CALL    MO.MONI
+            LD      HL,D0.ADPQ2
+            LD      DE,D0.TAD2
+            JR      D0.ADD1
+;
+;
+;
+D0.ADPQ2:   CALL    D0.AS               ;ZPOS = 10 , SPOS = 14
+            LD      HL,00E0AH
+            CALL    D0.DDU19
+            CALL    D0.AH2
+            LD      B,1
+            LD      HL,D0.TAD2+8
+            CALL    MO.MONI
+;
+            LD      HL,(S2.PAR1)
+            LD      DE,(S2.DL)
+            ADD     HL,DE
+            LD      (S2.DL),HL
+;
+            CALL    D0.AH2
+            JR      D0.ADD
+
+            TITLE   'Funktion :   SUB '
+            PAGE
+;****************************************************************
+;*	                     D E B U G   -   Funktion :  SUB        *
+;****************************************************************
+D0.TSB1:    DB      'SUB     A'
+D0.TSB2:    DB      'SUB	-B'
+D0.SUB:     CALL    D0.TA03
+            LD      HL,D0.SBPQ1
+            LD      DE,D0.TSB1
+D0.SUB1:    JR      D0.ADD1
+;
+;
+;
+D0.SBPQ1:   LD      B,7
+            LD      HL,D0.TSB1
+            CALL    D0.PQ14
+            LD      B,1
+            LD      HL,D0.TSB2+6
+            CALL    MO.MONI
+            LD      HL,D0.SBPQ2
+            LD      DE,D0.TSB2
+            JR      D0.SUB1
+;
+;
+;
+D0.SBPQ2:   CALL    D0.AS
+            LD      HL,00E0AH           ;ZPOS = 10 , SPOS = 14
+            CALL    D0.DDU19
+            CALL    D0.AH2
+            LD      B,1
+            LD      HL,D0.TAD2+8
+            CALL    MO.MONI
+;
+            LD      HL,(S2.PAR1)
+            LD      DE,(S2.DL)
+            XOR     A
+            SBC     HL,DE
+            LD      (S2.DL),HL
+;
+            CALL    D0.AH2
+            JR      D0.SUB
+
+            TITLE   'Funktionen :   MeDC und ROMT '
+            PAGE
+;****************************************************************
+;*	                     D E B U G   -   Funktion :  MeDC       *
+;****************************************************************
+D0.TME:     DB      'Anf.Adr.'
+D0.MEDC:    CALL    D0.TA03
+            LD      HL,D0.MEPQ
+            LD      DE,D0.TME
+D0.MEDC1:   JR      D0.SUB1
+;
+;
+;
+D0.MEPQ:    CALL    D0.AS
+            LD      A,2                 ;Zeile  1 bis 22  loeschen            
+            LD      (MS.CMD),A
+            CALL    MO.MONI
+            LD      A,5
+            LD      (MS.CMD),A	
+            CALL    MO.MONI
+            LD      DE,(S2.DL)          ;DE <== Anfangsadresse fuer MEMO           
+            LD      A,1
+            ;JP      D1.MEMO             ;???
+            HALT
+
+;****************************************************************
+;*	                     D E B U G   -   Funktion :  ROMT       *
+;****************************************************************
+D0.RT1:     DB      'ROM-Anf.'
+D0.RT2:     DB      'ROM-Byte'
+D0.RT3:     DB      '  Kontrollsume: '
+D0.ROMT:    CALL    D0.TA03
+            LD      HL,D0.RTPQ1
+            LD      DE,D0.RT1
+D0.ROM1:    JR      D0.MEDC1
+;
+;
+;
+D0.RTPQ1:   LD      B,8
+            LD      HL,D0.RT1
+            CALL    D0.PQ14
+            LD      HL,D0.RTPQ2
+            LD      DE,D0.RT2
+            LD      (TS.TAB4),HL
+            LD      (S2.TE),DE
+            LD      HL,00400H
+            JP      D0.IN2
+;
+;
+;
+D0.RTPQ2:   CALL    D0.AS
+            LD      HL,00F0AH           ;ZPOS = 10 , SPOS = 15
+            CALL    D0.DDU19
+            LD      B,8
+            LD      HL,D0.RT2
+            CALL    MO.MONI
+            LD      B,2
+            LD      HL,D0.TPQ
+            CALL    MO.MONI
+            CALL    D0.AH2
+            LD      HL,(S2.PAR1)
+            LD      BC,(S2.DL)
+            CALL    D0.CHK
+            JR      D0.ROMT
+
+            TITLE   'Funktion :   PROM '
+            PAGE
+;****************************************************************
+;*	                     D E B U G   -   Funktion :  PROM       *
+;****************************************************************
+D0.PR1:     DB      'PROMAnf.'
+D0.PRT1:    DB      'KontLiesProg------------'
+            DB      '------------------------'
+            DB      '------------------------'
+            DB      '------------------------'
+            DB      '------------------------'
+            DB      '------------------------'
+            DB      '------------------------'
+            DB      '------------------------'
+D0.PRT2:    DW      D0.PRK
+            DW      D0.PRL
+            DW      D0.PRP
+D0.PROM:    LD      HL,D0.PRT1-4
+            LD      DE,D0.PRT2
+            LD      BC,6            
+            CALL    D0.TA04
+            LD      HL,0
+            LD      (MS.ZPOS),HL
+            LD      HL,D0.DD
+            LD      (TS.TAB3+6),HL
+            LD      A,080H
+            LD      (TS.SPMER),A
+            RET
+;
+;
+;            
+D0.PRK:     CALL    D0.PRUP1            ;EPROM - Kontrollieren
+D0.PRK1:    CALL    D0.PRUP2
+            JR      NZ,D0.PRF
+            INC     A
+            JR      NZ,D0.PRF
+            INC     DE
+            BIT     2,D
+            JR      Z,D0.PRK1
+;
+D0.PRR:     XOR     A                   ;Ende des PROM - Programmteiles
+            OUT     (S0.PROM+1),A
+            JR      D0.PROM
+;
+D0.PRF1:    DB      'Fehler: '
+D0.PRF:     LD      HL,0000AH           ;Fehler anzeigen
+            LD      (S2.DL),DE
+            CALL    D0.DDU19
+            LD      B,8
+            LD      HL,D0.PRF1
+            CALL    MO.MONI
+            CALL    D0.AH2
+            JR      D0.PRR
+
+            PAGE
+D0.PRL:     CALL    D0.TA03             ;EPROM - lesen
+            LD      HL,D0.PRPQ1
+            LD      DE,D0.PR1
+D0.PRL1:    JP      D0.IN1
+;
+D0.PRPQ1:   LD      B,8
+            LD      HL,D0.PR1
+            CALL    D0.PQ14
+            LD      HL,(S2.DL)
+            CALL    D0.PRUP1
+D0.PRL2:    CALL    D0.PRUP2
+            JR      NZ,D0.PRF
+            LD      (HL),A
+            CP      (HL)
+            JR      NZ,D0.PRL
+            INC     HL
+            INC     DE
+            BIT     2,D
+            JR      Z,D0.PRL2
+            LD      BC,00400H
+            LD      HL,(S2.DL)
+            CALL    D0.CHK
+            JR      D0.PRR
+;            
+D0.PRL3:    PUSH    HL
+            POP     DE
+            JR      D0.PRF
+;
+;
+;
+D0.PRP:     CALL    D0.TA03             ;EPROM - programmieren
+            LD      HL,D0.PRPQ2
+            LD      DE,D0.PR1
+            JR      D0.PRL1
+;
+D0.PRPQ2:   LD      B,8
+            LD      HL,D0.PR1
+            CALL    D0.PQ14
+            LD      HL,(S2.DL)
+	        LD      C,010H
+D0.PRP2:    CALL    D0.PRUP3
+            PUSH    BC
+            CALL    D0.PRUP4
+            POP     BC
+            JR      Z,D0.PRP3
+            DEC     C
+            JR      NZ,D0.PRP2
+            JP      D0.PRF              ;Fehlerauswertung
+;            
+D0.PRP3:    CALL    D0.PRUP3
+            LD      BC,00400H
+            LD      HL,(S2.DL)
+            CALL    D0.CHK
+            JP      D0.PRR
+
+            TITLE   'Funktion :   RAMT '
+            PAGE
+;****************************************************************
+;*	                     D E B U G   -   Funktion :  RAMT       *
+;****************************************************************
+D0.RAMT:    LD      HL,D0.RAMT1
+            LD      (TS.BFOL2),HL
+            LD      A,0FFH
+            LD      (TS.MIO),A
+            RET
+;            
+D0.RAMT1:   DB      0CDH                ;SYS-Taste
+            DB      'LP1'
+            DB      0B0H                ;POS QUIT
+            DB      'RAMBUG'
+            DB      0B0H
+            DB      'RAMB'
+            DB      0B0H
+;
+            DW      $
+            DB      'RAMB'
+            DI
+            XOR     A
+            LD      (TS.MIO),A
+            LD      HL,MO.ROLL
+            LD      (MS.RADR),HL
+            LD      HL,MS.DIRES
+            SET     5,(HL)
+            LD      HL,D0.RAMT2
+            LD      DE,00103H
+            LD      BC,17
+            LDIR
+            JP      00100H
+;            
+D0.RAMT2:   JP      D0.CON
+            JP      S9.CIN
+            JP      S9.CSTSX
+            JP      D0.CADR
+            JP      D0.CHOM
+            DB      22
+            DB      80
+;
+D0.CON:     LD      C,A
+            JP      S9.CON
+;
+D0.CADR:    LD      (MS.ZPOS),DE
+            RET
+;
+D0.CHOM:    CALL    S9.SAVE
+            LD      A,5
+            LD      (MS.CMD),A
+            CALL    MO.MONI
+            LD      HL,0
+            LD      (MS.ZPOS),HL
+            LD      A,6
+            LD      (MS.CMD),A
+            CALL    MO.MONI
+            CALL    S9.LOAD
+            RET
+;
+D0.RCDC     EQU     $
+D0.LOAD     EQU     $
+D0.SAVE     EQU     $
+D0.REAS     EQU     $
+            RET
+;            
+D0.RGDC     EQU     $
+D0.UCPU:    CALL    D0.DDU30
+            LD      HL,D0.DD
+            LD      (TS.TAB3+6),HL
+            RET
+
+            TITLE 'Unterprogramme'
+            PAGE
+;****************************************************************
+;*	                     Kontrollsumme berechnen                *
+;****************************************************************
+D0.CHK:     LD      DE,0FFFFH
+D0.CHK1:    LD      A,(HL)
+            XOR     D
+            LD      D,A
+            RRCA
+            RRCA
+            RRCA
+            RRCA
+            AND     00FH
+            XOR     D
+            LD      D,A
+            RRCA
+            RRCA
+            RRCA
+            PUSH    AF
+            AND     01FH
+            XOR     E
+            LD      E,A
+            POP     AF
+            PUSH    AF
+            RRCA
+            AND     0F0H
+            XOR     E
+            LD      E,A
+            POP     AF
+            AND     0E0H
+            XOR     D
+            LD      D,E
+            LD      E,A
+            INC     HL
+            DEC     BC
+            LD      A,B
+            OR      C
+            JR      NZ,D0.CHK1          ; Ergebnis in < DE >
+            LD      (S2.DL),DE
+            LD      B,17
+            LD      HL,D0.RT3
+            CALL    MO.MONI
+            CALL    D0.AH2
+            RET
+
+            PAGE
+;**********************************************************************
+;*	                     Unterprogramme fuer EPROM - Anschlusseinheit *
+;**********************************************************************
+D0.PRUP1:   LD      A,018H
+            OUT     (S0.PROM+1),A
+            LD      DE,003E8H
+D0.PRU11:   DEC     DE
+            LD      A,D
+            OR      E
+            JR      NZ,D0.PRU11
+            RET
+;
+D0.PRUP2:   LD      A,E
+            OUT     (S0.PROM+2),A
+            LD      A,D
+            RRCA
+            RRCA
+            OR      018H
+            OUT     (S0.PROM+1),A
+            LD      B,6
+D0.PRU21:   DJNZ    D0.PRU22
+            OR      1
+            RET
+;
+D0.PRU22:   IN      A,(S0.PROM+3)
+            LD      C,A
+            IN      A,(S0.PROM+3)
+            CP      C
+            JR      NZ,D0.PRU21
+            RET
+;
+D0.PRUP3:   LD      B,00CH
+D0.PRU31:   LD      HL,(S2.DL)
+            LD      DE ,0
+D0.PRU32:   LD      A,E
+            OUT     (S0.PROM+2),A
+            LD      A,D
+            RRCA
+            RRCA
+            OR      01BH
+            OUT     (S0.PROM+1),A
+            PUSH    AF
+            LD      A,(HL)
+            OUT     (S0.PROM+3),A
+            POP     AF
+            PUSH    AF
+            OR      01FH
+            OUT     (S0.PROM+1),A
+            LD      A,018H
+D0.PRU33:   DEC     A
+            JR      NZ,D0.PRU33
+            POP     AF
+            OUT     (S0.PROM+1),A
+            INC     HL
+            INC     DE
+            BIT     2,D
+            JR      Z,D0.PRU32
+            DJNZ    D0.PRU31
+            AND     0FDH
+            OUT     (S0.PROM+1),A
+            RET
+;
+D0.PRUP4:   LD      HL,(S2.DL)
+            CALL    D0.PRUP1
+D0.PRU41:   CALL    D0.PRUP2
+            RET     NZ
+            CP      (HL)
+            RET     NZ
+            INC     HL
+            INC     DE
+            BIT     2,D
+            JR      Z,D0.PRU41
+            XOR     A
+            RET
+            
+            PAGE
+;**********************************************************************
+;*                                                                    *
+;**********************************************************************
+D0.PQ14:    PUSH    HL
+            PUSH    BC
+            CALL    D0.AS
+            LD      HL,(S2.DL)
+            LD      (S2.PAR1),HL
+            LD      HL,0000AH           ;ZPOS = 10 , SPOS = 0
+            CALL    D0.DDU19
+            POP     BC
+            POP     HL
+            CALL    MO.MONI
+            LD      B,2
+            LD      HL,D0.TPQ
+            CALL    MO.MONI
+            CALL    D0.AH2
+            RET
+;**********************************************************************
+;*	                     <B>-malige Anzeige von <A> in Richtung <C>   *
+;**********************************************************************
+D0.DDU01:   LD      (MS.TK),A
+            LD      A,C
+            LD      (MS.DIRES),A
+D0.DDU02:   CALL    MO.MONI
+            DJNZ    D0.DDU02
+            RET
+
+            PAGE
+;**********************************************************************
+;*	                     Rahmengrundelemente                          *
+;**********************************************************************
+;           Anzeige :    $$$$$
+D0.DDU03:   LD      (MS.ZPOS),HL
+            LD      A,001H              ;Zeichen : $ 	           (03)
+            LD      C,0C0H              ;Richtung: Ost
+            CALL    D0.DDU01
+;           Anzeige :    $
+;                        $
+;                        $
+D0.DDU04:   LD      (MS.ZPOS),HL
+            XOR     A                   ;Zeichen : $
+            LD      C,0C6H              ;Richtung: Sued
+            CALL    D0.DDU01
+            RET
+;           Anzeige :    $$$$$
+D0.DDU05:   LD      C,0C0H              ;Richtung: Ost
+            PUSH    BC
+            LD      (MS.ZPOS),HL
+            LD      A,002H              ;Zeichen : $
+            LD      B,1
+            CALL    D0.DDU01
+            LD      HL,(MS.ZPOS)
+            POP     BC
+            CALL    D0.DDU03
+            LD      A,003H              ;Zeichen : $ 	           (01)
+            LD      BC,00100H
+            CALL    D0.DDU01
+            RET
+;
+D0.DDU17:   LD      C,0C0H
+            PUSH    BC
+            LD      (MS.ZPOS),HL
+            LD      A,00AH
+            LD      B,1
+            CALL    D0.DDU01
+            LD      HL,(MS.ZPOS)
+            POP     BC
+            CALL    D0.DDU03
+            LD      A,00BH
+            LD      BC,00100H
+            CALL    D0.DDU01
+            RET
+;           Anzeige :    $
+;                        $
+;                        $
+D0.DDU06:   LD      C,0C6H              ;Richtung: Sued
+            PUSH    BC
+            LD      (MS.ZPOS),HL
+            LD      A,001H              ;Zeichen : $	           (05)
+            LD      B,1
+            CALL    D0.DDU01
+            LD      HL,(MS.ZPOS)
+            POP     BC
+            CALL    D0.DDU04
+            LD      A,001H              ;Zeichen : $	           (04)
+            LD      BC,00100H
+            CALL    D0.DDU01
+            RET
+;
+D0.DDU07:   LD      BC,00E04H
+            CALL    D0.DDU18
+            LD      HL,(S2.DM1)
+            LD      A,H
+            ADD     A,5
+            LD      H,A
+            LD      B,4
+            CALL    D0.DDU06
+            LD      HL,(S2.DM1)
+            LD      A,H
+            ADD     A,10
+            LD      H,A
+            LD      B,4
+            CALL    D0.DDU06
+            RET
+;
+D0.DDU08:   LD      A,20
+            LD      (MS.CMD),A
+            LD      HL,00203H           ;ZPOS = 3 , SPOS = 2
+            CALL    D0.DDU07            ;                    Rahmen Ebene 0
+            LD      HL,01603H           ;ZPOS = 3 , SPOS = 22
+            CALL    D0.DDU07            ;                    Rahmen Ebene 1
+            LD      HL,02A03H           ;ZPOS = 3 , SPOS = 42
+            CALL    D0.DDU07            ;                    Rahmen Ebene 2
+            LD      HL,03E03H           ;ZPOS = 3 , SPOS = 62
+            CALL    D0.DDU07            ;                    Rahmen Ebene 3
+            LD      A,24
+            LD      (MS.CMD),A
+            LD      HL,00602H           ;ZPOS = 2 , SPOS = 6
+            CALL    D0.DDU10
+            LD      HL,01A02H           ;ZPOS = 2 , SPOS = 26
+            CALL    D0.DDU10
+            LD      HL,02E02H           ;ZPOS = 2 , SPOS = 46
+            CALL    D0.DDU10
+            LD      HL,04202H           ;ZPOS = 2 , SPOS = 66
+            CALL    D0.DDU10
+            LD      A,20
+            LD      (MS.CMD),A
+            LD      A,'/'
+            LD      (MS.TK),A
+            LD      HL,00D02H           ;ZPOS = 2 , SPOS = 13
+            CALL    D0.DDU11
+            LD      HL,02102H           ;ZPOS = 2 , SPOS = 33
+            CALL    D0.DDU11
+            LD      HL,03502H           ;ZPOS = 2 , SPOS = 53
+            CALL    D0.DDU11
+            LD      HL,04902H           ;ZPOS = 2 , SPOS = 73
+            CALL    D0.DDU11
+            RET
+;
+D0.DDU09:   DB      'Ebene'
+D0.DDU10:   LD      (MS.ZPOS),HL
+            LD      B,5
+            LD      HL,D0.DDU09
+            CALL    MO.MONI
+            RET
+ ;
+ ;
+ ;
+ D0.DDU11:  LD      (MS.ZPOS),HL
+            LD      HL,MS.TK
+            INC     (HL)
+            CALL    MO.MONI
+            RET
+;
+;
+;
+D0.DDU12:   LD      HL,(S2.DM1)
+            LD      DE,4
+            ADD     HL,DE
+            LD      (S2.DM1),HL
+            LD      B,4
+            CALL    MO.MONI
+            RET
+;
+;
+;
+D0.DDU13:   LD      (MS.ZPOS),HL
+            LD      B,4
+D0.DDU14:   PUSH    BC
+            CALL    D0.DDU12
+            INC     (IX)
+            CALL    D0.DDU12
+            INC     (IX)
+            CALL    D0.DDU12
+            INC     (IY)
+            LD      B,14
+D0.DDU15:   DEC     (IX)
+            DJNZ    D0.DDU15
+            POP     BC
+            DJNZ    D0.DDU14
+            RET
+;
+;
+;
+D0.DDU16:   LD      A,24
+            LD      (MS.CMD),A
+            LD      A,0C0H
+            LD      (MS.DIRES),A
+            LD      (S2.DM1),HL         ;Bedeutungstabelle
+            LD      IY,MS.ZPOS
+            LD      IX,MS.SPOS
+            LD      HL,00304H           ;ZPOS = 4 , SPOS = 3
+            CALL    D0.DDU13
+            LD      HL,01704H           ;ZPOS = 4 , SPOS = 23
+            CALL    D0.DDU13
+            LD      HL,02B04H           ;ZPOS = 4 , SPOS = 43
+            CALL    D0.DDU13
+            LD      HL,03F04H           ;ZPOS = 4 , SPOS = 63
+            CALL    D0.DDU13
+            RET
+
+            PAGE
+D0.DDU18:   PUSH    BC                  ; |---------|
+            LD      (S2.DM1),HL         ; |         | < C >   anzeigen
+            CALL    D0.DDU05            ; |---------|
+            LD      HL,(MS.ZPOS)        ;    < B >
+            INC     L
+            POP     BC
+            PUSH    BC
+            LD      B,C
+            CALL    D0.DDU04
+            LD      HL,(S2.DM1)
+            INC     L
+            POP     BC
+            PUSH    BC
+            LD      B,C
+            CALL    D0.DDU04
+            LD      HL,(MS.ZPOS)
+            POP     BC
+            CALL    D0.DDU17
+            RET
+;
+;
+;
+D0.DDU19:   PUSH    HL
+            LD      A,2
+            LD      (MS.CMD),A
+            CALL    MO.MONI
+            LD      A,24
+            LD      (MS.CMD),A
+            POP     HL
+            LD      (MS.ZPOS),HL
+            RET
+;
+;
+;
+D0.DDU20:   CALL    D0.DDU08
+            LD      HL,D0.DDPTB-4
+            CALL    D0.DDU16
+            RET
+;
+;
+;
+D0.DDU21:   LD      A,(S2.BZ)
+            CP      2
+            JR      Z,D0.DDU22
+            LD      B,0
+            JR      D0.DDU23
+;            
+D0.DDU22:   LD      B,5
+D0.DDU23:   LD      A,(S2.AFOR)
+            ADD     A,B
+            ADD     A,A
+            LD      C,A
+            LD      B,0
+            ADD     HL,BC
+            LD      A,(HL)
+            INC     HL
+            LD      H,(HL)
+            LD      L,A
+            RET
+;
+D0.DDU24:   LD      A,44
+            LD      (MS.CMD),A
+            LD      (MS.ZPOL),HL
+            LD      HL,S2.DM1
+            CALL    MO.MONI
+            RET
+;**********************************************************************
+;*	                     Eingabefeld loeschen und ":" anzeigen        *
+;**********************************************************************
+D0.DDU25:   CALL    D0.MO01
+            LD      A,5
+            LD      (MS.CMD),A
+            CALL    MO.MONI
+            LD      A,20
+            LD      (MS.CMD),A
+            LD      A,':'
+            LD      (MS.TK),A
+            LD      HL,03D14H           ;ZPOS = 20 , SPOS = 61
+            LD      (MS.ZPOS),HL
+            CALL    MO.MONI
+            LD      HL,03513H           ;ZPOS = 19 , SPOS = 53
+            LD      (MS.ZPOS),HL
+            RET
+;**********************************************************************
+;*	                     Spaltennummern und Text anzeigen             *
+;**********************************************************************
+D0.DDU26:   LD      A,B
+            CP      10
+            JR      C,D0.DDU27
+            LD      A,55
+            ADD     A,B
+            LD      (MS.TK),A
+            CALL    MO.MONI
+            DEC     B
+            JR      D0.DDU26
+;
+D0.DDU27:   LD      A,'/'
+            ADD     A,B
+            LD      (MS.TK),A
+D0.DDU28:   CALL    MO.MONI
+            LD      HL,MS.TK
+            DEC     (HL)
+            DJNZ    D0.DDU28
+            LD      A,24
+            LD      (MS.CMD),A
+            LD      B,8
+            LD      HL, (S2.TE)
+            CALL    MO.MONI
+            LD      HL,04F15H
+            LD      (MS.ZMAX),HL
+            RET
+
+            PAGE
+D0.DDU30:   LD      HL,0000BH
+            LD      (MS.ZMIN),HL
+            LD      HL,05016H
+            LD      (MS.ZMAX),HL
+            LD      A,5
+            LD      (MS.CMD),A
+            CALL    MO.MONI
+            LD      A,2
+            LD      (MS.CMD),A
+            CALL    MO.MONI
+            LD      A,20
+            LD      (MS.CMD),A
+            LD      HL,0000AH           ;ZPOS = 10 , SPOS = 0
+            LD      BC,04E0AH           ;Laenge:78 , Breite:10
+            CALL    D0.DDU18
+            LD      HL,00012H           ;ZPOS = 18 , SPOS = 0
+            LD      B,78                ;Laenge:78
+            CALL    D0.DDU05
+            LD      HL,0250AH           ;ZPOS = 10 , SPOS = 37
+            LD      B,7
+            CALL    D0.DDU06
+            LD      HL,03412H           ;ZPOS = 18 , SPOS = 52
+            LD      B,2
+            CALL    D0.DDU06
+            LD      HL,0000CH           ;ZPOS = 12 , SPOS = 0
+            LD      B,36
+            CALL    D0.DDU05
+            LD      HL,0000FH           ;ZPOS = 15 , SPOS = 0
+            LD      B,36
+            CALL    D0.DDU05
+            LD      HL,00A0FH           ;ZPOS = 15 , SPOS = 10
+            LD      B,5
+            CALL    D0.DDU06
+            LD      HL,00D0AH           ;ZPOS = 10 , SPOS = 13
+            LD      B,4
+            CALL    D0.DDU06
+            LD      HL,0150AH           ;ZPOS = 10 , SPOS = 21
+            LD      B,4
+            CALL    D0.DDU06
+            LD      HL,01D0AH           ;ZPOS = 10 , SPOS = 29
+            LD      B,4
+            CALL    D0.DDU06
+            LD      HL,0170FH           ;ZPOS = 15 , SPOS = 23
+            LD      B,2
+            CALL    D0.DDU06
+            LD      HL,0090CH           ;ZPOS = 12 , SPOS = 9
+            CALL    D0.DDU31
+            LD      HL,0110CH           ;ZPOS = 12 , SPOS = 17
+            CALL    D0.DDU31
+            LD      HL,0190CH           ;ZPOS = 12 , SPOS = 25
+            CALL    D0.DDU31
+            LD      HL,0210CH           ;ZPOS = 12 , SPOS = 33
+            CALL    D0.DDU31
+            RET
+;
+D0.DDU31:   LD      (MS.ZPOS),HL
+            LD      A,07CH
+            LD      BC,003C6H
+            CALL    D0.DDU01
+            RET
+
+            PAGE
+;**********************************************************************
+;*	                     Anzeige im Eingabebereich retten             *
+;**********************************************************************
+D0.AS:      LD      HL,D0.ASTAB
+            CALL    D0.DDU21
+            JP      (HL)
+;
+;
+;
+D0.ASTAB:   DW      D0.ASH1
+            DW      D0.ASD1
+            DW      D0.ASO1
+            DW      D0.ASB1
+            DW      D0.ASA1
+;
+            DW      D0.ASH2
+            DW      D0.ASD2
+            DW      D0.ASO2
+            DW      D0.ASB2
+            DW      D0.ASA2
+;
+;
+;
+D0.ASH1:    LD      HL,04D14H
+            LD      B,2
+            CALL    D0.DDU24
+            LD      HL,S2.DM1
+            CALL    S1.HBKON
+            LD      (S2.DL),A
+            XOR     A
+            LD      (S2.DH),A
+            RET
+;
+D0.ASH2:    LD      HL,04B14H
+            LD      B,4
+            CALL    D0.DDU24
+            LD      HL,S2.DM1
+            CALL    S1.HBKON
+            LD      (S2.DH),A
+            INC     HL
+            CALL    S1.HBKON
+            LD      (S2.DL),A
+            RET
+;
+;
+;
+D0.ASD1:    LD      HL,04C14H
+            LD      B,3
+            CALL    D0.DDU24
+            LD      A,' '
+            LD      (S2.DM1+3),A
+            LD      DE,S2.DM1
+            CALL    S1.IDH
+            LD      (S2.DL),HL
+            RET
+;
+D0.ASD2:    LD      HL,04A14H
+            LD      B,5
+            CALL    D0.DDU24
+            LD      A,' '
+            LD      (S2.DM1+5),A
+            LD      DE,S2.DM1
+            CALL    S1.IDH
+            LD      (S2.DL),HL
+            RET
+;
+;
+;
+D0.ASA1:    LD      HL,04E14H
+            LD      B,1
+            CALL    D0.DDU24
+            XOR     A
+            LD      (S2.DH),A
+            LD      A,(S2.DM1)
+            LD      (S2.DL),A
+            RET
+;
+D0.ASA2:    LD      HL,04D14H
+            LD      B,2
+            CALL    D0.DDU24
+            LD      A,(S2.DM1)
+            LD      (S2.DH),A
+            LD      A,(S2.DM1+1)
+            LD      (S2.DL),A
+            RET
+;
+;
+;
+D0.ASO1     EQU     $
+D0.ASO2     EQU     $
+D0.ASB1     EQU     $
+D0.ASB2     EQU     $
+            RET
+
+            PAGE
+;**********************************************************************
+;*	                     Anzeige im Eingabebereich laden              *
+;**********************************************************************
+D0.AL:      LD      HL,D0.ALTAB
+            CALL    D0.DDU21
+            JP      (HL)
+;
+;
+;
+D0.ALTAB:   DW      D0.ALH1
+            DW      D0.ALD1
+            DW      D0.ALO1
+            DW      D0.ALB1
+            DW      D0.ALA1
+;
+            DW      D0.ALH2
+            DW      D0.ALD2
+            DW      D0.ALO2
+            DW      D0.ALB2
+            DW      D0.ALA2
+;
+;
+;
+D0.ALH1:    CALL    D0.DDU25
+            LD      A,'H'
+            LD      (MS.TK),A
+            CALL    MO.MONI
+            LD      A,77
+            LD      (MS.SPOS),A
+            LD      B,2
+            CALL    D0.DDU26
+            LD      HL,04E15H
+            LD      (MS.ZMIN),HL
+            LD      HL,04D14H
+            LD      (MS.ZPOS),HL
+            CALL    D0.AH1
+D0.ALH:     LD      HL,D0.HZEIN
+            LD      (TS.EINA),HL
+            LD      A,0A8H
+            LD      (TS.SPMER),A
+            RET
+;
+D0.ALH2:    CALL    D0.DDU25
+            LD      A,'H'
+            LD      (MS.TK),A
+            CALL    MO.MONI
+            LD      A,75
+            LD      (MS.SPOS),A
+            LD      B,4
+            CALL    D0.DDU26
+            LD      HL,04C15H
+            LD      (MS.ZMIN),HL
+            LD      HL,04B14H
+            LD      (MS.ZPOS),HL
+            CALL    D0.AH2
+            JR      D0.ALH
+;
+;
+;            
+D0.ALD1:    CALL    D0.DDU25
+            LD      A,'D'
+            LD      (MS.TK),A
+            CALL    MO.MONI
+            LD      A,76
+            LD      (MS.SPOS),A
+            LD      B,3
+            CALL    D0.DDU26
+            LD      HL,04D15H
+            LD      (MS.ZMIN),HL
+            LD      HL,04C14H
+            LD      (MS.ZPOS),HL
+            CALL    D0.AD1
+D0.ALD:     LD      HL,D0.DZEIN
+            LD      (TS.EINA),HL
+            LD      A,088H
+            LD      (TS.SPMER),A
+            RET
+;
+D0.ALD2:    CALL    D0.DDU25
+            LD      A,'D'
+            LD      (MS.TK),A
+            CALL    MO.MONI
+            LD      A,74
+            LD      (MS.SPOS),A
+            LD      B,5
+            CALL    D0.DDU26
+            LD      HL,04B15H
+            LD      (MS.ZMIN),HL
+            LD      HL,04A14H
+            LD      (MS.ZPOS),HL
+            CALL    D0.AD2
+            JR      D0.ALD
+;
+D0.ALO1     EQU     $
+D0.ALO2     EQU     $
+D0.ALB1     EQU     $
+D0.ALB2:    RET
+;
+;
+;
+D0.ALA1:    CALL    D0.DDU25
+            LD      A,'A'
+            LD      (MS.TK),A
+            CALL    MO.MONI
+            LD      A,78
+            LD      (MS.SPOS),A
+            LD      B,1
+            CALL    D0.DDU26
+            LD      HL,04F15H
+            LD      (MS.ZMIN),HL
+            LD      HL,04E14H
+            LD      (MS.ZPOS),HL
+            LD      B,1
+            LD      HL,S2.DL
+            CALL    MO.MONI
+D0.ALA:     LD      HL,D0.AZEIN
+            LD      (TS.EINA),HL
+            LD      A,0FFH
+            LD      (TS.SPMER),A
+            RET
+;
+D0.ALA2:    CALL    D0.DDU25
+            LD      A,'A'
+            LD      (MS.TK),A
+            CALL    MO.MONI
+            LD      A,77
+            LD      (MS.SPOS),A
+            LD      B,2
+            CALL    D0.DDU26
+            LD      HL,04E15H
+            LD      (MS.ZMIN),HL
+            LD      HL,04D14H
+            LD      (MS.ZPOS),HL
+            LD      A,(S2.DH)
+            LD      (S2.DM1),A
+            LD      A,(S2.DL)
+            LD	    (S2.DM1+1),A
+            LD      B,2
+            LD      HL,S2.DM1
+            CALL    MO.MONI
+            JR      D0.ALA
+;
+;
+;
+D0.AW:      CALL    D0.AS
+            LD      A,(TS.TK)
+            LD      (S2.AFOR),A
+            CALL    D0.AL
+            RET
+;
+;
+;
+D0.TA01:    LD      HL,S1.CNLS
+            LD      (TS.TAB2+14),HL
+            LD      HL,S1.CNRS
+            LD      (TS.TAB2+18),HL
+            LD      HL,S1.NN
+            LD      (TS.TAB3),HL
+            LD      HL,S1.NNN
+            LD      (TS.TAB3+2),HL
+            RET
+;
+;
+;
+D0.TA02:    PUSH    BC
+            PUSH    DE
+            PUSH    HL
+            CALL    TA.LOE
+            LD      A,2	
+            LD      (MS.CMD),A	
+            CALL    MO.MONI
+            CALL    D0.DDU08            ;Rahmen P-Tasten anzeigen
+            POP     HL                  ;Rahmen fuellen
+            CALL    D0.DDU16
+            POP     HL
+            LD      DE,TS.TAB1
+            POP     BC
+            LDIR
+            RET
+;
+;
+;
+D0.TA03:    LD      HL,D0.DDPT3-4
+            LD      DE,D0.DDPT2
+            LD      BC,10
+D0.TA04:    CALL    D0.TA02
+            XOR     A                   ;Anzeigeformat auf hexa
+            LD      (S2.AFOR),A
+            LD      A,2                 ;Eingabe auf 2 Byte
+            LD      (S2.BZ),A
+            RET
+;
+;
+;
+;**********************************************************************
+;*	                     Fenster gleich Eingabebereich definieren     *
+;**********************************************************************
+D0.MO01:    LD      HL,03614H           ;ZMIN = 20 , SMIN = 54
+            LD      (MS.ZMIN),HL
+            LD      HL,04F15H           ;ZMAX = 21 , SMAX = 79
+            LD      (MS.ZMAX),HL
+            LD      HL,03513H           ;ZPOS = 19 , SPOS = 53
+            LD      (MS.ZPOS),HL
+            LD      A,0C0H
+            LD      (MS.DIRES),A
+            RET
+;**********************************************************************
+;*	                     Anzeige von   <S2.DL>   hexadezimal          *
+;**********************************************************************
+D0.AH1:     LD      A,(S2.DL)
+            LD      HL,S2.DM1
+            CALL    S1.BHKON
+            LD      B,2
+            LD      HL,S2.DM1
+            CALL    MO.MONI
+            RET
+;**********************************************************************
+;*	                     Anzeige von   <S2.DH,S2.DL>   hexadezimal    *
+;**********************************************************************
+D0.AH2:     LD      A,(S2.DH)
+            LD      HL,S2.DM1
+            CALL    S1.BHKON
+            LD      A,(S2.DL)
+            INC     HL
+            CALL    S1.BHKON
+            LD      B,4
+            LD      HL,S2.DM1
+            CALL    MO.MONI
+            RET
+;
+;
+;
+D0.AD1:     LD      HL,(S2.DL)
+            LD      DE,S2.DM1
+            LD      A,'A'
+            LD      (DE) ,A
+            CALL    S1.HDI
+            LD      B,3
+            LD      HL,S2.DM1+3
+            CALL    MO.MONI
+            RET
+;
+D0.AD2:     LD      HL,(S2.DL)
+            LD      DE,S2.DM1
+            LD      A,'A'
+            LD      (DE),A
+            CALL    S1.HDI
+            LD      B,5
+            LD      HL,S2.DM1+1
+            CALL    MO.MONI
+            RET
+;
+;
+;
+D0.HZEIN:   LD      A,(TS.TK)
+            CP      'G'
+            RET     NC
+            CP      'A'
+            JR      NC,D0.DZEIN
+            CP      ':'
+            RET     NC
+            CP      '0'
+            JR      NC,D0.DZEIN
+            RET
+;
+D0.AZEIN    EQU     $
+D0.DZEIN:   CALL    S1.AEIN
+            LD      A,1
+            LD      (TS.ZSMER),A
+            RET
+;
+D0.OZEIN:   LD      A,(TS.TK)
+            CP      '8'
+            RET     NC
+            JR      D0.DZEIN
+;
+D0.BZEIN:   LD      A,(TS.TK)
+            CP      '2'
+            RET     NC
+            JR      D0.DZEIN
+;
+            .DEPHASE
+;
+            END
+

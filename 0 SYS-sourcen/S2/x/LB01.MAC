@@ -1,0 +1,611 @@
+;           PN      LB01
+            TITLE   'Lochband-Geraete-Treiber'
+            PAGE
+;****************************************************************
+;*                  Lochband-Geraete-Treiber  fuer              *
+;*                  S I F 1000  ( ADA )  und  I F S P  ( ALB )  *
+;*  Version         --------------------------------------------*
+;*                  Programmierer: M. Herbote  K EAW  ZFT (WFT) *
+;*  V 2 . 1         --------------------------------------------*
+;*                  Stand        : 10.Januar 1985               *
+;****************************************************************
+
+;****************************************************************
+;*                  Aufbau der  E-/A-Tabelle                    *
+;*                  --------------------------------------------*
+;*       +  0       EOR - Zeichen  extern                       *
+;*       +  1       EOR - Zeichen  intern                       *
+;*       +  2       Basisadresse der Ansteuerkarte fuer Lochb.  *
+;*       +  3       Status                                      *
+;*                  bit 0 = 1  ...  EOF gelesen                 *
+;*                      1 = 1  ...  EOR gelesen                 *
+;*       +  4       Kommando                                    *
+;*                  bit 0      ...  nicht benutzt               *
+;*                                                              *
+;*                      1 = 0  ...  Transport rueckwaerts Lesen *
+;*                        = 1  ...  Transport vorwaerts   Lesen *
+;*                      2 = 0  ...  keine EOR-Umwandlung        *
+;*                        = 1  ...  EOR extern <===> EOR intern *
+;*                      3 = 0  ...  keine Code-Konvertierung    *
+;*                        = 1  ...        Code-Konvertierung    *
+;*                      4      ...  nicht benutzt               *
+;*                                                              *
+;*                      5 = 0  ...  NUL und DEL      lesen      *
+;*                          1  ...  NUL und DEL ueberlesen      *
+;*                      6 = 0  ...  ungerade Paritaet (7=1)     *
+;*                          1  ...    gerade Paritaet (7=1)     *
+;*                      7 = 0  ...  ohne Paritaet               *
+;*                          1  ...  mit  Paritaet               *
+;*       + 5, + 6   Anfangsadresse der Konvertierungstabelle(n) *
+;*       + 7, + 8   Blockadresse                                *
+;*       + 9, +10   Blocklaenge                                 *
+;*       +11        Paritaetsverknuepfungszeichen               *
+;*       +12        EOF - Zeichen                               *
+;*       +13, +14   Adresse der  OPEN       - Routine           *
+;*       +15, +16   Adresse der  CLOSE      - Routine           *
+;*       +17, +18   Adresse der  READ/WRITE - Routine           *
+;*       +19, +20   Adresse der  KONV       - Routine           *
+;****************************************************************
+LB.IRLB:    DW      LB.IRLBS
+            DW      LB.IRLBL
+
+LB.SC700:   LD      A,(IX+4)            ;Routinennummer
+            SUB     70
+            CP      6
+            JR      Z,LB.SC760
+            CP      5
+            JR      Z,LB.SC750
+            CP      4
+            JR      Z,LB.SC740
+            CP      3
+            JR      Z,LB.SC730
+            CP      2
+            JR      Z,LB.SC720
+            CP      1
+            JR      Z,LB.SC710
+            CP      0
+            JP      Z,LB.SC701
+            RET
+
+
+LB.SC750:   LD      HL,LB.SC752
+LB.SC751:   LD      (00307H),HL
+            RET
+
+LB.SC760:   LD      HL,LB.SC762
+            JR      LB.SC751
+
+
+LB.SC730:   LD      HL,LB.SC712
+            LD      (0030DH),HL
+            RET
+
+LB.SC740:   LD      HL,LB.SC742
+            LD      (00313H),HL
+            RET
+
+
+LB.SC710:   LD      HL,LB.SC712
+            LD      BC,LB.SC713
+LB.SC711:   LD      (0030AH),HL
+            LD      (00310H),BC
+LB.SC713:   RET
+
+LB.SC720:   LD      HL,LB.SC713
+            LD      BC,LB.SC722
+            JR      LB.SC711
+
+
+LB.SC712:   CALL    S9.SAVE             ;S9.SAVE
+            LD      IX,LB.TABL
+            CALL    LB.LBL
+            LD      (TS.TK),A           ;TS.TK
+            CALL    LB.ERS
+            CALL    S9.LOAD             ;S9.LOAD
+            LD      A,(TS.TK)
+            RET
+
+LB.SC722:   PUSH    AF                  ;bei PRINT keine Ausgabe von 0AH
+            LD      A,C
+            CP      0AH
+            JR      NZ,LB.SC723
+            POP     AF
+            RET
+LB.SC723:   POP     AF
+LB.SC742:   CALL    S9.SAVE             ;S9.SAVE
+            LD      IX,LB.TABS
+            CALL    LB.LBS
+            JR      LB.SC763
+
+
+LB.SC752:   CALL    S9.SAVE                ;S9.SAVE
+            LD      IX,LB.TABL
+            CALL    LB.LBL
+            LD      B,A
+            XOR     A
+            CALL    0032AH
+            JR      LB.SC763
+
+LB.SC762:   CALL    S9.SAVE             ;S9.SAVE
+            CALL    00327H
+            LD      C,E
+            LD      IX,LB.TABS
+            CALL    LB.LBS
+LB.SC763:   CALL    LB.ERS
+            CALL    S9.LOAD             ;S9.LOAD
+            RET
+
+
+LB.SC701:   LD      A,(IX+8)            ;richtung
+            CP      'I'
+            JR      Z,LB.SC702
+            CP      'O'
+            RET     NZ
+            LD      IY,LB.TABS
+            LD      C,80H
+            JR      LB.SC703
+
+LB.SC702:   LD      IY,LB.TABL
+            LD      C,7FH
+LB.SC703:   LD      A,(IX+6)            ;unteroperation
+            CP      4
+            JR      Z,LB.SC704
+            CP      3
+            JR      Z,LB.SC705
+            CP      2
+            JR      Z,LB.SC706
+            CP      1
+            JR      Z,LB.SC707
+            CP      0
+            JR      Z,LB.SC708
+            RET
+                                        ;uop = 1
+LB.SC707:   LD      A,(IX+10)           ;wert
+            LD      B,0
+            LD      C,(IX+12)           ;rel. tabellenadresse
+            ADD     IY,BC
+            LD      (IY+0),A
+            RET
+                                        ;uop = 3  ...  ASCII
+LB.SC705:   LD      A,(IX+8)            ;richtung
+            CP      'O'
+            JR      Z,$+6
+            LD      B,11100110B
+            JR      LB.SC716
+            LD      B,11000100B
+            JR      LB.SC716
+                                        ;uop = 2  ...  binaer
+LB.SC706:   LD      A,(IX+8)            ;richtung
+            CP      'O'
+            JR      Z,$+6
+            LD      B,2
+            JR      LB.SC716
+            LD      B,0
+LB.SC716:   LD      DE,01E0DH           ;EOR - Zeichen
+            LD      A,019H              ;EOF - Zeichen
+            LD      HL,0
+            PUSH    HL
+            JR      LB.SC709
+                                        ;uop = 0
+LB.SC708:   LD      D,(IX+22)
+            LD      E,(IX+20)
+            LD      B,(IX+18)
+            LD      C,(IX+14)
+            LD      A,(IX+12)
+            LD      H,(IX+11)
+            LD      L,(IX+10)
+            PUSH    HL
+            LD      H,(IX+17)
+            LD      L,(IX+16)
+
+LB.SC709:   LD      (IY+0),D
+            LD      (IY+1),E
+            LD      (IY+4),B
+            LD      (IY+11),C
+            LD      (IY+12),A
+            LD      (IY+5),L
+            LD      (IY+6),H
+            POP     HL
+            LD      (IY+19),L
+            LD      (IY+20),H
+            RET
+                                        ;uop = 4  ...  Standard-Anwender-Kode
+LB.SC704:   LD      HL,LB.KONV
+            PUSH    HL
+            LD      A,(IX+8)
+            CP      'O'
+            JR      Z,$+9
+            LD      C,0EFH
+            LD      HL,LB.SKTBI
+            JR      $+7
+            LD      C,010H
+            LD      HL,LB.SKTBO
+            LD      D,080H
+            LD      E,00DH
+            LD      B,10101110B
+            LD      A,019H
+            JR      LB.SC709
+
+
+LB.KONV:    PUSH    HL
+            PUSH    BC
+            LD      H,(IX+6)            ;Adresse der Konvertierungstabelle
+            LD      L,(IX+5)
+            LD      B,0
+            LD      C,A
+            ADD     HL,BC
+            LD      A,(HL)
+            POP     BC
+            POP     HL
+            RET
+
+LB.KONV1:   BIT     3,B                 ;Konvertierung ?
+            RET     Z                   ;NEIN
+            PUSH    AF                  ;Zeichen retten
+            LD      A,(IX+19)           ;Adresse der Konvertierungsroutine
+            LD      L,A                 ;laden
+            OR      (IX+20)
+            JR      Z,LB.KONV2
+            LD      H,(IX+20)
+            JR      LB.KONV3
+LB.KONV2:   LD      HL,LB.KONV
+LB.KONV3:   POP     AF                  ;Zeichen laden
+            JP      (HL)                ;Konvertierungsroutine aufrufen
+
+LB.ERSTR:   LD      H,'E'
+            LD      L,52H+80H
+LB.NSTR:    LD      (S2.RBBR),HL        ;S2.RBBR
+            CALL    S9.SUSY             ;S9.SUSY
+            LD      A,D
+            OR      E
+            RET
+
+LB.ERS:     CALL    LB.ERSTR
+            RET     Z
+            LD      DE,6
+            ADD     HL,DE
+            LD      A,(IX+3)
+            ADD     A,30H
+            LD      (HL),A
+            RET
+
+            PAGE
+LB.SKTBI:   DS      256                 ;Standard-Konvertierungstabelle
+                                        ; E I A  -  Code
+
+LB.SKTBO:   DS      256
+
+
+LB.TABS:    DB      01EH                ;+ 0
+            DB      00DH                ;+ 1
+            DB      0FFH                ;+ 2
+            DB      0                   ;+ 3
+            DB      0                   ;+ 4
+            DW      0                   ;+ 5,  + 6
+            DW      0                   ;+ 7,  + 8
+            DW      0                   ;+ 9,  +10
+            DB      080H                ;+11
+            DB      019H                ;+12
+            DW      0                   ;+13,  +14
+            DW      0                   ;+15,  +16
+            DW      0                   ;+17,  +18
+            DW      LB.KONV             ;+19,  +20
+
+LB.TABL:    DB      01EH                ;+ 0
+            DB      00DH                ;+ 1
+            DB      0FFH                ;+ 2
+            DB      0                   ;+ 3
+            DB      02H                 ;+ 4
+            DW      0                   ;+ 5,  + 6
+            DW      0                   ;+ 7,  + 8
+            DW      0                   ;+ 9,  +10
+            DB      07FH                ;+11
+            DB      019H                ;+12
+            DW      0                   ;+13,  +14
+            DW      0                   ;+15,  +16
+            DW      0                   ;+17,  +18
+            DW      LB.KONV             ;+19,  +20
+
+
+LB.RBBR     EQU     0B26CH
+LB.SUSY     EQU     0E91BH
+LB.LOAD     EQU     0E969H
+LB.SAVE     EQU     0E949H
+LB.TK:      DB      0
+
+LB.LBGEN    EQU     00000010B           ;Generierungskonstante
+                                        ;Bit 0 = 1  ...  ALB / K6200
+                                        ;    1 = 1  ...  ADA / DARO
+
+            TITLE   'Lochband Ausgabe Routine'
+            PAGE
+;****************************************************************
+;*                  Ausgabe eines Zeichens zum Lochbandstanzer  *
+;****************************************************************
+LB.LBS:     PUSH    HL                  ;Register retten
+            PUSH    BC
+            PUSH    AF
+            LD      A,I                 ;I-Register retten
+            PUSH    AF
+            LD      A,HIGH(LB.IRLB)     ;I-Register fuer LB laden
+            LD      I,A
+            LD      B,C                 ;auszugebendes Zeichen retten
+            PUSH    BC
+
+            IF      LB.LBGEN AND 1
+            LD      A,0E8H              ;Basisadresse ALB
+            ENDIF
+            IF      LB.LBGEN AND 2
+            LD      A,0                 ;Basisadresse ADA
+            ENDIF
+
+LB.ILBS:    DI
+
+            IF      LB.LBGEN AND 1
+            ADD     A,6
+            ENDIF
+            IF      LB.LBGEN AND 2
+            ADD     A,2
+            ENDIF
+
+            LD      C,A
+            LD      HL,LB.SWLBS
+            LD      B,3
+            OTIR                        ;Adresse + 6 : PIO 2, Port A, Steuer
+                                        ;Adresse + 2 : PIO 1, Port A, Steuer
+
+            INC     C
+            LD      B,3
+            OTIR                        ;Adresse + 7 : PIO 2, Port B, Steuer
+                                        ;Adresse + 3 : PIO 1, Port B, Steuer
+
+            DEC     C
+            DEC     C
+
+            IF      LB.LBGEN AND 1
+            DEC     C
+            XOR     A                   ;ALB aktivieren
+            OUT     (C),A               ;Adresse + 4 : PIO 2, Port A, Daten
+            INC     C
+            ENDIF
+            IF      LB.LBGEN AND 2
+            LD      A,7                 ;SIF1000 - Kommando ausgeben
+            OUT     (C),A               ;Adresse + 1 : PIO 1, Port B, Daten
+            IN      A,(C)
+            DEC     C
+            ENDIF
+
+            POP     AF                  ;Ausgabe des Datenbyte ====>
+            LD      B,(IX+4)            ;Kommandobyte
+            BIT     2,B                 ;EOR-Umwandlung ?
+            JR      Z,LB.LBS2           ;NEIN
+            CP      (IX+1)              ;EOR intern ?
+            JR      NZ,LB.LBS2          ;NEIN
+            LD      A,(IX+0)            ;EOR extern
+LB.LBS2:    CALL    LB.KONV1
+            BIT     7,B                 ;mit Paritaet ?
+            JR      Z,LB.LBSE           ;NEIN
+            BIT     6,B                 ;welche Paritaet ?
+            JR      NZ,LB.LBS1
+
+            OR      A                   ;ungerade Paritaet ?
+            JP      PO,LB.LBSE          ;JA
+            OR      (IX+11)             ;Paritybit setzen
+            JR      LB.LBSE
+
+LB.LBS1:    OR      A                   ;  gerade Paritaet ?
+            JP      PE,LB.LBSE          ;JA
+            OR      (IX+11)             ;Paritybit seten
+
+LB.LBSE:    OUT     (C),A               ;Adresse + 5 : PIO 2, Port B, Daten
+                                        ;Adresse + 0 : PIO 1, Port A, Daten
+
+            IF      LB.LBGEN AND 1
+            DEC     C
+            ENDIF
+            IF      LB.LBGEN AND 2
+            INC     C
+            ENDIF
+
+            EI
+            HALT
+
+            IF      LB.LBGEN AND 1
+            LD      A,10H               ;ALB sperren
+            OUT     (C),A               ;Adresse + 4
+            ENDIF
+
+            POP     AF                  ;I-Register alten Zustand laden
+            LD      I,A
+            POP     AF                  ;Register laden
+            POP     BC
+            POP     HL
+            RET
+;****************************************************************
+;*                  Interruptroutine Lochbandstanzer            *
+;****************************************************************
+LB.IRLBS    EQU     $
+
+            IF      LB.LBGEN AND 1
+            IN      A,(C)               ;Adresse + 4,(C)
+            BIT     3,A
+            JR      NZ,LB.IRLBS
+            BIT     0,A
+            JR      NZ,LB.IRLBS
+            ENDIF
+
+            EI
+            RETI
+
+            TITLE   'Lochband Eingabe Routine'
+            PAGE
+;****************************************************************
+;*                  Eingabe eines Zeichens vom Lochbandleser    *
+;****************************************************************
+LB.LBL:     PUSH    HL                  ;Register retten
+            PUSH    BC
+            LD      A,I                 ;I-Register retten
+            PUSH    AF
+            LD      A,HIGH(LB.IRLB)     ;I-Register fuer LB laden
+            LD      I,A
+
+            IF      LB.LBGEN AND 1
+            LD      A,0E8H              ;Basisadresse ALB
+            ENDIF
+            IF      LB.LBGEN AND 2
+            LD      A,0                 ;Basisadresse ADA
+            ENDIF
+
+LB.ILBL:    DI
+
+            IF      LB.LBGEN AND 1
+            ADD     A,2
+            ENDIF
+            IF      LB.LBGEN AND 2
+            ADD     A,6
+            ENDIF
+
+            LD      C,A
+
+            LD      B,3
+            LD      HL,LB.SWLBL
+            OTIR                        ;Adresse + 2 : PIO 1, Port A, Steuer
+                                        ;Adresse + 6 : PIO 2, Port A, Steuer
+
+            INC     C
+            LD      B,3
+            OTIR                        ;Adresse + 3 : PIO 1, Port B, Steuer
+                                        ;Adresse + 7 : PIO 2, Port B, Steuer
+
+            DEC     C
+            DEC     C
+
+            IF      LB.LBGEN AND 1
+            DEC     C
+            LD      A,(IX+4)            ;Kommando: 0 ... Lesen rueckwaerts
+            AND     002H                ;          2 ... Lesen vorwaerts
+            OUT     (C),A               ;Adresse + 0 : PIO 1, Port A, Daten
+            INC     C
+            ENDIF
+            IF      LB.LBGEN AND 2
+            LD      A,(IX+4)            ;Kommando: 0 ... Lesen rueckwaerts
+            AND     002H                ;          2 ... Lesen vorwaerts
+            CP      2                   ;rueckwaerts ?
+            JR      NZ,$+6              ;NEIN
+            LD      A,3
+            JR      $+4
+            LD      A,7
+            OUT     (C),A               ;Adresse + 5 : PIO 2, Port B, Daten
+            DEC     C
+            ENDIF
+
+                                        ;Eingabe des Datenbyte <====
+            IN      A,(C)               ;Adresse + 1 : PIO 1, Port B, Daten,(C)
+            LD      (IX+3),0
+            CP      (IX+12)             ;Zeichen = EOF ?
+            JR      NZ,LB.LBL2          ;NEIN
+            SET     0,(IX+3)
+
+LB.LBL2:    LD      B,(IX+4)            ;Kommandobyte
+            BIT     7,B                 ;mit Paritaet ?
+            JR      Z,LB.LBL3           ;NEIN
+            AND     (IX+11)             ;Paritybyte
+LB.LBL3:    CP      (IX+0)              ;EOR extern ?
+            JR      NZ,LB.LBL4          ;NEIN
+            SET     1,(IX+3)
+LB.LBL4:    CALL    LB.KONV1
+            BIT     2,B                 ;EOR-Umwandlung ?
+            JR      Z,LB.LBLE           ;NEIN
+            BIT     1,(IX+3)            ;war EOR-Zeichen ?
+            JR      Z,LB.LBLE           ;NEIN
+            LD      A,(IX+1)            ;EOR intern
+
+LB.LBLE:    PUSH    AF
+            DEC     C
+            EI
+            HALT
+
+            POP     AF
+            POP     BC                  ;I-Register laden
+            PUSH    AF
+            LD      A,B
+            LD      I,A
+            POP     AF
+            POP     BC
+            POP     HL
+            BIT     5,(IX+4)            ;mit NUL und DEL ?
+            RET     Z                   ;NEIN
+            CP      0                   ;Zeichen = NUL ?
+            JR      Z,LB.LBL            ;JA
+            CP      7FH                 ;Zeichen = DEL ?
+            JR      Z,LB.LBL            ;JA
+            RET
+;****************************************************************
+;*                  Interruptroutine Lochbandleser              *
+;****************************************************************
+LB.IRLBL    EQU     $
+
+            IF      LB.LBGEN AND 1
+            IN      A,(C)               ;Adresse + 0,(C)
+            BIT     4,A
+            JR      NZ,LB.IRLBL
+            ENDIF
+
+            EI
+            RETI
+
+            PAGE
+;****************************************************************
+;*                  PIO - Steuerworte fuer Stanzen              *
+;****************************************************************
+LB.SWLBS    EQU     $
+
+            IF      LB.LBGEN AND 1      ;fuer   +++   ALB   +++
+            DB      0CFH                ;MODE 3 : BIT Ein-/Ausgabe
+            DB      00FH                ;             Ein-/Ausgabe - Maske
+            DB      003H                ;Interrupt AUS
+
+            DB      00FH                ;MODE 0 : BYTE Ausgabe
+            DB      LOW(LB.IRLB)
+            DB      083H                ;Interrupt EIN
+            ENDIF
+
+
+            IF      LB.LBGEN AND 2      ;fuer   +++   ADA   +++
+            DB      00FH                ;MODE 0 : BYTE Ausgabe
+            DB      LOW(LB.IRLB)
+            DB      083H                ;Interrupt EIN
+
+            DB      0CFH                ;MODE 3 : BIT Ein-/Ausgabe
+            DB      0F0H                ;             Ein-/Ausgabe - Maske
+            DB      003H                ;Interrupt AUS
+            ENDIF
+;****************************************************************
+;*                  PIO - Steuerworte fuer Lesen                *
+;****************************************************************
+LB.SWLBL    EQU     $
+
+            IF      LB.LBGEN AND 1      ;fuer   +++   ALB   +++
+            DB      0CFH                ;MODE 3 : BIT Ein-/Ausgabe
+            DB      0F0H                ;             Ein-/Ausgabe - Maske
+            DB      003H                ;Interrupt AUS
+
+            DB      04FH                ;MODE 1 : BYTE Eingabe
+            DB      LOW(LB.IRLB+2)
+            DB      083H                ;Interrupt EIN
+            ENDIF
+
+
+            IF      LB.LBGEN AND 2      ;fuer   +++   ADA   +++
+            DB      04FH                ;MODE 1 : BYTE Eingabe
+            DB      LOW(LB.IRLB+2)
+            DB      083H                ;Interrupt EIN
+
+            DB      0CFH                ;MODE 3 : BIT Ein-/Ausgabe
+            DB      0F0H                ;             Ein-/Ausgabe - Maske
+            DB      003H                ;Interrupt AUS
+            ENDIF
+
+                                        ;(C) Marcus Herbote    K EAW / wfvm
+;           END
+

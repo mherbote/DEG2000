@@ -1,0 +1,81 @@
+            TITLE   'S Y S   2 . 1 3'
+            PAGE    87
+
+BC.D017     EQU     00150H
+BC.D024     EQU     0015EH
+BC.D025     EQU     00160H
+BC.D026     EQU     00162H
+BC.D047     EQU     0019AH
+BC.D058     EQU     001ABH
+BC.INIT     EQU     00300H
+BC.RECOV    EQU     00303H
+BC.USR      EQU     00306H
+BC.CIN      EQU     00309H
+BC.RIV      EQU     0030CH
+BC.CON      EQU     0030FH
+BC.WRTV     EQU     00312H
+BC.LISTX    EQU     00315H
+BC.CSTSX    EQU     00318H
+BC.PAR      EQU     00327H
+BC.RUCK     EQU     0032AH
+BC.GRF1     EQU     003A6H
+BC.SVC1     EQU     003C6H
+BC.C006     EQU     00451H
+BC.C032     EQU     00948H
+BC.C091     EQU     0171BH
+BC.CALL1    EQU     01F40H
+BC.CALL2    EQU     01F4BH
+BC.D101     EQU     01F57H
+BC.GRF2     EQU     02CC0H
+BC.SVC2     EQU     02D98H
+BC.D131     EQU     02FB7H
+BC.RECOV1   EQU     03010H
+BC.ANF      EQU     030B2H
+
+S0.TINIT    EQU     04000H              ; Initialisierung der Tastatur
+S0.TA1      EQU     04003H              ; U_Int - Abfrage
+S0.TA2      EQU     04006H              ; Tastencode-Eingabe
+S0.TFE      EQU     0400CH              ; Warten auf Tastenende
+S0.TIM      EQU     0400FH              ; Ansteuerung der INS_MOD - Diode
+S0.TEM      EQU     04012H              ; Ansteuerung der Ebenen  - Dioden
+S0.TBEL     EQU     04015H              ; Ansteuerung der Fehleranzeigen
+
+S0.MRES     EQU     04046H              ; Drucker - Initialisierung
+S0.PRIO     EQU     04049H              ; Ausgabe eines Zeichens an den Drucker
+
+            .PHASE  0B000H-20H
+;--------------------------\            ; Vorspann fuer BIN-Datei
+            DB      0F0H                ; Startbyte ---> weitere BIN-Datei
+            DB      'S12'               ;                Name der BIN-Datei
+            DS      25,0
+            DB      002H                ; HS-Bereich : 2
+            DW      0B000H              ; Ladeadresse: B000H
+;--------------------------/
+
+        ;     INCLUDE KS01.MAC
+        ;     INCLUDE K209.MAC
+        ;     INCLUDE MS05.MAC
+        ;     INCLUDE TS06.MAC
+        ;     INCLUDE S213.MAC
+            INCLUDE Speicher.MAC
+            .DEPHASE
+
+            .PHASE  0C000H
+        ;     INCLUDE S165.MAC
+        ;     INCLUDE S310.MAC
+        ;     INCLUDE MO26.MAC
+        ;     INCLUDE TA35.MAC   ;???   TA36
+        ;     INCLUDE K158.MAC
+        ;     INCLUDE LO28.MAC
+        ;     INCLUDE S975.MAC   ;???   S967
+        ;     INCLUDE S424.MAC   ;???   S425
+        ;     INCLUDE SM01.MAC
+        ;     INCLUDE S052.MAC   ;???   S053
+            INCLUDE System.MAC
+
+XXXX        EQU     $
+            .DEPHASE
+
+            TITLE   'Symbolliste SYS 2.13'
+            END
+

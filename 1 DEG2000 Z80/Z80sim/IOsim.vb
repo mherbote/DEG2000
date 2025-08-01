@@ -25,6 +25,9 @@ Public Class IOsim
     Public Sys_32() As Byte = {3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3}       ' 9  '0000 - FFFF auf 3 (SYS3), außer 3000-3FFF auf Standard
     Public Sys_33() As Byte = {0, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3}       '10  '0000 - FFFF auf 3 (SYS3), außer 0000-0FFF und 3000-3FFF auf Standard
 
+    Public Sys_21() As Byte = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2}       '11  '0000 - FFFF aus 2 (SYS2)
+    Public Sys_22() As Byte = {1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2}       '12  '0000 - FFFF aus 2 (SYS2), außer 0000-7FFF 
+
 #End Region
 
 #Region "Local variables"
@@ -55,6 +58,7 @@ Public Class IOsim
 
 
     'Private MEMswitch(4, 16) As Byte
+    Private ReadOnly DateS2_buffer(6) As Byte
     Private ReadOnly Date_buffer(3) As Byte
     Private ReadOnly Time_buffer(8) As Byte
 #End Region
@@ -65,6 +69,7 @@ Public Class IOsim
         Memory_buffer(0) = 0
         Kassette_buffer(0) = 0
         Kassette_Status(0) = 0
+        DateS2_buffer(0) = 0
         Date_buffer(0) = 0
         Time_buffer(0) = 0
     End Sub
@@ -135,6 +140,7 @@ Public Class IOsim
 #End Region
 
 #Region "Set Port's for Date/Time FEH/FFH"
+        port(&HFD, 0) = New op_funcb(AddressOf DateS2_in)
         port(&HFE, 0) = New op_funcb(AddressOf Date_in)
         port(&HFF, 0) = New op_funcb(AddressOf Time_in)
 #End Region
@@ -910,10 +916,10 @@ Public Class IOsim
         '   2.Byte:    02
         '   3.Byte        BereichNr (0,1,2,3,4)
         '   4.Byte:    FF Endemarkierung
-        '3) alle Bereiche auf SYS4-Constantenliste umschalten
+        '3) alle Bereiche auf Konstantenliste umschalten
         '   1.Byte:    F0 Startbyte
         '   2.Byte:    03
-        '   3.Byte        BereichNr (01, ... , 10)
+        '   3.Byte        BereichNr (01, ... , 12)
         '   4.Byte:    FF Endemarkierung
         '4) mehrere Bereiche auf 0 1 2 3 oder 4 umschalten
         '   1.Byte:    F0 Startbyte
@@ -957,7 +963,7 @@ Public Class IOsim
                             Memory_buffer(0) = 0
                         End If
                     Case 3
-                        If (data >= 1 And data <= 10) Then
+                        If (data >= 1 And data <= 12) Then
                             Memory_buffer(Memory_buffer(0)) = data
                         Else
                             Memory_buffer(0) = 0
@@ -1015,13 +1021,13 @@ Public Class IOsim
 
         If (weiter) Then
             Select Case Memory_buffer(2)
-                Case 1                                                      '           einen Bereich auf BereichNr            umschalten
+                Case 1                                                      '           einen Bereich auf BereichNr       umschalten
                     COMMON.vZ80cpu.Seg_HS(Memory_buffer(3)) = Memory_buffer(4)
-                Case 2                                                      '           alle Bereiche auf 0,1,2,3 oder 4       umschalten
+                Case 2                                                      '           alle Bereiche auf 0,1,2,3 oder 4  umschalten
                     For i = 0 To 15
                         COMMON.vZ80cpu.Seg_HS(i) = Memory_buffer(3)
                     Next
-                Case 3                                                      '           alle Bereiche auf SYS4-Constantenliste umschalten
+                Case 3                                                      '           alle Bereiche auf Konstantenliste umschalten
                     Select Case Memory_buffer(3)
                         Case 1
                             For i = 0 To 15
@@ -1062,6 +1068,14 @@ Public Class IOsim
                         Case 10
                             For i = 0 To 15
                                 COMMON.vZ80cpu.Seg_HS(i) = Sys_33(i)
+                            Next
+                        Case 11
+                            For i = 0 To 15
+                                COMMON.vZ80cpu.Seg_HS(i) = Sys_21(i)
+                            Next
+                        Case 12
+                            For i = 0 To 15
+                                COMMON.vZ80cpu.Seg_HS(i) = Sys_22(i)
                             Next
                     End Select
                 Case 4                                                      '           mehrere Bereiche auf 0 1 2 3 oder 4 umschalten
@@ -1252,6 +1266,32 @@ Public Class IOsim
 #End Region
 
 #Region "Date/Time"
+    Private Function DateS2_in()
+        Dim dat As String
+        DateS2_in = Nothing
+        Try
+            If DateS2_buffer(0) = 0 Then
+                dat = Format(Now, "ddMMyy")
+                DateS2_buffer(1) = dat.Substring(0, 1) + &H30
+                DateS2_buffer(2) = dat.Substring(1, 1) + &H30
+                DateS2_buffer(3) = dat.Substring(2, 1) + &H30
+                DateS2_buffer(4) = dat.Substring(3, 1) + &H30
+                DateS2_buffer(5) = dat.Substring(4, 1) + &H30
+                DateS2_buffer(6) = dat.Substring(5, 1) + &H30
+            End If
+            DateS2_buffer(0) += 1
+
+            If DateS2_buffer(0) < 7 Then
+                DateS2_in = DateS2_buffer(DateS2_buffer(0))
+            End If
+
+            If DateS2_buffer(0) = 6 Then
+                DateS2_buffer(0) = 0
+            End If
+        Catch ex As Exception
+            MsgBox("IOsim.DateTime_in: " + ex.Message)
+        End Try
+    End Function
     Private Function Date_in()
         Date_in = Nothing
         Try
@@ -1260,8 +1300,8 @@ Public Class IOsim
                 Date_buffer(2) = Now.Month
                 Date_buffer(3) = Format(Now.Year).Substring(2)
             End If
+            Date_buffer(0) += 1
 
-            Date_buffer(0) = Date_buffer(0) + 1
             If Date_buffer(0) < 4 Then
                 Date_in = Date_buffer(Date_buffer(0))
             End If

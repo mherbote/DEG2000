@@ -127,6 +127,7 @@ Module DDCB
     End Function '7E    ' op_tb7ixd
     Private Function tb(ByVal Data As Integer, ByVal Bit1 As Integer) As ULong
         Dim i As ULong
+        If Data > &H7F Then Data = Data - &H100
         Call COMMON.vZ80cpu.busfront(COMMON.CPU_WO Or COMMON.CPU_MEMR)
         i = 2 ^ Bit1
         Call COMMON.vZ80cpu.FlagNflag2()
@@ -167,6 +168,7 @@ Module DDCB
     End Function 'BE    ' op_rb7ixd
     Private Function rb(ByVal data As Integer, ByVal Bit1 As Integer) As ULong
         Dim i As ULong
+        If data > &H7F Then data = data - &H100
         Call COMMON.vZ80cpu.busfront(COMMON.CPU_WO Or COMMON.CPU_MEMR)
         i = &HFF - 2 ^ Bit1
         COMMON.vZ80cpu.Speicher_schreiben_Byte(COMMON.vZ80cpu.IX + data, (COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.IX + data) And i))
@@ -202,6 +204,7 @@ Module DDCB
     End Function 'FE    ' op_sb7ixd
     Private Function sb(ByVal Data As Integer, ByVal Bit1 As Integer) As ULong
         Dim i As ULong
+        If Data > &H7F Then Data = Data - &H100
         Call COMMON.vZ80cpu.busfront(COMMON.CPU_WO Or COMMON.CPU_MEMR)
         i = 2 ^ Bit1
         COMMON.vZ80cpu.Speicher_schreiben_Byte(COMMON.vZ80cpu.IX + Data, (COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.IX + Data) Or i))
@@ -215,6 +218,7 @@ Module DDCB
     Private Function op_rlcixd(ByVal Data As Integer) As ULong                  '&H06         ' RLC (IX+d)
         Dim i As Integer
         Dim p As Byte
+        If Data > &H7F Then Data = Data - &H100
         Call COMMON.vZ80cpu.busfront(COMMON.CPU_WO Or COMMON.CPU_MEMR)
         p = COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.IX + Data)
         If (p And &H80) = &H80 Then i = 1 Else i = 0
@@ -233,6 +237,7 @@ Module DDCB
     Private Function op_rrcixd(ByVal Data As Integer) As ULong                  '&H0E         ' RRC (IX+d)
         Dim i As Integer
         Dim p As Byte
+        If Data > &H7F Then Data = Data - &H100
         Call COMMON.vZ80cpu.busfront(COMMON.CPU_WO Or COMMON.CPU_MEMR)
         p = COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.IX + Data)
         If (p And &H1) = &H1 Then i = 1 Else i = 0
@@ -252,6 +257,7 @@ Module DDCB
         Dim old_c_flag As Integer
         Dim p As Byte
         Dim i As Integer
+        If Data > &H7F Then Data = Data - &H100
         Call COMMON.vZ80cpu.busfront(COMMON.CPU_WO Or COMMON.CPU_MEMR)
         p = COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.IX + Data)
         old_c_flag = COMMON.vZ80cpu.F And COMMON.C_FLAG
@@ -271,6 +277,7 @@ Module DDCB
     Private Function op_rrixd(ByVal Data As Integer) As ULong                  '&H1E         ' RR (IX+d)
         Dim p As Byte
         Dim i As Integer
+        If Data > &H7F Then Data = Data - &H100
         Call COMMON.vZ80cpu.busfront(COMMON.CPU_WO Or COMMON.CPU_MEMR)
         p = COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.IX + Data)
         If (p And &H1) = &H1 Then i = 1 Else i = 0
@@ -287,6 +294,7 @@ Module DDCB
     End Function '1E    ' op_rrixd
     Private Function op_slaixd(ByVal Data As Integer) As ULong                  '&H26         ' SLA (IX+d)
         Dim p As Byte
+        If Data > &H7F Then Data = Data - &H100
         Call COMMON.vZ80cpu.busfront(COMMON.CPU_WO Or COMMON.CPU_MEMR)
         p = COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.IX + Data)
         Call COMMON.vZ80cpu.FlagCflag1((p And &H80))
@@ -302,6 +310,7 @@ Module DDCB
     Private Function op_sraixd(ByVal Data As Integer) As ULong                  '&H2E         ' SRA (IX+d)
         Dim i As Integer
         Dim p As Byte
+        If Data > &H7F Then Data = Data - &H100
         Call COMMON.vZ80cpu.busfront(COMMON.CPU_WO Or COMMON.CPU_MEMR)
         p = COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.IX + Data) : i = p And &H80
         Call COMMON.vZ80cpu.FlagCflag1((p And &H1) = &H1)
@@ -317,6 +326,7 @@ Module DDCB
     End Function '2E    ' op_sraixd
     Private Function op_srlixd(ByVal Data As Integer) As ULong                  '&H3E         ' SRL (IX+d)
         Dim p As Byte
+        If Data > &H7F Then Data = Data - &H100
         Call COMMON.vZ80cpu.busfront(COMMON.CPU_WO Or COMMON.CPU_MEMR)
         p = COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.IX + Data)
         Call COMMON.vZ80cpu.FlagCflag1((p And &H1))

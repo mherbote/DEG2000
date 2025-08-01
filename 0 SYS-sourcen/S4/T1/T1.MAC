@@ -1,0 +1,48 @@
+            TITLE   'T e s t M o d u l'
+            PAGE    87
+
+            .PHASE  00100H-3
+;--------------------------\            ; Vorspann fuer BIN-Datei
+            DB      0FFH                ; Startbyte ---> 
+            DW      00100H              ; Ladeadresse: 0100H
+;--------------------------/
+            LD      IY,SP2
+            LD      A,(IY-6)
+            BIT     6,(IY-6)
+            BIT     7,(IY-6)
+
+            LD      A,(IY-5)
+            BIT     6,(IY-5)
+            BIT     7,(IY-5)
+
+            LD      A,(IY-4)
+            BIT     6,(IY-4)
+            BIT     7,(IY-4)
+
+            LD      A,(IY-3)
+            BIT     6,(IY-3)
+            BIT     7,(IY-3)
+
+            LD      A,(IY-2)
+            BIT     6,(IY-2)
+            BIT     7,(IY-2)
+
+            LD      A,(IY-1)
+            BIT     6,(IY-1)
+            BIT     7,(IY-1)
+
+SP1:        DB      8
+            DB      8+080H
+            DB      8+040H
+            DB      14
+            DB      080H+14
+            DB      040H+14
+SP2:        DB      'AAAA'
+            DS      100H,0
+
+XXXX        EQU     $
+            .DEPHASE
+
+            TITLE   'Symbolliste Test Modul'
+            END
+

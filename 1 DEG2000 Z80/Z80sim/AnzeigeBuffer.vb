@@ -77,6 +77,7 @@ Public Class AnzeigeBuffer
 
 #Region "Anzeige-Routinen"
     Private Sub AnzeigenPCstack()
+        Dim BIndexI As UShort
         Dim i As UShort
         Dim j As UShort
         Dim adr As Integer
@@ -85,13 +86,12 @@ Public Class AnzeigeBuffer
         Dim hilf2 As String
 
         Try
-            AnzeigeStart = &HCE0 - &H70 'COMMON.vZ80cpu.STACK - &H70                            'abhängig vom System!!!
             AnzeigeStart = COMMON.vZ80cpu.STACK - &H40
-            'BereichsIndex = Convert.ToByte(BereichsWahl.Rows(AnzeigeSeg).Cells(1).Value)
-            BereichsIndex = 1                                                                   'abhängig vom System!!!
+            BIndexI = (COMMON.vZ80cpu.STACK And &HF000) / &H1000
+            BereichsIndex = COMMON.vZ80cpu.Seg_HS(BIndexI)
 
-
-            PC.Text = HexAnzeige_WordByte(COMMON.vZ80cpu.STACK, "B")
+            StackBereich.Text = BereichsIndex
+            Stack.Text = HexAnzeige_WordByte(COMMON.vZ80cpu.STACK, "B")
             With PCstack
                 c = AnzeigeStart And &HF
                 For i = 0 To 15

@@ -226,18 +226,33 @@ PF.O3END EQU	$-1
 	TITLE 'Aufruf SYS2'
 	PAGE
 ;****************************************************************
-	IF	SD.GENE AND 00000001B
-	DW	$
-	DB	'S2  '
+            DW      $
+            DB      'S2  '
 PF.S2:
-	OUT	(0C4H),A	;RESET-Sperre aus
-	LD	A,0FEH
-	OUT	(0C0H),A	;SYS 1
-	LD	A,01
-	OUT	(0C1H),A	;SYS 2
-	JP	0FF37H	;Sprung zur Version 2.1
-			;           Version 2.0 : 0C093H
-	ENDIF
+            IF      SD.GENE AND 00000001B
+            OUT     (0C4H),A            ;RESET-Sperre aus
+            LD      A,0FEH
+            OUT     (0C0H),A            ;SYS 1
+            LD      A,01
+            OUT     (0C1H),A            ;SYS 2
+            JP      0FF37H              ;Sprung zur Version 2.1
+                                        ;           Version 2.0 : 0C093H
+            ENDIF
+
+	    IF      SD.GENE AND 00010000B
+                                        ;DEG2000 Emulator
+            LD      BC,004C0H
+            LD      HL,PF.OUTS2
+            OTIR
+PF.OUTS1:
+            LD      HL,(0C000H)         ;Eintrittspunkt von SYS2.13 holen
+            JP      (HL)                ;Sprung zum SYS 2.13 (Umschaltroutine)
+PF.OUTS2:
+            DB      0F0H                ;Startbyte
+            DB      003H                ;wahl
+            DB      00CH                ;Sys_22
+            DB      0FFH                ;Endbyte
+            ENDIF
 ;****************************************************************
 
 

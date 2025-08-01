@@ -1,0 +1,1493 @@
+	TITLE	'S o f t w a r e  T R A C E   D E G 2 0 0 0 V1'
+	PAGE	87
+;--------------------------\            ; Vorspann fuer BIN-Datei
+            DB      0EFH                ; Startbyte ---> 
+            DS      12,0
+            DB      001H                ; HS-Bereich : 1
+            DW      0E000H              ; Ladeadresse: E000H
+;--------------------------/
+            INCLUDE S1EQU.MAC
+
+;           PN      ST37
+;****************************************************************
+;*               S o f t w a r e  T R A C E   D E G 2 0 0 0     *
+;*  Version      -----------------------------------------------*
+;*               uebernommen aus  : Rolf Dieter Klein           *
+;*                           "u-Computer Hard- u. Softw.praxis" *
+;*               aufbereitet durch: M. Herbote - K EAW  ZFT(WFT)*
+;*  V 1 . 2      -----------------------------------------------*
+;*               Stand            : 01.Maerz 1985               *
+;****************************************************************
+            .PHASE  0E000H
+
+V1          EQU     1                   ;1  ...  B W S  mit 80 Spalten
+                                        ;2  ...  B W S  mit 64 Spalten
+
+BWSA:       DS      00800H,0
+
+            JP      MAIN
+            DB      'V1.2/010385'
+
+BWSUS:      PUSH    HL
+            PUSH    DE
+            PUSH	BC
+            PUSH	AF
+            LD      HL,BWSA
+            LD      DE,SD.BWSA
+            LD      BC,24*7             ;0800H alt
+            CALL    BWSU1
+            LD      HL,00DB2H
+            LD      DE,RPOS
+            LD      BC,6
+            CALL	BWSU1
+            POP     AF
+            POP     BC
+            POP     DE
+            POP     HL
+            RET
+
+BWSU1:      LD      A,(HL)
+            EX      AF,AF'              ;'
+            LD      A,(DE)
+            LD      (HL),A
+            EX      AF,AF'              ;'
+            LD      (DE),A
+            INC     HL
+            INC     DE
+            DEC     BC
+            LD      A,B
+            OR      C
+            JR      NZ,BWSU1
+            RET
+
+
+SAVE:       EX      (SP),HL
+            PUSH    AF
+            PUSH    BC
+            PUSH    DE
+            PUSH    IX
+            PUSH    IY
+            JP      (HL)
+
+LOAD:       POP     HL
+            POP     IY
+            POP     IX
+            POP     DE
+            POP     BC
+            POP     AF
+            EX      (SP),HL
+            RET
+
+            PAGE
+CIN:        CALL    SAVE                ;Konsoleninput
+            LD      A,(CST)
+            OR      A
+            JR      NZ,CIN1
+            CALL    CSTS1
+CIN1:       CALL    TA1
+            JR      Z,CIN1
+            XOR     A
+            LD      (CST),A
+            CALL    LOAD
+            LD      A,(TK)
+            RET
+
+CSTS1:      CALL    TA1
+            JR      NZ,CSTS1
+            CALL    TA2
+            CP      0CDH
+            JP      Z,SYTB
+            CP      01EH
+            JR      Z,CSTS3
+            CP      080H
+            JR      Z,CST10
+            CP      07FH
+            JR      NC,CSTS1
+            CP      ' '
+            JR      C,CSTS1
+CSTS2:      LD      (TK),A
+            LD      A,-1
+            LD      (CST),A
+            RET
+CSTS3:      LD      A,00DH
+            JR      CSTS2
+CST10:      CALL    BWSUS
+CST11:      CALL    TA1
+            JR      Z,$-3
+            CALL    TA1
+            JR      NZ,$-3
+            CALL    TA2
+            CP      80H
+            JR      NZ,CST11
+            CALL    BWSUS
+            CALL    TA1
+            JR      Z,$-3
+            JR      CSTS1
+
+CSTS:       CALL    SAVE                ;Konsolenstatus
+            CALL    TA1
+            JR      NZ,CSTS4
+            CALL    CSTS1
+            JR      CSTS5
+CSTS4:      XOR     A
+            LD      (CST),A
+CSTS5:      CALL    LOAD
+            LD      A,(CST)
+            OR      A
+            RET
+
+CON:        CALL    SAVE
+            CALL	SY.RESC
+            LD      A,C
+            CP      00DH
+            JR      Z,CON9
+            CP      00CH
+            JR      Z,CON2
+            CP      00AH
+            JR      Z,CON1
+            CALL    SY.AEIN
+            JR      CON9
+
+CON1:       CALL    TA.FKT2             ;IN.FKT2 (CNZA)
+            JR      CON9
+
+CON2:       CALL    SY.BILO
+            LD      HL,0
+            LD      (ZPOS),HL
+CON9:       CALL    SY.SETC
+            CALL    LOAD
+            RET
+
+LIST:       CALL    SAVE
+            LD      A,C
+            CP      00CH
+            JR      Z,STX3
+            CP      00DH
+            JR      Z,STX9
+            CP      00AH
+            JR      NZ,STX2
+            LD      C,1EH
+            CALL    PRIO
+            LD      HL,ZZ
+            DEC     (HL)
+            JR      NZ,STX9
+STX3:       LD      A,(HL)
+            CP      69
+            JR      Z,STX9
+            ADD     A,3
+            LD      B,A
+            LD      C,1EH
+STX4:       PUSH    BC
+            CALL	PRIO
+            POP     BC
+            DJNZ    STX4
+            LD      A,69
+            LD      (ZZ),A
+            JR      STX9
+STX2:       CALL    PRIO
+STX9:       CALL    LOAD
+            RET
+
+            PAGE
+C04:        PUSH    AF                  ;Zeichenausgabe auf BWS / Drucker
+            LD      A,(ST2)
+            OR      A
+            JR      NZ,C042             ;891C
+            POP     AF
+            JP      CON
+
+C042:       POP     AF
+            JP      LIST
+
+C041:       CALL    C50
+            CALL    C04
+            JP      C51
+
+C05:        LD      B,0                 ;Befehlslaenge ermitteln
+            PUSH    HL
+            POP     DE
+            LD      A,M
+            AND     0DFH
+            CP      0DDH
+            JR      Z,J093
+            LD      A,M
+            CP      0CBH
+            JR      Z,J092
+            CP      0EDH
+            JR      Z,J091
+            LD      A,M
+            CP      0C3H
+            JR      Z,J11
+            CP      0CDH
+            JR      Z,J11
+            AND     0EFH
+            CP      022H
+            JR      Z,J11
+            CP      02AH
+            JR      Z,J11
+            AND     0CFH
+            CP      001H
+            JR      Z,J11
+            AND     0C7H
+            CP      0C2H
+            JR      Z,J11
+            CP      0C4H
+            JR      Z,J11
+            LD      A,M
+            AND     0F7H
+            CP      010H
+            JR      Z,J12
+            CP      0D3H
+            JR      Z,J12
+            AND     0E7H
+            CP      020H
+            JR      Z,J12
+            AND     0C7H
+            CP      006H
+            JR      Z,J12
+            CP      0C6H
+            JR      Z,J12
+            JR      J13
+
+            PAGE
+J091:       INC     HL
+            LD      A,M
+            AND     0C7H
+            CP      043H
+            JR      Z,J10
+            JR      J12
+
+J092:       JR      J12
+
+J09:        JR      J10
+
+J093:       INC     HL
+            LD      A,M
+            CP      0CBH
+            JR      Z,J09
+            CP      021H
+            JR      Z,J10
+            AND     0FEH
+            CP      034H
+            JR      Z,J11
+            AND     0F8H
+            CP      070H
+            JR      Z,J11
+            LD      A,M
+            AND     0CFH
+            CP      006H
+            JR      Z,J10
+            AND     0C7H
+            CP      002H
+            JR      Z,J10
+            LD      A,M
+            SUB     040H
+            AND     087H
+            CP      006H
+            JR      Z,J11
+            JR      J12
+J10:        INC     B
+J11:        INC     B
+J12:        INC     B
+J13:        INC     B
+            EX      DE,HL
+            RET
+
+            PAGE
+C06:        LD      (DDBC),BC           ;USER - Register retten
+            LD      (DDDE),DE
+            LD      (DDHL),HL
+            PUSH    AF
+            POP     BC
+            LD      (DDAF),BC
+            EX      AF,AF'              ;'
+            EXX
+            LD      (DDBCS),BC
+            LD      (DDDES),DE
+            LD      (DDHLS),HL
+            PUSH    AF
+            POP     BC
+            LD      (DDAFS),BC
+            LD      A,I
+            LD      (DDI),A
+            LD      A,R
+            LD      (DDR),A
+            LD      (DDIX),IX
+            LD      (DDIY),IY
+            CALL    BWSUS
+            LD      HL,(ST3)
+            RET
+
+C07:        LD      (ST3),HL            ;USER - Register laden
+            CALL    BWSUS
+            LD      IY,(DDIY)
+            LD      IX,(DDIX)
+            LD      A,(DDI)
+            LD      I,A
+            LD      A,(DDR)
+            LD      R,A
+            LD      BC,(DDAFS)
+            PUSH    BC
+            POP     AF
+            LD      HL,(DDHLS)
+            LD      DE,(DDDES)
+            LD      BC,(DDBCS)
+            EXX
+            EX      AF,AF'              ;'
+            LD      BC,(DDAF)
+            PUSH    BC
+            POP     AF
+            LD      HL,(DDHL)
+            LD      DE,(DDDE)
+            LD      BC,(DDBC)
+            RET
+
+            PAGE
+J20:        XOR     A                   ;Unterprogramme fuer USER-Befehl
+            LD      B,4
+            LD      DE,USBEF+3
+            LD      (DE),A
+            DEC     DE
+            DJNZ    $-02                ;8A5A
+            PUSH    DE
+            CALL    C05
+            POP     DE
+            LD      A,M
+            INC     DE
+            LD      (DE),A
+            INC     HL
+            DJNZ    $-04                ;8A63
+            CALL    C07
+            LD      (STSP),SP
+            LD      SP,(DDSP)
+USBEF:      NOP
+            NOP
+            NOP
+            NOP
+            LD      (DDSP),SP
+            LD      SP,(STSP)
+            CALL    C06
+            RET
+
+J21:        LD      A,M
+            INC     HL
+            LD      (STSP),SP
+            LD      SP,(DDSP)
+            PUSH    HL
+            LD      (DDSP),SP
+            LD      SP,(STSP)
+            LD      H,0
+            AND     038H
+            LD      L,A
+            RET
+
+J22:        INC     HL
+            INC     HL
+            INC     HL
+            LD      (STSP),SP
+            LD      SP,(DDSP)
+            PUSH    HL
+            LD      (DDSP),SP
+            LD      SP,(STSP)
+            DEC     HL
+            LD      A,M
+            DEC     HL
+            LD      L,M
+            LD      H,A
+            RET
+
+J23:        LD      HL,(DDHL)
+            RET
+
+J24:        LD      HL,(DDIX)
+            RET
+
+J25:        LD      HL,(DDIY)
+            RET
+
+J26:        LD      (STSP),SP
+            LD      SP,(DDSP)
+            POP     HL
+            LD      (DDSP),SP
+            LD      SP,(STSP)
+            RET
+
+J27:        INC     HL
+            LD      A,M
+            INC     HL
+            LD      H,M
+            LD      L,A
+            RET
+
+J28:        INC     HL
+            LD      A,M
+            INC     HL
+            LD      C,A
+            OR      A
+            JP      M,J29
+            LD      B,0
+            ADD     HL,BC
+            RET
+
+J29:        LD      B,0FFH
+            ADD     HL,BC
+            RET
+
+J30:        LD      BC,(DDBC)
+            DEC     B
+            LD      (DDBC),BC
+            JR      NZ,J28
+            INC     HL
+            INC     HL
+            RET
+
+J31:        LD      A,M
+            AND     038H
+            OR      0C2H
+            LD      (USB1),A
+            LD      BC,(DDAF)
+            PUSH    BC
+            POP     AF
+USB1:       NOP
+            DW      J22
+            INC     HL
+            INC     HL
+            INC     HL
+            RET
+
+J32:        LD      A,M
+            LD      (USB2),A
+            LD      BC,(DDAF)
+            PUSH    BC
+            POP     AF
+USB2:       NOP
+            DW      J27
+            INC     HL
+            INC     HL
+            INC     HL
+            RET
+
+J33:        LD      A,M
+            AND     038H
+            OR      0C2H
+            LD      (USB3),A
+            LD      BC,(DDAF)
+            PUSH    BC
+            POP     AF
+USB3:       NOP
+            DW      J26
+            INC	HL
+            RET
+
+J34:        LD      A,M
+            AND     018H
+            OR      0C2H
+            LD      (USB4),A
+            LD      BC,(DDAF)
+            PUSH    BC
+            POP     AF
+USB4:       NOP
+            DW      J28
+            INC     HL
+            INC     HL
+            RET
+
+            PAGE
+;****************************************************************
+;*               einen  USER - Befehl  ausfuehren               *
+;****************************************************************
+C08:	LD	A,M
+	CP	0C9H
+	JP	Z,J26
+	CP	0CDH
+	JP	Z,J22
+	CP	0C3H
+	JP	Z,J27
+	CP	018H
+	JP	Z,J28
+	CP	010H
+	JP	Z,J30
+	CP	0E9H
+	JP	Z,J23
+	AND	0E7H
+	CP	020H
+	JR	Z,J34
+	AND	0C7H
+	CP	0C2H
+	JR	Z,J32
+	CP	0C4H
+	JP	Z,J31
+	CP	0C7H
+	JP	Z,J21
+	CP	0C0H
+	JR	Z,J33
+	LD	A,M
+	CP	0EDH
+	JR	NZ,J35
+	INC	HL
+	LD	A,M
+	DEC	HL
+	CP	04DH
+	JP	Z,J26
+	CP	045H
+	JP	Z,J26
+J341:	JP	J20
+
+J35:	LD	A,M
+	AND	0DFH
+	CP	0DDH
+	JR	NZ,J341
+	INC	HL
+	LD	A,M
+	DEC	HL
+	CP	0E9H
+	JR	NZ,J341
+	LD	A,M
+	CP	0DDH
+	JP	Z,J24
+	JP	J25
+
+	PAGE
+C09:	LD	A,M	;Vektor mit  CON / LIST  ausgeben
+	OR	A	;Vektorende wird durch 00H angezeigt
+	RET	Z
+	LD	C,A
+	INC	HL
+	CALL	C04
+	JR	C09
+
+C10:	LD	A,H
+	CALL	C15
+	LD	A,L
+	JR	C15
+
+C11:	PUSH	AF
+	RRA
+	RRA
+	RRA
+	RRA
+	CALL	C12
+	POP	AF
+C12:	AND	00FH
+	ADD	A,030H
+	CP	03AH
+	JR	C,C13
+	ADD	A,007H
+
+C13:	LD	C,A
+	JP	C04
+
+C131:	CALL	C50
+	CALL	C13
+	JP	C51
+
+C111:	CALL	C50
+	CALL	C11
+	JP	C51
+
+C14:	LD	C,00AH
+	JP	C04
+
+C141:	CALL	C50
+	CALL	C14
+	JP	C51
+
+C15:	CALL	C11
+	LD	C,' '
+	JP	C04
+
+C16:	PUSH	BC
+	LD	A,B
+	CALL	C11
+	POP	BC
+	LD	A,C
+	JR	C15
+
+C161:	CALL	C50
+	CALL	C16
+	JP	C51
+
+C17:	PUSH	HL
+	LD	HL,0
+C171:	CALL	CIN
+	CALL	C13
+	CALL	C18
+	JR	C,J36
+	ADD	HL,HL
+	ADD	HL,HL
+	ADD	HL,HL
+	ADD	HL,HL
+	OR	L
+	LD	L,A
+	JR	C171
+
+C172:	CALL	C50
+	CALL	C17
+	JP	C51
+
+C18:	SUB	030H
+	RET	C
+	CP	017H
+	CCF
+	RET	C
+	CP	00AH
+	CCF
+	RET	NC
+	SUB	007H
+	CP	00AH
+	RET
+
+J36:	LD	A,C
+	PUSH	HL
+	POP	BC
+	POP	HL
+	RET
+
+C50:	RET
+
+C51:	RET
+
+	PAGE
+;****************************************************************
+;*               Kopfzeilen ausgeben                            *
+;****************************************************************
+C60	EQU	$
+	CALL	C09
+
+	IF	V1 AND 1
+	LD	HL,TXT11
+	CALL	C09
+	ENDIF
+
+	CALL	C14
+	LD	HL,TXT12
+	CALL	C09
+
+	IF	V1 AND 1
+	LD	HL,TXT13
+	CALL	C09
+	ENDIF
+
+	CALL	C14
+
+	IF	V1 AND 2
+	LD	HL,TXT11
+	CALL	C09
+	LD	HL,TXT13
+	CALL	C09
+	CALL	C14
+	ENDIF
+
+	CALL	C14
+	RET
+
+	PAGE
+C211	EQU	$
+	LD	A,(ST1)
+	OR	A
+	RET	Z
+	LD	(ST2),A
+	CALL	C21
+	XOR	A
+	LD	(ST2),A
+	RET
+
+C21:	PUSH	HL	;Registeranzeige BWS bzw. Drucker
+
+	CALL	C30
+
+	LD	A,(ST4)	;Speicherbereiche anzeigen ?
+	OR	A
+	JR	Z,J38
+	PUSH	AF
+	LD	HL,TXT2
+	CALL	C09
+	POP	AF
+	LD	HL,ST9
+J39:	LD	E,M
+	INC	HL
+	LD	D,M
+	INC	HL
+	EX	DE,HL
+	PUSH	AF
+	PUSH	DE
+	CALL	C22
+	POP	DE
+	POP	AF
+	EX	DE,HL
+	DEC	A
+	JR	NZ,J39
+	CALL	C14
+	CALL	C14
+
+J38	EQU	$
+	POP	HL
+	RET
+
+C22:	PUSH	HL
+	POP	BC
+	CALL	C16
+	LD	B,16
+	PUSH	BC
+	LD	A,M
+	CALL	C15
+	INC	HL
+	POP	BC
+	DJNZ	$-07	;8DD5
+	CALL	C14
+	RET
+
+C23:	BIT	7,A	;Flags anzeigen
+	CALL	C25
+	BIT	6,A
+	CALL	C25
+	CALL	C24
+	BIT	4,A
+	CALL	C25
+	CALL	C24
+	BIT	2,A
+	CALL	C25
+	BIT	1,A
+	CALL	C25
+	BIT	0,A
+	CALL	C25
+	LD	C,' '
+	CALL	C04
+	JP	C04
+
+C24:	PUSH	AF
+	LD	C,' '
+	CALL	C04
+	POP	AF
+	RET
+
+C25:	PUSH	AF
+	LD	C,'*'
+	JR	NZ,$+04	;8E1A
+	LD	C,'.'
+	CALL	C04
+	POP	AF
+	RET
+
+	PAGE
+C30:	LD	HL,(DDAF)	;Flags anzeigen
+	LD	A,L
+	CALL	C23
+	LD	A,H	;Reg. A   anzeigen
+	CALL	C15
+	LD	BC,(DDBC)	;Reg. BC  anzeigen
+	CALL	C16
+	LD	BC,(DDDE)	;Reg. DE  anzeigen
+	CALL	C16
+	LD	BC,(DDHL)	;Reg. HL  anzeigen
+	PUSH	BC
+	CALL	C16
+	CALL	C04
+	POP	BC
+	LD	A,(BC)	;Inh. HL  anzeigen
+	CALL	C15
+	CALL	C04
+	CALL	C04
+	LD	BC,(DDIX)	;Reg. IX  anzeigen
+	PUSH	BC
+	CALL	C16
+	POP	BC
+	LD	A,(BC)	;Inh. IX  anzeigen
+	CALL	C15
+	LD	BC,(DDIY)	;Reg. IY  anzeigen
+	PUSH	BC
+	CALL	C16
+	POP	BC
+	LD	A,(BC)	;Inh. IY  anzeigen
+	CALL	C15
+	CALL	C04
+	CALL	C04
+	LD	A,(DDI)	;Reg. I   anzeigen
+	CALL	C15
+	LD	A,(DDR)	;Reg. R   anzeigen
+	CALL	C15
+	CALL	C04
+	CALL	C04
+	CALL	C04
+	CALL	C04
+
+	IF	V1 AND 1
+	POP	HL	;Reg. PC anzeigen
+	POP	BC
+	PUSH	BC
+	PUSH	HL
+	CALL	C16
+	POP	BC	;Befehl   anzeigen
+	POP	HL
+	PUSH	HL
+	PUSH	BC
+	CALL	C05
+C31:	LD	A,M
+	INC	HL
+	PUSH	BC
+	CALL	C15
+	POP	BC
+	DJNZ	C31
+	ENDIF
+
+	CALL	C14	;Zeilenende ausgeben
+	PAGE
+	LD	HL,(DDAFS)	;S Flags  anzeigen
+	LD	A,L
+	CALL	C23
+	LD	A,H	;Reg. A s anzeigen
+	CALL	C15
+	LD	BC,(DDBCS)	;Reg. BCs anzeigen
+	CALL	C16
+	LD	BC,(DDDES)	;Reg. DEs anzeigen
+	CALL	C16
+	LD	BC,(DDHLS)	;Reg. HLs anzeigen
+	PUSH	BC
+	CALL	C16
+	CALL	C04
+	POP	BC
+	LD	A,(BC)	;Inh. HLs anzeigen
+	CALL	C15
+	CALL	C04
+	CALL	C04
+
+	IF	V1 AND 1
+	LD	BC,(DDSP)	;Reg. SP  anzeigen
+	PUSH	BC
+	CALL	C16
+	CALL	C04
+	CALL	C04
+	CALL	C04
+	POP	DE	;Inh. Keller anzeigen
+	DEC	DE
+	DEC	DE
+	DEC	DE
+	DEC	DE
+	LD	B,5
+C32:	PUSH	BC
+	LD	A,(DE)
+	LD	C,A
+	INC	DE
+	LD	A,(DE)
+	LD	B,A
+	INC	DE
+	CALL	C16
+	POP	BC
+	DJNZ	C32
+	ENDIF
+
+	CALL	C14	;Zeilenende ausgeben
+
+	PAGE
+	IF	V1 AND 2
+	POP	HL	;Reg. PC anzeigen
+	POP	BC
+	PUSH	BC
+	PUSH	HL
+	CALL	C16
+	POP	BC	;Befehl   anzeigen
+	POP	HL
+	PUSH	HL
+	PUSH	BC
+	CALL	C05
+C31:	LD	A,M
+	INC	HL
+	PUSH	BC
+	CALL	C15
+	POP	BC
+	DJNZ	C31
+	LD	BC,(DDSP)	;Reg. SP  anzeigen
+	PUSH	BC
+	CALL	C16
+	CALL	C04
+	CALL	C04
+	CALL	C04
+	POP	DE	;Inh. Keller anzeigen
+	DEC	DE
+	DEC	DE
+	DEC	DE
+	DEC	DE
+	LD	B,5
+C32:	PUSH	BC
+	LD	A,(DE)
+	LD	C,A
+	INC	DE
+	LD	A,(DE)
+	LD	B,A
+	INC	DE
+	CALL	C16
+	POP	BC
+	DJNZ	C32
+	CALL	C14	;Zeilenende ausgeben
+	ENDIF
+
+	CALL	C14
+	RET
+
+	PAGE
+;****************************************************************
+;*               Zeichenketten                                  *
+;****************************************************************
+TXT1        EQU     $
+            DB      00CH
+            DB      'DEG2000   Software-TRACE    V1.1  31.01.85'
+            DW      00A0AH
+            DB      'sz_h_pnc__A__B_C__D_E__H_L__(HL_)_IX______IY________'
+            DB      'I__R______'
+            DB      0
+TXT11:      DB      'PC___Befehl_____'
+            DB      0
+TXT12:      DB      'sz_h_pnc__A'
+            DB      27H
+            DB      '_B'
+            DB      27H
+            DB      'C'
+            DB      27H
+            DB      '_D'
+            DB      27H
+            DB      'E'
+            DB      27H
+            DB      '_H'
+            DB      27H
+            DB      'L'
+            DB      27H
+            DB      '_(HL'
+            DB      27H
+            DB      ')'
+            DB      0
+TXT13:      DB      '_SP______-4___-2____0___+2___+4__'
+            DB      0
+TXT2:       DB      'MEM__0__1__2__3__4__5__6__7__8__9__A__B__C__D__E__F_'
+            DW      0000AH
+TXT3:       DB      'Kommando: '
+            DB      0
+
+            PAGE
+            DW      $
+            DB      'TRAC'
+MAIN:       LD      HL,STPO
+            LD      DE,ZPOS
+            LD      BC,6
+            LDIR
+            LD      (DDSP),SP
+            LD      SP,STSP
+            CALL    C06
+            LD      SP,(DDSP)
+            POP     HL
+            LD      (DDPC),HL
+            JR      SUB
+
+            DW      $
+            DB      'TRAR'
+            CALL    BWSUS
+SUB:        LD      SP,STSP
+            LD      A,69
+            LD      (ZZ),A
+            XOR     A
+            LD      (CST),A
+            LD      (ST1),A
+            LD      (ST2),A
+            LD      (ST4),A
+            LD      (ST5),A
+
+            LD      HL,(DDPC)
+
+            PAGE
+J40         EQU     $
+J401:       PUSH    HL
+            PUSH    DE
+            PUSH    BC
+            LD      HL,STPO
+            LD      DE,ZPOS
+            LD      BC,6
+            LDIR
+            LD      HL,TXT1
+            CALL    C60
+            POP     BC
+            POP     DE
+            POP     HL
+            CALL    C21
+            CALL    C211
+            PUSH    HL
+            PUSH    DE
+            PUSH    BC
+            LD      HL,TXT3
+            CALL    C09
+            POP     BC
+            POP     DE
+            POP     HL
+            CALL    CIN
+            LD      (DDPC),HL
+            CALL    C131
+            CP      ','
+            JR      Z,J45
+            CP      ';'
+            JR      Z,J44
+            CP      'P'
+            JP      Z,J46
+            CP      'N'
+            JP      Z,J47
+            CP      'U'
+            JP      Z,J49
+            CP      'M'
+            JP      Z,J51
+            CP      'G'
+            JP      Z,J53
+            CP      'S'
+            JP      Z,J56
+            CP      'T'
+            JP      Z,J62
+            CP      'B'
+            JR      Z,J41
+            JR      J40
+
+            PAGE
+J41:	CALL	CIN	;Kommandos:  B .
+	CALL	C131
+	CP	'K'
+	JP	Z,J411
+	CP	'Y'	;Kommando:  B Y E
+	JR	NZ,J40
+	CALL	CIN
+	CALL	C131
+	CP	'E'
+	JP	NZ,J40
+	CALL	CIN
+	CALL	C131
+	CP	00DH
+	JP	NZ,J40
+SYTB:	CALL	BWSUS
+	JP	SYSTB
+
+J45:	CALL	C08	;Kommando:  ,
+	JP	J40
+
+J44:	PUSH	HL	;Kommando:  ;
+	LD	A,(ST1)
+	OR	A
+	JR	Z,J441
+	LD	(ST2),A
+	LD	HL,TXT1+1
+	CALL	C60
+	XOR	A
+	LD	(ST2),A
+J441:	POP	HL
+	JP	J40
+
+J46:	CALL	C172	;Kommando:  P
+	PUSH	BC
+	POP	HL
+	JP	J40
+
+J47:	CALL	C172	;Kommando:  N
+J471:	PUSH	BC
+	CALL	C08
+	CALL	CSTS
+	JR	NZ,J48
+	CALL	C21
+	CALL	C211
+	POP	BC
+	DEC	BC
+	LD	A,B
+	OR	C
+	JR	NZ,J471
+	JP	J401
+
+J48:	POP	BC
+	JP	J40
+
+J49:	CALL	C172	;Kommando:  U
+J50:	PUSH	BC
+	CALL	C08
+	CALL	CSTS
+	JR	NZ,J48
+	POP	BC
+	DEC	BC
+	LD	A,B
+	OR	C
+	JR	NZ,J50
+	JP	J40
+
+J51:	PUSH	HL
+	CALL	CIN
+	CALL	C131
+	CP	'C'
+	JR	NZ,J52
+	XOR	A	;Kommando:  M C
+	LD	(ST4),A
+J511:	POP	HL
+	JP	J40
+
+J52:	CP	'S'
+	JR	NZ,J511
+	LD	A,(ST4)	;Kommando:  M S
+	INC	A
+	LD	(ST4),A
+	RLCA
+	LD	E,A
+	LD	D,0
+	LD	HL,ST8
+	ADD	HL,DE
+	CALL	C172
+	LD	A,C
+	AND	0F0H
+	LD	M,A
+	INC	HL
+	LD	M,B
+	POP	HL
+	JP	J40
+
+J411:	XOR	A	;Kommando:  B K
+	LD	(ST5),A
+	PUSH	HL
+	LD	(USB90+1),HL
+	JR	J552
+
+J53:	XOR	A	;Kommando:  G
+	LD	(ST5),A
+	PUSH	HL
+	CALL	C172
+	LD	H,B
+	LD	L,C
+	LD	(USB90+1),HL
+	CP	','
+	JR	Z,J552
+	CP	00DH
+	JR	Z,J55
+J54:	POP	HL
+	LD	HL,(ST3)
+	JP	J40
+
+J55:	JP	0
+	LD	A,0C3H
+	LD	(00FF9H),A
+	LD	HL,J551
+	LD	(00FFAH),HL
+	CALL	C07
+	LD	(STSP),SP
+	LD	SP,(DDSP)
+USB90:	JP	0
+
+J552:	XOR	A
+	LD	D,A
+	LD	HL,ST6
+J553:	CALL	C172
+	LD	E,A
+	LD	M,C
+	INC	HL
+	LD	M,B
+	INC	HL
+	INC	D
+	LD	A,D
+	CP	5
+	LD	(ST5),A
+	JR	Z,J54
+	LD	A,E
+	CP	00DH
+	JR	NZ,J553
+	LD	HL,ST6
+	LD	IX,ST7
+J554:	LD	C,M
+	INC	HL
+	LD	B,M
+	INC	HL
+	LD	A,(BC)
+	LD	(IX+00),A
+	INC	IX
+	LD	A,0FFH
+	LD	(BC),A
+	DEC	D
+	JR	NZ,J554
+	LD	A,0C3H
+	LD	(00FF9H),A
+	LD	HL,J551
+	LD	(00FFAH),HL
+	JR	J55
+
+J551:	EX	(SP),HL
+	DEC	HL
+	LD	(ST3),HL
+	EX	(SP),HL
+	INC	SP
+	INC	SP
+	LD	(DDSP),SP
+	LD	SP,(STSP)
+	CALL	C06
+	LD	A,(ST5)
+	OR	A
+	JR	Z,J54
+	LD	D,A
+	LD	HL,ST6
+	LD	IX,ST7
+J555:	LD	C,M
+	INC	HL
+	LD	B,M
+	INC	HL
+	LD	A,(IX+00)
+	INC	IX
+	LD	(BC),A
+	DEC	D
+	JR	NZ,J555
+	JP	J54
+
+J56:	PUSH	HL	;Kommandos:  S .
+	CALL	CIN
+	CALL	C131
+	CP	'R'
+	LD	HL,DDAF
+	LD	A,' '
+	JP	Z,J60
+	CALL	C172	;Kommando:  S M
+	LD	H,B
+	LD	L,C
+J57:	CP	00DH
+	JR	Z,J58
+	LD	A,M
+	CALL	C111
+	LD	C,'-'
+	CALL	C041
+	CALL	C172
+	CP	','
+	JR	Z,J59
+	LD	M,C
+	INC	HL
+	CP	'.'
+	JR	Z,J571
+	JR	J57
+
+J571:	CALL	C141
+	PUSH	HL
+	POP	BC
+	CALL	C161
+	LD	A,1
+	JR	J57
+
+J58:	POP	HL
+	JP	J40
+
+J59:	INC	HL
+	JR	J57
+
+TAB2:	DB	' I'
+	DW	DDI
+	DB	1
+
+	DB	' R'
+	DW	DDR
+	DB	1
+
+	DB	' A'
+	DW	DDAF
+	DB	2
+
+	DB	' B'
+	DW	DDBC
+	DB	2
+
+	DB	' C'
+	DW	DDBC
+	DB	1
+
+	DB	' D'
+	DW	DDDE
+	DB	2
+
+	DB	' E'
+	DW	DDDE
+	DB	1
+
+	DB	' H'
+	DW	DDHL
+	DB	2
+
+	DB	' L'
+	DW	DDHL
+	DB	1
+
+	DB	' F'
+	DW	DDAF
+	DB	1
+
+	DB	'XI'
+	DW	DDIX
+	DB	0
+
+	DB	'YI'
+	DW	DDIY
+	DB	0
+
+	DB	'PS'
+	DW	DDSP
+	DB	0
+
+	DB	27H
+	DB	'A'
+	DW	DDAFS
+	DB	2
+
+	DB	27H
+	DB	'B'
+	DW	DDBCS
+	DB	2
+
+	DB	27H
+	DB	'C'
+	DW	DDBCS
+	DB	1
+
+	DB	27H
+	DB	'D'
+	DW	DDDES
+	DB	2
+
+	DB	27H
+	DB	'E'
+	DW	DDDES
+	DB	1
+
+	DB	27H
+	DB	'H'
+	DW	DDHLS
+	DB	2
+
+	DB	27H
+	DB	'L'
+	DW	DDHLS
+	DB	1
+
+	DB	27H
+	DB	'F'
+	DW	DDAFS
+	DB	1
+
+	DB	0
+
+J60:	CALL	CIN	;Kommando:  S R
+	CALL	C131
+	LD	D,A
+	CALL	CIN
+	CALL	C131
+	LD	E,A
+	LD	C,' '
+	CALL	C041
+	LD	BC,TAB2
+J601:	LD	A,(BC)
+	OR	A
+	JP	Z,J58
+	LD	L,A
+	INC	BC
+	LD	A,(BC)
+	LD	H,A
+	SBC	HL,DE
+	JR	Z,J61
+	INC	BC
+	INC	BC
+	INC	BC
+	INC	BC
+	JR	J601
+
+J61:	INC	BC
+	LD	A,(BC)
+	LD	L,A
+	INC	BC
+	LD	A,(BC)
+	LD	H,A
+	INC	BC
+	LD	A,(BC)
+	OR	A
+	JR	NZ,J611
+	LD	C,M
+	INC	HL
+	LD	B,M
+	CALL	C161
+	LD	C,'-'
+	CALL	C041
+	CALL	C172
+	LD	M,B
+	DEC	HL
+	LD	M,C
+	JP	J58
+
+J611:	DEC	A
+	LD	C,A
+	LD	B,0
+	ADD	HL,BC
+	LD	A,M
+	CALL	C111
+	LD	C,'-'
+	CALL	C041
+	CALL	C172
+	LD	M,C
+	JP	J58
+
+J62:	CALL	CIN	;Kommandos:  T .
+	CALL	C131
+	CP	'N'
+	JR	NZ,J621
+	PUSH	HL	;Kommando:  T N
+	LD	A,1
+	LD	(ST1),A
+	LD	(ST2),A
+	LD	HL,TXT1+1
+	CALL	C60
+	XOR	A
+	LD	(ST2),A
+	POP	HL
+	JP	J40
+
+J621:	XOR	A	;Kommando :  T O
+	LD	(ST1),A
+	JP	J40
+
+	PAGE
+;****************************************************************
+;*               Monitorvektor - Konstanten                     *
+;****************************************************************
+STPO:       DW      00000H              ;ZPOS= 1 , SPOS= 1
+            DW      00101H              ;ZMIN= 1 , SMIN= 1
+            DW      MAX                 ;ZMAX=24 , SMAX=80
+
+RPOS:       DS      6,0
+ST1:        DB      0
+ST2:        DB      0
+ST3:        DW      0
+ST4:        DB      0
+ST5:        DB      0
+ST6:        DS      8,0
+ST7:        DS      33,0
+ST8:        DW      0
+ST9:        DS      300H,0
+STSP:       DW      0
+
+MAX         EQU     05018H
+
+ZPOS        EQU     SM.ZPOS
+
+TK:         DB      0
+ZZ:         DB      0
+CST:        DB      0
+
+DDEI:       DB      0                   ;S2.DDEI
+DDIM:       DB      0
+DDI:        DB      0
+DDR:        DB      0
+DDPC:       DW      0
+DDSP:       DW      0
+DDIX:       DW      0
+DDIY:       DW      0
+DDBCS:      DW      0
+DDDES:      DW      0
+DDHLS:      DW      0
+DDAFS:      DW      0
+DDBC:       DW      0
+DDDE:       DW      0
+DDHL:       DW      0
+DDAF:       DW      0
+
+ENDTRAC     EQU     $
+;
+            .DEPHASE
+;
+
+            END
+
