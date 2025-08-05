@@ -14,7 +14,7 @@ Module COMMON
     Public Const HISIZE As Byte = 100                                           ' number of entrys in history 
 
     '#Const SBSIZE0 = 1                                                         'breakpoint
-    Public Const SBSIZE As Byte = 4                                             ' number of software breakpoints 
+    Public Const SBSIZE As Byte = 9                                             ' number of software breakpoints 
 
     '#Const CNTL_C0 = 1                                                         'cntl-c will stop running emulation
     Public cntl_c As Integer                                                    ' flag for cntl-c entered

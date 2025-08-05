@@ -1,8 +1,8 @@
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1
 
 
-                                	TITLE	'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'
-                                	PAGE	87
+                                            TITLE   'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'
+                                            PAGE    87
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-1
 
 
@@ -11,13 +11,18 @@
   0000*   EF                                DB      0EFH                ; Startbyte ---> 
   0001*                                     DS      12,0
   000D*   02                                DB      002H                ; HS-Bereich : 2
-  000E*   0100                              DW      00100H              ; Ladeadresse: 0100H
+  000E*   8000                              DW      08000H              ; Ladeadresse: 9000H
                                 ;--------------------------/
                          C                  INCLUDE S21EQU1.MAC
   00E0                   C      S0.PROM     EQU     0E0H
   0050                   C      S0.SPANZ    EQU     80
   0018                   C      S0.ZANZ     EQU     24
   A000                   C      S0.BWSA     EQU     0A000H
+  B7E0                   C      S0.PFFI     EQU     0B7E0H
+  BBF0                   C      S0.PFFA     EQU     0BBF0H
+                         C      ;
+  B136                   C      K2.FRADR    EQU     0B136H
+  B134                   C      K2.SKADR    EQU     0B134H
                          C      ;
   B18A                   C      MS.ZPOL     EQU     0B18AH
   B18B                   C      MS.SPOL     EQU     MS.ZPOL+1
@@ -68,7 +73,10 @@
   B262                   C      S2.ZZ       EQU     0B262H
   B263                   C      S2.CST      EQU     S2.ZZ+1
   B264                   C      S2.IOC      EQU     S2.CST+1
-  B26E                   C      S2.AADR     EQU     S2.IOC+10
+  B265                   C      S2.PRGN     EQU     S2.IOC+1
+  B26B                   C      S2.DNR      EQU     S2.PRGN+6
+  B26C                   C      S2.RBBR     EQU     S2.DNR+1
+  B26E                   C      S2.AADR     EQU     S2.RBBR+2
   B270                   C      S2.KADR     EQU     S2.AADR+2
   B272                   C      S2.ZP       EQU     S2.KADR+2
   B273                   C      S2.SP1      EQU     S2.ZP+1
@@ -80,6 +88,9 @@
   B28C                   C      S2.TE       EQU     S2.BZ+1
   B28E                   C      S2.DL       EQU     S2.TE+2
   B28F                   C      S2.DH       EQU     S2.DL+1
+'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-2
+
+
   B290                   C      S2.PAR1     EQU     S2.DH+1
   B292                   C      S2.DMANF    EQU     S2.PAR1+2
   B294                   C      S2.DMCUR    EQU     S2.DMANF+2
@@ -88,21 +99,19 @@
   B29A                   C      S2.DM1      EQU     S2.DMBE+2
   B2AA                   C      S2.DM2      EQU     S2.DM1+16
   B2AB                   C      S2.DMH      EQU     S2.DM2+1
-'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-2
-
-
   B2AC                   C      S2.DML      EQU     S2.DMH+1
   B2AD                   C      S2.SMHL     EQU     S2.DML+1
   B2AF                   C      S2.S1       EQU     S2.SMHL+2
   B2B0                   C      S2.S2       EQU     S2.S1+1
   B2B8                   C      S2.DDEI     EQU     S2.S2+8
                          C      ;
-                         C      
                          C                  INCLUDE S21EQU2.MAC
-  CB10                   C      MO.MONI     EQU     0CB10H
-  CB3F                   C      MO.BWSUS    EQU     0CB3FH
-  CD99                   C      MO.ROLL     EQU     0CD99H
-                         C      
+  C02D                   C      S1.SM       EQU     0C02DH
+  C82E                   C      S1.DB111    EQU     0C82EH
+  C86E                   C      S1.EINDB    EQU     0C86EH
+  C8B0                   C      S1.ANZU1    EQU     0C8B0H
+  C8C0                   C      S1.ANZU2    EQU     0C8C0H
+  C8CD                   C      S1.SYDB2    EQU     0C8CDH
   C114                   C      S1.SYSTB    EQU     0C114H
   C2B4                   C      S1.CNRS     EQU     0C2B4H
   C2D3                   C      S1.CNLS     EQU     0C2D3H
@@ -115,14 +124,59 @@
   C592                   C      S1.IDH      EQU     0C592H
   C5CC                   C      S1.HBKON    EQU     0C5CCH
   C5FF                   C      S1.BHKON    EQU     0C5FFH
-                         C      
+  C652                   C      S1.CHK      EQU     0C652H
+  C935                   C      S1.MEAA     EQU     0C935H
+  C995                   C      S1.HXN1     EQU     0C995H
+  C9E4                   C      S1.MEAU2    EQU     0C9E4H
+                         C      ;
+  CB10                   C      MO.MONI     EQU     0CB10H
+  CB3F                   C      MO.BWSUS    EQU     0CB3FH
+  CD99                   C      MO.ROLL     EQU     0CD99H
+  CF45                   C      MO.BWSE     EQU     0CF45H
+  CF4C                   C      MO.PNSP     EQU     0CF4CH
+                         C      ;
   D408                   C      TA.LOE      EQU     0D408H
-                         C      
+  D420                   C      TA.LOES     EQU     0D420H
+                         C      ;
   E657                   C      S9.CIN      EQU     0E657H
   E68B                   C      S9.CSTSX    EQU     0E68BH
   E6A6                   C      S9.CON      EQU     0E6A6H
   EE58                   C      S9.SAVE     EQU     0EE58H
   EE78                   C      S9.LOAD     EQU     0EE78H
+                         C      ;
+  D548                   C      K1.ARMB     EQU     0D548H
+  D576                   C      K1.ARBT     EQU     0D576H
+  D581                   C      K1.BLKP     EQU     0D581H
+  D58F                   C      K1.BLKM     EQU     0D58FH
+  D59D                   C      K1.RCZP     EQU     0D59DH
+  D5AB                   C      K1.RCZM     EQU     0D5ABH
+  D5B9                   C      K1.RCZN     EQU     0D5B9H
+  D5C1                   C      K1.LHLBC    EQU     0D5C1H
+  D5CE                   C      K1.BM       EQU     0D5CEH
+  D5D5                   C      K1.F17      EQU     0D5D5H
+  D5ED                   C      K1.RGL1     EQU     0D5EDH
+  D5FE                   C      K1.RGL2     EQU     0D5FEH
+  D6B1                   C      K1.GNSTS    EQU     0D6B1H
+  D708                   C      K1.GNRE     EQU     0D708H
+  D725                   C      K1.GNRA     EQU     0D725H
+  D740                   C      K1.GNRW     EQU     0D740H
+  D765                   C      K1.GNRP     EQU     0D765H
+  D780                   C      K1.GNRM     EQU     0D780H
+  D7B1                   C      K1.GNLP     EQU     0D7B1H
+  D7B3                   C      K1.GNLPN    EQU     0D7B3H
+  D7EB                   C      K1.GNLMN    EQU     0D7EBH
+  D870                   C      K1.PUFT     EQU     0D870H
+  D85B                   C      K1.GNRD     EQU     0D85BH
+  D8CB                   C      K1.GNWR     EQU     0D8CBH
+  D8EF                   C      K1.GNRWR    EQU     0D8EFH
+                         C      ;
+  DECC                   C      LO.EIN      EQU     0DECCH
+  E239                   C      LO.EIN1     EQU     0E239H
+                         C      ;
+  F5CF                   C      S0.BWSUS    EQU     0F5CFH
+'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-3
+
+
                                 
                                 ;           PN      ST33
                                 ;****************************************************************
@@ -134,707 +188,707 @@
                                 ;*  V 2 . 1      -----------------------------------------------*
                                 ;*               Stand            : 25.November 1983            *
                                 ;****************************************************************
-                                            .PHASE  00100H
+                                            .PHASE  08000H
                                 
-  0100                          BWSA:       DS      00800H,0
+  8000                          BWSA:       DS      00800H,0
                                 
   0001                          V1          EQU     1                   ;1  ...  B W S  mit 80 Spalten
                                                                         ;2  ...  B W S  mit 64 Spalten
                                 
-  0900    C3 102D                           JP      MAIN
-  0903    56 32 2E 31                       DB      'V2.1/251183'
-  0907    2F 32 35 31           
-  090B    31 38 33              
-  090E    C3 C10A               SYSTB:      JP      0C10AH              ;S1.SYSTB
-  0911    C3 C010               TA1:        JP      0C010H              ;S1.TA
-  0914    C3 C013               TA2:        JP      0C013H              ;S1.TA+3
-  0917    C3 C022               MONI:       JP      0C022H              ;S1.MO
-  091A    C3 C02B               MRES:       JP      0C02BH              ;S1.SM
-  091D    C3 C02E               PRIO:       JP      0C02EH              ;S1.SM+3
-  0920    C3 C028               BWSUS:      JP      0C028H              ;S1.MO+6
+  8800    C3 8F2D                           JP      MAIN
+  8803    56 32 2E 31                       DB      'V2.1/251183'
+  8807    2F 32 35 31           
+  880B    31 38 33              
+  880E    C3 C10A               SYSTB:      JP      0C10AH              ;S1.SYSTB
+  8811    C3 C010               TA1:        JP      0C010H              ;S1.TA
+  8814    C3 C013               TA2:        JP      0C013H              ;S1.TA+3
+  8817    C3 C022               MONI:       JP      0C022H              ;S1.MO
+  881A    C3 C02B               MRES:       JP      0C02BH              ;S1.SM
+  881D    C3 C02E               PRIO:       JP      0C02EH              ;S1.SM+3
+  8820    C3 C028               BWSUS:      JP      0C028H              ;S1.MO+6
                                 
-  0923    E3                    SAVE:       EX      (SP),HL
-  0924    F5                                PUSH    AF
-  0925    C5                                PUSH    BC
-  0926    D5                                PUSH    DE
-  0927    DD E5                             PUSH    IX
-  0929    FD E5                             PUSH    IY
-  092B    E9                                JP      (HL)
+  8823    E3                    SAVE:       EX      (SP),HL
+  8824    F5                                PUSH    AF
+  8825    C5                                PUSH    BC
+  8826    D5                                PUSH    DE
+  8827    DD E5                             PUSH    IX
+  8829    FD E5                             PUSH    IY
+  882B    E9                                JP      (HL)
                                 
-  092C    E1                    LOAD:       POP     HL
-  092D    FD E1                             POP     IY
-  092F    DD E1                             POP     IX
-  0931    D1                                POP     DE
-  0932    C1                                POP     BC
-  0933    F1                                POP     AF
-  0934    E3                                EX      (SP),HL
-  0935    C9                                RET
+  882C    E1                    LOAD:       POP     HL
+  882D    FD E1                             POP     IY
+  882F    DD E1                             POP     IX
+  8831    D1                                POP     DE
+  8832    C1                                POP     BC
+  8833    F1                                POP     AF
+  8834    E3                                EX      (SP),HL
+  8835    C9                                RET
                                 
                                             PAGE
-'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-3
-
-
-                                
-  0936    CD 0923               CIN:        CALL    SAVE                ;Konsoleninput
-  0939    3A B263                           LD      A,(CST)
-  093C    B7                                OR      A
-  093D    20 03                             JR      NZ,CIN1
-  093F    CD 0952                           CALL    CSTS1
-  0942    CD 0911               CIN1:       CALL    TA1
-  0945    28 FB                             JR      Z,CIN1
-  0947    AF                                XOR     A
-  0948    32 B263                           LD      (CST),A
-  094B    CD 092C                           CALL    LOAD
-  094E    3A B23C                           LD      A,(TK)
-  0951    C9                                RET
-                                
-  0952    CD 0911               CSTS1:      CALL    TA1
-  0955    20 FB                             JR      NZ,CSTS1
-  0957    CD 0914                           CALL    TA2
-  095A    FE CD                             CP      0CDH
-  095C    CA 090E                           JP      Z,SYSTB
-  095F    FE 1E                             CP      1EH
-  0961    28 1F                             JR      Z,CSTS3
-  0963    FE 80                             CP      80H
-  0965    28 1F                             JR      Z,CST10
-  0967    FE 81                             CP      81H
-  0969    28 20                             JR      Z,CST11
-  096B    FE 7F                             CP      7FH
-  096D    30 E3                             JR      NC,CSTS1
-  096F    FE 20                             CP      20H
-  0971    38 DF                             JR      C,CSTS1
-  0973    32 B23C               CSTS2:      LD      (TK),A
-  0976    21 0100                           LD      HL,BWSA
-  0979    22 B194                           LD      (MBWSA),HL
-  097C    3E FF                             LD      A,-1
-  097E    32 B263                           LD      (CST),A
-  0981    C9                                RET
-  0982    3E 0D                 CSTS3:      LD      A,00DH
-  0984    18 ED                             JR      CSTS2
-  0986    21 A000               CST10:      LD      HL,SBWSA
-  0989    18 03                             JR      CST12
-  098B    21 0100               CST11:      LD      HL,BWSA
-  098E    22 B194               CST12:      LD      (MBWSA),HL
-  0991    CD 0920                           CALL    BWSUS
-  0994    CD 0911                           CALL    TA1
-  0997    28 FB                             JR      Z,$-3
-  0999    18 B7                             JR      CSTS1
-                                
-  099B    CD 0923               CSTS:       CALL    SAVE                ;Konsolenstatus
-  099E    CD 0911                           CALL    TA1
-  09A1    20 05                             JR      NZ,CSTS4
-  09A3    CD 0952                           CALL    CSTS1
-  09A6    18 04                             JR      CSTS5
-  09A8    AF                    CSTS4:      XOR     A
-  09A9    32 B263                           LD      (CST),A
-  09AC    CD 092C               CSTS5:      CALL    LOAD
-  09AF    3A B263                           LD      A,(CST)
-  09B2    B7                                OR      A
-  09B3    C9                                RET
-                                
-  09B4    CD 0923               CON:        CALL    SAVE
-  09B7    3E 07                             LD      A,7
-  09B9    32 B198                           LD      (CMD),A
-  09BC    CD 0917                           CALL    MONI
-  09BF    3E 14                             LD      A,20
-  09C1    32 B198                           LD      (CMD),A
-  09C4    79                                LD      A,C
-  09C5    FE 0D                             CP      00DH
-  09C7    28 28                             JR      Z,CON9
-  09C9    FE 0C                             CP      00CH
-  09CB    28 16                             JR      Z,CON2
-  09CD    FE 0A                             CP      00AH
-  09CF    28 08                             JR      Z,CON1
-  09D1    32 B199                           LD      (MTK),A
-  09D4    CD 0917                           CALL    MONI
-  09D7    18 18                             JR      CON9
-  09D9    3E 17                 CON1:       LD      A,23
-  09DB    32 B198                           LD      (CMD),A
-  09DE    CD 0917                           CALL    MONI
-  09E1    18 0E                             JR      CON9
-  09E3    3E 04                 CON2:       LD      A,4
-  09E5    32 B198                           LD      (CMD),A
-  09E8    CD 0917                           CALL    MONI
-  09EB    21 0000                           LD      HL,0
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-4
 
 
-  09EE    22 B18C                           LD      (ZPOS),HL
-  09F1    3E 06                 CON9:       LD      A,6
-  09F3    32 B198                           LD      (CMD),A
-  09F6    CD 0917                           CALL    MONI
-  09F9    CD 092C                           CALL    LOAD
-  09FC    C9                                RET
                                 
-  09FD    CD 0923               LIST:       CALL    SAVE
-  0A00    79                                LD      A,C
-  0A01    FE 0C                             CP      00CH
-  0A03    28 13                             JR      Z,STX3
-  0A05    FE 0D                             CP      00DH
-  0A07    28 2A                             JR      Z,STX9
-  0A09    FE 0A                             CP      00AH
-  0A0B    20 23                             JR      NZ,STX2
-  0A0D    0E 1E                             LD      C,1EH
-  0A0F    CD 091D                           CALL    PRIO
-  0A12    21 B262                           LD      HL,ZZ
-  0A15    35                                DEC     (HL)
-  0A16    20 1B                             JR      NZ,STX9
-  0A18    7E                    STX3:       LD      A,(HL)
-  0A19    FE 45                             CP      69
-  0A1B    28 16                             JR      Z,STX9
-  0A1D    C6 03                             ADD     A,3
-  0A1F    47                                LD      B,A
-  0A20    0E 1E                             LD      C,1EH
-  0A22    C5                    STX4:       PUSH    BC
-  0A23    CD 091D                           CALL    PRIO
-  0A26    C1                                POP     BC
-  0A27    10 F9                             DJNZ    STX4
-  0A29    3E 45                             LD      A,69
-  0A2B    32 B262                           LD      (ZZ),A
-  0A2E    18 03                             JR      STX9
-  0A30    CD 091D               STX2:       CALL    PRIO
-  0A33    CD 092C               STX9:       CALL    LOAD
-  0A36    C9                                RET
+  8836    CD 8823               CIN:        CALL    SAVE                ;Konsoleninput
+  8839    3A B263                           LD      A,(CST)
+  883C    B7                                OR      A
+  883D    20 03                             JR      NZ,CIN1
+  883F    CD 8852                           CALL    CSTS1
+  8842    CD 8811               CIN1:       CALL    TA1
+  8845    28 FB                             JR      Z,CIN1
+  8847    AF                                XOR     A
+  8848    32 B263                           LD      (CST),A
+  884B    CD 882C                           CALL    LOAD
+  884E    3A B23C                           LD      A,(TK)
+  8851    C9                                RET
                                 
-                                            PAGE
+  8852    CD 8811               CSTS1:      CALL    TA1
+  8855    20 FB                             JR      NZ,CSTS1
+  8857    CD 8814                           CALL    TA2
+  885A    FE CD                             CP      0CDH
+  885C    CA 880E                           JP      Z,SYSTB
+  885F    FE 1E                             CP      1EH
+  8861    28 1F                             JR      Z,CSTS3
+  8863    FE 80                             CP      80H
+  8865    28 1F                             JR      Z,CST10
+  8867    FE 81                             CP      81H
+  8869    28 20                             JR      Z,CST11
+  886B    FE 7F                             CP      7FH
+  886D    30 E3                             JR      NC,CSTS1
+  886F    FE 20                             CP      20H
+  8871    38 DF                             JR      C,CSTS1
+  8873    32 B23C               CSTS2:      LD      (TK),A
+  8876    21 8000                           LD      HL,BWSA
+  8879    22 B194                           LD      (MBWSA),HL
+  887C    3E FF                             LD      A,-1
+  887E    32 B263                           LD      (CST),A
+  8881    C9                                RET
+  8882    3E 0D                 CSTS3:      LD      A,00DH
+  8884    18 ED                             JR      CSTS2
+  8886    21 A000               CST10:      LD      HL,SBWSA
+  8889    18 03                             JR      CST12
+  888B    21 8000               CST11:      LD      HL,BWSA
+  888E    22 B194               CST12:      LD      (MBWSA),HL
+  8891    CD 8820                           CALL    BWSUS
+  8894    CD 8811                           CALL    TA1
+  8897    28 FB                             JR      Z,$-3
+  8899    18 B7                             JR      CSTS1
+                                
+  889B    CD 8823               CSTS:       CALL    SAVE                ;Konsolenstatus
+  889E    CD 8811                           CALL    TA1
+  88A1    20 05                             JR      NZ,CSTS4
+  88A3    CD 8852                           CALL    CSTS1
+  88A6    18 04                             JR      CSTS5
+  88A8    AF                    CSTS4:      XOR     A
+  88A9    32 B263                           LD      (CST),A
+  88AC    CD 882C               CSTS5:      CALL    LOAD
+  88AF    3A B263                           LD      A,(CST)
+  88B2    B7                                OR      A
+  88B3    C9                                RET
+                                
+  88B4    CD 8823               CON:        CALL    SAVE
+  88B7    3E 07                             LD      A,7
+  88B9    32 B198                           LD      (CMD),A
+  88BC    CD 8817                           CALL    MONI
+  88BF    3E 14                             LD      A,20
+  88C1    32 B198                           LD      (CMD),A
+  88C4    79                                LD      A,C
+  88C5    FE 0D                             CP      00DH
+  88C7    28 28                             JR      Z,CON9
+  88C9    FE 0C                             CP      00CH
+  88CB    28 16                             JR      Z,CON2
+  88CD    FE 0A                             CP      00AH
+  88CF    28 08                             JR      Z,CON1
+  88D1    32 B199                           LD      (MTK),A
+  88D4    CD 8817                           CALL    MONI
+  88D7    18 18                             JR      CON9
+  88D9    3E 17                 CON1:       LD      A,23
+  88DB    32 B198                           LD      (CMD),A
+  88DE    CD 8817                           CALL    MONI
+  88E1    18 0E                             JR      CON9
+  88E3    3E 04                 CON2:       LD      A,4
+  88E5    32 B198                           LD      (CMD),A
+  88E8    CD 8817                           CALL    MONI
+  88EB    21 0000                           LD      HL,0
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-5
 
 
+  88EE    22 B18C                           LD      (ZPOS),HL
+  88F1    3E 06                 CON9:       LD      A,6
+  88F3    32 B198                           LD      (CMD),A
+  88F6    CD 8817                           CALL    MONI
+  88F9    CD 882C                           CALL    LOAD
+  88FC    C9                                RET
                                 
-  0A37    F5                    C04:        PUSH    AF                  ;Zeichenausgabe auf BWS / Drucker
-  0A38    3A 13CB                           LD      A,(ST2)
-  0A3B    B7                                OR      A
-  0A3C    20 04                             JR      NZ,C042             ;891C
-  0A3E    F1                                POP     AF
-  0A3F    C3 09B4                           JP      CON
-                                
-  0A42    F1                    C042:       POP     AF
-  0A43    C3 09FD                           JP      LIST
-                                
-  0A46    CD 0D63               C041:       CALL    C50
-  0A49    CD 0A37                           CALL    C04
-  0A4C    C3 0D77                           JP      C51
-                                
-  0A4F    06 00                 C05:        LD      B,0                 ;Befehlslaenge ermitteln
-  0A51    E5                                PUSH    HL
-  0A52    D1                                POP     DE
-  0A53    7E                                LD      A,M
-  0A54    E6 DF                             AND     0DFH
-  0A56    FE DD                             CP      0DDH
-  0A58    28 57                             JR      Z,J093
-  0A5A    7E                                LD      A,M
-  0A5B    FE CB                             CP      0CBH
-  0A5D    28 4E                             JR      Z,J092
-  0A5F    FE ED                             CP      0EDH
-  0A61    28 40                             JR      Z,J091
-  0A63    7E                                LD      A,M
-  0A64    FE C3                             CP      0C3H
-  0A66    28 78                             JR      Z,J11
-  0A68    FE CD                             CP      0CDH
-  0A6A    28 74                             JR      Z,J11
-  0A6C    E6 EF                             AND     0EFH
-  0A6E    FE 22                             CP      022H
-  0A70    28 6E                             JR      Z,J11
-  0A72    FE 2A                             CP      02AH
-  0A74    28 6A                             JR      Z,J11
-  0A76    E6 CF                             AND     0CFH
-  0A78    FE 01                             CP      001H
-  0A7A    28 64                             JR      Z,J11
-  0A7C    E6 C7                             AND     0C7H
-  0A7E    FE C2                             CP      0C2H
-  0A80    28 5E                             JR      Z,J11
-  0A82    FE C4                             CP      0C4H
-  0A84    28 5A                             JR      Z,J11
-  0A86    7E                                LD      A,M
-  0A87    E6 F7                             AND     0F7H
-  0A89    FE 10                             CP      010H
-  0A8B    28 54                             JR      Z,J12
-  0A8D    FE D3                             CP      0D3H
-  0A8F    28 50                             JR      Z,J12
-  0A91    E6 E7                             AND     0E7H
-  0A93    FE 20                             CP      020H
-  0A95    28 4A                             JR      Z,J12
-  0A97    E6 C7                             AND     0C7H
-  0A99    FE 06                             CP      006H
-  0A9B    28 44                             JR      Z,J12
-  0A9D    FE C6                             CP      0C6H
-  0A9F    28 40                             JR      Z,J12
-  0AA1    18 3F                             JR      J13
+  88FD    CD 8823               LIST:       CALL    SAVE
+  8900    79                                LD      A,C
+  8901    FE 0C                             CP      00CH
+  8903    28 13                             JR      Z,STX3
+  8905    FE 0D                             CP      00DH
+  8907    28 2A                             JR      Z,STX9
+  8909    FE 0A                             CP      00AH
+  890B    20 23                             JR      NZ,STX2
+  890D    0E 1E                             LD      C,1EH
+  890F    CD 881D                           CALL    PRIO
+  8912    21 B262                           LD      HL,ZZ
+  8915    35                                DEC     (HL)
+  8916    20 1B                             JR      NZ,STX9
+  8918    7E                    STX3:       LD      A,(HL)
+  8919    FE 45                             CP      69
+  891B    28 16                             JR      Z,STX9
+  891D    C6 03                             ADD     A,3
+  891F    47                                LD      B,A
+  8920    0E 1E                             LD      C,1EH
+  8922    C5                    STX4:       PUSH    BC
+  8923    CD 881D                           CALL    PRIO
+  8926    C1                                POP     BC
+  8927    10 F9                             DJNZ    STX4
+  8929    3E 45                             LD      A,69
+  892B    32 B262                           LD      (ZZ),A
+  892E    18 03                             JR      STX9
+  8930    CD 881D               STX2:       CALL    PRIO
+  8933    CD 882C               STX9:       CALL    LOAD
+  8936    C9                                RET
                                 
                                             PAGE
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-6
 
 
                                 
-  0AA3    23                    J091:       INC     HL
-  0AA4    7E                                LD      A,M
-  0AA5    E6 C7                             AND     0C7H
-  0AA7    FE 43                             CP      043H
-  0AA9    28 34                             JR      Z,J10
-  0AAB    18 34                             JR      J12
+  8937    F5                    C04:        PUSH    AF                  ;Zeichenausgabe auf BWS / Drucker
+  8938    3A 92CB                           LD      A,(ST2)
+  893B    B7                                OR      A
+  893C    20 04                             JR      NZ,C042             ;891C
+  893E    F1                                POP     AF
+  893F    C3 88B4                           JP      CON
                                 
-  0AAD    18 32                 J092:       JR      J12
+  8942    F1                    C042:       POP     AF
+  8943    C3 88FD                           JP      LIST
                                 
-  0AAF    18 2E                 J09:        JR      J10
+  8946    CD 8C63               C041:       CALL    C50
+  8949    CD 8937                           CALL    C04
+  894C    C3 8C77                           JP      C51
                                 
-  0AB1    23                    J093:       INC     HL
-  0AB2    7E                                LD      A,M
-  0AB3    FE CB                             CP      0CBH
-  0AB5    28 F8                             JR      Z,J09
-  0AB7    FE 21                             CP      021H
-  0AB9    28 24                             JR      Z,J10
-  0ABB    E6 FE                             AND     0FEH
-  0ABD    FE 34                             CP      034H
-  0ABF    28 1F                             JR      Z,J11
-  0AC1    E6 F8                             AND     0F8H
-  0AC3    FE 70                             CP      070H
-  0AC5    28 19                             JR      Z,J11
-  0AC7    7E                                LD      A,M
-  0AC8    E6 CF                             AND     0CFH
-  0ACA    FE 06                             CP      006H
-  0ACC    28 11                             JR      Z,J10
-  0ACE    E6 C7                             AND     0C7H
-  0AD0    FE 02                             CP      002H
-  0AD2    28 0B                             JR      Z,J10
-  0AD4    7E                                LD      A,M
-  0AD5    D6 40                             SUB     040H
-  0AD7    E6 87                             AND     087H
-  0AD9    FE 06                             CP      006H
-  0ADB    28 03                             JR      Z,J11
-  0ADD    18 02                             JR      J12
-  0ADF    04                    J10:        INC     B
-  0AE0    04                    J11:        INC     B
-  0AE1    04                    J12:        INC     B
-  0AE2    04                    J13:        INC     B
-  0AE3    EB                                EX      DE,HL
-  0AE4    C9                                RET
+  894F    06 00                 C05:        LD      B,0                 ;Befehlslaenge ermitteln
+  8951    E5                                PUSH    HL
+  8952    D1                                POP     DE
+  8953    7E                                LD      A,M
+  8954    E6 DF                             AND     0DFH
+  8956    FE DD                             CP      0DDH
+  8958    28 57                             JR      Z,J093
+  895A    7E                                LD      A,M
+  895B    FE CB                             CP      0CBH
+  895D    28 4E                             JR      Z,J092
+  895F    FE ED                             CP      0EDH
+  8961    28 40                             JR      Z,J091
+  8963    7E                                LD      A,M
+  8964    FE C3                             CP      0C3H
+  8966    28 78                             JR      Z,J11
+  8968    FE CD                             CP      0CDH
+  896A    28 74                             JR      Z,J11
+  896C    E6 EF                             AND     0EFH
+  896E    FE 22                             CP      022H
+  8970    28 6E                             JR      Z,J11
+  8972    FE 2A                             CP      02AH
+  8974    28 6A                             JR      Z,J11
+  8976    E6 CF                             AND     0CFH
+  8978    FE 01                             CP      001H
+  897A    28 64                             JR      Z,J11
+  897C    E6 C7                             AND     0C7H
+  897E    FE C2                             CP      0C2H
+  8980    28 5E                             JR      Z,J11
+  8982    FE C4                             CP      0C4H
+  8984    28 5A                             JR      Z,J11
+  8986    7E                                LD      A,M
+  8987    E6 F7                             AND     0F7H
+  8989    FE 10                             CP      010H
+  898B    28 54                             JR      Z,J12
+  898D    FE D3                             CP      0D3H
+  898F    28 50                             JR      Z,J12
+  8991    E6 E7                             AND     0E7H
+  8993    FE 20                             CP      020H
+  8995    28 4A                             JR      Z,J12
+  8997    E6 C7                             AND     0C7H
+  8999    FE 06                             CP      006H
+  899B    28 44                             JR      Z,J12
+  899D    FE C6                             CP      0C6H
+  899F    28 40                             JR      Z,J12
+  89A1    18 3F                             JR      J13
                                 
                                             PAGE
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-7
 
 
                                 
-  0AE5    ED 43 B2CC            C06:        LD      (DDBC),BC           ;USER - Register retten
-  0AE9    ED 53 B2CE                        LD      (DDDE),DE
-  0AED    22 B2D0                           LD      (DDHL),HL
-  0AF0    F5                                PUSH    AF
-  0AF1    C1                                POP     BC
-  0AF2    ED 43 B2D2                        LD      (DDAF),BC
-  0AF6    08                                EX      AF,AF'              ;'
-  0AF7    D9                                EXX
-  0AF8    ED 43 B2C4                        LD      (DDBCS),BC
-  0AFC    ED 53 B2C6                        LD      (DDDES),DE
-  0B00    22 B2C8                           LD      (DDHLS),HL
-  0B03    F5                                PUSH    AF
-  0B04    C1                                POP     BC
-  0B05    ED 43 B2CA                        LD      (DDAFS),BC
-  0B09    ED 57                             LD      A,I
-  0B0B    32 B2BA                           LD      (DDI),A
-  0B0E    ED 5F                             LD      A,R
-  0B10    32 B2BB                           LD      (DDR),A
-  0B13    DD 22 B2C0                        LD      (DDIX),IX
-  0B17    FD 22 B2C2                        LD      (DDIY),IY
-  0B1B    21 B18C                           LD      HL,ZPOS
-  0B1E    11 13BA                           LD      DE,RPOS
-  0B21    01 0010                           LD      BC,16
-  0B24    ED B0                             LDIR
-  0B26    CD 0920                           CALL    BWSUS
-  0B29    2A 13CC                           LD      HL,(ST3)
-  0B2C    C9                                RET
+  89A3    23                    J091:       INC     HL
+  89A4    7E                                LD      A,M
+  89A5    E6 C7                             AND     0C7H
+  89A7    FE 43                             CP      043H
+  89A9    28 34                             JR      Z,J10
+  89AB    18 34                             JR      J12
                                 
-  0B2D    22 13CC               C07:        LD      (ST3),HL            ;USER - Register laden
-  0B30    21 13BA                           LD      HL,RPOS
-  0B33    11 B18C                           LD      DE,ZPOS
-  0B36    01 0010                           LD      BC,16
-  0B39    ED B0                             LDIR
-  0B3B    CD 0920                           CALL    BWSUS
-  0B3E    FD 2A B2C2                        LD      IY,(DDIY)
-  0B42    DD 2A B2C0                        LD      IX,(DDIX)
-  0B46    3A B2BA                           LD      A,(DDI)
-  0B49    ED 47                             LD      I,A
-  0B4B    3A B2BB                           LD      A,(DDR)
-  0B4E    ED 4F                             LD      R,A
-  0B50    ED 4B B2CA                        LD      BC,(DDAFS)
-  0B54    C5                                PUSH    BC
-  0B55    F1                                POP     AF
-  0B56    2A B2C8                           LD      HL,(DDHLS)
-  0B59    ED 5B B2C6                        LD      DE,(DDDES)
-  0B5D    ED 4B B2C4                        LD      BC,(DDBCS)
-  0B61    D9                                EXX
-  0B62    08                                EX      AF,AF'              ;'
-  0B63    ED 4B B2D2                        LD      BC,(DDAF)
-  0B67    C5                                PUSH    BC
-  0B68    F1                                POP     AF
-  0B69    2A B2D0                           LD      HL,(DDHL)
-  0B6C    ED 5B B2CE                        LD      DE,(DDDE)
-  0B70    ED 4B B2CC                        LD      BC,(DDBC)
-  0B74    C9                                RET
+  89AD    18 32                 J092:       JR      J12
+                                
+  89AF    18 2E                 J09:        JR      J10
+                                
+  89B1    23                    J093:       INC     HL
+  89B2    7E                                LD      A,M
+  89B3    FE CB                             CP      0CBH
+  89B5    28 F8                             JR      Z,J09
+  89B7    FE 21                             CP      021H
+  89B9    28 24                             JR      Z,J10
+  89BB    E6 FE                             AND     0FEH
+  89BD    FE 34                             CP      034H
+  89BF    28 1F                             JR      Z,J11
+  89C1    E6 F8                             AND     0F8H
+  89C3    FE 70                             CP      070H
+  89C5    28 19                             JR      Z,J11
+  89C7    7E                                LD      A,M
+  89C8    E6 CF                             AND     0CFH
+  89CA    FE 06                             CP      006H
+  89CC    28 11                             JR      Z,J10
+  89CE    E6 C7                             AND     0C7H
+  89D0    FE 02                             CP      002H
+  89D2    28 0B                             JR      Z,J10
+  89D4    7E                                LD      A,M
+  89D5    D6 40                             SUB     040H
+  89D7    E6 87                             AND     087H
+  89D9    FE 06                             CP      006H
+  89DB    28 03                             JR      Z,J11
+  89DD    18 02                             JR      J12
+  89DF    04                    J10:        INC     B
+  89E0    04                    J11:        INC     B
+  89E1    04                    J12:        INC     B
+  89E2    04                    J13:        INC     B
+  89E3    EB                                EX      DE,HL
+  89E4    C9                                RET
                                 
                                             PAGE
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-8
 
 
                                 
-  0B75    AF                    J20:        XOR     A                   ;Unterprogramme fuer USER-Befehl
-  0B76    06 04                             LD      B,4
-  0B78    11 0B98                           LD      DE,USBEF+3
-  0B7B    12                                LD      (DE),A
-  0B7C    1B                                DEC     DE
-  0B7D    10 FC                             DJNZ    $-02                ;8A5A
-  0B7F    D5                                PUSH    DE
-  0B80    CD 0A4F                           CALL    C05
-  0B83    D1                                POP     DE
-  0B84    7E                                LD      A,M
-  0B85    13                                INC     DE
-  0B86    12                                LD      (DE),A
-  0B87    23                                INC     HL
-  0B88    10 FA                             DJNZ    $-04                ;8A63
-  0B8A    CD 0B2D                           CALL    C07
-  0B8D    ED 73 16FB                        LD      (STSP),SP
-  0B91    ED 7B B2BE                        LD      SP,(DDSP)
-  0B95    00                    USBEF:      NOP
-  0B96    00                                NOP
-  0B97    00                                NOP
-  0B98    00                                NOP
-  0B99    ED 73 B2BE                        LD      (DDSP),SP
-  0B9D    ED 7B 16FB                        LD      SP,(STSP)
-  0BA1    CD 0AE5                           CALL    C06
-  0BA4    C9                                RET
+  89E5    ED 43 B2CC            C06:        LD      (DDBC),BC           ;USER - Register retten
+  89E9    ED 53 B2CE                        LD      (DDDE),DE
+  89ED    22 B2D0                           LD      (DDHL),HL
+  89F0    F5                                PUSH    AF
+  89F1    C1                                POP     BC
+  89F2    ED 43 B2D2                        LD      (DDAF),BC
+  89F6    08                                EX      AF,AF'              ;'
+  89F7    D9                                EXX
+  89F8    ED 43 B2C4                        LD      (DDBCS),BC
+  89FC    ED 53 B2C6                        LD      (DDDES),DE
+  8A00    22 B2C8                           LD      (DDHLS),HL
+  8A03    F5                                PUSH    AF
+  8A04    C1                                POP     BC
+  8A05    ED 43 B2CA                        LD      (DDAFS),BC
+  8A09    ED 57                             LD      A,I
+  8A0B    32 B2BA                           LD      (DDI),A
+  8A0E    ED 5F                             LD      A,R
+  8A10    32 B2BB                           LD      (DDR),A
+  8A13    DD 22 B2C0                        LD      (DDIX),IX
+  8A17    FD 22 B2C2                        LD      (DDIY),IY
+  8A1B    21 B18C                           LD      HL,ZPOS
+  8A1E    11 92BA                           LD      DE,RPOS
+  8A21    01 0010                           LD      BC,16
+  8A24    ED B0                             LDIR
+  8A26    CD 8820                           CALL    BWSUS
+  8A29    2A 92CC                           LD      HL,(ST3)
+  8A2C    C9                                RET
                                 
-  0BA5    7E                    J21:        LD      A,M
-  0BA6    23                                INC     HL
-  0BA7    ED 73 16FB                        LD      (STSP),SP
-  0BAB    ED 7B B2BE                        LD      SP,(DDSP)
-  0BAF    E5                                PUSH    HL
-  0BB0    ED 73 B2BE                        LD      (DDSP),SP
-  0BB4    ED 7B 16FB                        LD      SP,(STSP)
-  0BB8    26 00                             LD      H,0
-  0BBA    E6 38                             AND     038H
-  0BBC    6F                                LD      L,A
-  0BBD    C9                                RET
+  8A2D    22 92CC               C07:        LD      (ST3),HL            ;USER - Register laden
+  8A30    21 92BA                           LD      HL,RPOS
+  8A33    11 B18C                           LD      DE,ZPOS
+  8A36    01 0010                           LD      BC,16
+  8A39    ED B0                             LDIR
+  8A3B    CD 8820                           CALL    BWSUS
+  8A3E    FD 2A B2C2                        LD      IY,(DDIY)
+  8A42    DD 2A B2C0                        LD      IX,(DDIX)
+  8A46    3A B2BA                           LD      A,(DDI)
+  8A49    ED 47                             LD      I,A
+  8A4B    3A B2BB                           LD      A,(DDR)
+  8A4E    ED 4F                             LD      R,A
+  8A50    ED 4B B2CA                        LD      BC,(DDAFS)
+  8A54    C5                                PUSH    BC
+  8A55    F1                                POP     AF
+  8A56    2A B2C8                           LD      HL,(DDHLS)
+  8A59    ED 5B B2C6                        LD      DE,(DDDES)
+  8A5D    ED 4B B2C4                        LD      BC,(DDBCS)
+  8A61    D9                                EXX
+  8A62    08                                EX      AF,AF'              ;'
+  8A63    ED 4B B2D2                        LD      BC,(DDAF)
+  8A67    C5                                PUSH    BC
+  8A68    F1                                POP     AF
+  8A69    2A B2D0                           LD      HL,(DDHL)
+  8A6C    ED 5B B2CE                        LD      DE,(DDDE)
+  8A70    ED 4B B2CC                        LD      BC,(DDBC)
+  8A74    C9                                RET
                                 
-  0BBE    23                    J22:        INC     HL
-  0BBF    23                                INC     HL
-  0BC0    23                                INC     HL
-  0BC1    ED 73 16FB                        LD      (STSP),SP
-  0BC5    ED 7B B2BE                        LD      SP,(DDSP)
-  0BC9    E5                                PUSH    HL
-  0BCA    ED 73 B2BE                        LD      (DDSP),SP
-  0BCE    ED 7B 16FB                        LD      SP,(STSP)
-  0BD2    2B                                DEC     HL
-  0BD3    7E                                LD      A,M
-  0BD4    2B                                DEC     HL
-  0BD5    6E                                LD      L,M
-  0BD6    67                                LD      H,A
-  0BD7    C9                                RET
-                                
-  0BD8    2A B2D0               J23:        LD      HL,(DDHL)
-  0BDB    C9                                RET
-                                
-  0BDC    2A B2C0               J24:        LD      HL,(DDIX)
-  0BDF    C9                                RET
-                                
-  0BE0    2A B2C2               J25:        LD      HL,(DDIY)
-  0BE3    C9                                RET
-                                
-  0BE4    ED 73 16FB            J26:        LD      (STSP),SP
-  0BE8    ED 7B B2BE                        LD      SP,(DDSP)
-  0BEC    E1                                POP     HL
-  0BED    ED 73 B2BE                        LD      (DDSP),SP
-  0BF1    ED 7B 16FB                        LD      SP,(STSP)
-  0BF5    C9                                RET
-                                
-  0BF6    23                    J27:        INC     HL
-  0BF7    7E                                LD      A,M
-  0BF8    23                                INC     HL
-  0BF9    66                                LD      H,M
-  0BFA    6F                                LD      L,A
-  0BFB    C9                                RET
-                                
-  0BFC    23                    J28:        INC     HL
-  0BFD    7E                                LD      A,M
-  0BFE    23                                INC     HL
-  0BFF    4F                                LD      C,A
-  0C00    B7                                OR      A
+                                            PAGE
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-9
 
 
-  0C01    FA 0C08                           JP      M,J29
-  0C04    06 00                             LD      B,0
-  0C06    09                                ADD     HL,BC
-  0C07    C9                                RET
                                 
-  0C08    06 FF                 J29:        LD      B,0FFH
-  0C0A    09                                ADD     HL,BC
-  0C0B    C9                                RET
+  8A75    AF                    J20:        XOR     A                   ;Unterprogramme fuer USER-Befehl
+  8A76    06 04                             LD      B,4
+  8A78    11 8A98                           LD      DE,USBEF+3
+  8A7B    12                                LD      (DE),A
+  8A7C    1B                                DEC     DE
+  8A7D    10 FC                             DJNZ    $-02                ;8A5A
+  8A7F    D5                                PUSH    DE
+  8A80    CD 894F                           CALL    C05
+  8A83    D1                                POP     DE
+  8A84    7E                                LD      A,M
+  8A85    13                                INC     DE
+  8A86    12                                LD      (DE),A
+  8A87    23                                INC     HL
+  8A88    10 FA                             DJNZ    $-04                ;8A63
+  8A8A    CD 8A2D                           CALL    C07
+  8A8D    ED 73 95FB                        LD      (STSP),SP
+  8A91    ED 7B B2BE                        LD      SP,(DDSP)
+  8A95    00                    USBEF:      NOP
+  8A96    00                                NOP
+  8A97    00                                NOP
+  8A98    00                                NOP
+  8A99    ED 73 B2BE                        LD      (DDSP),SP
+  8A9D    ED 7B 95FB                        LD      SP,(STSP)
+  8AA1    CD 89E5                           CALL    C06
+  8AA4    C9                                RET
                                 
-  0C0C    ED 4B B2CC            J30:        LD      BC,(DDBC)
-  0C10    05                                DEC     B
-  0C11    ED 43 B2CC                        LD      (DDBC),BC
-  0C15    20 E5                             JR      NZ,J28
-  0C17    23                                INC     HL
-  0C18    23                                INC     HL
-  0C19    C9                                RET
+  8AA5    7E                    J21:        LD      A,M
+  8AA6    23                                INC     HL
+  8AA7    ED 73 95FB                        LD      (STSP),SP
+  8AAB    ED 7B B2BE                        LD      SP,(DDSP)
+  8AAF    E5                                PUSH    HL
+  8AB0    ED 73 B2BE                        LD      (DDSP),SP
+  8AB4    ED 7B 95FB                        LD      SP,(STSP)
+  8AB8    26 00                             LD      H,0
+  8ABA    E6 38                             AND     038H
+  8ABC    6F                                LD      L,A
+  8ABD    C9                                RET
                                 
-  0C1A    7E                    J31:        LD      A,M
-  0C1B    E6 38                             AND     038H
-  0C1D    F6 C2                             OR      0C2H
-  0C1F    32 0C28                           LD      (USB1),A
-  0C22    ED 4B B2D2                        LD      BC,(DDAF)
-  0C26    C5                                PUSH    BC
-  0C27    F1                                POP     AF
-  0C28    00                    USB1:       NOP
-  0C29    0BBE                              DW      J22
-  0C2B    23                                INC     HL
-  0C2C    23                                INC     HL
-  0C2D    23                                INC     HL
-  0C2E    C9                                RET
+  8ABE    23                    J22:        INC     HL
+  8ABF    23                                INC     HL
+  8AC0    23                                INC     HL
+  8AC1    ED 73 95FB                        LD      (STSP),SP
+  8AC5    ED 7B B2BE                        LD      SP,(DDSP)
+  8AC9    E5                                PUSH    HL
+  8ACA    ED 73 B2BE                        LD      (DDSP),SP
+  8ACE    ED 7B 95FB                        LD      SP,(STSP)
+  8AD2    2B                                DEC     HL
+  8AD3    7E                                LD      A,M
+  8AD4    2B                                DEC     HL
+  8AD5    6E                                LD      L,M
+  8AD6    67                                LD      H,A
+  8AD7    C9                                RET
                                 
-  0C2F    7E                    J32:        LD      A,M
-  0C30    32 0C39                           LD      (USB2),A
-  0C33    ED 4B B2D2                        LD      BC,(DDAF)
-  0C37    C5                                PUSH    BC
-  0C38    F1                                POP     AF
-  0C39    00                    USB2:       NOP
-  0C3A    0BF6                              DW      J27
-  0C3C    23                                INC     HL
-  0C3D    23                                INC     HL
-  0C3E    23                                INC     HL
-  0C3F    C9                                RET
+  8AD8    2A B2D0               J23:        LD      HL,(DDHL)
+  8ADB    C9                                RET
                                 
-  0C40    7E                    J33:        LD      A,M
-  0C41    E6 38                             AND     038H
-  0C43    F6 C2                             OR      0C2H
-  0C45    32 0C4E                           LD      (USB3),A
-  0C48    ED 4B B2D2                        LD      BC,(DDAF)
-  0C4C    C5                                PUSH    BC
-  0C4D    F1                                POP     AF
-  0C4E    00                    USB3:       NOP
-  0C4F    0BE4                              DW      J26
-  0C51    23                                INC     HL
-  0C52    C9                                RET
+  8ADC    2A B2C0               J24:        LD      HL,(DDIX)
+  8ADF    C9                                RET
                                 
-  0C53    7E                    J34:        LD      A,M
-  0C54    E6 18                             AND     018H
-  0C56    F6 C2                             OR      0C2H
-  0C58    32 0C61                           LD      (USB4),A
-  0C5B    ED 4B B2D2                        LD      BC,(DDAF)
-  0C5F    C5                                PUSH    BC
-  0C60    F1                                POP     AF
-  0C61    00                    USB4:       NOP
-  0C62    0BFC                              DW      J28
-  0C64    23                                INC     HL
-  0C65    23                                INC     HL
-  0C66    C9                                RET
+  8AE0    2A B2C2               J25:        LD      HL,(DDIY)
+  8AE3    C9                                RET
                                 
-                                            PAGE
+  8AE4    ED 73 95FB            J26:        LD      (STSP),SP
+  8AE8    ED 7B B2BE                        LD      SP,(DDSP)
+  8AEC    E1                                POP     HL
+  8AED    ED 73 B2BE                        LD      (DDSP),SP
+  8AF1    ED 7B 95FB                        LD      SP,(STSP)
+  8AF5    C9                                RET
+                                
+  8AF6    23                    J27:        INC     HL
+  8AF7    7E                                LD      A,M
+  8AF8    23                                INC     HL
+  8AF9    66                                LD      H,M
+  8AFA    6F                                LD      L,A
+  8AFB    C9                                RET
+                                
+  8AFC    23                    J28:        INC     HL
+  8AFD    7E                                LD      A,M
+  8AFE    23                                INC     HL
+  8AFF    4F                                LD      C,A
+  8B00    B7                                OR      A
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-10
 
 
+  8B01    FA 8B08                           JP      M,J29
+  8B04    06 00                             LD      B,0
+  8B06    09                                ADD     HL,BC
+  8B07    C9                                RET
                                 
-                                ;****************************************************************
-                                ;*               einen  USER - Befehl  ausfuehren               *
-                                ;****************************************************************
-  0C67    7E                    C08:        LD      A,M
-  0C68    FE C9                             CP      0C9H
-  0C6A    CA 0BE4                           JP      Z,J26
-  0C6D    FE CD                             CP      0CDH
-  0C6F    CA 0BBE                           JP      Z,J22
-  0C72    FE C3                             CP      0C3H
-  0C74    CA 0BF6                           JP      Z,J27
-  0C77    FE 18                             CP      018H
-  0C79    CA 0BFC                           JP      Z,J28
-  0C7C    FE 10                             CP      010H
-  0C7E    CA 0C0C                           JP      Z,J30
-  0C81    FE E9                             CP      0E9H
-  0C83    CA 0BD8                           JP      Z,J23
-  0C86    E6 E7                             AND     0E7H
-  0C88    FE 20                             CP      020H
-  0C8A    28 C7                             JR      Z,J34
-  0C8C    E6 C7                             AND     0C7H
-  0C8E    FE C2                             CP      0C2H
-  0C90    28 9D                             JR      Z,J32
-  0C92    FE C4                             CP      0C4H
-  0C94    CA 0C1A                           JP      Z,J31
-  0C97    FE C7                             CP      0C7H
-  0C99    CA 0BA5                           JP      Z,J21
-  0C9C    FE C0                             CP      0C0H
-  0C9E    28 A0                             JR      Z,J33
-  0CA0    7E                                LD      A,M
-  0CA1    FE ED                             CP      0EDH
-  0CA3    20 10                             JR      NZ,J35
-  0CA5    23                                INC     HL
-  0CA6    7E                                LD      A,M
-  0CA7    2B                                DEC     HL
-  0CA8    FE 4D                             CP      04DH
-  0CAA    CA 0BE4                           JP      Z,J26
-  0CAD    FE 45                             CP      045H
-  0CAF    CA 0BE4                           JP      Z,J26
-  0CB2    C3 0B75               J341:       JP      J20
+  8B08    06 FF                 J29:        LD      B,0FFH
+  8B0A    09                                ADD     HL,BC
+  8B0B    C9                                RET
                                 
-  0CB5    7E                    J35:        LD      A,M
-  0CB6    E6 DF                             AND     0DFH
-  0CB8    FE DD                             CP      0DDH
-  0CBA    20 F6                             JR      NZ,J341
-  0CBC    23                                INC     HL
-  0CBD    7E                                LD      A,M
-  0CBE    2B                                DEC     HL
-  0CBF    FE E9                             CP      0E9H
-  0CC1    20 EF                             JR      NZ,J341
-  0CC3    7E                                LD      A,M
-  0CC4    FE DD                             CP      0DDH
-  0CC6    CA 0BDC                           JP      Z,J24
-  0CC9    C3 0BE0                           JP      J25
+  8B0C    ED 4B B2CC            J30:        LD      BC,(DDBC)
+  8B10    05                                DEC     B
+  8B11    ED 43 B2CC                        LD      (DDBC),BC
+  8B15    20 E5                             JR      NZ,J28
+  8B17    23                                INC     HL
+  8B18    23                                INC     HL
+  8B19    C9                                RET
+                                
+  8B1A    7E                    J31:        LD      A,M
+  8B1B    E6 38                             AND     038H
+  8B1D    F6 C2                             OR      0C2H
+  8B1F    32 8B28                           LD      (USB1),A
+  8B22    ED 4B B2D2                        LD      BC,(DDAF)
+  8B26    C5                                PUSH    BC
+  8B27    F1                                POP     AF
+  8B28    00                    USB1:       NOP
+  8B29    8ABE                              DW      J22
+  8B2B    23                                INC     HL
+  8B2C    23                                INC     HL
+  8B2D    23                                INC     HL
+  8B2E    C9                                RET
+                                
+  8B2F    7E                    J32:        LD      A,M
+  8B30    32 8B39                           LD      (USB2),A
+  8B33    ED 4B B2D2                        LD      BC,(DDAF)
+  8B37    C5                                PUSH    BC
+  8B38    F1                                POP     AF
+  8B39    00                    USB2:       NOP
+  8B3A    8AF6                              DW      J27
+  8B3C    23                                INC     HL
+  8B3D    23                                INC     HL
+  8B3E    23                                INC     HL
+  8B3F    C9                                RET
+                                
+  8B40    7E                    J33:        LD      A,M
+  8B41    E6 38                             AND     038H
+  8B43    F6 C2                             OR      0C2H
+  8B45    32 8B4E                           LD      (USB3),A
+  8B48    ED 4B B2D2                        LD      BC,(DDAF)
+  8B4C    C5                                PUSH    BC
+  8B4D    F1                                POP     AF
+  8B4E    00                    USB3:       NOP
+  8B4F    8AE4                              DW      J26
+  8B51    23                                INC     HL
+  8B52    C9                                RET
+                                
+  8B53    7E                    J34:        LD      A,M
+  8B54    E6 18                             AND     018H
+  8B56    F6 C2                             OR      0C2H
+  8B58    32 8B61                           LD      (USB4),A
+  8B5B    ED 4B B2D2                        LD      BC,(DDAF)
+  8B5F    C5                                PUSH    BC
+  8B60    F1                                POP     AF
+  8B61    00                    USB4:       NOP
+  8B62    8AFC                              DW      J28
+  8B64    23                                INC     HL
+  8B65    23                                INC     HL
+  8B66    C9                                RET
                                 
                                             PAGE
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-11
 
 
                                 
-  0CCC    7E                    C09:        LD      A,M                 ;Vektor mit  CON / LIST  ausgeben
-  0CCD    B7                                OR      A                   ;Vektorende wird durch 00H angezeigt
-  0CCE    C8                                RET     Z
-  0CCF    4F                                LD      C,A
-  0CD0    23                                INC     HL
-  0CD1    CD 0A37                           CALL    C04
-  0CD4    18 F6                             JR      C09
+                                ;****************************************************************
+                                ;*               einen  USER - Befehl  ausfuehren               *
+                                ;****************************************************************
+  8B67    7E                    C08:        LD      A,M
+  8B68    FE C9                             CP      0C9H
+  8B6A    CA 8AE4                           JP      Z,J26
+  8B6D    FE CD                             CP      0CDH
+  8B6F    CA 8ABE                           JP      Z,J22
+  8B72    FE C3                             CP      0C3H
+  8B74    CA 8AF6                           JP      Z,J27
+  8B77    FE 18                             CP      018H
+  8B79    CA 8AFC                           JP      Z,J28
+  8B7C    FE 10                             CP      010H
+  8B7E    CA 8B0C                           JP      Z,J30
+  8B81    FE E9                             CP      0E9H
+  8B83    CA 8AD8                           JP      Z,J23
+  8B86    E6 E7                             AND     0E7H
+  8B88    FE 20                             CP      020H
+  8B8A    28 C7                             JR      Z,J34
+  8B8C    E6 C7                             AND     0C7H
+  8B8E    FE C2                             CP      0C2H
+  8B90    28 9D                             JR      Z,J32
+  8B92    FE C4                             CP      0C4H
+  8B94    CA 8B1A                           JP      Z,J31
+  8B97    FE C7                             CP      0C7H
+  8B99    CA 8AA5                           JP      Z,J21
+  8B9C    FE C0                             CP      0C0H
+  8B9E    28 A0                             JR      Z,J33
+  8BA0    7E                                LD      A,M
+  8BA1    FE ED                             CP      0EDH
+  8BA3    20 10                             JR      NZ,J35
+  8BA5    23                                INC     HL
+  8BA6    7E                                LD      A,M
+  8BA7    2B                                DEC     HL
+  8BA8    FE 4D                             CP      04DH
+  8BAA    CA 8AE4                           JP      Z,J26
+  8BAD    FE 45                             CP      045H
+  8BAF    CA 8AE4                           JP      Z,J26
+  8BB2    C3 8A75               J341:       JP      J20
                                 
-  0CD6    7C                    C10:        LD      A,H
-  0CD7    CD 0D14                           CALL    C15
-  0CDA    7D                                LD      A,L
-  0CDB    18 37                             JR      C15
+  8BB5    7E                    J35:        LD      A,M
+  8BB6    E6 DF                             AND     0DFH
+  8BB8    FE DD                             CP      0DDH
+  8BBA    20 F6                             JR      NZ,J341
+  8BBC    23                                INC     HL
+  8BBD    7E                                LD      A,M
+  8BBE    2B                                DEC     HL
+  8BBF    FE E9                             CP      0E9H
+  8BC1    20 EF                             JR      NZ,J341
+  8BC3    7E                                LD      A,M
+  8BC4    FE DD                             CP      0DDH
+  8BC6    CA 8ADC                           JP      Z,J24
+  8BC9    C3 8AE0                           JP      J25
                                 
-  0CDD    F5                    C11:        PUSH    AF
-  0CDE    1F                                RRA
-  0CDF    1F                                RRA
-  0CE0    1F                                RRA
-  0CE1    1F                                RRA
-  0CE2    CD 0CE6                           CALL    C12
-  0CE5    F1                                POP     AF
-  0CE6    E6 0F                 C12:        AND     00FH
-  0CE8    C6 30                             ADD     A,030H
-  0CEA    FE 3A                             CP      03AH
-  0CEC    38 02                             JR      C,C13
-  0CEE    C6 07                             ADD     A,007H
-                                
-  0CF0    4F                    C13:        LD      C,A
-  0CF1    C3 0A37                           JP      C04
-                                
-  0CF4    CD 0D63               C131:       CALL    C50
-  0CF7    CD 0CF0                           CALL    C13
-  0CFA    C3 0D77                           JP      C51
-                                
-  0CFD    CD 0D63               C111:       CALL    C50
-  0D00    CD 0CDD                           CALL    C11
-  0D03    C3 0D77                           JP      C51
-                                
-  0D06    0E 0A                 C14:        LD      C,00AH
-  0D08    C3 0A37                           JP      C04
-                                
-  0D0B    CD 0D63               C141:       CALL    C50
-  0D0E    CD 0D06                           CALL    C14
-  0D11    C3 0D77                           JP      C51
-                                
-  0D14    CD 0CDD               C15:        CALL    C11
-  0D17    0E 20                             LD      C,' '
-  0D19    C3 0A37                           JP      C04
-                                
-  0D1C    C5                    C16:        PUSH    BC
-  0D1D    78                                LD      A,B
-  0D1E    CD 0CDD                           CALL    C11
-  0D21    C1                                POP     BC
-  0D22    79                                LD      A,C
-  0D23    18 EF                             JR      C15
-                                
-  0D25    CD 0D63               C161:       CALL    C50
-  0D28    CD 0D1C                           CALL    C16
-  0D2B    C3 0D77                           JP      C51
-                                
-  0D2E    E5                    C17:        PUSH    HL
-  0D2F    21 0000                           LD      HL,0
-  0D32    CD 0936               C171:       CALL    CIN
-  0D35    CD 0CF0                           CALL    C13
-  0D38    CD 0D4E                           CALL    C18
-  0D3B    38 21                             JR      C,J36
-  0D3D    29                                ADD     HL,HL
-  0D3E    29                                ADD     HL,HL
-  0D3F    29                                ADD     HL,HL
-  0D40    29                                ADD     HL,HL
-  0D41    B5                                OR      L
-  0D42    6F                                LD      L,A
-  0D43    18 ED                             JR      C171
-                                
-  0D45    CD 0D63               C172:       CALL    C50
-  0D48    CD 0D2E                           CALL    C17
-  0D4B    C3 0D77                           JP      C51
-                                
-  0D4E    D6 30                 C18:        SUB     030H
-  0D50    D8                                RET     C
-  0D51    FE 17                             CP      017H
-  0D53    3F                                CCF
+                                            PAGE
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-12
 
 
-  0D54    D8                                RET     C
-  0D55    FE 0A                             CP      00AH
-  0D57    3F                                CCF
-  0D58    D0                                RET     NC
-  0D59    D6 07                             SUB     007H
-  0D5B    FE 0A                             CP      00AH
-  0D5D    C9                                RET
                                 
-  0D5E    79                    J36:        LD      A,C
-  0D5F    E5                                PUSH    HL
-  0D60    C1                                POP     BC
-  0D61    E1                                POP     HL
-  0D62    C9                                RET
+  8BCC    7E                    C09:        LD      A,M                 ;Vektor mit  CON / LIST  ausgeben
+  8BCD    B7                                OR      A                   ;Vektorende wird durch 00H angezeigt
+  8BCE    C8                                RET     Z
+  8BCF    4F                                LD      C,A
+  8BD0    23                                INC     HL
+  8BD1    CD 8937                           CALL    C04
+  8BD4    18 F6                             JR      C09
                                 
-  0D63    E5                    C50:        PUSH    HL
-  0D64    D5                                PUSH    DE
-  0D65    C5                                PUSH    BC
-  0D66    F5                                PUSH    AF
-  0D67    21 13AA                           LD      HL,STPO3
-  0D6A    11 B18C                           LD      DE,ZPOS
-  0D6D    01 0010                           LD      BC,16
-  0D70    ED B0                             LDIR
-  0D72    F1                                POP     AF
-  0D73    C1                                POP     BC
-  0D74    D1                                POP     DE
-  0D75    E1                                POP     HL
-  0D76    C9                                RET
+  8BD6    7C                    C10:        LD      A,H
+  8BD7    CD 8C14                           CALL    C15
+  8BDA    7D                                LD      A,L
+  8BDB    18 37                             JR      C15
                                 
-  0D77    E5                    C51:        PUSH    HL
-  0D78    2A B18C                           LD      HL,(ZPOS)
-  0D7B    22 13AA                           LD      (STPO3),HL
-  0D7E    E1                                POP     HL
-  0D7F    C9                                RET
+  8BDD    F5                    C11:        PUSH    AF
+  8BDE    1F                                RRA
+  8BDF    1F                                RRA
+  8BE0    1F                                RRA
+  8BE1    1F                                RRA
+  8BE2    CD 8BE6                           CALL    C12
+  8BE5    F1                                POP     AF
+  8BE6    E6 0F                 C12:        AND     00FH
+  8BE8    C6 30                             ADD     A,030H
+  8BEA    FE 3A                             CP      03AH
+  8BEC    38 02                             JR      C,C13
+  8BEE    C6 07                             ADD     A,007H
+                                
+  8BF0    4F                    C13:        LD      C,A
+  8BF1    C3 8937                           JP      C04
+                                
+  8BF4    CD 8C63               C131:       CALL    C50
+  8BF7    CD 8BF0                           CALL    C13
+  8BFA    C3 8C77                           JP      C51
+                                
+  8BFD    CD 8C63               C111:       CALL    C50
+  8C00    CD 8BDD                           CALL    C11
+  8C03    C3 8C77                           JP      C51
+                                
+  8C06    0E 0A                 C14:        LD      C,00AH
+  8C08    C3 8937                           JP      C04
+                                
+  8C0B    CD 8C63               C141:       CALL    C50
+  8C0E    CD 8C06                           CALL    C14
+  8C11    C3 8C77                           JP      C51
+                                
+  8C14    CD 8BDD               C15:        CALL    C11
+  8C17    0E 20                             LD      C,' '
+  8C19    C3 8937                           JP      C04
+                                
+  8C1C    C5                    C16:        PUSH    BC
+  8C1D    78                                LD      A,B
+  8C1E    CD 8BDD                           CALL    C11
+  8C21    C1                                POP     BC
+  8C22    79                                LD      A,C
+  8C23    18 EF                             JR      C15
+                                
+  8C25    CD 8C63               C161:       CALL    C50
+  8C28    CD 8C1C                           CALL    C16
+  8C2B    C3 8C77                           JP      C51
+                                
+  8C2E    E5                    C17:        PUSH    HL
+  8C2F    21 0000                           LD      HL,0
+  8C32    CD 8836               C171:       CALL    CIN
+  8C35    CD 8BF0                           CALL    C13
+  8C38    CD 8C4E                           CALL    C18
+  8C3B    38 21                             JR      C,J36
+  8C3D    29                                ADD     HL,HL
+  8C3E    29                                ADD     HL,HL
+  8C3F    29                                ADD     HL,HL
+  8C40    29                                ADD     HL,HL
+  8C41    B5                                OR      L
+  8C42    6F                                LD      L,A
+  8C43    18 ED                             JR      C171
+                                
+  8C45    CD 8C63               C172:       CALL    C50
+  8C48    CD 8C2E                           CALL    C17
+  8C4B    C3 8C77                           JP      C51
+                                
+  8C4E    D6 30                 C18:        SUB     030H
+  8C50    D8                                RET     C
+  8C51    FE 17                             CP      017H
+  8C53    3F                                CCF
+'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-13
+
+
+  8C54    D8                                RET     C
+  8C55    FE 0A                             CP      00AH
+  8C57    3F                                CCF
+  8C58    D0                                RET     NC
+  8C59    D6 07                             SUB     007H
+  8C5B    FE 0A                             CP      00AH
+  8C5D    C9                                RET
+                                
+  8C5E    79                    J36:        LD      A,C
+  8C5F    E5                                PUSH    HL
+  8C60    C1                                POP     BC
+  8C61    E1                                POP     HL
+  8C62    C9                                RET
+                                
+  8C63    E5                    C50:        PUSH    HL
+  8C64    D5                                PUSH    DE
+  8C65    C5                                PUSH    BC
+  8C66    F5                                PUSH    AF
+  8C67    21 92AA                           LD      HL,STPO3
+  8C6A    11 B18C                           LD      DE,ZPOS
+  8C6D    01 0010                           LD      BC,16
+  8C70    ED B0                             LDIR
+  8C72    F1                                POP     AF
+  8C73    C1                                POP     BC
+  8C74    D1                                POP     DE
+  8C75    E1                                POP     HL
+  8C76    C9                                RET
+                                
+  8C77    E5                    C51:        PUSH    HL
+  8C78    2A B18C                           LD      HL,(ZPOS)
+  8C7B    22 92AA                           LD      (STPO3),HL
+  8C7E    E1                                POP     HL
+  8C7F    C9                                RET
                                 
                                             PAGE
-'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-13
+'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-14
 
 
                                 
                                 ;****************************************************************
                                 ;*               Kopfzeilen ausgeben                            *
                                 ;****************************************************************
-  0D80                          C60         EQU     $
-  0D80    CD 0CCC                           CALL    C09
+  8C80                          C60         EQU     $
+  8C80    CD 8BCC                           CALL    C09
                                 
                                             IF      V1 AND 1
-  0D83    21 0F91                           LD      HL,TXT11
-  0D86    CD 0CCC                           CALL    C09
+  8C83    21 8E91                           LD      HL,TXT11
+  8C86    CD 8BCC                           CALL    C09
                                             ENDIF
                                 
-  0D89    CD 0D06                           CALL    C14
-  0D8C    21 0FA2                           LD      HL,TXT12
-  0D8F    CD 0CCC                           CALL    C09
+  8C89    CD 8C06                           CALL    C14
+  8C8C    21 8EA2                           LD      HL,TXT12
+  8C8F    CD 8BCC                           CALL    C09
                                 
                                             IF      V1 AND 1
-  0D92    21 0FC4                           LD      HL,TXT13
-  0D95    CD 0CCC                           CALL    C09
+  8C92    21 8EC4                           LD      HL,TXT13
+  8C95    CD 8BCC                           CALL    C09
                                             ENDIF
                                 
-  0D98    CD 0D06                           CALL    C14
+  8C98    CD 8C06                           CALL    C14
                                 
                                             IF      V1 AND 2
                                             LD      HL,TXT11
@@ -844,236 +898,236 @@
                                             CALL    C14
                                             ENDIF
                                 
-  0D9B    CD 0D06                           CALL    C14
-  0D9E    C9                                RET
+  8C9B    CD 8C06                           CALL    C14
+  8C9E    C9                                RET
                                 
                                             PAGE
-'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-14
-
-
-                                
-  0D9F                          C211        EQU     $
-  0D9F    3A 13CA                           LD      A,(ST1)
-  0DA2    B7                                OR      A
-  0DA3    C8                                RET     Z
-  0DA4    32 13CB                           LD      (ST2),A
-  0DA7    CD 0DAF                           CALL    C21
-  0DAA    AF                                XOR     A
-  0DAB    32 13CB                           LD      (ST2),A
-  0DAE    C9                                RET
-                                
-  0DAF    E5                    C21:        PUSH    HL                  ;Registeranzeige BWS bzw. Drucker
-  0DB0    D5                                PUSH    DE
-  0DB1    C5                                PUSH    BC
-  0DB2    21 138A                           LD      HL,STPO
-  0DB5    11 B18C                           LD      DE,ZPOS
-  0DB8    01 0010                           LD      BC,16
-  0DBB    ED B0                             LDIR
-  0DBD    C1                                POP     BC
-  0DBE    D1                                POP     DE
-                                
-  0DBF    CD 0E49                           CALL    C30
-                                
-  0DC2    3A 13CE                           LD      A,(ST4)             ;Speicherbereiche anzeigen ?
-  0DC5    B7                                OR      A
-  0DC6    28 21                             JR      Z,J38
-  0DC8    F5                                PUSH    AF
-  0DC9    21 0FE6                           LD      HL,TXT2
-  0DCC    CD 0CCC                           CALL    C09
-  0DCF    F1                                POP     AF
-  0DD0    21 13FB                           LD      HL,ST9
-  0DD3    5E                    J39:        LD      E,M
-  0DD4    23                                INC     HL
-  0DD5    56                                LD      D,M
-  0DD6    23                                INC     HL
-  0DD7    EB                                EX      DE,HL
-  0DD8    F5                                PUSH    AF
-  0DD9    D5                                PUSH    DE
-  0DDA    CD 0DF5                           CALL    C22
-  0DDD    D1                                POP     DE
-  0DDE    F1                                POP     AF
-  0DDF    EB                                EX      DE,HL
-  0DE0    3D                                DEC     A
-  0DE1    20 F0                             JR      NZ,J39
-  0DE3    CD 0D06                           CALL    C14
-  0DE6    CD 0D06                           CALL    C14
-                                
-  0DE9    D5                    J38:        PUSH    DE
-  0DEA    C5                                PUSH    BC
-  0DEB    2A B18C                           LD      HL,(ZPOS)
-  0DEE    22 13AA                           LD      (STPO3),HL
-  0DF1    C1                                POP     BC
-  0DF2    D1                                POP     DE
-  0DF3    E1                                POP     HL
-  0DF4    C9                                RET
-                                
-  0DF5    E5                    C22:        PUSH    HL
-  0DF6    C1                                POP     BC
-  0DF7    CD 0D1C                           CALL    C16
-  0DFA    06 10                             LD      B,16
-  0DFC    C5                                PUSH    BC
-  0DFD    7E                                LD      A,M
-  0DFE    CD 0D14                           CALL    C15
-  0E01    23                                INC     HL
-  0E02    C1                                POP     BC
-  0E03    10 F7                             DJNZ    $-07                ;8DD5
-  0E05    CD 0D06                           CALL    C14
-  0E08    C9                                RET
-                                
-  0E09    CB 7F                 C23:        BIT     7,A                 ;Flags anzeigen
-  0E0B    CD 0E3D                           CALL    C25
-  0E0E    CB 77                             BIT     6,A
-  0E10    CD 0E3D                           CALL    C25
-  0E13    CD 0E35                           CALL    C24
-  0E16    CB 67                             BIT     4,A
-  0E18    CD 0E3D                           CALL    C25
-  0E1B    CD 0E35                           CALL    C24
-  0E1E    CB 57                             BIT     2,A
-  0E20    CD 0E3D                           CALL    C25
-  0E23    CB 4F                             BIT     1,A
-  0E25    CD 0E3D                           CALL    C25
-  0E28    CB 47                             BIT     0,A
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-15
 
 
-  0E2A    CD 0E3D                           CALL    C25
-  0E2D    0E 20                             LD      C,' '
-  0E2F    CD 0A37                           CALL    C04
-  0E32    C3 0A37                           JP      C04
                                 
-  0E35    F5                    C24:        PUSH    AF
-  0E36    0E 20                             LD      C,' '
-  0E38    CD 0A37                           CALL    C04
-  0E3B    F1                                POP     AF
-  0E3C    C9                                RET
+  8C9F                          C211        EQU     $
+  8C9F    3A 92CA                           LD      A,(ST1)
+  8CA2    B7                                OR      A
+  8CA3    C8                                RET     Z
+  8CA4    32 92CB                           LD      (ST2),A
+  8CA7    CD 8CAF                           CALL    C21
+  8CAA    AF                                XOR     A
+  8CAB    32 92CB                           LD      (ST2),A
+  8CAE    C9                                RET
                                 
-  0E3D    F5                    C25:        PUSH    AF
-  0E3E    0E 2A                             LD      C,'*'
-  0E40    20 02                             JR      NZ,$+04             ;8E1A
-  0E42    0E 2E                             LD      C,'.'
-  0E44    CD 0A37                           CALL    C04
-  0E47    F1                                POP     AF
-  0E48    C9                                RET
+  8CAF    E5                    C21:        PUSH    HL                  ;Registeranzeige BWS bzw. Drucker
+  8CB0    D5                                PUSH    DE
+  8CB1    C5                                PUSH    BC
+  8CB2    21 928A                           LD      HL,STPO
+  8CB5    11 B18C                           LD      DE,ZPOS
+  8CB8    01 0010                           LD      BC,16
+  8CBB    ED B0                             LDIR
+  8CBD    C1                                POP     BC
+  8CBE    D1                                POP     DE
                                 
-                                            PAGE
+  8CBF    CD 8D49                           CALL    C30
+                                
+  8CC2    3A 92CE                           LD      A,(ST4)             ;Speicherbereiche anzeigen ?
+  8CC5    B7                                OR      A
+  8CC6    28 21                             JR      Z,J38
+  8CC8    F5                                PUSH    AF
+  8CC9    21 8EE6                           LD      HL,TXT2
+  8CCC    CD 8BCC                           CALL    C09
+  8CCF    F1                                POP     AF
+  8CD0    21 92FB                           LD      HL,ST9
+  8CD3    5E                    J39:        LD      E,M
+  8CD4    23                                INC     HL
+  8CD5    56                                LD      D,M
+  8CD6    23                                INC     HL
+  8CD7    EB                                EX      DE,HL
+  8CD8    F5                                PUSH    AF
+  8CD9    D5                                PUSH    DE
+  8CDA    CD 8CF5                           CALL    C22
+  8CDD    D1                                POP     DE
+  8CDE    F1                                POP     AF
+  8CDF    EB                                EX      DE,HL
+  8CE0    3D                                DEC     A
+  8CE1    20 F0                             JR      NZ,J39
+  8CE3    CD 8C06                           CALL    C14
+  8CE6    CD 8C06                           CALL    C14
+                                
+  8CE9    D5                    J38:        PUSH    DE
+  8CEA    C5                                PUSH    BC
+  8CEB    2A B18C                           LD      HL,(ZPOS)
+  8CEE    22 92AA                           LD      (STPO3),HL
+  8CF1    C1                                POP     BC
+  8CF2    D1                                POP     DE
+  8CF3    E1                                POP     HL
+  8CF4    C9                                RET
+                                
+  8CF5    E5                    C22:        PUSH    HL
+  8CF6    C1                                POP     BC
+  8CF7    CD 8C1C                           CALL    C16
+  8CFA    06 10                             LD      B,16
+  8CFC    C5                                PUSH    BC
+  8CFD    7E                                LD      A,M
+  8CFE    CD 8C14                           CALL    C15
+  8D01    23                                INC     HL
+  8D02    C1                                POP     BC
+  8D03    10 F7                             DJNZ    $-07                ;8DD5
+  8D05    CD 8C06                           CALL    C14
+  8D08    C9                                RET
+                                
+  8D09    CB 7F                 C23:        BIT     7,A                 ;Flags anzeigen
+  8D0B    CD 8D3D                           CALL    C25
+  8D0E    CB 77                             BIT     6,A
+  8D10    CD 8D3D                           CALL    C25
+  8D13    CD 8D35                           CALL    C24
+  8D16    CB 67                             BIT     4,A
+  8D18    CD 8D3D                           CALL    C25
+  8D1B    CD 8D35                           CALL    C24
+  8D1E    CB 57                             BIT     2,A
+  8D20    CD 8D3D                           CALL    C25
+  8D23    CB 4F                             BIT     1,A
+  8D25    CD 8D3D                           CALL    C25
+  8D28    CB 47                             BIT     0,A
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-16
 
 
+  8D2A    CD 8D3D                           CALL    C25
+  8D2D    0E 20                             LD      C,' '
+  8D2F    CD 8937                           CALL    C04
+  8D32    C3 8937                           JP      C04
                                 
-  0E49    2A B2D2               C30:        LD      HL,(DDAF)           ;Flags anzeigen
-  0E4C    7D                                LD      A,L
-  0E4D    CD 0E09                           CALL    C23
-  0E50    7C                                LD      A,H                 ;Reg. A   anzeigen
-  0E51    CD 0D14                           CALL    C15
-  0E54    ED 4B B2CC                        LD      BC,(DDBC)           ;Reg. BC  anzeigen
-  0E58    CD 0D1C                           CALL    C16
-  0E5B    ED 4B B2CE                        LD      BC,(DDDE)           ;Reg. DE  anzeigen
-  0E5F    CD 0D1C                           CALL    C16
-  0E62    ED 4B B2D0                        LD      BC,(DDHL)           ;Reg. HL  anzeigen
-  0E66    C5                                PUSH    BC
-  0E67    CD 0D1C                           CALL    C16
-  0E6A    CD 0A37                           CALL    C04
-  0E6D    C1                                POP     BC
-  0E6E    0A                                LD      A,(BC)              ;Inh. HL  anzeigen
-  0E6F    CD 0D14                           CALL    C15
-  0E72    CD 0A37                           CALL    C04
-  0E75    CD 0A37                           CALL    C04
-  0E78    ED 4B B2C0                        LD      BC,(DDIX)           ;Reg. IX  anzeigen
-  0E7C    C5                                PUSH    BC
-  0E7D    CD 0D1C                           CALL    C16
-  0E80    C1                                POP     BC
-  0E81    0A                                LD      A,(BC)              ;Inh. IX  anzeigen
-  0E82    CD 0D14                           CALL    C15
-  0E85    ED 4B B2C2                        LD      BC,(DDIY)           ;Reg. IY  anzeigen
-  0E89    C5                                PUSH    BC
-  0E8A    CD 0D1C                           CALL    C16
-  0E8D    C1                                POP     BC
-  0E8E    0A                                LD      A,(BC)              ;Inh. IY  anzeigen
-  0E8F    CD 0D14                           CALL    C15
-  0E92    CD 0A37                           CALL    C04
-  0E95    CD 0A37                           CALL    C04
-  0E98    3A B2BA                           LD      A,(DDI)             ;Reg. I   anzeigen
-  0E9B    CD 0D14                           CALL    C15
-  0E9E    3A B2BB                           LD      A,(DDR)             ;Reg. R   anzeigen
-  0EA1    CD 0D14                           CALL    C15
-  0EA4    CD 0A37                           CALL    C04
-  0EA7    CD 0A37                           CALL    C04
-  0EAA    CD 0A37                           CALL    C04
-  0EAD    CD 0A37                           CALL    C04
+  8D35    F5                    C24:        PUSH    AF
+  8D36    0E 20                             LD      C,' '
+  8D38    CD 8937                           CALL    C04
+  8D3B    F1                                POP     AF
+  8D3C    C9                                RET
                                 
-                                            IF      V1 AND 1
-  0EB0    E1                                POP     HL                  ;Reg. PC anzeigen
-  0EB1    C1                                POP     BC
-  0EB2    C5                                PUSH    BC
-  0EB3    E5                                PUSH    HL
-  0EB4    CD 0D1C                           CALL    C16
-  0EB7    C1                                POP     BC                  ;Befehl   anzeigen
-  0EB8    E1                                POP     HL
-  0EB9    E5                                PUSH    HL
-  0EBA    C5                                PUSH    BC
-  0EBB    CD 0A4F                           CALL    C05
-  0EBE    7E                    C31:        LD      A,M
-  0EBF    23                                INC     HL
-  0EC0    C5                                PUSH    BC
-  0EC1    CD 0D14                           CALL    C15
-  0EC4    C1                                POP     BC
-  0EC5    10 F7                             DJNZ    C31
-                                            ENDIF
+  8D3D    F5                    C25:        PUSH    AF
+  8D3E    0E 2A                             LD      C,'*'
+  8D40    20 02                             JR      NZ,$+04             ;8E1A
+  8D42    0E 2E                             LD      C,'.'
+  8D44    CD 8937                           CALL    C04
+  8D47    F1                                POP     AF
+  8D48    C9                                RET
                                 
-  0EC7    CD 0D06                           CALL    C14                 ;Zeilenende ausgeben
                                             PAGE
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-17
 
 
                                 
-  0ECA    2A B2CA                           LD      HL,(DDAFS)          ;S Flags  anzeigen
-  0ECD    7D                                LD      A,L
-  0ECE    CD 0E09                           CALL    C23
-  0ED1    7C                                LD      A,H                 ;Reg. A s anzeigen
-  0ED2    CD 0D14                           CALL    C15
-  0ED5    ED 4B B2C4                        LD      BC,(DDBCS)          ;Reg. BCs anzeigen
-  0ED9    CD 0D1C                           CALL    C16
-  0EDC    ED 4B B2C6                        LD      BC,(DDDES)          ;Reg. DEs anzeigen
-  0EE0    CD 0D1C                           CALL    C16
-  0EE3    ED 4B B2C8                        LD      BC,(DDHLS)          ;Reg. HLs anzeigen
-  0EE7    C5                                PUSH    BC
-  0EE8    CD 0D1C                           CALL    C16
-  0EEB    CD 0A37                           CALL    C04
-  0EEE    C1                                POP     BC
-  0EEF    0A                                LD      A,(BC)              ;Inh. HLs anzeigen
-  0EF0    CD 0D14                           CALL    C15
-  0EF3    CD 0A37                           CALL    C04
-  0EF6    CD 0A37                           CALL    C04
+  8D49    2A B2D2               C30:        LD      HL,(DDAF)           ;Flags anzeigen
+  8D4C    7D                                LD      A,L
+  8D4D    CD 8D09                           CALL    C23
+  8D50    7C                                LD      A,H                 ;Reg. A   anzeigen
+  8D51    CD 8C14                           CALL    C15
+  8D54    ED 4B B2CC                        LD      BC,(DDBC)           ;Reg. BC  anzeigen
+  8D58    CD 8C1C                           CALL    C16
+  8D5B    ED 4B B2CE                        LD      BC,(DDDE)           ;Reg. DE  anzeigen
+  8D5F    CD 8C1C                           CALL    C16
+  8D62    ED 4B B2D0                        LD      BC,(DDHL)           ;Reg. HL  anzeigen
+  8D66    C5                                PUSH    BC
+  8D67    CD 8C1C                           CALL    C16
+  8D6A    CD 8937                           CALL    C04
+  8D6D    C1                                POP     BC
+  8D6E    0A                                LD      A,(BC)              ;Inh. HL  anzeigen
+  8D6F    CD 8C14                           CALL    C15
+  8D72    CD 8937                           CALL    C04
+  8D75    CD 8937                           CALL    C04
+  8D78    ED 4B B2C0                        LD      BC,(DDIX)           ;Reg. IX  anzeigen
+  8D7C    C5                                PUSH    BC
+  8D7D    CD 8C1C                           CALL    C16
+  8D80    C1                                POP     BC
+  8D81    0A                                LD      A,(BC)              ;Inh. IX  anzeigen
+  8D82    CD 8C14                           CALL    C15
+  8D85    ED 4B B2C2                        LD      BC,(DDIY)           ;Reg. IY  anzeigen
+  8D89    C5                                PUSH    BC
+  8D8A    CD 8C1C                           CALL    C16
+  8D8D    C1                                POP     BC
+  8D8E    0A                                LD      A,(BC)              ;Inh. IY  anzeigen
+  8D8F    CD 8C14                           CALL    C15
+  8D92    CD 8937                           CALL    C04
+  8D95    CD 8937                           CALL    C04
+  8D98    3A B2BA                           LD      A,(DDI)             ;Reg. I   anzeigen
+  8D9B    CD 8C14                           CALL    C15
+  8D9E    3A B2BB                           LD      A,(DDR)             ;Reg. R   anzeigen
+  8DA1    CD 8C14                           CALL    C15
+  8DA4    CD 8937                           CALL    C04
+  8DA7    CD 8937                           CALL    C04
+  8DAA    CD 8937                           CALL    C04
+  8DAD    CD 8937                           CALL    C04
                                 
                                             IF      V1 AND 1
-  0EF9    ED 4B B2BE                        LD      BC,(DDSP)           ;Reg. SP  anzeigen
-  0EFD    C5                                PUSH    BC
-  0EFE    CD 0D1C                           CALL    C16
-  0F01    CD 0A37                           CALL    C04
-  0F04    CD 0A37                           CALL    C04
-  0F07    CD 0A37                           CALL    C04
-  0F0A    D1                                POP     DE                  ;Inh. Keller anzeigen
-  0F0B    1B                                DEC     DE
-  0F0C    1B                                DEC     DE
-  0F0D    1B                                DEC     DE
-  0F0E    1B                                DEC     DE
-  0F0F    06 05                             LD      B,5
-  0F11    C5                    C32:        PUSH    BC
-  0F12    1A                                LD      A,(DE)
-  0F13    4F                                LD      C,A
-  0F14    13                                INC     DE
-  0F15    1A                                LD      A,(DE)
-  0F16    47                                LD      B,A
-  0F17    13                                INC     DE
-  0F18    CD 0D1C                           CALL    C16
-  0F1B    C1                                POP     BC
-  0F1C    10 F3                             DJNZ    C32
+  8DB0    E1                                POP     HL                  ;Reg. PC anzeigen
+  8DB1    C1                                POP     BC
+  8DB2    C5                                PUSH    BC
+  8DB3    E5                                PUSH    HL
+  8DB4    CD 8C1C                           CALL    C16
+  8DB7    C1                                POP     BC                  ;Befehl   anzeigen
+  8DB8    E1                                POP     HL
+  8DB9    E5                                PUSH    HL
+  8DBA    C5                                PUSH    BC
+  8DBB    CD 894F                           CALL    C05
+  8DBE    7E                    C31:        LD      A,M
+  8DBF    23                                INC     HL
+  8DC0    C5                                PUSH    BC
+  8DC1    CD 8C14                           CALL    C15
+  8DC4    C1                                POP     BC
+  8DC5    10 F7                             DJNZ    C31
                                             ENDIF
                                 
-  0F1E    CD 0D06                           CALL    C14                 ;Zeilenende ausgeben
-                                
+  8DC7    CD 8C06                           CALL    C14                 ;Zeilenende ausgeben
                                             PAGE
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-18
+
+
+                                
+  8DCA    2A B2CA                           LD      HL,(DDAFS)          ;S Flags  anzeigen
+  8DCD    7D                                LD      A,L
+  8DCE    CD 8D09                           CALL    C23
+  8DD1    7C                                LD      A,H                 ;Reg. A s anzeigen
+  8DD2    CD 8C14                           CALL    C15
+  8DD5    ED 4B B2C4                        LD      BC,(DDBCS)          ;Reg. BCs anzeigen
+  8DD9    CD 8C1C                           CALL    C16
+  8DDC    ED 4B B2C6                        LD      BC,(DDDES)          ;Reg. DEs anzeigen
+  8DE0    CD 8C1C                           CALL    C16
+  8DE3    ED 4B B2C8                        LD      BC,(DDHLS)          ;Reg. HLs anzeigen
+  8DE7    C5                                PUSH    BC
+  8DE8    CD 8C1C                           CALL    C16
+  8DEB    CD 8937                           CALL    C04
+  8DEE    C1                                POP     BC
+  8DEF    0A                                LD      A,(BC)              ;Inh. HLs anzeigen
+  8DF0    CD 8C14                           CALL    C15
+  8DF3    CD 8937                           CALL    C04
+  8DF6    CD 8937                           CALL    C04
+                                
+                                            IF      V1 AND 1
+  8DF9    ED 4B B2BE                        LD      BC,(DDSP)           ;Reg. SP  anzeigen
+  8DFD    C5                                PUSH    BC
+  8DFE    CD 8C1C                           CALL    C16
+  8E01    CD 8937                           CALL    C04
+  8E04    CD 8937                           CALL    C04
+  8E07    CD 8937                           CALL    C04
+  8E0A    D1                                POP     DE                  ;Inh. Keller anzeigen
+  8E0B    1B                                DEC     DE
+  8E0C    1B                                DEC     DE
+  8E0D    1B                                DEC     DE
+  8E0E    1B                                DEC     DE
+  8E0F    06 05                             LD      B,5
+  8E11    C5                    C32:        PUSH    BC
+  8E12    1A                                LD      A,(DE)
+  8E13    4F                                LD      C,A
+  8E14    13                                INC     DE
+  8E15    1A                                LD      A,(DE)
+  8E16    47                                LD      B,A
+  8E17    13                                INC     DE
+  8E18    CD 8C1C                           CALL    C16
+  8E1B    C1                                POP     BC
+  8E1C    10 F3                             DJNZ    C32
+                                            ENDIF
+                                
+  8E1E    CD 8C06                           CALL    C14                 ;Zeilenende ausgeben
+                                
+                                            PAGE
+'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-19
 
 
                                 
@@ -1119,664 +1173,664 @@
                                             CALL    C14                 ;Zeilenende ausgeben
                                             ENDIF
                                 
-  0F21    CD 0D06                           CALL    C14
-  0F24    C9                                RET
+  8E21    CD 8C06                           CALL    C14
+  8E24    C9                                RET
                                 
                                             PAGE
-'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-19
+'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-20
 
 
                                 
                                 ;****************************************************************
                                 ;*               Zeichenketten                                  *
                                 ;****************************************************************
-  0F25                          TXT1        EQU     $
-  0F25    0C                                DB      00CH
-  0F26    44 45 47 32                       DB      'DEG2000   Software-TRACE    V2.1  25.11.83'
-  0F2A    30 30 30 20           
-  0F2E    20 20 53 6F           
-  0F32    66 74 77 61           
-  0F36    72 65 2D 54           
-  0F3A    52 41 43 45           
-  0F3E    20 20 20 20           
-  0F42    56 32 2E 31           
-  0F46    20 20 32 35           
-  0F4A    2E 31 31 2E           
-  0F4E    38 33                 
-  0F50    0A0A                              DW      00A0AH
-  0F52    73 7A 5F 68                       DB      'sz_h_pnc__A__B_C__D_E__H_L__(HL_)_IX______IY________'
-  0F56    5F 70 6E 63           
-  0F5A    5F 5F 41 5F           
-  0F5E    5F 42 5F 43           
-  0F62    5F 5F 44 5F           
-  0F66    45 5F 5F 48           
-  0F6A    5F 4C 5F 5F           
-  0F6E    28 48 4C 5F           
-  0F72    29 5F 49 58           
-  0F76    5F 5F 5F 5F           
-  0F7A    5F 5F 49 59           
-  0F7E    5F 5F 5F 5F           
-  0F82    5F 5F 5F 5F           
-  0F86    49 5F 5F 52                       DB      'I__R______'
-  0F8A    5F 5F 5F 5F           
-  0F8E    5F 5F                 
-  0F90    00                                DB      0
-  0F91    50 43 5F 5F           TXT11:      DB      'PC___Befehl_____'
-  0F95    5F 42 65 66           
-  0F99    65 68 6C 5F           
-  0F9D    5F 5F 5F 5F           
-  0FA1    00                                DB      0
-  0FA2    73 7A 5F 68           TXT12:      DB      'sz_h_pnc__A'
-  0FA6    5F 70 6E 63           
-  0FAA    5F 5F 41              
-  0FAD    27                                DB      27H
-  0FAE    5F 42                             DB      '_B'
-  0FB0    27                                DB      27H
-  0FB1    43                                DB      'C'
-  0FB2    27                                DB      27H
-  0FB3    5F 44                             DB      '_D'
-  0FB5    27                                DB      27H
-  0FB6    45                                DB      'E'
-  0FB7    27                                DB      27H
-  0FB8    5F 48                             DB      '_H'
-  0FBA    27                                DB      27H
-  0FBB    4C                                DB      'L'
-  0FBC    27                                DB      27H
-  0FBD    5F 28 48 4C                       DB      '_(HL'
-  0FC1    27                                DB      27H
-  0FC2    29                                DB      ')'
-  0FC3    00                                DB      0
-  0FC4    5F 53 50 5F           TXT13:      DB      '_SP______-4___-2____0___+2___+4__'
-  0FC8    5F 5F 5F 5F           
-  0FCC    5F 2D 34 5F           
-  0FD0    5F 5F 2D 32           
-  0FD4    5F 5F 5F 5F           
-  0FD8    30 5F 5F 5F           
-  0FDC    2B 32 5F 5F           
-  0FE0    5F 2B 34 5F           
-  0FE4    5F                    
-  0FE5    00                                DB      0
-  0FE6    4D 45 4D 5F           TXT2:       DB      'MEM__0__1__2__3__4__5__6__7__8__9__A__B__C__D__E__F_'
-  0FEA    5F 30 5F 5F           
-  0FEE    31 5F 5F 32           
-  0FF2    5F 5F 33 5F           
-  0FF6    5F 34 5F 5F           
-  0FFA    35 5F 5F 36           
-  0FFE    5F 5F 37 5F           
-  1002    5F 38 5F 5F           
-  1006    39 5F 5F 41           
-  100A    5F 5F 42 5F           
-  100E    5F 43 5F 5F           
-  1012    44 5F 5F 45           
-'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-20
-
-
-  1016    5F 5F 46 5F           
-  101A    000A                              DW      0000AH
-  101C    4B 6F 6D 6D           TXT3:       DB      'Kommando: '
-  1020    61 6E 64 6F           
-  1024    3A 20                 
-  1026    00                                DB      0
-                                
-                                            PAGE
+  8E25                          TXT1        EQU     $
+  8E25    0C                                DB      00CH
+  8E26    44 45 47 32                       DB      'DEG2000   Software-TRACE    V2.1  25.11.83'
+  8E2A    30 30 30 20           
+  8E2E    20 20 53 6F           
+  8E32    66 74 77 61           
+  8E36    72 65 2D 54           
+  8E3A    52 41 43 45           
+  8E3E    20 20 20 20           
+  8E42    56 32 2E 31           
+  8E46    20 20 32 35           
+  8E4A    2E 31 31 2E           
+  8E4E    38 33                 
+  8E50    0A0A                              DW      00A0AH
+  8E52    73 7A 5F 68                       DB      'sz_h_pnc__A__B_C__D_E__H_L__(HL_)_IX______IY________'
+  8E56    5F 70 6E 63           
+  8E5A    5F 5F 41 5F           
+  8E5E    5F 42 5F 43           
+  8E62    5F 5F 44 5F           
+  8E66    45 5F 5F 48           
+  8E6A    5F 4C 5F 5F           
+  8E6E    28 48 4C 5F           
+  8E72    29 5F 49 58           
+  8E76    5F 5F 5F 5F           
+  8E7A    5F 5F 49 59           
+  8E7E    5F 5F 5F 5F           
+  8E82    5F 5F 5F 5F           
+  8E86    49 5F 5F 52                       DB      'I__R______'
+  8E8A    5F 5F 5F 5F           
+  8E8E    5F 5F                 
+  8E90    00                                DB      0
+  8E91    50 43 5F 5F           TXT11:      DB      'PC___Befehl_____'
+  8E95    5F 42 65 66           
+  8E99    65 68 6C 5F           
+  8E9D    5F 5F 5F 5F           
+  8EA1    00                                DB      0
+  8EA2    73 7A 5F 68           TXT12:      DB      'sz_h_pnc__A'
+  8EA6    5F 70 6E 63           
+  8EAA    5F 5F 41              
+  8EAD    27                                DB      27H
+  8EAE    5F 42                             DB      '_B'
+  8EB0    27                                DB      27H
+  8EB1    43                                DB      'C'
+  8EB2    27                                DB      27H
+  8EB3    5F 44                             DB      '_D'
+  8EB5    27                                DB      27H
+  8EB6    45                                DB      'E'
+  8EB7    27                                DB      27H
+  8EB8    5F 48                             DB      '_H'
+  8EBA    27                                DB      27H
+  8EBB    4C                                DB      'L'
+  8EBC    27                                DB      27H
+  8EBD    5F 28 48 4C                       DB      '_(HL'
+  8EC1    27                                DB      27H
+  8EC2    29                                DB      ')'
+  8EC3    00                                DB      0
+  8EC4    5F 53 50 5F           TXT13:      DB      '_SP______-4___-2____0___+2___+4__'
+  8EC8    5F 5F 5F 5F           
+  8ECC    5F 2D 34 5F           
+  8ED0    5F 5F 2D 32           
+  8ED4    5F 5F 5F 5F           
+  8ED8    30 5F 5F 5F           
+  8EDC    2B 32 5F 5F           
+  8EE0    5F 2B 34 5F           
+  8EE4    5F                    
+  8EE5    00                                DB      0
+  8EE6    4D 45 4D 5F           TXT2:       DB      'MEM__0__1__2__3__4__5__6__7__8__9__A__B__C__D__E__F_'
+  8EEA    5F 30 5F 5F           
+  8EEE    31 5F 5F 32           
+  8EF2    5F 5F 33 5F           
+  8EF6    5F 34 5F 5F           
+  8EFA    35 5F 5F 36           
+  8EFE    5F 5F 37 5F           
+  8F02    5F 38 5F 5F           
+  8F06    39 5F 5F 41           
+  8F0A    5F 5F 42 5F           
+  8F0E    5F 43 5F 5F           
+  8F12    44 5F 5F 45           
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-21
 
 
-                                
-  1027    1027                              DW      $
-  1029    54 52 41 43                       DB      'TRAC'
-  102D    ED 73 B2BE            MAIN:       LD      (DDSP),SP
-  1031    31 16FB                           LD      SP,STSP
-  1034    CD 0AE5                           CALL    C06
-  1037    ED 7B B2BE                        LD      SP,(DDSP)
-  103B    E1                                POP     HL
-  103C    22 B2BC                           LD      (DDPC),HL
-  103F    3E C3                             LD      A,0C3H
-  1041    32 C078                           LD      (S1RST),A
-  1044    21 1052                           LD      HL,SUB
-  1047    22 C079                           LD      (S1RST+1),HL
-  104A    18 06                             JR      SUB
-                                
-  104C    104C                              DW      $
-  104E    54 52 41 52                       DB      'TRAR'
-  1052    31 16FB               SUB:        LD      SP,STSP
-  1055    3E 45                             LD      A,69
-  1057    32 B262                           LD      (ZZ),A
-  105A    AF                                XOR     A
-  105B    32 B263                           LD      (CST),A
-  105E    32 13CA                           LD      (ST1),A
-  1061    32 13CB                           LD      (ST2),A
-  1064    32 13CE                           LD      (ST4),A
-  1067    32 13CF                           LD      (ST5),A
-  106A    21 139A                           LD      HL,STPO2
-  106D    11 B18C                           LD      DE,ZPOS
-  1070    01 0010                           LD      BC,16
-  1073    ED B0                             LDIR
-                                
-  1075    21 0F25                           LD      HL,TXT1
-  1078    CD 0D80                           CALL    C60
-                                
-  107B    2A B18C                           LD      HL,(ZPOS)
-  107E    22 13AA                           LD      (STPO3),HL
-                                
-  1081    2A B2BC                           LD      HL,(DDPC)
+  8F16    5F 5F 46 5F           
+  8F1A    000A                              DW      0000AH
+  8F1C    4B 6F 6D 6D           TXT3:       DB      'Kommando: '
+  8F20    61 6E 64 6F           
+  8F24    3A 20                 
+  8F26    00                                DB      0
                                 
                                             PAGE
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-22
 
 
                                 
-  1084    CD 0DAF               J40:        CALL    C21
-  1087    CD 0D9F                           CALL    C211
-  108A    E5                    J401:       PUSH    HL
-  108B    D5                                PUSH    DE
-  108C    C5                                PUSH    BC
-  108D    21 138A                           LD      HL,STPO
-  1090    11 B18C                           LD      DE,ZPOS
-  1093    01 0010                           LD      BC,16
-  1096    ED B0                             LDIR
-  1098    2A 13AA                           LD      HL,(STPO3)
-  109B    22 B18C                           LD      (ZPOS),HL
-  109E    21 101C                           LD      HL,TXT3
-  10A1    CD 0CCC                           CALL    C09
-  10A4    2A B18C                           LD      HL,(ZPOS)
-  10A7    22 13AA                           LD      (STPO3),HL
-  10AA    C1                                POP     BC
-  10AB    D1                                POP     DE
-  10AC    E1                                POP     HL
-  10AD    CD 0936                           CALL    CIN
-  10B0    22 B2BC                           LD      (DDPC),HL
-  10B3    CD 0CF4                           CALL    C131
-  10B6    FE 2C                             CP      ','
-  10B8    28 60                             JR      Z,J45
-  10BA    FE 3B                             CP      ';'
-  10BC    28 62                             JR      Z,J44
-  10BE    FE 50                             CP      'P'
-  10C0    CA 1138                           JP      Z,J46
-  10C3    FE 4E                             CP      'N'
-  10C5    CA 1140                           JP      Z,J47
-  10C8    FE 55                             CP      'U'
-  10CA    CA 115F                           JP      Z,J49
-  10CD    FE 4D                             CP      'M'
-  10CF    CA 1174                           JP      Z,J51
-  10D2    FE 47                             CP      'G'
-  10D4    CA 11B1                           JP      Z,J53
-  10D7    FE 53                             CP      'S'
-  10D9    CA 1256                           JP      Z,J56
-  10DC    FE 54                             CP      'T'
-  10DE    CA 1362                           JP      Z,J62
-  10E1    FE 42                             CP      'B'
-  10E3    28 02                             JR      Z,J41
-  10E5    18 9D                             JR      J40
+  8F27    8F27                              DW      $
+  8F29    54 52 41 43                       DB      'TRAC'
+  8F2D    ED 73 B2BE            MAIN:       LD      (DDSP),SP
+  8F31    31 95FB                           LD      SP,STSP
+  8F34    CD 89E5                           CALL    C06
+  8F37    ED 7B B2BE                        LD      SP,(DDSP)
+  8F3B    E1                                POP     HL
+  8F3C    22 B2BC                           LD      (DDPC),HL
+  8F3F    3E C3                             LD      A,0C3H
+  8F41    32 C078                           LD      (S1RST),A
+  8F44    21 8F52                           LD      HL,SUB
+  8F47    22 C079                           LD      (S1RST+1),HL
+  8F4A    18 06                             JR      SUB
+                                
+  8F4C    8F4C                              DW      $
+  8F4E    54 52 41 52                       DB      'TRAR'
+  8F52    31 95FB               SUB:        LD      SP,STSP
+  8F55    3E 45                             LD      A,69
+  8F57    32 B262                           LD      (ZZ),A
+  8F5A    AF                                XOR     A
+  8F5B    32 B263                           LD      (CST),A
+  8F5E    32 92CA                           LD      (ST1),A
+  8F61    32 92CB                           LD      (ST2),A
+  8F64    32 92CE                           LD      (ST4),A
+  8F67    32 92CF                           LD      (ST5),A
+  8F6A    21 929A                           LD      HL,STPO2
+  8F6D    11 B18C                           LD      DE,ZPOS
+  8F70    01 0010                           LD      BC,16
+  8F73    ED B0                             LDIR
+                                
+  8F75    21 8E25                           LD      HL,TXT1
+  8F78    CD 8C80                           CALL    C60
+                                
+  8F7B    2A B18C                           LD      HL,(ZPOS)
+  8F7E    22 92AA                           LD      (STPO3),HL
+                                
+  8F81    2A B2BC                           LD      HL,(DDPC)
                                 
                                             PAGE
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-23
 
 
                                 
-  10E7    CD 0936               J41:        CALL    CIN                 ;Kommandos:  B .
-  10EA    CD 0CF4                           CALL    C131
-  10ED    FE 4B                             CP      'K'
-  10EF    CA 11A7                           JP      Z,J411
-  10F2    FE 59                             CP      'Y'                 ;Kommando:  B Y E
-  10F4    20 8E                             JR      NZ,J40
-  10F6    CD 0936                           CALL    CIN
-  10F9    CD 0CF4                           CALL    C131
-  10FC    FE 45                             CP      'E'
-  10FE    C2 1084                           JP      NZ,J40
-  1101    CD 0936                           CALL    CIN
-  1104    CD 0CF4                           CALL    C131
-  1107    FE 0D                             CP      00DH
-  1109    C2 1084                           JP      NZ,J40
-  110C    3E 21                             LD      A,021H
-  110E    32 C078                           LD      (S1RST),A
-  1111    21 C293                           LD      HL,INIT6
-  1114    22 C079                           LD      (S1RST+1),HL
-  1117    C3 090E                           JP      SYSTB
+  8F84    CD 8CAF               J40:        CALL    C21
+  8F87    CD 8C9F                           CALL    C211
+  8F8A    E5                    J401:       PUSH    HL
+  8F8B    D5                                PUSH    DE
+  8F8C    C5                                PUSH    BC
+  8F8D    21 928A                           LD      HL,STPO
+  8F90    11 B18C                           LD      DE,ZPOS
+  8F93    01 0010                           LD      BC,16
+  8F96    ED B0                             LDIR
+  8F98    2A 92AA                           LD      HL,(STPO3)
+  8F9B    22 B18C                           LD      (ZPOS),HL
+  8F9E    21 8F1C                           LD      HL,TXT3
+  8FA1    CD 8BCC                           CALL    C09
+  8FA4    2A B18C                           LD      HL,(ZPOS)
+  8FA7    22 92AA                           LD      (STPO3),HL
+  8FAA    C1                                POP     BC
+  8FAB    D1                                POP     DE
+  8FAC    E1                                POP     HL
+  8FAD    CD 8836                           CALL    CIN
+  8FB0    22 B2BC                           LD      (DDPC),HL
+  8FB3    CD 8BF4                           CALL    C131
+  8FB6    FE 2C                             CP      ','
+  8FB8    28 60                             JR      Z,J45
+  8FBA    FE 3B                             CP      ';'
+  8FBC    28 62                             JR      Z,J44
+  8FBE    FE 50                             CP      'P'
+  8FC0    CA 9038                           JP      Z,J46
+  8FC3    FE 4E                             CP      'N'
+  8FC5    CA 9040                           JP      Z,J47
+  8FC8    FE 55                             CP      'U'
+  8FCA    CA 905F                           JP      Z,J49
+  8FCD    FE 4D                             CP      'M'
+  8FCF    CA 9074                           JP      Z,J51
+  8FD2    FE 47                             CP      'G'
+  8FD4    CA 90B1                           JP      Z,J53
+  8FD7    FE 53                             CP      'S'
+  8FD9    CA 9156                           JP      Z,J56
+  8FDC    FE 54                             CP      'T'
+  8FDE    CA 9262                           JP      Z,J62
+  8FE1    FE 42                             CP      'B'
+  8FE3    28 02                             JR      Z,J41
+  8FE5    18 9D                             JR      J40
                                 
-  111A    CD 0C67               J45:        CALL    C08                 ;Kommando:  ,
-  111D    C3 1084                           JP      J40
-                                
-  1120    E5                    J44:        PUSH    HL                  ;Kommando:  ;
-  1121    3A 13CA                           LD      A,(ST1)
-  1124    B7                                OR      A
-  1125    28 0D                             JR      Z,J441
-  1127    32 13CB                           LD      (ST2),A
-  112A    21 0F26                           LD      HL,TXT1+1
-  112D    CD 0D80                           CALL    C60
-  1130    AF                                XOR     A
-  1131    32 13CB                           LD      (ST2),A
-  1134    E1                    J441:       POP     HL
-  1135    C3 1084                           JP      J40
-                                
-  1138    CD 0D45               J46:        CALL    C172                ;Kommando:  P
-  113B    C5                                PUSH    BC
-  113C    E1                                POP     HL
-  113D    C3 1084                           JP      J40
-                                
-  1140    CD 0D45               J47:        CALL    C172                ;Kommando:  N
-  1143    C5                    J471:       PUSH    BC
-  1144    CD 0C67                           CALL    C08
-  1147    CD 099B                           CALL    CSTS
-  114A    20 0F                             JR      NZ,J48
-  114C    CD 0DAF                           CALL    C21
-  114F    CD 0D9F                           CALL    C211
-  1152    C1                                POP     BC
-  1153    0B                                DEC     BC
-  1154    78                                LD      A,B
-  1155    B1                                OR      C
-  1156    20 EB                             JR      NZ,J471
-  1158    C3 108A                           JP      J401
-                                
-  115B    C1                    J48:        POP     BC
-  115C    C3 1084                           JP      J40
-                                
-  115F    CD 0D45               J49:        CALL    C172                ;Kommando:  U
-  1162    C5                    J50:        PUSH    BC
-  1163    CD 0C67                           CALL    C08
-  1166    CD 099B                           CALL    CSTS
-  1169    20 F0                             JR      NZ,J48
-  116B    C1                                POP     BC
-  116C    0B                                DEC     BC
-  116D    78                                LD      A,B
-  116E    B1                                OR      C
-  116F    20 F1                             JR      NZ,J50
-  1171    C3 1084                           JP      J40
-                                
-  1174    E5                    J51:        PUSH    HL
-  1175    CD 0936                           CALL    CIN
-  1178    CD 0CF4                           CALL    C131
-  117B    FE 43                             CP      'C'
-  117D    20 08                             JR      NZ,J52
-  117F    AF                                XOR     A                   ;Kommando:  M C
-  1180    32 13CE                           LD      (ST4),A
-  1183    E1                    J511:       POP     HL
-  1184    C3 1084                           JP      J40
-                                
-  1187    FE 53                 J52:        CP      'S'
-  1189    20 F8                             JR      NZ,J511
+                                            PAGE
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-24
 
 
-  118B    3A 13CE                           LD      A,(ST4)             ;Kommando:  M S
-  118E    3C                                INC     A
-  118F    32 13CE                           LD      (ST4),A
-  1192    07                                RLCA
-  1193    5F                                LD      E,A
-  1194    16 00                             LD      D,0
-  1196    21 13F9                           LD      HL,ST8
-  1199    19                                ADD     HL,DE
-  119A    CD 0D45                           CALL    C172
-  119D    79                                LD      A,C
-  119E    E6 F0                             AND     0F0H
-  11A0    77                                LD      M,A
-  11A1    23                                INC     HL
-  11A2    70                                LD      M,B
-  11A3    E1                                POP     HL
-  11A4    C3 1084                           JP      J40
                                 
-  11A7    AF                    J411:       XOR     A                   ;Kommando:  B K
-  11A8    32 13CF                           LD      (ST5),A
-  11AB    E5                                PUSH    HL
-  11AC    22 11E4                           LD      (USB90+1),HL
-  11AF    18 35                             JR      J552
+  8FE7    CD 8836               J41:        CALL    CIN                 ;Kommandos:  B .
+  8FEA    CD 8BF4                           CALL    C131
+  8FED    FE 4B                             CP      'K'
+  8FEF    CA 90A7                           JP      Z,J411
+  8FF2    FE 59                             CP      'Y'                 ;Kommando:  B Y E
+  8FF4    20 8E                             JR      NZ,J40
+  8FF6    CD 8836                           CALL    CIN
+  8FF9    CD 8BF4                           CALL    C131
+  8FFC    FE 45                             CP      'E'
+  8FFE    C2 8F84                           JP      NZ,J40
+  9001    CD 8836                           CALL    CIN
+  9004    CD 8BF4                           CALL    C131
+  9007    FE 0D                             CP      00DH
+  9009    C2 8F84                           JP      NZ,J40
+  900C    3E 21                             LD      A,021H
+  900E    32 C078                           LD      (S1RST),A
+  9011    21 C293                           LD      HL,INIT6
+  9014    22 C079                           LD      (S1RST+1),HL
+  9017    C3 880E                           JP      SYSTB
                                 
-  11B1    AF                    J53:        XOR     A                   ;Kommando:  G
-  11B2    32 13CF                           LD      (ST5),A
-  11B5    E5                                PUSH    HL
-  11B6    CD 0D45                           CALL    C172
-  11B9    60                                LD      H,B
-  11BA    69                                LD      L,C
-  11BB    22 11E4                           LD      (USB90+1),HL
-  11BE    FE 2C                             CP      ','
-  11C0    28 24                             JR      Z,J552
-  11C2    FE 0D                             CP      00DH
-  11C4    28 07                             JR      Z,J55
-  11C6    E1                    J54:        POP     HL
-  11C7    2A 13CC                           LD      HL,(ST3)
-  11CA    C3 1084                           JP      J40
+  901A    CD 8B67               J45:        CALL    C08                 ;Kommando:  ,
+  901D    C3 8F84                           JP      J40
                                 
-  11CD    3E C3                 J55:        LD      A,0C3H
-  11CF    32 0038                           LD      (00038H),A
-  11D2    21 1225                           LD      HL,J551
-  11D5    22 0039                           LD      (00039H),HL
-  11D8    CD 0B2D                           CALL    C07
-  11DB    ED 73 16FB                        LD      (STSP),SP
-  11DF    ED 7B B2BE                        LD      SP,(DDSP)
-  11E3    C3 0000               USB90:      JP      0
+  9020    E5                    J44:        PUSH    HL                  ;Kommando:  ;
+  9021    3A 92CA                           LD      A,(ST1)
+  9024    B7                                OR      A
+  9025    28 0D                             JR      Z,J441
+  9027    32 92CB                           LD      (ST2),A
+  902A    21 8E26                           LD      HL,TXT1+1
+  902D    CD 8C80                           CALL    C60
+  9030    AF                                XOR     A
+  9031    32 92CB                           LD      (ST2),A
+  9034    E1                    J441:       POP     HL
+  9035    C3 8F84                           JP      J40
                                 
-  11E6    AF                    J552:       XOR     A
-  11E7    57                                LD      D,A
-  11E8    21 13D0                           LD      HL,ST6
-  11EB    CD 0D45               J553:       CALL    C172
-  11EE    5F                                LD      E,A
-  11EF    71                                LD      M,C
-  11F0    23                                INC     HL
-  11F1    70                                LD      M,B
-  11F2    23                                INC     HL
-  11F3    14                                INC     D
-  11F4    7A                                LD      A,D
-  11F5    FE 05                             CP      5
-  11F7    32 13CF                           LD      (ST5),A
-  11FA    28 CA                             JR      Z,J54
-  11FC    7B                                LD      A,E
-  11FD    FE 0D                             CP      00DH
-  11FF    20 EA                             JR      NZ,J553
-  1201    21 13D0                           LD      HL,ST6
-  1204    DD 21 13D8                        LD      IX,ST7
-  1208    4E                    J554:       LD      C,M
-  1209    23                                INC     HL
-  120A    46                                LD      B,M
-  120B    23                                INC     HL
-  120C    0A                                LD      A,(BC)
-  120D    DD 77 00                          LD      (IX+00),A
-  1210    DD 23                             INC     IX
-  1212    3E FF                             LD      A,0FFH
-  1214    02                                LD      (BC),A
-  1215    15                                DEC     D
-  1216    20 F0                             JR      NZ,J554
-  1218    3E C3                             LD      A,0C3H
-  121A    32 0038                           LD      (00038H),A
-  121D    21 1225                           LD      HL,J551
-  1220    22 0039                           LD      (00039H),HL
-  1223    18 A8                             JR      J55
+  9038    CD 8C45               J46:        CALL    C172                ;Kommando:  P
+  903B    C5                                PUSH    BC
+  903C    E1                                POP     HL
+  903D    C3 8F84                           JP      J40
                                 
+  9040    CD 8C45               J47:        CALL    C172                ;Kommando:  N
+  9043    C5                    J471:       PUSH    BC
+  9044    CD 8B67                           CALL    C08
+  9047    CD 889B                           CALL    CSTS
+  904A    20 0F                             JR      NZ,J48
+  904C    CD 8CAF                           CALL    C21
+  904F    CD 8C9F                           CALL    C211
+  9052    C1                                POP     BC
+  9053    0B                                DEC     BC
+  9054    78                                LD      A,B
+  9055    B1                                OR      C
+  9056    20 EB                             JR      NZ,J471
+  9058    C3 8F8A                           JP      J401
+                                
+  905B    C1                    J48:        POP     BC
+  905C    C3 8F84                           JP      J40
+                                
+  905F    CD 8C45               J49:        CALL    C172                ;Kommando:  U
+  9062    C5                    J50:        PUSH    BC
+  9063    CD 8B67                           CALL    C08
+  9066    CD 889B                           CALL    CSTS
+  9069    20 F0                             JR      NZ,J48
+  906B    C1                                POP     BC
+  906C    0B                                DEC     BC
+  906D    78                                LD      A,B
+  906E    B1                                OR      C
+  906F    20 F1                             JR      NZ,J50
+  9071    C3 8F84                           JP      J40
+                                
+  9074    E5                    J51:        PUSH    HL
+  9075    CD 8836                           CALL    CIN
+  9078    CD 8BF4                           CALL    C131
+  907B    FE 43                             CP      'C'
+  907D    20 08                             JR      NZ,J52
+  907F    AF                                XOR     A                   ;Kommando:  M C
+  9080    32 92CE                           LD      (ST4),A
+  9083    E1                    J511:       POP     HL
+  9084    C3 8F84                           JP      J40
+                                
+  9087    FE 53                 J52:        CP      'S'
+  9089    20 F8                             JR      NZ,J511
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-25
 
 
-  1225    E3                    J551:       EX      (SP),HL
-  1226    2B                                DEC     HL
-  1227    22 13CC                           LD      (ST3),HL
-  122A    E3                                EX      (SP),HL
-  122B    33                                INC     SP
-  122C    33                                INC     SP
-  122D    ED 73 B2BE                        LD      (DDSP),SP
-  1231    ED 7B 16FB                        LD      SP,(STSP)
-  1235    CD 0AE5                           CALL    C06
-  1238    3A 13CF                           LD      A,(ST5)
-  123B    B7                                OR      A
-  123C    28 88                             JR      Z,J54
-  123E    57                                LD      D,A
-  123F    21 13D0                           LD      HL,ST6
-  1242    DD 21 13D8                        LD      IX,ST7
-  1246    4E                    J555:       LD      C,M
-  1247    23                                INC     HL
-  1248    46                                LD      B,M
-  1249    23                                INC     HL
-  124A    DD 7E 00                          LD      A,(IX+00)
-  124D    DD 23                             INC     IX
-  124F    02                                LD      (BC),A
-  1250    15                                DEC     D
-  1251    20 F3                             JR      NZ,J555
-  1253    C3 11C6                           JP      J54
+  908B    3A 92CE                           LD      A,(ST4)             ;Kommando:  M S
+  908E    3C                                INC     A
+  908F    32 92CE                           LD      (ST4),A
+  9092    07                                RLCA
+  9093    5F                                LD      E,A
+  9094    16 00                             LD      D,0
+  9096    21 92F9                           LD      HL,ST8
+  9099    19                                ADD     HL,DE
+  909A    CD 8C45                           CALL    C172
+  909D    79                                LD      A,C
+  909E    E6 F0                             AND     0F0H
+  90A0    77                                LD      M,A
+  90A1    23                                INC     HL
+  90A2    70                                LD      M,B
+  90A3    E1                                POP     HL
+  90A4    C3 8F84                           JP      J40
                                 
-  1256    E5                    J56:        PUSH    HL                  ;Kommandos:  S .
-  1257    CD 0936                           CALL    CIN
-  125A    CD 0CF4                           CALL    C131
-  125D    FE 52                             CP      'R'
-  125F    21 B2D2                           LD      HL,DDAF
-  1262    3E 20                             LD      A,' '
-  1264    CA 1305                           JP      Z,J60
-  1267    CD 0D45                           CALL    C172                ;Kommando:  S M
-  126A    60                                LD      H,B
-  126B    69                                LD      L,C
-  126C    FE 0D                 J57:        CP      00DH
-  126E    28 24                             JR      Z,J58
-  1270    7E                                LD      A,M
-  1271    CD 0CFD                           CALL    C111
-  1274    0E 2D                             LD      C,'-'
-  1276    CD 0A46                           CALL    C041
-  1279    CD 0D45                           CALL    C172
-  127C    FE 2C                             CP      ','
-  127E    28 18                             JR      Z,J59
-  1280    71                                LD      M,C
-  1281    23                                INC     HL
-  1282    FE 2E                             CP      '.'
-  1284    28 02                             JR      Z,J571
-  1286    18 E4                             JR      J57
+  90A7    AF                    J411:       XOR     A                   ;Kommando:  B K
+  90A8    32 92CF                           LD      (ST5),A
+  90AB    E5                                PUSH    HL
+  90AC    22 90E4                           LD      (USB90+1),HL
+  90AF    18 35                             JR      J552
                                 
-  1288    CD 0D0B               J571:       CALL    C141
-  128B    E5                                PUSH    HL
-  128C    C1                                POP     BC
-  128D    CD 0D25                           CALL    C161
-  1290    3E 01                             LD      A,1
-  1292    18 D8                             JR      J57
+  90B1    AF                    J53:        XOR     A                   ;Kommando:  G
+  90B2    32 92CF                           LD      (ST5),A
+  90B5    E5                                PUSH    HL
+  90B6    CD 8C45                           CALL    C172
+  90B9    60                                LD      H,B
+  90BA    69                                LD      L,C
+  90BB    22 90E4                           LD      (USB90+1),HL
+  90BE    FE 2C                             CP      ','
+  90C0    28 24                             JR      Z,J552
+  90C2    FE 0D                             CP      00DH
+  90C4    28 07                             JR      Z,J55
+  90C6    E1                    J54:        POP     HL
+  90C7    2A 92CC                           LD      HL,(ST3)
+  90CA    C3 8F84                           JP      J40
                                 
-  1294    E1                    J58:        POP     HL
-  1295    C3 1084                           JP      J40
+  90CD    3E C3                 J55:        LD      A,0C3H
+  90CF    32 0038                           LD      (00038H),A
+  90D2    21 9125                           LD      HL,J551
+  90D5    22 0039                           LD      (00039H),HL
+  90D8    CD 8A2D                           CALL    C07
+  90DB    ED 73 95FB                        LD      (STSP),SP
+  90DF    ED 7B B2BE                        LD      SP,(DDSP)
+  90E3    C3 0000               USB90:      JP      0
                                 
-  1298    23                    J59:        INC     HL
-  1299    18 D1                             JR      J57
+  90E6    AF                    J552:       XOR     A
+  90E7    57                                LD      D,A
+  90E8    21 92D0                           LD      HL,ST6
+  90EB    CD 8C45               J553:       CALL    C172
+  90EE    5F                                LD      E,A
+  90EF    71                                LD      M,C
+  90F0    23                                INC     HL
+  90F1    70                                LD      M,B
+  90F2    23                                INC     HL
+  90F3    14                                INC     D
+  90F4    7A                                LD      A,D
+  90F5    FE 05                             CP      5
+  90F7    32 92CF                           LD      (ST5),A
+  90FA    28 CA                             JR      Z,J54
+  90FC    7B                                LD      A,E
+  90FD    FE 0D                             CP      00DH
+  90FF    20 EA                             JR      NZ,J553
+  9101    21 92D0                           LD      HL,ST6
+  9104    DD 21 92D8                        LD      IX,ST7
+  9108    4E                    J554:       LD      C,M
+  9109    23                                INC     HL
+  910A    46                                LD      B,M
+  910B    23                                INC     HL
+  910C    0A                                LD      A,(BC)
+  910D    DD 77 00                          LD      (IX+00),A
+  9110    DD 23                             INC     IX
+  9112    3E FF                             LD      A,0FFH
+  9114    02                                LD      (BC),A
+  9115    15                                DEC     D
+  9116    20 F0                             JR      NZ,J554
+  9118    3E C3                             LD      A,0C3H
+  911A    32 0038                           LD      (00038H),A
+  911D    21 9125                           LD      HL,J551
+  9120    22 0039                           LD      (00039H),HL
+  9123    18 A8                             JR      J55
                                 
-  129B    20 49                 TAB2:       DB      ' I'
-  129D    B2BA                              DW      DDI
-  129F    01                                DB      1
-                                
-  12A0    20 52                             DB      ' R'
-  12A2    B2BB                              DW      DDR
-  12A4    01                                DB      1
-                                
-  12A5    20 41                             DB      ' A'
-  12A7    B2D2                              DW      DDAF
-  12A9    02                                DB      2
-                                
-  12AA    20 42                             DB      ' B'
-  12AC    B2CC                              DW      DDBC
-  12AE    02                                DB      2
-                                
-  12AF    20 43                             DB      ' C'
-  12B1    B2CC                              DW      DDBC
-  12B3    01                                DB      1
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-26
 
 
+  9125    E3                    J551:       EX      (SP),HL
+  9126    2B                                DEC     HL
+  9127    22 92CC                           LD      (ST3),HL
+  912A    E3                                EX      (SP),HL
+  912B    33                                INC     SP
+  912C    33                                INC     SP
+  912D    ED 73 B2BE                        LD      (DDSP),SP
+  9131    ED 7B 95FB                        LD      SP,(STSP)
+  9135    CD 89E5                           CALL    C06
+  9138    3A 92CF                           LD      A,(ST5)
+  913B    B7                                OR      A
+  913C    28 88                             JR      Z,J54
+  913E    57                                LD      D,A
+  913F    21 92D0                           LD      HL,ST6
+  9142    DD 21 92D8                        LD      IX,ST7
+  9146    4E                    J555:       LD      C,M
+  9147    23                                INC     HL
+  9148    46                                LD      B,M
+  9149    23                                INC     HL
+  914A    DD 7E 00                          LD      A,(IX+00)
+  914D    DD 23                             INC     IX
+  914F    02                                LD      (BC),A
+  9150    15                                DEC     D
+  9151    20 F3                             JR      NZ,J555
+  9153    C3 90C6                           JP      J54
                                 
-  12B4    20 44                             DB      ' D'
-  12B6    B2CE                              DW      DDDE
-  12B8    02                                DB      2
+  9156    E5                    J56:        PUSH    HL                  ;Kommandos:  S .
+  9157    CD 8836                           CALL    CIN
+  915A    CD 8BF4                           CALL    C131
+  915D    FE 52                             CP      'R'
+  915F    21 B2D2                           LD      HL,DDAF
+  9162    3E 20                             LD      A,' '
+  9164    CA 9205                           JP      Z,J60
+  9167    CD 8C45                           CALL    C172                ;Kommando:  S M
+  916A    60                                LD      H,B
+  916B    69                                LD      L,C
+  916C    FE 0D                 J57:        CP      00DH
+  916E    28 24                             JR      Z,J58
+  9170    7E                                LD      A,M
+  9171    CD 8BFD                           CALL    C111
+  9174    0E 2D                             LD      C,'-'
+  9176    CD 8946                           CALL    C041
+  9179    CD 8C45                           CALL    C172
+  917C    FE 2C                             CP      ','
+  917E    28 18                             JR      Z,J59
+  9180    71                                LD      M,C
+  9181    23                                INC     HL
+  9182    FE 2E                             CP      '.'
+  9184    28 02                             JR      Z,J571
+  9186    18 E4                             JR      J57
                                 
-  12B9    20 45                             DB      ' E'
-  12BB    B2CE                              DW      DDDE
-  12BD    01                                DB      1
+  9188    CD 8C0B               J571:       CALL    C141
+  918B    E5                                PUSH    HL
+  918C    C1                                POP     BC
+  918D    CD 8C25                           CALL    C161
+  9190    3E 01                             LD      A,1
+  9192    18 D8                             JR      J57
                                 
-  12BE    20 48                             DB      ' H'
-  12C0    B2D0                              DW      DDHL
-  12C2    02                                DB      2
+  9194    E1                    J58:        POP     HL
+  9195    C3 8F84                           JP      J40
                                 
-  12C3    20 4C                             DB      ' L'
-  12C5    B2D0                              DW      DDHL
-  12C7    01                                DB      1
+  9198    23                    J59:        INC     HL
+  9199    18 D1                             JR      J57
                                 
-  12C8    20 46                             DB      ' F'
-  12CA    B2D2                              DW      DDAF
-  12CC    01                                DB      1
+  919B    20 49                 TAB2:       DB      ' I'
+  919D    B2BA                              DW      DDI
+  919F    01                                DB      1
                                 
-  12CD    58 49                             DB      'XI'
-  12CF    B2C0                              DW      DDIX
-  12D1    00                                DB      0
+  91A0    20 52                             DB      ' R'
+  91A2    B2BB                              DW      DDR
+  91A4    01                                DB      1
                                 
-  12D2    59 49                             DB      'YI'
-  12D4    B2C2                              DW      DDIY
-  12D6    00                                DB      0
+  91A5    20 41                             DB      ' A'
+  91A7    B2D2                              DW      DDAF
+  91A9    02                                DB      2
                                 
-  12D7    50 53                             DB      'PS'
-  12D9    B2BE                              DW      DDSP
-  12DB    00                                DB      0
+  91AA    20 42                             DB      ' B'
+  91AC    B2CC                              DW      DDBC
+  91AE    02                                DB      2
                                 
-  12DC    27                                DB      27H
-  12DD    41                                DB      'A'
-  12DE    B2CA                              DW      DDAFS
-  12E0    02                                DB      2
-                                
-  12E1    27                                DB      27H
-  12E2    42                                DB      'B'
-  12E3    B2C4                              DW      DDBCS
-  12E5    02                                DB      2
-                                
-  12E6    27                                DB      27H
-  12E7    43                                DB      'C'
-  12E8    B2C4                              DW      DDBCS
-  12EA    01                                DB      1
-                                
-  12EB    27                                DB      27H
-  12EC    44                                DB      'D'
-  12ED    B2C6                              DW      DDDES
-  12EF    02                                DB      2
-                                
-  12F0    27                                DB      27H
-  12F1    45                                DB      'E'
-  12F2    B2C6                              DW      DDDES
-  12F4    01                                DB      1
-                                
-  12F5    27                                DB      27H
-  12F6    48                                DB      'H'
-  12F7    B2C8                              DW      DDHLS
-  12F9    02                                DB      2
-                                
-  12FA    27                                DB      27H
-  12FB    4C                                DB      'L'
-  12FC    B2C8                              DW      DDHLS
-  12FE    01                                DB      1
-                                
-  12FF    27                                DB      27H
-  1300    46                                DB      'F'
-  1301    B2CA                              DW      DDAFS
-  1303    01                                DB      1
-                                
-  1304    00                                DB      0
-                                
-  1305    CD 0936               J60:        CALL    CIN                 ;Kommando:  S R
-  1308    CD 0CF4                           CALL    C131
-  130B    57                                LD      D,A
-  130C    CD 0936                           CALL    CIN
-  130F    CD 0CF4                           CALL    C131
-  1312    5F                                LD      E,A
-  1313    0E 20                             LD      C,' '
-  1315    CD 0A46                           CALL    C041
+  91AF    20 43                             DB      ' C'
+  91B1    B2CC                              DW      DDBC
+  91B3    01                                DB      1
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-27
 
 
-  1318    01 129B                           LD      BC,TAB2
-  131B    0A                    J601:       LD      A,(BC)
-  131C    B7                                OR      A
-  131D    CA 1294                           JP      Z,J58
-  1320    6F                                LD      L,A
-  1321    03                                INC     BC
-  1322    0A                                LD      A,(BC)
-  1323    67                                LD      H,A
-  1324    ED 52                             SBC     HL,DE
-  1326    28 06                             JR      Z,J61
-  1328    03                                INC     BC
-  1329    03                                INC     BC
-  132A    03                                INC     BC
-  132B    03                                INC     BC
-  132C    18 ED                             JR      J601
                                 
-  132E    03                    J61:        INC     BC
-  132F    0A                                LD      A,(BC)
-  1330    6F                                LD      L,A
-  1331    03                                INC     BC
-  1332    0A                                LD      A,(BC)
-  1333    67                                LD      H,A
-  1334    03                                INC     BC
-  1335    0A                                LD      A,(BC)
-  1336    B7                                OR      A
-  1337    20 14                             JR      NZ,J611
-  1339    4E                                LD      C,M
-  133A    23                                INC     HL
-  133B    46                                LD      B,M
-  133C    CD 0D25                           CALL    C161
-  133F    0E 2D                             LD      C,'-'
-  1341    CD 0A46                           CALL    C041
-  1344    CD 0D45                           CALL    C172
-  1347    70                                LD      M,B
-  1348    2B                                DEC     HL
-  1349    71                                LD      M,C
-  134A    C3 1294                           JP      J58
+  91B4    20 44                             DB      ' D'
+  91B6    B2CE                              DW      DDDE
+  91B8    02                                DB      2
                                 
-  134D    3D                    J611:       DEC     A
-  134E    4F                                LD      C,A
-  134F    06 00                             LD      B,0
-  1351    09                                ADD     HL,BC
-  1352    7E                                LD      A,M
-  1353    CD 0CFD                           CALL    C111
-  1356    0E 2D                             LD      C,'-'
-  1358    CD 0A46                           CALL    C041
-  135B    CD 0D45                           CALL    C172
-  135E    71                                LD      M,C
-  135F    C3 1294                           JP      J58
+  91B9    20 45                             DB      ' E'
+  91BB    B2CE                              DW      DDDE
+  91BD    01                                DB      1
                                 
-  1362    CD 0936               J62:        CALL    CIN                 ;Kommandos:  T .
-  1365    CD 0CF4                           CALL    C131
-  1368    FE 4E                             CP      'N'
-  136A    20 17                             JR      NZ,J621
-  136C    E5                                PUSH    HL                  ;Kommando:  T N
-  136D    3E 01                             LD      A,1
-  136F    32 13CA                           LD      (ST1),A
-  1372    32 13CB                           LD      (ST2),A
-  1375    21 0F26                           LD      HL,TXT1+1
-  1378    CD 0D80                           CALL    C60
-  137B    AF                                XOR     A
-  137C    32 13CB                           LD      (ST2),A
-  137F    E1                                POP     HL
-  1380    C3 1084                           JP      J40
+  91BE    20 48                             DB      ' H'
+  91C0    B2D0                              DW      DDHL
+  91C2    02                                DB      2
                                 
-  1383    AF                    J621:       XOR     A                   ;Kommando :  T O
-  1384    32 13CA                           LD      (ST1),A
-  1387    C3 1084                           JP      J40
+  91C3    20 4C                             DB      ' L'
+  91C5    B2D0                              DW      DDHL
+  91C7    01                                DB      1
+                                
+  91C8    20 46                             DB      ' F'
+  91CA    B2D2                              DW      DDAF
+  91CC    01                                DB      1
+                                
+  91CD    58 49                             DB      'XI'
+  91CF    B2C0                              DW      DDIX
+  91D1    00                                DB      0
+                                
+  91D2    59 49                             DB      'YI'
+  91D4    B2C2                              DW      DDIY
+  91D6    00                                DB      0
+                                
+  91D7    50 53                             DB      'PS'
+  91D9    B2BE                              DW      DDSP
+  91DB    00                                DB      0
+                                
+  91DC    27                                DB      27H
+  91DD    41                                DB      'A'
+  91DE    B2CA                              DW      DDAFS
+  91E0    02                                DB      2
+                                
+  91E1    27                                DB      27H
+  91E2    42                                DB      'B'
+  91E3    B2C4                              DW      DDBCS
+  91E5    02                                DB      2
+                                
+  91E6    27                                DB      27H
+  91E7    43                                DB      'C'
+  91E8    B2C4                              DW      DDBCS
+  91EA    01                                DB      1
+                                
+  91EB    27                                DB      27H
+  91EC    44                                DB      'D'
+  91ED    B2C6                              DW      DDDES
+  91EF    02                                DB      2
+                                
+  91F0    27                                DB      27H
+  91F1    45                                DB      'E'
+  91F2    B2C6                              DW      DDDES
+  91F4    01                                DB      1
+                                
+  91F5    27                                DB      27H
+  91F6    48                                DB      'H'
+  91F7    B2C8                              DW      DDHLS
+  91F9    02                                DB      2
+                                
+  91FA    27                                DB      27H
+  91FB    4C                                DB      'L'
+  91FC    B2C8                              DW      DDHLS
+  91FE    01                                DB      1
+                                
+  91FF    27                                DB      27H
+  9200    46                                DB      'F'
+  9201    B2CA                              DW      DDAFS
+  9203    01                                DB      1
+                                
+  9204    00                                DB      0
+                                
+  9205    CD 8836               J60:        CALL    CIN                 ;Kommando:  S R
+  9208    CD 8BF4                           CALL    C131
+  920B    57                                LD      D,A
+  920C    CD 8836                           CALL    CIN
+  920F    CD 8BF4                           CALL    C131
+  9212    5F                                LD      E,A
+  9213    0E 20                             LD      C,' '
+  9215    CD 8946                           CALL    C041
+'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-28
+
+
+  9218    01 919B                           LD      BC,TAB2
+  921B    0A                    J601:       LD      A,(BC)
+  921C    B7                                OR      A
+  921D    CA 9194                           JP      Z,J58
+  9220    6F                                LD      L,A
+  9221    03                                INC     BC
+  9222    0A                                LD      A,(BC)
+  9223    67                                LD      H,A
+  9224    ED 52                             SBC     HL,DE
+  9226    28 06                             JR      Z,J61
+  9228    03                                INC     BC
+  9229    03                                INC     BC
+  922A    03                                INC     BC
+  922B    03                                INC     BC
+  922C    18 ED                             JR      J601
+                                
+  922E    03                    J61:        INC     BC
+  922F    0A                                LD      A,(BC)
+  9230    6F                                LD      L,A
+  9231    03                                INC     BC
+  9232    0A                                LD      A,(BC)
+  9233    67                                LD      H,A
+  9234    03                                INC     BC
+  9235    0A                                LD      A,(BC)
+  9236    B7                                OR      A
+  9237    20 14                             JR      NZ,J611
+  9239    4E                                LD      C,M
+  923A    23                                INC     HL
+  923B    46                                LD      B,M
+  923C    CD 8C25                           CALL    C161
+  923F    0E 2D                             LD      C,'-'
+  9241    CD 8946                           CALL    C041
+  9244    CD 8C45                           CALL    C172
+  9247    70                                LD      M,B
+  9248    2B                                DEC     HL
+  9249    71                                LD      M,C
+  924A    C3 9194                           JP      J58
+                                
+  924D    3D                    J611:       DEC     A
+  924E    4F                                LD      C,A
+  924F    06 00                             LD      B,0
+  9251    09                                ADD     HL,BC
+  9252    7E                                LD      A,M
+  9253    CD 8BFD                           CALL    C111
+  9256    0E 2D                             LD      C,'-'
+  9258    CD 8946                           CALL    C041
+  925B    CD 8C45                           CALL    C172
+  925E    71                                LD      M,C
+  925F    C3 9194                           JP      J58
+                                
+  9262    CD 8836               J62:        CALL    CIN                 ;Kommandos:  T .
+  9265    CD 8BF4                           CALL    C131
+  9268    FE 4E                             CP      'N'
+  926A    20 17                             JR      NZ,J621
+  926C    E5                                PUSH    HL                  ;Kommando:  T N
+  926D    3E 01                             LD      A,1
+  926F    32 92CA                           LD      (ST1),A
+  9272    32 92CB                           LD      (ST2),A
+  9275    21 8E26                           LD      HL,TXT1+1
+  9278    CD 8C80                           CALL    C60
+  927B    AF                                XOR     A
+  927C    32 92CB                           LD      (ST2),A
+  927F    E1                                POP     HL
+  9280    C3 8F84                           JP      J40
+                                
+  9283    AF                    J621:       XOR     A                   ;Kommando :  T O
+  9284    32 92CA                           LD      (ST1),A
+  9287    C3 8F84                           JP      J40
                                 
                                             PAGE
-'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-28
+'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-29
 
 
                                 
                                 ;****************************************************************
                                 ;*               Monitorvektor - Konstanten                     *
                                 ;****************************************************************
-  138A    0017                  STPO:       DW      00017H              ;ZPOS=24 , SPOS= 1
-  138C    0106                              DW      00106H              ;ZMIN= 6 , SMIN= 1
-  138E    5018                              DW      MAX                 ;ZMAX=24 , SMAX=80
-  1390    5018                              DW      MAX                 ;ZANZ=24 , SPANZ=80
-  1392    0100                              DW      BWSA                ;Pseudo-BWS fuer TRACE
-  1394    C0                                DB      0C0H
-  1395    E0                                DB      0E0H
-  1396    0000                              DW      0
-  1398    CD99                              DW      MROLL               ;MO.ROLL
+  928A    0017                  STPO:       DW      00017H              ;ZPOS=24 , SPOS= 1
+  928C    0106                              DW      00106H              ;ZMIN= 6 , SMIN= 1
+  928E    5018                              DW      MAX                 ;ZMAX=24 , SMAX=80
+  9290    5018                              DW      MAX                 ;ZANZ=24 , SPANZ=80
+  9292    8000                              DW      BWSA                ;Pseudo-BWS fuer TRACE
+  9294    C0                                DB      0C0H
+  9295    E0                                DB      0E0H
+  9296    0000                              DW      0
+  9298    CD99                              DW      MROLL               ;MO.ROLL
                                 
-  139A    0000                  STPO2:      DW      0                   ;ZPOS= 1 , SPOS= 1
-  139C    0101                              DW      00101H              ;ZMIN= 1 , SMIN= 1
-  139E    5018                              DW      MAX                 ;ZMAX=24 , SMAX=80
-  13A0    5018                              DW      MAX                 ;ZANZ=24 , SPANZ=80
-  13A2    0100                              DW      BWSA
-  13A4    C0                                DB      0C0H
-  13A5    C0                                DB      0C0H
-  13A6    0000                              DW      0
-  13A8    0000                              DW      0
+  929A    0000                  STPO2:      DW      0                   ;ZPOS= 1 , SPOS= 1
+  929C    0101                              DW      00101H              ;ZMIN= 1 , SMIN= 1
+  929E    5018                              DW      MAX                 ;ZMAX=24 , SMAX=80
+  92A0    5018                              DW      MAX                 ;ZANZ=24 , SPANZ=80
+  92A2    8000                              DW      BWSA
+  92A4    C0                                DB      0C0H
+  92A5    C0                                DB      0C0H
+  92A6    0000                              DW      0
+  92A8    0000                              DW      0
                                 
-  13AA    0000                  STPO3:      DW      0
-  13AC    0117                              DW      00117H              ;ZMIN=23 , SMIN= 1
-  13AE    5018                              DW      MAX                 ;ZMAX=24 , SMAX=80
-  13B0    5018                              DW      MAX                 ;ZANZ=24 , SPANZ=80
-  13B2    0100                              DW      BWSA
-  13B4    C0                                DB      0C0H
-  13B5    E0                                DB      0E0H
-  13B6    0000                              DW      0
-  13B8    CD99                              DW      MROLL               ;MO.ROLL
+  92AA    0000                  STPO3:      DW      0
+  92AC    0117                              DW      00117H              ;ZMIN=23 , SMIN= 1
+  92AE    5018                              DW      MAX                 ;ZMAX=24 , SMAX=80
+  92B0    5018                              DW      MAX                 ;ZANZ=24 , SPANZ=80
+  92B2    8000                              DW      BWSA
+  92B4    C0                                DB      0C0H
+  92B5    E0                                DB      0E0H
+  92B6    0000                              DW      0
+  92B8    CD99                              DW      MROLL               ;MO.ROLL
                                 
-  13BA                          RPOS:       DS      16,0
-  13CA    00                    ST1:        DB      0
-  13CB    00                    ST2:        DB      0
-  13CC    0000                  ST3:        DW      0
-  13CE    00                    ST4:        DB      0
-  13CF    00                    ST5:        DB      0
-  13D0                          ST6:        DS      8,0
-  13D8                          ST7:        DS      33,0
-  13F9    0000                  ST8:        DW      0
-  13FB                          ST9:        DS      300H,0
-  16FB    0000                  STSP:       DW      0
+  92BA                          RPOS:       DS      16,0
+  92CA    00                    ST1:        DB      0
+  92CB    00                    ST2:        DB      0
+  92CC    0000                  ST3:        DW      0
+  92CE    00                    ST4:        DB      0
+  92CF    00                    ST5:        DB      0
+  92D0                          ST6:        DS      8,0
+  92D8                          ST7:        DS      33,0
+  92F9    0000                  ST8:        DW      0
+  92FB                          ST9:        DS      300H,0
+  95FB    0000                  STSP:       DW      0
                                 
                                             PAGE
-'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-29
+'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-30
 
 
                                 
@@ -1830,90 +1884,106 @@
 Macros:
 
 Symbols:
-0100 	BWSA            0920 	BWSUS           0A37 	C04             
-0A46 	C041            0A42 	C042            0A4F 	C05             
-0AE5 	C06             0B2D 	C07             0C67 	C08             
-0CCC 	C09             0CD6 	C10             0CDD 	C11             
-0CFD 	C111            0CE6 	C12             0CF0 	C13             
-0CF4 	C131            0D06 	C14             0D0B 	C141            
-0D14 	C15             0D1C 	C16             0D25 	C161            
-0D2E 	C17             0D32 	C171            0D45 	C172            
-0D4E 	C18             0DAF 	C21             0D9F 	C211            
-0DF5 	C22             0E09 	C23             0E35 	C24             
-0E3D 	C25             0E49 	C30             0EBE 	C31             
-0F11 	C32             0D63 	C50             0D77 	C51             
-0D80 	C60             0936 	CIN             0942 	CIN1            
-B198 	CMD             09B4 	CON             09D9 	CON1            
-09E3 	CON2            09F1 	CON9            B263 	CST             
-0986 	CST10           098B 	CST11           098E 	CST12           
-099B 	CSTS            0952 	CSTS1           0973 	CSTS2           
-0982 	CSTS3           09A8 	CSTS4           09AC 	CSTS5           
+8000 	BWSA            8820 	BWSUS           8937 	C04             
+8946 	C041            8942 	C042            894F 	C05             
+89E5 	C06             8A2D 	C07             8B67 	C08             
+8BCC 	C09             8BD6 	C10             8BDD 	C11             
+8BFD 	C111            8BE6 	C12             8BF0 	C13             
+8BF4 	C131            8C06 	C14             8C0B 	C141            
+8C14 	C15             8C1C 	C16             8C25 	C161            
+8C2E 	C17             8C32 	C171            8C45 	C172            
+8C4E 	C18             8CAF 	C21             8C9F 	C211            
+8CF5 	C22             8D09 	C23             8D35 	C24             
+8D3D 	C25             8D49 	C30             8DBE 	C31             
+8E11 	C32             8C63 	C50             8C77 	C51             
+8C80 	C60             8836 	CIN             8842 	CIN1            
+B198 	CMD             88B4 	CON             88D9 	CON1            
+88E3 	CON2            88F1 	CON9            B263 	CST             
+8886 	CST10           888B 	CST11           888E 	CST12           
+889B 	CSTS            8852 	CSTS1           8873 	CSTS2           
+8882 	CSTS3           88A8 	CSTS4           88AC 	CSTS5           
 B2D2 	DDAF            B2CA 	DDAFS           B2CC 	DDBC            
 B2C4 	DDBCS           B2CE 	DDDE            B2C6 	DDDES           
 B2B8 	DDEI            B2D0 	DDHL            B2C8 	DDHLS           
 B2BA 	DDI             B2B9 	DDIM            B2C0 	DDIX            
 B2C2 	DDIY            B2BC 	DDPC            B2BB 	DDR             
-B2BE 	DDSP            C293 	INIT6           0AAF 	J09             
-0AA3 	J091            0AAD 	J092            0AB1 	J093            
-0ADF 	J10             0AE0 	J11             0AE1 	J12             
-0AE2 	J13             0B75 	J20             0BA5 	J21             
-0BBE 	J22             0BD8 	J23             0BDC 	J24             
-0BE0 	J25             0BE4 	J26             0BF6 	J27             
-0BFC 	J28             0C08 	J29             0C0C 	J30             
-0C1A 	J31             0C2F 	J32             0C40 	J33             
-0C53 	J34             0CB2 	J341            0CB5 	J35             
-0D5E 	J36             0DE9 	J38             0DD3 	J39             
-1084 	J40             108A 	J401            10E7 	J41             
-11A7 	J411            1120 	J44             1134 	J441            
-111A 	J45             1138 	J46             1140 	J47             
-1143 	J471            115B 	J48             115F 	J49             
-1162 	J50             1174 	J51             1183 	J511            
-1187 	J52             11B1 	J53             11C6 	J54             
-11CD 	J55             1225 	J551            11E6 	J552            
-11EB 	J553            1208 	J554            1246 	J555            
-1256 	J56             126C 	J57             1288 	J571            
-1294 	J58             1298 	J59             1305 	J60             
-131B 	J601            132E 	J61             134D 	J611            
-1362 	J62             1383 	J621            09FD 	LIST            
-092C 	LOAD            102D 	MAIN            5018 	MAX             
-B194 	MBWSA           CB3F 	MO.BWSUS        CB10 	MO.MONI         
-CD99 	MO.ROLL         0917 	MONI            091A 	MRES            
-CD99 	MROLL           B194 	MS.BWSA         B198 	MS.CMD          
-B19E 	MS.CZEIT        B196 	MS.DIRDEL       B197 	MS.DIRES        
-B19D 	MS.MCUR         B19C 	MS.MCZ          B19A 	MS.RADR         
-B191 	MS.SMAX         B18F 	MS.SMIN         B193 	MS.SPANZ        
-B18B 	MS.SPOL         B18D 	MS.SPOS         B199 	MS.TK           
-B192 	MS.ZANZ         B190 	MS.ZMAX         B18E 	MS.ZMIN         
-B18A 	MS.ZPOL         B18C 	MS.ZPOS         B199 	MTK             
-091D 	PRIO            13BA 	RPOS            A000 	S0.BWSA         
-00E0 	S0.PROM         0050 	S0.SPANZ        0018 	S0.ZANZ         
-C328 	S1.AEIN         C3BF 	S1.ANZEI        C5FF 	S1.BHKON        
-C2D3 	S1.CNLS         C2B4 	S1.CNRS         C5CC 	S1.HBKON        
-C54E 	S1.HDI          C592 	S1.IDH          C532 	S1.INPTR        
-C334 	S1.NN           C345 	S1.NNN          C114 	S1.SYSTB        
-C078 	S1RST           B26E 	S2.AADR         B28A 	S2.AFOR         
-B28B 	S2.BZ           B263 	S2.CST          B2B8 	S2.DDEI         
-B28F 	S2.DH           B28E 	S2.DL           B29A 	S2.DM1          
-B2AA 	S2.DM2          B292 	S2.DMANF        B296 	S2.DMBA         
-B298 	S2.DMBE         B294 	S2.DMCUR        B2AB 	S2.DMH          
-B2AC 	S2.DML          B264 	S2.IOC          B270 	S2.KADR         
-B290 	S2.PAR1         B2AF 	S2.S1           B2B0 	S2.S2           
-B2AD 	S2.SMHL         B273 	S2.SP1          B274 	S2.SP2          
-B275 	S2.SP3          B28C 	S2.TE           B276 	S2.TRB          
-B272 	S2.ZP           B262 	S2.ZZ           E657 	S9.CIN          
-E6A6 	S9.CON          E68B 	S9.CSTSX        EE78 	S9.LOAD         
-EE58 	S9.SAVE         0923 	SAVE            A000 	SBWSA           
-13CA 	ST1             13CB 	ST2             13CC 	ST3             
-13CE 	ST4             13CF 	ST5             13D0 	ST6             
-13D8 	ST7             13F9 	ST8             13FB 	ST9             
-138A 	STPO            139A 	STPO2           13AA 	STPO3           
-16FB 	STSP            0A30 	STX2            0A18 	STX3            
-0A22 	STX4            0A33 	STX9            1052 	SUB             
+B2BE 	DDSP            C293 	INIT6           89AF 	J09             
+89A3 	J091            89AD 	J092            89B1 	J093            
+89DF 	J10             89E0 	J11             89E1 	J12             
+89E2 	J13             8A75 	J20             8AA5 	J21             
+8ABE 	J22             8AD8 	J23             8ADC 	J24             
+8AE0 	J25             8AE4 	J26             8AF6 	J27             
+8AFC 	J28             8B08 	J29             8B0C 	J30             
+8B1A 	J31             8B2F 	J32             8B40 	J33             
+8B53 	J34             8BB2 	J341            8BB5 	J35             
+8C5E 	J36             8CE9 	J38             8CD3 	J39             
+8F84 	J40             8F8A 	J401            8FE7 	J41             
+90A7 	J411            9020 	J44             9034 	J441            
+901A 	J45             9038 	J46             9040 	J47             
+9043 	J471            905B 	J48             905F 	J49             
+9062 	J50             9074 	J51             9083 	J511            
+9087 	J52             90B1 	J53             90C6 	J54             
+90CD 	J55             9125 	J551            90E6 	J552            
+90EB 	J553            9108 	J554            9146 	J555            
+9156 	J56             916C 	J57             9188 	J571            
+9194 	J58             9198 	J59             9205 	J60             
+921B 	J601            922E 	J61             924D 	J611            
+9262 	J62             9283 	J621            D576 	K1.ARBT         
+D548 	K1.ARMB         D58F 	K1.BLKM         D581 	K1.BLKP         
+D5CE 	K1.BM           D5D5 	K1.F17          D7EB 	K1.GNLMN        
+D7B1 	K1.GNLP         D7B3 	K1.GNLPN        D725 	K1.GNRA         
+D85B 	K1.GNRD         D708 	K1.GNRE         D780 	K1.GNRM         
+D765 	K1.GNRP         D740 	K1.GNRW         D8EF 	K1.GNRWR        
+D6B1 	K1.GNSTS        D8CB 	K1.GNWR         D5C1 	K1.LHLBC        
+D870 	K1.PUFT         D5AB 	K1.RCZM         D5B9 	K1.RCZN         
+D59D 	K1.RCZP         D5ED 	K1.RGL1         D5FE 	K1.RGL2         
+B136 	K2.FRADR        B134 	K2.SKADR        88FD 	LIST            
+DECC 	LO.EIN          E239 	LO.EIN1         882C 	LOAD            
+8F2D 	MAIN            5018 	MAX             B194 	MBWSA           
+CF45 	MO.BWSE         CB3F 	MO.BWSUS        CB10 	MO.MONI         
+CF4C 	MO.PNSP         CD99 	MO.ROLL         8817 	MONI            
+881A 	MRES            CD99 	MROLL           B194 	MS.BWSA         
+B198 	MS.CMD          B19E 	MS.CZEIT        B196 	MS.DIRDEL       
+B197 	MS.DIRES        B19D 	MS.MCUR         B19C 	MS.MCZ          
+B19A 	MS.RADR         B191 	MS.SMAX         B18F 	MS.SMIN         
+B193 	MS.SPANZ        B18B 	MS.SPOL         B18D 	MS.SPOS         
+B199 	MS.TK           B192 	MS.ZANZ         B190 	MS.ZMAX         
+B18E 	MS.ZMIN         B18A 	MS.ZPOL         B18C 	MS.ZPOS         
+B199 	MTK             881D 	PRIO            92BA 	RPOS            
+A000 	S0.BWSA         F5CF 	S0.BWSUS        BBF0 	S0.PFFA         
+B7E0 	S0.PFFI         00E0 	S0.PROM         0050 	S0.SPANZ        
+0018 	S0.ZANZ         C328 	S1.AEIN         C3BF 	S1.ANZEI        
+C8B0 	S1.ANZU1        C8C0 	S1.ANZU2        C5FF 	S1.BHKON        
+C652 	S1.CHK          C2D3 	S1.CNLS         C2B4 	S1.CNRS         
+C82E 	S1.DB111        C86E 	S1.EINDB        C5CC 	S1.HBKON        
+C54E 	S1.HDI          C995 	S1.HXN1         C592 	S1.IDH          
+C532 	S1.INPTR        C935 	S1.MEAA         C9E4 	S1.MEAU2        
+C334 	S1.NN           C345 	S1.NNN          C02D 	S1.SM           
+C8CD 	S1.SYDB2        C114 	S1.SYSTB        C078 	S1RST           
+B26E 	S2.AADR         B28A 	S2.AFOR         B28B 	S2.BZ           
+B263 	S2.CST          B2B8 	S2.DDEI         B28F 	S2.DH           
+B28E 	S2.DL           B29A 	S2.DM1          B2AA 	S2.DM2          
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	S-1
 
 
-090E 	SYSTB           D408 	TA.LOE          0911 	TA1             
-0914 	TA2             129B 	TAB2            B23C 	TK              
+B292 	S2.DMANF        B296 	S2.DMBA         B298 	S2.DMBE         
+B294 	S2.DMCUR        B2AB 	S2.DMH          B2AC 	S2.DML          
+B26B 	S2.DNR          B264 	S2.IOC          B270 	S2.KADR         
+B290 	S2.PAR1         B265 	S2.PRGN         B26C 	S2.RBBR         
+B2AF 	S2.S1           B2B0 	S2.S2           B2AD 	S2.SMHL         
+B273 	S2.SP1          B274 	S2.SP2          B275 	S2.SP3          
+B28C 	S2.TE           B276 	S2.TRB          B272 	S2.ZP           
+B262 	S2.ZZ           E657 	S9.CIN          E6A6 	S9.CON          
+E68B 	S9.CSTSX        EE78 	S9.LOAD         EE58 	S9.SAVE         
+8823 	SAVE            A000 	SBWSA           92CA 	ST1             
+92CB 	ST2             92CC 	ST3             92CE 	ST4             
+92CF 	ST5             92D0 	ST6             92D8 	ST7             
+92F9 	ST8             92FB 	ST9             928A 	STPO            
+929A 	STPO2           92AA 	STPO3           95FB 	STSP            
+8930 	STX2            8918 	STX3            8922 	STX4            
+8933 	STX9            8F52 	SUB             880E 	SYSTB           
+D408 	TA.LOE          D420 	TA.LOES         8811 	TA1             
+8814 	TA2             919B 	TAB2            B23C 	TK              
 B249 	TS.BFOL1        B24B 	TS.BFOL2        B22D 	TS.EINA         
 B23E 	TS.EMERK        B241 	TS.KGMER        B248 	TS.MBF          
 B247 	TS.MIO          B231 	TS.NEWL         B23B 	TS.PTAST        
@@ -1922,11 +1992,11 @@ B19F 	TS.TAB1         B1FF 	TS.TAB2         B217 	TS.TAB3
 B223 	TS.TAB4         B233 	TS.TAB5         B22F 	TS.TABU         
 B23C 	TS.TK           B240 	TS.UMERK        B245 	TS.ZEI21        
 B243 	TS.ZEIT1        B244 	TS.ZEIT2        B242 	TS.ZSMER        
-B246 	TS.ZSTC         0F25 	TXT1            0F91 	TXT11           
-0FA2 	TXT12           0FC4 	TXT13           0FE6 	TXT2            
-101C 	TXT3            0C28 	USB1            0C39 	USB2            
-0C4E 	USB3            0C61 	USB4            11E3 	USB90           
-0B95 	USBEF           0001 	V1              B18C 	ZPOS            
+B246 	TS.ZSTC         8E25 	TXT1            8E91 	TXT11           
+8EA2 	TXT12           8EC4 	TXT13           8EE6 	TXT2            
+8F1C 	TXT3            8B28 	USB1            8B39 	USB2            
+8B4E 	USB3            8B61 	USB4            90E3 	USB90           
+8A95 	USBEF           0001 	V1              B18C 	ZPOS            
 B262 	ZZ              
 
 

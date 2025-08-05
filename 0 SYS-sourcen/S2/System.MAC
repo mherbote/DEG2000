@@ -1643,7 +1643,7 @@ S1.SCHR     EQU     $
 ;*               Macro zu Erzeugung des Steuervektors nach      *
 ;*               ROBOTRON - MOS                                 *
 ;****************************************************************
-S3.RMOS     MACRO   SB,FB,BA,SA,CMD,ENTRY,PUADR,PULAE,INF1,INF2
+S3.RMOS     MACRO   SB,FB,BA,SA,CMD,ENTRY,PUADR,PULAE,INF1,INF2,INF3
             DB      SB                  ;Statusbyte
             DB      FB                  ;Fehlerbyte
             DB      BA                  ;Basisadresse
@@ -1655,6 +1655,7 @@ S3.RMOS     MACRO   SB,FB,BA,SA,CMD,ENTRY,PUADR,PULAE,INF1,INF2
             DB      LOW(PULAE)
             DB      INF1                ;Informationsbyte 1
             DB      INF2                ;Informationsbyte 2
+            DB      INF3                ;Informationsbyte 3
             ENDM
 
 ;****************************************************************
@@ -1687,7 +1688,7 @@ S3.STI:     DB      0
 S3.KS1:     DB      S3.KS2-S3.KS1       ;Laengenbyte
             DB      11000000B           ;Typ - Kennsatz ja , SYS-Geraet
             DB      11000001B           ;Geraetebyte
-            S3.RMOS 0,0,S0.AKB,1,0,0,S0.PFFI,100H,0,0
+            S3.RMOS 0,0,S0.AKB,1,0,0,S0.PFFI,100H,0,0,0
             DW      0                   ;OPEN
             DW      0                   ;CLOSE
             DW      0                   ;READ
@@ -1699,7 +1700,7 @@ S3.KS1:     DB      S3.KS2-S3.KS1       ;Laengenbyte
 S3.KS2:     DB      S3.DFU-S3.KS2       ;Laengenbyte
             DB      10000000B           ;Typ - Kennsatz ja
             DB      11000001B           ;Geraetebyte
-            S3.RMOS 0,0,S0.AKB,2,0,0,S0.PFFI,100H,0,0
+            S3.RMOS 0,0,S0.AKB,2,0,0,S0.PFFI,100H,0,0,0
             DW      0                   ;OPEN
             DW      0                   ;CLOSE
             DW      0                   ;READ
@@ -1713,7 +1714,7 @@ S3.KS2:     DB      S3.DFU-S3.KS2       ;Laengenbyte
 S3.DFU:     DB      S3.LBL-S3.DFU       ;Laengenbyte
             DB      10000000B           ;Typ - Kennsatz ja
             DB      11000000B           ;Geraetebyte
-            S3.RMOS 0,0,S0.V24,0,0,0,S0.PFFI,400H,0,0
+            S3.RMOS 0,0,S0.V24,0,0,0,S0.PFFI,400H,0,0,0
             DW      0                   ;OPEN
             DW      0                   ;CLOSE
             DW      0                   ;READ
@@ -1725,7 +1726,7 @@ S3.DFU:     DB      S3.LBL-S3.DFU       ;Laengenbyte
 S3.LBL:     DB      S3.LBS-S3.LBL       ;Laengenbyte
             DB      00000000B           ;Typ - Kennsatz nein
             DB      01000000B           ;Geraetebyte
-            S3.RMOS 0,0,S0.ADA,0,02H,0,S0.PFFI,400H,7FH,19H
+            S3.RMOS 0,0,S0.ADA,0,02H,0,S0.PFFI,400H,7FH,19H,0
             DW      0                   ;OPEN
             DW      0                   ;CLOSE
             DW      0                   ;READ
@@ -1736,7 +1737,7 @@ S3.LBL:     DB      S3.LBS-S3.LBL       ;Laengenbyte
 S3.LBS:     DB      S3.PRIN-S3.LBS      ;Laengenbyte
             DB      00000000B           ;Typ - Kennsatz nein
             DB      10000000B           ;Geraetebyte
-            S3.RMOS 0,0,S0.ADA,0,0,0,S0.PFFA,400H,80H,19H
+            S3.RMOS 0,0,S0.ADA,0,0,0,S0.PFFA,400H,80H,19H,0
             DW      0                   ;OPEN
             DW      0                   ;CLOSE
             DW      0                   ;WRITE
@@ -1747,7 +1748,7 @@ S3.LBS:     DB      S3.PRIN-S3.LBS      ;Laengenbyte
 S3.PRIN:    DB      S3.ENDEA-S3.PRIN    ;Laengenbyte
             DB      00000000B           ;Typ - Kennsatz nein
             DB      10000001B           ;Geraetebyte
-            S3.RMOS 0,0,S0.DRU,S0.IVSYS,0,0,S0.PFFA,400H,0,0
+            S3.RMOS 0,0,S0.DRU,S0.IVSYS,0,0,S0.PFFA,400H,0,0,0
             DW      SM.MRES             ;OPEN
             DW      0                   ;CLOSE
             DW      SM.PRIO             ;WRITE
@@ -3566,17 +3567,58 @@ K1.ARMB:    PUSH    IX
             LD      DE,K1.ADRK3
             CALL    K1.MONI
             CALL    K1.MVL
-            LD      (IX+5),LOW(K1.ARMB1)
-            LD      (IX+6),HIGH(K1.ARMB1)
-K1.ARMBM:   CALL    S0.KRZU             ;BAMOS-Routine zuschalten
-;            CALL    0   ;??? KR.BRKMB            ;Ausfuehrung Kassettenkommando
-K1.ARMB0:   HALT                        ;warten auf Routinen-Ende
-            JR      K1.ARMB0
-K1.ARMB1:   INC     SP                  ;stack-pointer korrigieren
-            INC     SP
+            ; LD      (IX+5),LOW(K1.ARMB1)
+            ; LD      (IX+6),HIGH(K1.ARMB1)
+K1.ARMBM:   PUSH    IX
+            CALL    S0.KRZU             ;BAMOS-Routine zuschalten
+            CALL    K1.IX2V1            ;???? ;IX-Bereich ===> V1
+            CALL    KR.BRKMB            ;Ausfuehrung Kassettenkommando
+            POP     IX
+            CALL    K1.V12IX            ;V1 ===> IX-Bereich
+; K1.ARMB0:   HALT                        ;warten auf Routinen-Ende
+;             JR      K1.ARMB0
+; K1.ARMB1:   INC     SP                  ;stack-pointer korrigieren
+;             INC     SP
             CALL    S2.STACK            ;BAMOS-Routine wegschalten
             POP     IY
             POP     IX
+            RET
+;****************************************************************
+;*  K M B G      IX-Bereich to SYS V1.2                         *
+;****************************************************************
+K1.IX2V1:   PUSH    HL
+            PUSH    DE
+            PUSH    BC
+            PUSH    IX
+            POP     HL
+            LD      IX,UB.KTAB
+            LD      (IX-2),2            ;HS-Bereich V2.13 (K0.HSB)
+            LD      DE,UB.KTAB
+            LD      BC,11
+            LDIR
+            POP     BC
+            POP     DE
+            POP     HL
+            RET
+;****************************************************************
+;*  K M B G      SYS V1.2 to IX-Bereich                         *
+;****************************************************************
+K1.V12IX:   PUSH    HL
+            PUSH    DE
+            PUSH    BC
+            PUSH    IX
+            PUSH    IX
+            POP     DE
+            LD      HL,UB.KTAB          ;Statusbyte und Fehlerbyte holen
+            LD      BC,2
+            LDIR
+            POP     IX
+            LD      HL,UB.KTAB-1        ;Laenge der Daten im Puffer (1 BM, 2 SL, 20H oder 80H)
+            LD      B,(HL)
+            LD      (IX+13),B
+            POP     BC
+            POP     DE
+            POP     HL
             RET
 ;****************************************************************
 ;*  K M B G      Fehlertest nach CALL ARMB                      *
@@ -9300,7 +9342,7 @@ S0.BASCL    EQU     $
 S0.TAZU:    CALL    S0.EM12
             RET
 
-S0.KRZU:    CALL    S0.EM11
+S0.KRZU:    CALL    S0.EM12
             RET
 
 ;           END

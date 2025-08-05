@@ -13,7 +13,7 @@
     Public III As Byte                                                          ' Z80 interrupt register
     Public IFF As Byte                                                          ' Z80 interrupt flags
     Public IX, IY As ULong                                                      ' Z80 
-    Public R As ULong                                                           ' Z80 refresh register
+    Public R As Byte                                                            ' Z80 refresh register
 
     Public wrk_ram As UShort                                                    ' workpointer into memory for dump etc. *wrk_ram
     Public cpu_state As Integer                                                 '       status of CPU emulation
@@ -59,6 +59,7 @@
 #If SBSIZE0 = 1 Then
     Public Class softbreak                                                      ' structure of a breakpoint        
         Public sb_adr As UShort                                                 ' address of breakpoint
+        Public sb_bereich As UShort                                             ' Speicherbereich {0 ... 5}        '???  muß ncoh erweitert werden
         Public sb_oldopc As Byte                                                ' op-code at adress of breakpoint
         Public sb_passcount As Integer                                          ' pass counter of breakpoint
         Public sb_pass As Integer                                               ' no. of pass to break

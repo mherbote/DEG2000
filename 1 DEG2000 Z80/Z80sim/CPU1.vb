@@ -123,7 +123,11 @@ Public Class CPU1
                 '#            Timer.tv_sec = 0
                 '#            Timer.tv_nsec =1000000L;
                 '#            nanosleep(&timer, NULL);
-                COMMON.vZ80cpu.R = COMMON.vZ80cpu.R + 9999
+                If COMMON.vZ80cpu.R = 255 Then
+                    COMMON.vZ80cpu.R = 0
+                Else
+                    COMMON.vZ80cpu.R = COMMON.vZ80cpu.R + 1 '9999
+                End If
             End While
 
         Catch ex As Exception
@@ -2107,7 +2111,11 @@ Public Class CPU1
                 If COMMON.vZ80cpu.PC > 65535 Then COMMON.vZ80cpu.PC = 0
 #End If
                 Try
-                    COMMON.vZ80cpu.R = COMMON.vZ80cpu.R + 1                     ' increment refresh register
+                    If COMMON.vZ80cpu.R = 255 Then
+                        COMMON.vZ80cpu.R = 0
+                    Else
+                        COMMON.vZ80cpu.R = COMMON.vZ80cpu.R + 1                 ' increment refresh register
+                    End If
                 Catch ex As Exception
                     MsgBox("CPU1.CPU (vZ80cpu.R): " + ex.Message)
                 End Try

@@ -63,6 +63,7 @@ KMBRUC:    RET              ;04063H
 KMBINI:    RET              ;04066H
            NOP
            NOP
+BRKMB:     JP   K1.BRKMB    ;04069H 
 
 ;   END
 

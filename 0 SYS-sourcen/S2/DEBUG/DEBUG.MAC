@@ -2,13 +2,13 @@
             DB      0EFH                ; Startbyte ---> 
             DS      12,0
             DB      002H                ; HS-Bereich : 2
-            DW      09000H              ; Ladeadresse: 9000H
+            DW      08000H              ; Ladeadresse: 8000H
 ;--------------------------/
 
             INCLUDE S21EQU1.MAC
             INCLUDE S21EQU2.MAC
 
-            .PHASE  09000H
+            .PHASE  08000H
 ;           PN      D010
 ;****************************************************************
 ;*	             D  E  B  U  G   ---   Steuerprogramm           *
@@ -307,8 +307,7 @@ D0.MEPQ:    CALL    D0.AS
             CALL    MO.MONI
             LD      DE,(S2.DL)          ;DE <== Anfangsadresse fuer MEMO           
             LD      A,1
-            ;JP      D1.MEMO             ;???
-            HALT
+            JP      D1.MEMO
 
 ;****************************************************************
 ;*	                     D E B U G   -   Funktion :  ROMT       *
@@ -689,9 +688,10 @@ D0.DDU02:   CALL    MO.MONI
 ;**********************************************************************
 ;           Anzeige :    $$$$$
 D0.DDU03:   LD      (MS.ZPOS),HL
-            LD      A,001H              ;Zeichen : $ 	           (03)
+            LD      A,081H              ;Zeichen : $   alt:001H   mitte   (03)
             LD      C,0C0H              ;Richtung: Ost
             CALL    D0.DDU01
+            RET
 ;           Anzeige :    $
 ;                        $
 ;                        $
@@ -704,13 +704,13 @@ D0.DDU04:   LD      (MS.ZPOS),HL
 D0.DDU05:   LD      C,0C0H              ;Richtung: Ost
             PUSH    BC
             LD      (MS.ZPOS),HL
-            LD      A,002H              ;Zeichen : $
+            LD      A,082H              ;Zeichen : $   alt:002H   links
             LD      B,1
             CALL    D0.DDU01
             LD      HL,(MS.ZPOS)
             POP     BC
             CALL    D0.DDU03
-            LD      A,003H              ;Zeichen : $ 	           (01)
+            LD      A,083H              ;Zeichen : $   alt:003H   rechts   (01)
             LD      BC,00100H
             CALL    D0.DDU01
             RET
@@ -718,13 +718,13 @@ D0.DDU05:   LD      C,0C0H              ;Richtung: Ost
 D0.DDU17:   LD      C,0C0H
             PUSH    BC
             LD      (MS.ZPOS),HL
-            LD      A,00AH
+            LD      A,08AH
             LD      B,1
             CALL    D0.DDU01
             LD      HL,(MS.ZPOS)
             POP     BC
             CALL    D0.DDU03
-            LD      A,00BH
+            LD      A,08BH
             LD      BC,00100H
             CALL    D0.DDU01
             RET
@@ -736,16 +736,17 @@ D0.DDU06:   LD      C,0C6H              ;Richtung: Sued
             LD      (MS.ZPOS),HL
             LD      A,001H              ;Zeichen : $	           (05)
             LD      B,1
-            CALL    D0.DDU01
+            ;CALL    D0.DDU01
             LD      HL,(MS.ZPOS)
+            INC     L
             POP     BC
             CALL    D0.DDU04
             LD      A,001H              ;Zeichen : $	           (04)
             LD      BC,00100H
-            CALL    D0.DDU01
+            ;CALL    D0.DDU01
             RET
 ;
-D0.DDU07:   LD      BC,00E04H
+D0.DDU07:   LD      BC,00E04H           ;Rahmen Zeichnen   
             CALL    D0.DDU18
             LD      HL,(S2.DM1)
             LD      A,H
@@ -798,6 +799,8 @@ D0.DDU08:   LD      A,20
 D0.DDU09:   DB      'Ebene'
 D0.DDU10:   LD      (MS.ZPOS),HL
             LD      B,5
+            LD      A,0C0H              ;Richtung: Ost
+            LD      (MS.DIRES),A
             LD      HL,D0.DDU09
             CALL    MO.MONI
             RET
@@ -863,6 +866,7 @@ D0.DDU18:   PUSH    BC                  ; |---------|
             CALL    D0.DDU05            ; |---------|
             LD      HL,(MS.ZPOS)        ;    < B >
             INC     L
+            DEC     H
             POP     BC
             PUSH    BC
             LD      B,C
@@ -1409,6 +1413,701 @@ D0.BZEIN:   LD      A,(TS.TK)
             RET     NC
             JR      D0.DZEIN
 ;
+;           PN      D103
+;****************************************************************
+;*                  D E B U G   ---   Programm   MEMO           '
+;*   Version        --------------------------------------------*
+;*                  Programmierer: Marcus Herbote--- IfR - OE-S *
+;*   V 1 . 0        --------------------------------------------*
+;*                  Stand        : 22.November 1982             *
+;****************************************************************
+            DB      'V1.0/22.11.82'
+            DW      $
+            DB      'MEM2'
+            CALL    S1.INPTR
+            INC     HL
+            CALL    S1.HBKON
+            LD      E,A
+            XOR     A                   ;Merker fuer Rueckkehr ins System
+;****************************************************************
+;*                  Eintrittspunkt vom DEBUG - Steuerprogramm   *
+;****************************************************************
+D1.MEMO:    PUSH    AF
+            LD      (S2.DMANF),DE
+            LD      (S2.DMCUR),DE
+            XOR     A
+            LD      (S2.DM2),A
+            LD      HL,0                ;Bereich auf 0000 bis 0000 setzen
+            LD      (S2.DMBA),HL
+            LD      (S2.DMBE),HL
+            LD      HL,00B00H           ;ZPOS = 0 , SPOS = 11
+            LD      (MS.ZPOS),HL
+            LD      A,24
+            LD      (MS.CMD),A
+            LD      B,38
+            LD      HL,$+8
+            CALL    MO.MONI
+            JR      $+40
+;
+            DB      'Memory Display and Change Version 1.0'
+            LD      HL,00015H           ;ZPOS = 21 , SPOS = 0
+            LD      (MS.ZPOS),HL
+            LD      B,58
+            LD      HL,$+8
+            CALL    MO.MONI
+            JR      $+60
+;
+            DB      'Cursorposition: .... '
+            DB      'Bereichanfang:	'
+            DB      'Bereichende: ....'
+            CALL    DMB
+            CALL    DMCP
+            CALL    DMBAP
+            CALL    DMBEP
+            LD      HL,00802H           ;ZPOS = 2 , SPOS = 8
+            LD      (S2.DL),HL
+            LD      HL,MS.DIRES
+            SET     5, (HL)
+            CALL    DMUP4
+            TITLE   'Tastaturdefinitionen'
+            PAGE
+;****************************************************************
+;*                  Tastaturdefinitionen                        *
+;****************************************************************
+            CALL    TA.LOE
+            LD      HL,DMP4
+            LD      (TS.TAB1+6),HL
+            LD      HL,DMP5
+            LD      (TS.TAB1+8),HL
+            LD      HL,DMTAB
+            LD      DE,TS.TAB2
+            LD      BC,52
+            LDIR
+            LD      A,0A8H
+            LD      (TS.SPMER),A
+            POP     AF
+            CP      0
+            JR      Z,MEMS
+            CP      1
+            JR      Z,MEMD
+            CP      2
+            JR      Z,MEMR
+            CP      3
+            JR      Z,MEMU
+MEMS:       RET
+MEMD:       LD      HL,D0.DD
+            LD      (TS.TAB3+6),HL
+            RET
+MEMR:       LD      HL,D0.RGDC
+            LD      (TS.TAB3+6),HL
+            RET
+MEMU:       LD      HL,D0.UCPU
+            LD      (TS.TAB3+6),HL
+            RET
+;****************************************************************
+;*                  Tastenroutinen-Adress-Tabelle               *
+;****************************************************************
+DMTAB:      DW      DMIM
+            DW      0
+            DW      0
+            DW      0
+            DW      DMSL                ;SCH LINKS
+            DW      DMCN
+            DW      DMSR                ;SCH RECHTS
+            DW      DMCW
+            DW      DMHOM
+            DW      DMCO
+            DW      DMNZ
+            DW      DMCS
+            DW      DMN2H
+            DW      DMN3H
+            DW      DMNQU
+            DW      S1.SYSTB
+            DW      0
+            DW      0
+            DW      DMPQU
+            DW      0
+            DW      0
+            DW      0
+            DW      0
+            DW      DMAH                ;EINA
+            DW      0                   ;TABU
+            DW      0                   ;NEW LINE
+
+            TITLE   'Cursortastenroutinen'
+            PAGE
+;****************************************************************
+;*                  Cursortastenroutine:	DMCN                *
+;****************************************************************
+DMCN:       LD      HL,DMRO
+            LD      (MS.RADR),HL
+            LD      A,0E2H
+            LD      (MS.DIRES),A
+            LD      A,21
+            LD      (MS.CMD),A
+            CALL    MO.MONI
+            LD      A,0E0H
+            LD      (MS.DIRES),A
+            CALL    DMUP3
+            LD      HL,(S2.DMCUR)
+	        LD      A,(TS.UMERK)
+            OR      A
+            JR      NZ,DMCN2
+            LD      DE,10H
+DMCN1:      SBC     HL,DE
+            LD      (S2.DMCUR),HL
+            CALL    DMCP
+            CALL    DMUP4
+            JR      DMCS3
+;
+DMCN2:      LD      DE,40H
+            JR      DMCN1
+;****************************************************************
+;*                  Cursortastenroutine:	DMCS                *
+;****************************************************************
+DMCS:       LD      HL,DMRU
+            LD      (MS.RADR),HL
+            LD      A,0E6H
+            LD      (MS.DIRES),A
+            LD      A,21
+            LD      (MS.CMD),A
+            CALL    MO.MONI
+            LD      A,0E0H
+            LD      (MS.DIRES),A
+            CALL    DMUP3
+            LD      HL,(S2.DMCUR)
+            LD      A,(TS.UMERK)
+            OR      A
+            JR      NZ,DMCS2
+            LD      DE,10H
+DMCS1:      ADD     HL,DE
+            LD      (S2.DMCUR),HL
+            CALL    DMCP
+            CALL    DMUP4
+DMCS3:      JR      DMCW2
+;
+DMCS2:      LD      DE,40H
+            JR      DMCS1
+;
+            PAGE
+;****************************************************************
+;*                  Cursortastenroutine:	DMCW                *
+;****************************************************************
+DMCW:       LD      HL,DMRO
+            LD      (MS.RADR),HL
+            LD      A,0E4H
+            LD      (MS.DIRES),A
+            LD      A,21
+            LD      (MS.CMD),A
+            CALL    MO.MONI
+            LD      A,(TS.UMERK)
+            OR      A
+            JR      NZ,DMCW1
+            CALL    MO.MONI
+            CALL    MO.MONI
+            CALL    MO.MONI
+DMCW1:      LD      A,0E0H
+            LD      (MS.DIRES),A
+            CALL    DMUP3
+            LD      HL,(S2.DMCUR)
+            DEC     HL
+            LD      (S2.DMCUR),HL
+            CALL    DMCP
+            CALL    DMUP4
+DMCW2:      JR      DMCO2
+;****************************************************************
+;*                  Cursortastenroutine:	DMCO                *
+;****************************************************************
+DMCO:       LD      HL,DMRU
+            LD      (MS.RADR),HL
+            LD      A,21
+            LD      (MS.CMD),A
+            CALL    MO.MONI
+            LD      A,(TS.UMERK)
+            OR      A
+            JR      NZ,DMCO1
+            CALL    MO.MONI
+            CALL    MO.MONI
+            CALL    MO.MONI
+DMCO1:      CALL    DMUP3
+            LD      HL,(S2.DMCUR)
+            INC     HL
+            LD      (S2.DMCUR),HL
+            CALL    DMCP
+            CALL    DMUP4
+DMCO2:      JR      DMNQ4
+;
+            PAGE
+;****************************************************************
+;*                  Cursortastenroutine:	DMHOM               *
+;****************************************************************
+DMHOM:      LD      A,22
+            LD      (MS.CMD),A
+            CALL    MO.MONI
+            CALL    DMUP3
+            LD      HL,(S2.DMANF)
+            LD      (S2.DMCUR),HL
+            CALL    DMCP
+            CALL    DMUP4
+            RET
+;****************************************************************
+;*                  Cursortastenroutine:	DMNZ                *
+;****************************************************************
+DMNZ:       LD      A,23
+            LD      (MS.CMD),A
+            CALL    MO.MONI
+            CALL    DMUP3
+            LD      HL,(S2.DMANF)
+            RET
+;            
+            TITLE   'Tastenroutinen : PQU / NQU '
+            PAGE
+;****************************************************************
+;*                  Tastenroutine negative Quittierung          *
+;****************************************************************
+DMNQU:      CALL    DMUP3
+            LD      HL,(MS.ZPOS)
+            PUSH    HL
+            LD      A,(TS.UMERK)
+            OR      A
+            JR      NZ,DMNQ2
+            LD      DE,100H
+DMNQ1:      LD      HL,(S2.DMANF)
+            SBC     HL,DE
+            LD      (S2.DMANF),HL
+            LD      HL,(S2.DMCUR)
+            SBC     HL,DE
+DMNQ3:      LD      (S2.DMCUR),HL
+            CALL    DMB
+            CALL    DMCP
+            POP     HL
+            LD      (MS.ZPOS),HL
+            CALL    DMUP4
+DMNQ4:      JP      DMAH3
+;
+DMNQ2:      LD      DE,400H
+            JR      DMNQ1
+;****************************************************************
+;*                  Tastenroutine positive Quittierung          *
+;****************************************************************
+DMPQU:      CALL    DMUP3
+            LD      HL,(MS.ZPOS)
+            PUSH    HL
+            LD      A,(TS.UMERK)
+            OR      A
+            JR      NZ,DMPQ2
+            LD      DE,100H
+DMPQ1:      LD      HL,(S2.DMANF)
+            ADD     HL,DE
+            LD      (S2.DMANF),HL
+            LD      HL,(S2.DMCUR)
+            ADD     HL,DE
+            JR      DMNQ3
+DMPQ2:      LD      DE,400H
+            JR      DMPQ1
+;
+            TITLE   'Tastenroutine: DMIM '
+            PAGE
+;****************************************************************
+;*                  Tastenroutine   insert mode                 *
+;****************************************************************
+DMIM:       CALL    DMUP3               ;Umschalten alpha <==> hexa
+            LD      HL,(S2.DMCUR)
+            LD      (S2.DMANF),HL
+            CALL    DMB
+            CALL    DMCP
+            LD      HL,00802H           ;ZPOS = 2 , SPOS = 8
+            LD      (S2.DL),HL
+            CALL    DMUP4
+            LD      A,(TS.UMERK)
+            OR      A
+            JR      NZ,DMIM1
+            LD      HL,DMAH
+            LD      (TS.EINA),HL
+            LD      HL,DMN2H
+            LD      (TS.TAB3),HL
+            LD      HL,DMN3H
+            LD      (TS.TAB3+2),HL
+            LD      A,0A8H
+            LD      (TS.SPMER),A
+            RET
+;
+DMIM1:      LD      HL,DMAA
+            LD      (TS.EINA),HL
+            LD      HL,DMN2A
+            LD      (TS.TAB3),HL
+            LD      HL,DMN3A
+            LD      (TS.TAB3+2),HL
+            LD      A,0FFH
+            LD      (TS.SPMER),A
+            RET
+;
+            TITLE   'Tastenroutinen: DMAH/DMAA '
+            PAGE
+;****************************************************************
+;*                  Tastenroutinen fuer alphanumerische Tasten  *
+;****************************************************************
+DMAH:       LD      A,(TS.TK)
+            CP      'G'
+            RET     NC
+            CP      'A'
+            JR      NC,DMAH1
+            CP      ':'
+            RET     NC
+            CP      '0'
+            JR      NC,DMAH1
+            RET
+;
+DMAH1:      LD      A,(S2.DM2)
+            OR      A
+            JR      NZ,DMAH4
+            INC     A
+            LD      (S2.DM2),A
+            LD      A,(TS.TK)
+            LD      (S2.DMH),A
+DMAH3:      LD      A,1
+            LD      (TS.ZSMER),A
+            RET
+;
+DMAH4:      LD      A,(TS.TK)
+            LD      (S2.DML),A
+            LD      HL,S2.DMH
+            CALL    S1.HBKON
+            LD      HL,(S2.DMCUR)
+            LD      (HL),A
+            LD      A,(HL)              ;???
+            LD      HL,S2.DMH
+            CALL    S1.BHKON
+            LD      HL,DMRU
+            LD      (MS.RADR),HL
+            LD      A,24
+            LD      (MS.CMD),A
+            LD      HL,S2.DMH
+            LD      B,2
+            CALL    MO.MONI
+            LD      A,21
+            LD      (MS.CMD),A
+            CALL    MO.MONI
+            CALL    MO.MONI
+DMAH5:      LD      HL,(S2.DMCUR)
+            INC     HL
+            LD      (S2.DMCUR),HL
+            CALL    DMUP3
+            CALL    DMCP
+            CALL    DMUP4
+            JR      DMAH3
+            PAGE
+;****************************************************************
+;*                                                              *
+;****************************************************************
+DMAA:       LD      HL,(S2.DMCUR)
+            LD      A,(MS.TK)
+            LD      (HL),A
+            LD      A,(HL)              ;???
+            LD      (MS.TK),A
+            LD      A,20
+            LD      (MS.CMD),A
+            LD      HL,DMRU
+            LD      (MS.RADR),HL
+            CALL    MO.MONI
+            JR      DMAH5
+;****************************************************************
+;*                                                              *
+;****************************************************************
+DMN3H:      LD      A,'0'
+            LD      (TS.TK),A
+            CALL    DMAH
+DMN31:      CALL    DMAH
+            CALL    DMAH
+            RET
+;
+DMN2H:      LD      A,'0'
+            LD      (TS.TK),A
+            JR      DMN31
+;****************************************************************
+;*                                                              *
+;****************************************************************
+DMN3A:      LD      A,'0'
+            LD      (TS.TK),A
+            CALL    DMAA
+DMN32:      CALL    DMAA
+            CALL    DMAA
+            RET
+;
+DMN2A:      LD      A,'0'
+            LD      (TS.TK),A
+            JR      DMN32
+            TITLE   'Tastenroutinen: DMSL/DMSR '
+            PAGE
+;****************************************************************
+;*                  Tastenroutine Schieben links                *
+;****************************************************************
+DMSL:       LD      HL,(S2.DMBE)
+            LD      DE,(S2.DMBA)
+            OR      A
+            SBC     HL,DE
+            RET     M
+            INC     HL
+            PUSH    HL
+            POP     BC
+            LD      HL,(S2.DMBA)
+            DEC     DE
+            LDIR
+            LD      HL,(S2.DMBA)
+            DEC     HL
+            LD      (S2.DMBA),HL
+            LD      HL, (S2.DMBE)
+            DEC     HL
+            LD      (S2.DMBE),HL
+DMSL1:      CALL    DMUP3
+            CALL    DMB
+            CALL    DMBAP
+            CALL    DMBEP
+            CALL    DMUP4
+            JP      DMAH3
+;****************************************************************
+;*                  Tastenroutine Schieben rechts               *
+;****************************************************************
+DMSR:       LD      HL,(S2.DMBE)
+            LD      DE,(S2.DMBA)
+            OR      A
+            SBC     HL,DE
+            RET     M
+            INC     HL
+            PUSH    HL
+            POP     BC
+            LD      HL,(S2.DMBE)
+            LD      DE,(S2.DMBE)
+            INC     DE
+            LDDR
+            LD      HL,(S2.DMBA)
+            INC     HL
+            LD      (S2.DMBA),HL
+            LD      HL,(S2.DMBE)
+            INC     HL
+            LD      (S2.DMBE),HL
+            JR      DMSL1
+;
+            TITLE   'MEMO -- Unterprogramme'
+            PAGE
+;****************************************************************
+;*                                                              *
+;****************************************************************
+DMUP1:      PUSH    HL                  ;Zieladresse   Zeile loeschen
+            POP     DE
+            PUSH    DE
+            INC     DE
+            LD      (HL),' '
+            LD      BC,(MS.SPANZ)
+            LD      B,0
+            LDIR
+            POP     HL
+            LD      DE,(S2.DM1)         ;Zeilenadresse aufbereiten
+            LD      A,D
+            CALL    S1.BHKON
+            INC     HL
+            LD      A,E
+            CALL    S1.BHKON
+            LD      BC,5
+            ADD     HL,BC
+            RET
+;****************************************************************
+;*                                                              *
+;****************************************************************
+DMUP3:      LD      HL,MS.DIRES
+            RES     5,(HL)
+            LD      HL,(MS.ZPOS)
+            LD      (S2.DL),HL
+            LD      A,2
+            LD      (MS.CMD),A
+            CALL    MO.MONI
+            LD      A,24
+            LD      (MS.CMD),A
+            RET
+;****************************************************************
+;*                                                              *
+;****************************************************************
+DMUP4:      LD      A,(TS.UMERK)
+            OR      A
+            JR      NZ,DMU2
+            LD      HL,00903H           ;ZMIN =  3 , SMIN =  9
+            LD      DE,04812H           ;ZMAX = 18 , SMAX = 72
+DMU1:       LD      (MS.ZMIN),HL
+            LD      (MS.ZMAX),DE
+            LD      A,24
+            LD      (MS.CMD),A
+            XOR     A
+            LD      (S2.DM2),A
+            LD      HL,(S2.DL)
+            LD      (MS.ZPOS),HL
+            LD      HL,MS.DIRES
+            SET     5, (HL)
+            RET
+;
+DMU2:       LD      HL,00903H           ;ZMIN =  3 , SMIN =  9
+            LD      DE,04812H           ;ZMAX = 18 , SMAX = 72
+            JR      DMU1
+            PAGE
+;****************************************************************
+;*                  Anschlussroutine Rollfunktion oben raus     *
+;****************************************************************
+DMRO:       PUSH    HL
+            LD      HL,(S2.DMANF)
+            LD      A,(TS.UMERK)
+            OR      A
+            JR      NZ,DMRO1
+            LD      DE,10H
+            SBC     HL,DE
+            LD      (S2.DMANF),HL
+            LD      (S2.DM1),HL
+            POP     HL
+            CALL    DMZH
+            RET
+;
+DMRO1:      LD      DE,40H
+            SBC     HL,DE
+            LD      (S2.DMANF),HL
+            LD      (S2.DM1),HL
+            POP     HL
+            CALL    DMZA
+            RET
+;****************************************************************
+;*                  Anschlussroutine Rollfunktion unten raus    *
+;****************************************************************
+DMRU:       PUSH    HL
+            LD      HL,(S2.DMANF)
+            LD      A,(TS.UMERK)
+            OR      A
+            JR      NZ,DMRU1
+            LD      DE,10H
+            ADD     HL,DE
+            LD      (S2.DMANF),HL
+            LD      DE,0F0H
+            ADD     HL,DE
+            LD      (S2.DM1),HL
+            POP     HL
+            CALL    DMZH
+            RET
+;
+DMRU1:      LD      DE,40H
+            ADD     HL,DE
+            LD      (S2.DMANF),HL
+            LD      DE,03C0H
+            ADD     HL,DE
+            LD      (S2.DM1),HL
+            POP     HL
+            CALL    DMZA
+            RET
+            PAGE
+;****************************************************************
+;*                  16 Byte hexadezimal aufbereiten             *
+;****************************************************************
+DMZH:       CALL    DMUP1
+            LD      B,16
+DMZH1:      LD      A,(DE)
+            CALL    S1.BHKON
+            INC     HL
+            INC     HL
+            INC     HL
+            INC     DE
+            DJNZ    DMZH1
+            LD      (S2.DM1),DE
+            RET
+;****************************************************************
+;*                  64 Byte alphanumerisch aufbereiten          *
+;****************************************************************
+DMZA:       CALL    DMUP1
+            EX      DE,HL
+            LD      BC,64
+            LDIR
+            LD      (S2.DM1),HL
+            RET
+;****************************************************************
+;*                  gesamtes Bild aufbauen                      *
+;****************************************************************
+DMB:        LD      HL,00002H
+            LD      (MS.ZPOS),HL
+            LD      DE,(S2.DMANF)
+            LD      (S2.DM1),DE
+            LD      B,16
+DMB1:       PUSH    BC
+            CALL    MO.BWSE
+            INC     HL
+            LD      A,(TS.UMERK)
+            OR      A
+            JR      NZ,DMB3
+            CALL    DMZH
+DMB2:       CALL    MO.BWSE
+            INC     HL
+            LD      A,(MS.SPANZ)
+            LD      B,A
+            CALL    MO.MONI
+            POP     BC
+            DJNZ    DMB1
+            RET
+;
+DMB3:       CALL    DMZA
+            JR      DMB2
+            PAGE
+;****************************************************************
+;*                  Anzeige einer Adresse                       *
+;****************************************************************
+DMADR:      LD      (S2.DM1),DE
+            LD      (MS.ZPOS),HL
+            CALL    MO.BWSE
+            INC     HL
+            LD      DE,(S2.DM1)
+            LD      A,D
+            CALL    S1.BHKON
+            INC     HL
+            LD      A,E
+            CALL    S1.BHKON
+            CALL    MO.BWSE
+            INC     HL
+            LD      B,4
+            CALL    MO.MONI
+            RET
+;****************************************************************
+;*                  Anzeige der Cursorposition                  *
+;****************************************************************
+DMCP:       LD      DE, (S2.DMCUR)
+            LD      HL,01015H           ;ZPOS = 21 , SPOS = 16
+            CALL    DMADR
+            RET
+;****************************************************************
+;*                  Anzeige des Bereichanfangs                  *
+;****************************************************************
+DMBAP:      LD      DE,(S2.DMBA)
+            LD      HL,02415H           ;ZPOS = 21 , SPOS = 36
+            CALL    DMADR
+            RET
+;****************************************************************
+;*                  Anzeige des Bereichendes                    *
+;****************************************************************
+DMBEP:      LD      DE, (S2.DMBE)
+            LD      HL,03615H           ;ZPOS = 21 , SPOS = 54
+            CALL    DMADR
+            RET
+;****************************************************************
+;*                                                              *
+;****************************************************************
+DMP4:       LD      HL,(S2.DMCUR)
+            LD      (S2.DMBA),HL
+            CALL    DMUP3
+            CALL    DMBAP
+            CALL    DMUP4
+            RET
+;
+DMP5:       LD      HL,(S2.DMCUR)
+            LD      (S2.DMBE),HL
+            CALL    DMUP3
+            CALL    DMBEP
+            CALL    DMUP4
+            RET
+;
+;
+;
+;           END
             .DEPHASE
 ;
             END

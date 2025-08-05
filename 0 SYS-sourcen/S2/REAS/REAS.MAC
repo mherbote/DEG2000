@@ -2,13 +2,13 @@
             DB      0EFH                ; Startbyte ---> 
             DS      12,0
             DB      002H                ; HS-Bereich : 2
-            DW      09000H              ; Ladeadresse: 9000H
+            DW      08000H              ; Ladeadresse: 8000H
 ;--------------------------/
 
             INCLUDE S21EQU1.MAC
             INCLUDE S21EQU2.MAC
 
-            .PHASE  09000H
+            .PHASE  08000H
 ;           PN      D207.REAS
 ;****************************************************************
 ;*               Reassembler I  ---  R I O - Format             *

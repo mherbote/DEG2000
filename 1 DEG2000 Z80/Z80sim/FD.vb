@@ -123,14 +123,14 @@ Module FD
         Dim iyh As Integer
         Dim iyl As Integer
 
-        iyh = (COMMON.vZ80cpu.IX And &HFF00) >> 8
-        iyl = COMMON.vZ80cpu.IX And &HFF
+        iyh = (COMMON.vZ80cpu.IY And &HFF00) >> 8
+        iyl = COMMON.vZ80cpu.IY And &HFF
         If CInt(iyl) + CInt(Par2) > 255 Then carry = 1 Else carry = 0
         iyl = iyl + Par2
         Call COMMON.vZ80cpu.FlagHflag1((iyh And &HF) + (par1 And &HF) + carry > &HF)
         Call COMMON.vZ80cpu.FlagCflag1(iyh + par1 + carry > 255)
         iyh = iyh + par1 + carry
-        COMMON.vZ80cpu.IX = ((iyh And &HFF) << 8) + (iyl And &HFF)
+        COMMON.vZ80cpu.IY = ((iyh And &HFF) << 8) + (iyl And &HFF)
         Call COMMON.vZ80cpu.FlagNflag2()
         add = 15
     End Function ' add
@@ -206,7 +206,7 @@ Module FD
         Dim d As Integer
         Dim n As Integer
         Call COMMON.vZ80cpu.busfront(COMMON.CPU_WO Or COMMON.CPU_MEMR)
-        Call COMMON.vZ80cpu.PCplus1() : d = COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.PC)
+        Call COMMON.vZ80cpu.PCplus1() : d = COMMON.Byte2SByte(COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.PC))
         Call COMMON.vZ80cpu.PCplus1() : n = COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.PC)
         Call COMMON.vZ80cpu.Speicher_schreiben_Byte(COMMON.vZ80cpu.IY + d, n)
         Call COMMON.vZ80cpu.busfront(COMMON.CPU_NONE)

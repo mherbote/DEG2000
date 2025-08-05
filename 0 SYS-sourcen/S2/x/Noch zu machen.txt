@@ -1,12 +1,3 @@
-Noch zu machen
-
- 1. Tastatur
- 2. KMBG
- 3. Speicher umschalten
- 4. 'S1  ' und 'S2  '
-
-
-
 TA.TAST     MACRO
 =================
 S0.TAZU
@@ -21,8 +12,11 @@ S0.EM12:    ;Sys_22 SYS2 mit SYS1   ;S0.TAZU
 S0.BWSUS
 S0.BWSUZ
 
+________________
+1)   LD (IX+n),b ???
+2)   INIR (30H) 1. Wert 1 statt 2 ???
+__________________
 
-1) STACK in Abhängigkeit von BEREICH !!!
 2a)  TR.TTBL2:  INS MOD
 2b)  TA.E0IN:  in System.MAC
 
@@ -31,3 +25,42 @@ Cursor !!!
 Aufbau MEM-Dateien ===> Übersicht Excel 
 
 Emulator:   Speicherbereich bei BREAK-Points ?
+
+
+Kassettenroutinen V2.13
+=======================
+K1RE, K2RE          Reservieren EIN
+K1RA, K2RA          Reservieren AUS
+K1RW, K2RW          Rewind
+K1CL, K2CL          Close
+K1ST, K2ST
+
+K1R+, K2R+          Record vor
+K1R-, K2R-          Record zurück
+
+K1L+, K2L+          Bandmarke vor
+K1L-, K2L-          Bandmarke zurück
+
+K1Y , K2Y
+K1XA, K2XA
+K1XE, K2XE
+
+============
+
+XKA1, XKA2
+YKA1, YKA2
+
+------------
+
+K1ME, K2ME          MRES-Eingabedatei öffnen
+K1MA, K2MA          MRES-Ausgabedatei öffnen
+K1MC, K2MC          MRES-Ausgabedatei abschließen
+
+KMBG
+
+============
+
+LP1 , LP2
+RLD1, RLD2
+
+SAVE

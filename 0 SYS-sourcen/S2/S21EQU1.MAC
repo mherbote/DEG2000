@@ -73,7 +73,7 @@ S2.TE       EQU     S2.BZ+1
 S2.DL       EQU     S2.TE+2
 S2.DH       EQU     S2.DL+1
 S2.PAR1     EQU     S2.DH+1
-S2.DMANF    EQU     S2.PAR1+2
+S2.DMANF    EQU     S2.PAR1+2           ;Pufferadresse? S0.PFFI
 S2.DMCUR    EQU     S2.DMANF+2
 S2.DMBA     EQU     S2.DMCUR+2
 S2.DMBE     EQU     S2.DMBA+2

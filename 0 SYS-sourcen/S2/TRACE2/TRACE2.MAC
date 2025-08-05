@@ -4,7 +4,7 @@
             DB      0EFH                ; Startbyte ---> 
             DS      12,0
             DB      002H                ; HS-Bereich : 2
-            DW      00100H              ; Ladeadresse: 0100H
+            DW      08000H              ; Ladeadresse: 8000H
 ;--------------------------/
             INCLUDE S21EQU1.MAC
             INCLUDE S21EQU2.MAC
@@ -19,7 +19,7 @@
 ;*  V 2 . 1      -----------------------------------------------*
 ;*               Stand            : 25.November 1983            *
 ;****************************************************************
-            .PHASE  00100H
+            .PHASE  08000H
 
 BWSA:       DS      00800H,0
 

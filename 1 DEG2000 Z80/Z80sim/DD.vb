@@ -206,7 +206,7 @@ Module DD
         Dim d As Integer
         Dim n As Integer
         Call COMMON.vZ80cpu.busfront(COMMON.CPU_WO Or COMMON.CPU_MEMR)
-        Call COMMON.vZ80cpu.PCplus1() : d = COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.PC)
+        Call COMMON.vZ80cpu.PCplus1() : d = COMMON.Byte2SByte(COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.PC))
         Call COMMON.vZ80cpu.PCplus1() : n = COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.PC)
         Call COMMON.vZ80cpu.Speicher_schreiben_Byte(COMMON.vZ80cpu.IX + d, n)
         Call COMMON.vZ80cpu.busfront(COMMON.CPU_NONE)
