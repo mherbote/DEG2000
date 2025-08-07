@@ -56,11 +56,13 @@ Public Class IOsim
     ''                                                                                                   '5 ... Subadresse            (1, 2)
     ''                                                                                                   '6 ... Kommando
 
-
     'Private MEMswitch(4, 16) As Byte
     Private ReadOnly DateS2_buffer(6) As Byte
     Private ReadOnly Date_buffer(3) As Byte
     Private ReadOnly Time_buffer(8) As Byte
+
+    'ColorBWS
+    Private ReadOnly ColorBWS(8) As Byte
 #End Region
 
 #Region "Global Routinen"
@@ -147,6 +149,10 @@ Public Class IOsim
 
 #Region "Port's for Corect BWS FDH"
         port(&HFD, 1) = New op_funcb(AddressOf CorrBWS_out)
+#End Region
+
+#Region "Port's for Set Color's BWS FCH"
+        port(&HFC, 1) = New op_funcb(AddressOf ColorBWS_out)
 #End Region
 
         KeyProc = False
@@ -244,6 +250,7 @@ Public Class IOsim
 #Region "Kassette_buffer(i) übernehmen"
             If Data = &HF0 Then                                                                         ' Kommando-Startbyte
                 Kassette_buffer(0) = 0
+                weiter = False
             End If
             If Kassette_buffer(0) >= 0 And Kassette_buffer(0) < 10 Then
                 Kassette_buffer(0) = Kassette_buffer(0) + 1
@@ -931,6 +938,7 @@ Public Class IOsim
 
         If data = &HF0 Then
             Memory_buffer(0) = 0
+            weiter = False
         End If
         If Memory_buffer(0) >= 0 And Memory_buffer(0) < 6 Then
             Memory_buffer(0) = Memory_buffer(0) + 1
@@ -1124,6 +1132,7 @@ Public Class IOsim
 
         If data = &HF0 Then
             Cursor_buffer(0) = 0
+            weiter = False
         End If
         If Cursor_buffer(0) >= 0 And Cursor_buffer(0) < 8 Then
             Cursor_buffer(0) = Cursor_buffer(0) + 1
@@ -1343,6 +1352,151 @@ Public Class IOsim
         Call BWS.ResetControlArray2()
 
         CorrBWS_out = 0
+    End Function
+#End Region
+
+#Region "Set Color's BWS FCH"
+    Dim weiter As Boolean = False
+    Dim CharCode As Byte
+    Dim x, x1, x2, y, y1, y2 As UInteger
+    Dim BColor, FColor, CColor As Color
+    Private Function ColorBWS_out(ByVal Data As Byte) As Byte
+        '1) Einzelnes Zeichen mit Color versehen
+        '   1.Byte:    F1 Startbyte
+        '   2.Byte:    X
+        '   3.Byte:    Y
+        '   4.Byte:    BColor
+        '   5.Byte:    FColor
+        '   6.Byte:    CColor
+        '   7.Byte:    FF Endemarkierung
+        '2) Mehrere Zeichen mit Color versehen in X-Richtung
+        '   1.Byte:    F2 Startbyte
+        '   2.Byte:    X1
+        '   3.Byte:    X2
+        '   4.Byte:    Y
+        '   5.Byte:    BColor
+        '   6.Byte:    FColor
+        '   7.Byte:    CColor
+        '   8.Byte:    FF Endemarkierung
+        '3) Mehrere Zeichen mit Color versehen in X-Richtung
+        '   1.Byte:    F3 Startbyte
+        '   2.Byte:    X
+        '   3.Byte:    Y1
+        '   4.Byte:    Y2
+        '   5.Byte:    BColor
+        '   6.Byte:    FColor
+        '   7.Byte:    CColor
+        '   8.Byte:    FF Endemarkierung
+
+        'Call BWS.ColorBWS()
+        Try
+            ColorBWS_out = Nothing
+#Region "ColorBWS2(i) übernehmen"
+            Select Case Data                                                                            ' Kommando-Startbyte
+                Case &HF1, &HF2, &HF3
+                    ColorBWS(0) = 0
+                    weiter = False
+            End Select
+            If ColorBWS(0) >= 0 And ColorBWS(0) < 8 Then
+                ColorBWS(0) += 1
+            End If
+            Select Case ColorBWS(0)
+                Case 1, 2, 3, 4, 5, 6
+                    ColorBWS(ColorBWS(0)) = Data
+                Case 7
+                    If Data = &HFF And ColorBWS(1) = &HF1 Then
+                        ColorBWS(ColorBWS(0)) = Data
+                        weiter = True
+                    Else
+                        ColorBWS(ColorBWS(0)) = Data
+                    End If
+                Case 8
+                    If Data = &HFF And ColorBWS(1) <> &HF1 Then
+                        ColorBWS(ColorBWS(0)) = Data
+                        weiter = True
+                    Else
+                        ColorBWS(ColorBWS(0)) = Data
+                    End If
+                Case Else
+                    ColorBWS(ColorBWS(0)) = Data
+            End Select
+#End Region
+            If weiter Then
+#Region "Kommando von ColorBWS2 ausführen"
+                Select Case ColorBWS(1)
+                    Case &HF1
+                        x1 = ColorBWS(2)
+                        y1 = ColorBWS(3)
+                        BColor = Byte2Color(ColorBWS(4))
+                        FColor = Byte2Color(ColorBWS(5))
+                        CColor = Byte2Color(ColorBWS(6))
+                        If BColor <> FColor Then
+                            CharCode = COMMON.vZ80cpu.Speicher_lesen_Byte1(&H3000 + y1 * BWS.BWSx + x1, 1)
+                            Call BWS.BWS_Zeichen(x1, y1, CharCode, BColor, FColor, CColor)
+                        End If
+                    Case &HF2
+                        x1 = ColorBWS(2)
+                        x2 = ColorBWS(3)
+                        y1 = ColorBWS(4)
+                        BColor = Byte2Color(ColorBWS(5))
+                        FColor = Byte2Color(ColorBWS(6))
+                        CColor = Byte2Color(ColorBWS(7))
+                        If BColor <> FColor And x1 < x2 Then
+                            For x = x1 To x2
+                                CharCode = COMMON.vZ80cpu.Speicher_lesen_Byte1(&H3000 + y1 * BWS.BWSx + x, 1)
+                                Call BWS.BWS_Zeichen(x, y1, CharCode, BColor, FColor, CColor)
+                            Next
+                        End If
+                    Case &HF3
+                        x1 = ColorBWS(2)
+                        y1 = ColorBWS(3)
+                        y2 = ColorBWS(4)
+                        BColor = Byte2Color(ColorBWS(5))
+                        FColor = Byte2Color(ColorBWS(6))
+                        CColor = Byte2Color(ColorBWS(7))
+                        If BColor <> FColor And y1 < y2 Then
+                            For y = y1 To y2
+                                CharCode = COMMON.vZ80cpu.Speicher_lesen_Byte1(&H3000 + y * BWS.BWSx + x1, 1)
+                                Call BWS.BWS_Zeichen(x1, y, CharCode, BColor, FColor, CColor)
+                            Next
+                        End If
+                End Select
+#End Region
+            End If
+        Catch ex As Exception
+            MsgBox("IOsim.CollorBWS_out: " + +ex.Message)
+        End Try
+        ColorBWS_out = 0
+    End Function
+    Private Function Byte2Color(Data As Byte) As Color
+        Select Case Data
+            Case 1
+                Byte2Color = Color.White
+            Case 11
+                Byte2Color = Color.Black
+            Case 2
+                Byte2Color = Color.Blue
+            Case 12
+                Byte2Color = Color.LightBlue
+            Case 3
+                Byte2Color = Color.Yellow
+            Case 13
+                Byte2Color = Color.LightYellow
+            Case 4
+                Byte2Color = Color.Red
+            Case 14
+                Byte2Color = Color.LightPink
+            Case 5
+                Byte2Color = Color.Green
+            Case 15
+                Byte2Color = Color.LightGreen
+            Case 6
+                Byte2Color = Color.Gray
+            Case 16
+                Byte2Color = Color.LightGray
+            Case Else
+                Byte2Color = Color.Aqua
+        End Select
     End Function
 #End Region
 
