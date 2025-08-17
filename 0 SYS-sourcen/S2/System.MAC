@@ -1912,10 +1912,12 @@ MO.ENMO:    POP     BC
             POP     IY
             POP     IX
             RET
+;
 MO.MORT:    JP      (IX)
+;
 MO.ENMOT:   RET
-
-
+;
+;
 MO.BWSUS:   LD      A,(MS.DIRES)
             BIT     3,A
             RET     NZ
@@ -2096,6 +2098,7 @@ MO.FSLO1:   POP     HL                  ;weitere Zeilen loeschen
             PUSH    DE
             LDIR
             JR      MO.FSLO1
+;            
 MO.FSLO2:   CALL    MO.BWSUS
             POP     HL
             RET
@@ -2264,11 +2267,8 @@ MO.SETC1:   DB      0F0H
             DB      0                   ;X
             DB      0                   ;Y
             DB      0FFH
-
-            CALL    MO.CPOS
-
-
-
+;
+;
 ;
 MO.RESC:    PUSH    HL
             PUSH    BC
@@ -2281,12 +2281,14 @@ MO.RESC:    PUSH    HL
 MO.RESC1:   DB      0F0H
             DB      002H                ;Cursor Aus
             DB      0FFH            
+
 ;****************************************************************
 ;*               DZPOS , DSPOS , DZPOL , DSPOL                  *
 ;****************************************************************
 MO.DZPOL:   LD      HL,MS.ZPOL          ;Lesezeilennr.     decr.
             CALL    MO.DECZ
             JR      MO.DIL
+
 MO.DSPOL:   LD      HL,MS.SPOL          ;Lesespaltennr.    decr.
             CALL    MO.DECS
 MO.DIL:     PUSH    BC
@@ -2294,17 +2296,21 @@ MO.DIL:     PUSH    BC
             POP     BC
             CCF                         ;Z = CY = 1  falls Uebertrag
             RET
+
 MO.DZPOS:   LD      HL,MS.ZPOS          ;Schreibzeilennr.  decr.
             CALL    MO.DECZ
             JR      MO.DIS
+
 MO.DECZ:    PUSH    BC
             LD      A,(MS.ZMAX)
             LD      B,A
             LD      A,(MS.ZMIN)
             JR      MO.DEC2
+
 MO.DSPOS:   LD      HL,MS.SPOS          ;Schreibspaltennr. decr.
             CALL    MO.DECS
             JR      MO.DIS
+
 MO.DECS:    PUSH    BC
             LD      A,(MS.SMAX)
             LD      B,A
@@ -2314,16 +2320,19 @@ MO.DEC2:    DEC     A
             JR      Z,MO.DEC3           ;Z=1,CY=0 falls Uebertrag
             DEC     (HL)
             JP      MO.INC4
+
 MO.DIS:     PUSH    BC
             CALL    MO.CPOS
             POP     BC
             CCF                         ;Z = CY = 1  falls Uebertrag
             RET
+
 MO.ROLL:    LD      BC,(MS.ZANZ)        ;Standardanschlussroutine Rollfkt.
 MO.ROL1:    LD      (HL),' '            ;loeschen der Zeile auf blank
             INC     HL
             DJNZ    MO.ROL1
             RET
+
             PAGE
 MO.DEC3:    PUSH    AF                  ;Rollfunktion
             PUSH    BC                  ;rollen nach unten raus
@@ -2347,8 +2356,6 @@ MO.DEC3:    PUSH    AF                  ;Rollfunktion
             LD      BC,(MS.SPANZ)       ;BC ermitteln
             LD      B,0
             LDIR                        ;letzte Zeile retten
-
-
 
             CALL    MO.SZA              ;HL ermitteln
             DEC     HL
@@ -2381,8 +2388,6 @@ MO.DEC5:    POP     HL                  ;rueckspeichern von ZPOS , SPOS
             INC     HL                  ;rausgerollten Zeile
             CALL    MO.MORT
 
-
-
             CALL    MO.BWSE             ;HL ermitteln
             INC     HL
             PUSH    HL
@@ -2392,8 +2397,6 @@ MO.DEC5:    POP     HL                  ;rueckspeichern von ZPOS , SPOS
             LD      BC,(MS.SPANZ)       ;BC ermitteln
             LD      B,0
             LDIR                        ;aktuelle Zeile neu belegen
-
-
 
             CALL    MO.BWSUS
 MO.DEC7:    POP     HL
@@ -2419,20 +2422,25 @@ MO.DEC6:    CALL    MO.ROUN
 MO.IZPOL:   LD      HL,MS.ZPOL          ;Lesezeilennr.     incr.
             CALL    MO.INCZ
             JP      MO.DIL
+
 MO.ISPOL:   LD      HL,MS.SPOL          ;Lesespaltennr.    incr.
             CALL    MO.INCS
             JP      MO.DIL
+
 MO.IZPOS:   LD      HL,MS.ZPOS          ;Schreibzeilennr.  incr.
             CALL    MO.INCZ
             JP      MO.DIS
+
 MO.INCZ:    PUSH    BC
             LD      A,(MS.ZMIN)
             LD      B,A
             LD      A,(MS.ZMAX)
             JR      MO.INC2
+
 MO.ISPOS:   LD      HL,MS.SPOS          ;Schreibspaltennr. incr.
             CALL    MO.INCS
             JP      MO.DIS
+
 MO.INCS:    PUSH    BC
             LD      A,(MS.SMIN)
             LD      B,A
@@ -2783,6 +2791,7 @@ MO.MZSO2:   PUSH    AF
             POP     AF
             CALL    C,MO.IZPOS
             RET
+
 MO.MZSO3:   CALL    MO.ISPOS
             JR      NZ,MO.MZSO2
             LD      A,(MS.SMIN)
@@ -2815,6 +2824,7 @@ MO.MZSW2:   PUSH    AF
             POP     AF
             CALL    C,MO.DZPOS
             RET
+
 MO.MZSW3:   CALL    MO.DSPOS
             JR      NZ,MO.MZSW2
             LD      A,(MS.SMAX)
@@ -2860,6 +2870,7 @@ MO.MZLO:    CALL    MO.ISPOL
             POP     AF
             CALL    C,MO.IZPOL
             RET
+
 MO.MZLW:    CALL    MO.DSPOL
             PUSH    AF
             LD      A,(MS.DIREL)
@@ -2868,6 +2879,7 @@ MO.MZLW:    CALL    MO.DSPOL
             POP     AF
             CALL    C,MO.DZPOL
             RET
+
 MO.MZLN:    CALL    MO.DZPOL
             PUSH    AF
             LD      A,(MS.DIREL)
@@ -2876,6 +2888,7 @@ MO.MZLN:    CALL    MO.DZPOL
             POP     AF
             CALL    C,MO.DSPOL
             RET
+
 MO.MZLS:    CALL    MO.IZPOL
             PUSH    AF
             LD      A,(MS.DIREL)
@@ -2884,6 +2897,7 @@ MO.MZLS:    CALL    MO.IZPOL
             POP     AF
             CALL    C,MO.ISPOL
             RET
+            
 MO.MZLNO    EQU     $
 MO.MZLNW    EQU     $
 MO.MZLSW    EQU     $
@@ -3615,7 +3629,8 @@ K1.V12IX:   PUSH    HL
             POP     IX
             LD      HL,UB.KTAB-1        ;Laenge der Daten im Puffer (1 BM, 2 SL, 20H oder 80H)
             LD      B,(HL)
-            LD      (IX+13),B
+            LD      (IX+9),0
+            LD      (IX+10),B
             POP     BC
             POP     DE
             POP     HL
@@ -3677,8 +3692,10 @@ K1.LHLBC:   LD      H,(IX+8)
 ;****************************************************************
 ;*  K M B G      Bandmarke gelesen ?                            *
 ;****************************************************************
-K1.BM:      LD      A,(IX+9)
-            OR      (IX+10)
+K1.BM:      LD      A,(IX+10)
+            CP      1
+            ; LD      A,(IX+9)
+            ; OR      (IX+10)
             RET
 ;****************************************************************
 ;*  K M B G      zweiter Leseversuch nach Fehler 17             *
@@ -5446,7 +5463,7 @@ S9.BASC:    CALL    S0.BASCL
             LD      HL,00100H           ;BASIC - CRC-Summe kontrollieren
             LD      BC,03000H
             CALL    S1.CHK
-            LD      HL,0B783H           ;CRC-Summe 100-30FF   (06D97H alt)
+            LD      HL,05354H           ;CRC-Summe 100-30FF   (06D97H alt)
             OR      A
             SBC     HL,DE
             JR      Z,S9.BASC1
@@ -5471,7 +5488,7 @@ S9.BASC1:   LD      HL,S1.RES           ;RESET-Adresse eintragen
 S9.BSCR:    LD      HL,BC.PAR
             LD      BC,BC.D131-BC.PAR   ;02C90H
             CALL    S1.CHK
-            LD      HL,0B7F8H           ;CRC-Summe 327-2FB7
+            LD      HL,09AD1H           ;CRC-Summe 327-2FB7   (0B7F8H alt)
             OR      A
             SBC     HL,DE
             JR      Z,S9.BASC2

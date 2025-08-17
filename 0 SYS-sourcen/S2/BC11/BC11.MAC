@@ -15,125 +15,13 @@
 ;*               Stand        : 07.Juni 1984                    *
 ;****************************************************************
 
-;****************************************************************
-;*               Pruefsummen-Programm                           *
-;*               Aufruf  :     EXEC 0100                        *
-;*               Ergebnis:     Pruefsummen stehen ab 4000H      *
-;****************************************************************
-;           ORG     00100H
+            PAGE    87
+            INCLUDE incBC11a.MAC
+
+            PAGE
             .PHASE  00000H
-            DS      00100H,0
-            LD      HL,04000H           ;Ergebnisbereich loeschen
-            LD      DE,04001H
-            LD      BC,00100H
-            LD      (HL),0
-            LDIR
-            LD      IX,04000H
-            LD      DE,00300H
-            LD      BC,0002FH
-BC.J001:    PUSH    BC
-            LD      HL,00000H
-            LD      BC,BC.D002
-            LD      A,(DE)
-            PUSH    DE
-            LD      E,A
-            LD      D,000H
-            ADD     HL,DE
-            POP     DE
-            INC     DE
-            DEC     BC
-            LD      A,B
-            OR      C
-            JR      NZ,$-11
-            LD      (IX+00),L
-            LD      (IX+01),H
-            INC     IX
-            INC     IX
-            POP     BC
-            DEC     BC
-            LD      A,B
-            OR      C
-            JR      NZ,BC.J001
-            RET
-BC.AAA      EQU     $
-            DS      00300H-BC.AAA,0
-
-            .DEPHASE
-
+            INCLUDE incBC11b.MAC
             PAGE
-;****************************************************************
-;*               Variablen - Deklarationen                      *
-;****************************************************************
-BC.AKJPB    EQU     001A4H
-BC.D001     EQU     000FFH
-BC.D002     EQU     BC.D001+1
-BC.D003     EQU     BC.D002+1
-BC.D004     EQU     BC.D003+1
-BC.D005     EQU     BC.D004+1
-BC.D006     EQU     BC.D005+1
-BC.D007     EQU     BC.D006+2
-BC.D008     EQU     BC.D007+2
-BC.D009     EQU     BC.D008+22
-BC.D010     EQU     BC.D009+38
-BC.D011     EQU     BC.D010+2
-BC.D012     EQU     BC.D011+2
-BC.D013     EQU     BC.D012+2
-BC.D014     EQU     BC.D013+2
-BC.D015     EQU     BC.D014+2
-BC.D016     EQU     BC.D015+1
-BC.D017     EQU     BC.D016+1
-BC.D018     EQU     BC.D017+2
-BC.D019     EQU     BC.D018+2
-BC.D020     EQU     BC.D019+2
-BC.D021     EQU     BC.D020+2
-BC.D022     EQU     BC.D021+2
-BC.D023     EQU     BC.D022+2
-BC.D024     EQU     BC.D023+2
-BC.D025     EQU     BC.D024+2
-BC.D026     EQU     BC.D025+2
-BC.D027     EQU     BC.D026+2
-BC.D028     EQU     BC.D027+1
-BC.D029     EQU     BC.D028+1
-BC.D030     EQU     BC.D029+2
-BC.D031     EQU     BC.D030+2
-BC.D032     EQU     BC.D031+1
-BC.D033     EQU     BC.D032+1
-BC.D034     EQU     BC.D033+1
-BC.D035     EQU     BC.D034+1
-BC.D036     EQU     BC.D035+25
-BC.D037     EQU     BC.D036+2
-BC.D038     EQU     BC.D037+2
-BC.D039     EQU     BC.D038+2
-BC.D040     EQU     BC.D039+1
-BC.D041     EQU     BC.D040+2
-BC.D042     EQU     BC.D041+1
-BC.D043     EQU     BC.D042+1
-BC.D044     EQU     BC.D043+3
-BC.D045     EQU     BC.D044+1
-BC.D046     EQU     BC.D045+1
-BC.D047     EQU     BC.D046+3
-BC.D048     EQU     BC.D047+2
-BC.D049     EQU     BC.D048+2
-BC.D050     EQU     BC.D049+1
-BC.D051     EQU     BC.D050+2
-BC.D052     EQU     BC.D051+2
-BC.D053     EQU     BC.D052+1
-BC.D054     EQU     BC.D053+1
-BC.D055     EQU     BC.D054+2
-BC.D056     EQU     BC.D055+1
-BC.D057     EQU     BC.D056+2
-BC.D058     EQU     BC.D057+1
-BC.D059     EQU     BC.D058+1
-BC.D060     EQU     BC.D059+2
-BC.D061     EQU     BC.D060+1
-BC.D062     EQU     BC.D061+1
-BC.D063     EQU     BC.D062+1
-BC.D064     EQU     BC.D063+255
-BC.D065     EQU     BC.D064+72
-BC.D066     EQU     BC.D065+7
-
-            PAGE
-            .PHASE  00300H
 ;****************************************************************
 ;*               Systemroutinen - Sprungverteiler               *
 ;****************************************************************
@@ -3217,7 +3105,7 @@ BC.C089:    CALL    BC.C091
             PUSH    DE
             LD      A,02CH
             CALL    BC.C006
-            CALL    BC.C091
+            JP      00003H              ;CALL    BC.C091
             POP     BC
             RET
 
@@ -4557,12 +4445,12 @@ BC.J071:    XOR     A
             LD      D,A
             INC     HL
             LD      A,M
-            SBC     A,(IX-35)
-            LD      L,A
+            DB      0DDH,09DH           ; SBC     A,IXL
+            DB      0DDH,06FH           ; LD      IXL,A
             INC     HL
             LD      A,M
-            SBC     A,(IX-35)
-            LD      H,A
+            DB      0DDH,09CH           ; SBC     A,IXH
+            DB      0DDH,067H           ; LD      IXH,A
             INC     HL
             LD      A,M
             SBC     A,C
@@ -4576,10 +4464,10 @@ BC.C111:    LD      L,B
             LD      A,C
             OR      A
             JR      NZ,$+41
-            LD      C,(IX-35)
-            LD      A,L
-            LD      (IX-35),A
-            LD      L,D
+            DB      0DDH,04CH           ; LD   C,IXH
+            DB      0DDH,07DH           ; LD   A,IXL
+            DB      0DDH,067H           ; LD   IXH,A
+            DB      0DDH,06AH           ; LD   IXL,D
             XOR     A
             LD      D,H
             LD      H,L
@@ -4629,8 +4517,10 @@ BC.C113:    INC     E
             RET     NZ
             INC     D
             RET     NZ
-            INC     (IX-64)
-            INC     (IX-64)
+            DB      0DDH,02CH           ; INC  IXL
+            RET     NZ
+            DB      0DDH,024H           ; INC  IXH
+            RET     NZ
             INC     C
             RET     NZ
             LD      C,080H
@@ -4648,12 +4538,12 @@ BC.C114:    LD      A,M
             LD      D,A
             INC     HL
             LD      A,M
-            ADC     A,(IX-35)
-            LD      L,A
+            DB      0DDH,08DH           ; ADC  A,IXL
+            DB      0DDH,06FH           ; LD   IXL,A
             INC     HL
             LD      A,M
-            ADC     A,(IX-35)
-            LD      H,A
+            DB      0DDH,08CH           ; ADC  A,IXH
+            DB      0DDH,067H           ; LD   IXH,A
             INC     HL
             LD      A,M
             ADC     A,C
@@ -4673,28 +4563,30 @@ BC.C115:    LD      HL,BC.D033
             SBC     HL,DE
             EX      DE,HL
             LD      L,A
-            SBC     A,(IX-35)
-            LD      L,A
+            DB      0DDH,09DH           ; SBC  A,IXL
+            DB      0DDH,06FH           ; LD   IXL,A
             LD      A,L
-            SBC     A,(IX-35)
-            LD      H,A
+            DB      0DDH,09CH           ; SBC  A,IXH
+            DB      0DDH,067H           ; LD   IXH,A
             LD      A,L
             SBC     A,C
             LD      C,A
             RET
-
+;
 BC.C116:    LD      B,0
             SUB     008H
             JR      C,$+18
             LD      B,E
             LD      E,D
-            LD      D,(IX+08)
-            LD      A,(IX-35)
-            LD      L,A
+            DB      0DDH,055H           ; LD   D,IXL
             EX      AF,AF'              ;'
-            LD      (IX+14),C
-            NOP
+            DB      0DDH,07CH           ; LD   A,IXH
+            DB      0DDH,06FH           ; LD   IXL,A
+            EX      AF,AF'              ;'
+            DB      0DDH,061H           ; LD   IXH,C
+            LD      C,0
             JR      $-18
+;
             ADD     A,009H
             LD      L,A
             XOR     A
@@ -4703,12 +4595,13 @@ BC.C116:    LD      B,0
             LD      A,C
 BC.C117:    RRA
             LD      C,A
-            LD      A,(IX+31)
-            LD      (IX-35),A
-            LD      A,L
+            DB      0DDH,07CH           ; LD   A,IXH
             RRA
-            LD      (IX-53),A
-            LD      A,(DE)
+            DB      0DDH,067H           ; LD   IXH,A
+            DB      0DDH,07DH           ; LD   A,IXL
+            RRA
+            DB      0DDH,06FH           ; LD   IXL,A
+            RR      D
             RR      E
             RR      B
             JR      $-22
@@ -4814,11 +4707,13 @@ BC.D107:    LD      A,M
             JR      NZ,$+16
             LD      B,E
             LD      E,D
-            LD      D,(IX+08)
-            LD      A,(IX-35)
-            LD      L,A
+            DB      0DDH,055H           ; LD   D,IXL
             EX      AF,AF'              ;'
-            LD      (IX+79),C
+            DB      0DDH,07CH           ; LD   A,IXH
+            DB      0DDH,06FH           ; LD   IXL,A
+            EX      AF,AF'              ;'
+            DB      0DDH,061H           ; LD   IXH,C
+            LD      C,A
             RET
             PUSH    HL
             EX      DE,HL
@@ -4844,12 +4739,13 @@ BC.D107:    LD      A,M
             POP     HL
             RRA
             LD      C,A
-            LD      A,(IX+31)
-            LD      (IX-35),A
-            LD      A,L
+            DB      0DDH,07CH           ; LD   A,IXH
             RRA
-            LD      (IX-53),A
-            INC     E
+            DB      0DDH,067H           ; LD   IXH,A
+            DB      0DDH,07DH           ; LD   A,IXL 
+            RRA
+            DB      0DDH,06FH           ; LD   IXL,A
+            RR      H
             RR      L
             RR      B
             DEC     E
@@ -4962,8 +4858,8 @@ BC.C120:    CALL    BC.C125
             LD      A,C
             OR      D
             OR      E
-            OR      (IX-35)
-            OR      L
+            DB      0DDH,0B4H           ; OR   IXH
+            DB      0DDH,0B5H           ; OR   IXL 
             JR      NZ,$-95
             PUSH    HL
             LD      HL,BC.D032
@@ -4998,7 +4894,7 @@ BC.C121:    LD      A,B
 BC.J079:    CALL    BC.C125
             CPL
             OR      A
-            DB      21
+            DB      21H
 BC.J080:    OR      A
             POP     HL
             JP      P,BC.C112
@@ -5082,9 +4978,11 @@ BC.C132:    LD      E,M
             LD      D,M
             INC     HL
             LD      C,M
-            LD      (IX+35),C
+            DB      0DDH,069H           ; LD   IXL,C 
+            INC     HL
             LD      C,M
-            LD      (IX+35),C
+            DB      0DDH,061H           ; LD   IXH,C 
+            INC     HL
             LD      C,M
             INC     HL
             LD      B,M
@@ -5142,10 +5040,12 @@ BC.C137:    INC     HL
             CP      M
             RET     NZ
             DEC     HL
-            LD      A,(IX-66)
+            DB      0DDH,07CH           ; LD   A,IXH
+            CP      (HL)
             RET     NZ
             DEC     HL
-            LD      A,(IX-66)
+            DB      0DDH,07DH           ; LD   A,IXL 
+            CP      (HL)
             RET     NZ
             DEC     HL
             LD      A,D
@@ -5172,8 +5072,8 @@ BC.C139:    LD      B,A
             LD      C,A
             LD      D,A
             LD      E,A
-            LD      (IX-35),A
-            LD      L,A
+            DB      0DDH,067H           ; LD   IXH,A
+            DB      0DDH,06FH           ; LD   IXL,A
             OR      A
             RET     Z
             PUSH    HL
@@ -5188,8 +5088,8 @@ BC.C139:    LD      B,A
             INC     A
             JR      NZ,$+12
             DEC     IX
-            LD      A,(IX-35)
-            AND     L
+            DB      0DDH,07CH           ; LD   A,IXH
+            DB      0DDH,0A5H           ; AND  IXL
             INC     A
             JR      NZ,$+03
             DEC     C
@@ -5821,10 +5721,14 @@ BC.C156:    PUSH    DE
             SBC     A,M
             LD      D,A
             INC     HL
-            LD      A,(IX-98)
-            LD      (IX+35),A
-            LD      A,(IX-98)
-            LD      (IX+35),A
+            DB      0DDH,07DH           ; LD   A,IXL 
+            SBC     A,(HL)
+            DB      0DDH,06FH           ; LD   IXL,A
+            INC     HL
+            DB      0DDH,07CH           ; LD   A,IXH
+            SBC     A,(HL)
+            DB      0DDH,067H           ; LD   IXH,A
+            INC     HL
             LD      A,C
             SBC     A,M
             LD      C,A
@@ -6568,7 +6472,7 @@ BC.D120:    DB      13
 
             PAGE
 BC.D121:    DB      'EN'                ;"END"
-            DB      44+80H
+            DB      44H+80H
             DB      'FO'                ;"FOR"
             DB      52H+80H
             DB      'NEX'               ;"NEXT"
@@ -6598,7 +6502,7 @@ BC.D121:    DB      'EN'                ;"END"
             DB      'RE'                ;"REM"
             DB      4DH+80H
             DB      'STO'               ;"STOP"
-            DB      50+80H
+            DB      50H+80H
             DB      'OU'                ;"OUT"
             DB      54H+80H
             DB      'O'                 ;"ON"
@@ -6610,7 +6514,7 @@ BC.D121:    DB      'EN'                ;"END"
             DB      'DE'                ;"DEF"
             DB      46H+80H
             DB      'POK'               ;"POKE"
-            DB      45+80H
+            DB      45H+80H
             DB      'PRIN'              ;"PRINT"
             DB      54H+80H
             DB      3FH+80H             ;"?"
@@ -6718,7 +6622,7 @@ BC.GRF2:    DB      'LISTE'             ;"LISTEN"
             DB      'LWIDT'             ;"LWIDTH"
             DB      48H+80H
             DB      'LNUL'              ;"LNULL"
-            DB      4CH+80
+            DB      4CH+80H
             DB      'WIDT'              ;"WIDTH"
             DB      48H+80H
             DB      'LVA'               ;"LVAR"
@@ -6828,7 +6732,7 @@ BC.D125:    DB      'SUBSCRIPT OUT OF RANG'
             DB      52H+80H
 BC.D126:    DB      '*INVALID INPUT'
             DB      0AH+80H
-BC.D127:    DB      ' @ LINE'
+BC.D127:    DB      '   LINE'
             DB      20H+80H
 BC.D128:    DB      0AH
             DB      'READY:'
@@ -6957,19 +6861,102 @@ BC.RECOV1:  LD      HL,BC.RECOV
             LD      HL,BC.D070
             LD      (BC.D054),HL
             CALL    BC.C011
-BC.ANF:     JP      BC.J012
+BC.ANF:     JP      START               ;BC.J012
 
             PAGE
-BC.D133:    DB      'DEG 2000   B  A  S  I  C   [ K EAW  ZFT ]    '
-            DB      'Stand: 10.82'
+BC.D133:    DB      'DEG 2000  B  A  S  I  C   [K EAW  IfR/Fm]  '
+            DB      'Stand: 10.82  '
             DB      0AH+80H
 BC.D134:    DB      0AH
             DB      'max. Speicher'
             DB      20H+80H
-BC.D135:    DB      ' Byte frei             '
+BC.D135:    DB      ' Bytes frei            '
             DB      0AH
-            DB      'DEG 2000  B A S I C          , Version 2.13'
+            DB      'DEG 2000  B A S I C         , Version 2.1'
+            DB      '                 '
             DB      0AH+80H
+            DS      0AFH,0
+            DB      004H
+            DS      00FH,0FFH
+;
+START:      LD      HL,ST01
+            LD      DE,BC.D131
+            LD      BC,000C0H
+            LDIR
+            JP      ST02
+;            
+            DS      2,0FFH
+;            
+ST01:       DB      4,030H,1,0
+            DB      'OPEN'
+            DB      '-'+080H
+            DB      '&EAB6:CLOSE'
+            DB      '-'+080H
+            DB      '&EBB9:EIN'
+            DB      '-'+080H
+            DB      '73:AUS'
+            DB      '-'+080H
+            DB      '79:LESEN'
+            DB      '-'+080H
+            DB      '&EC1F:SCHREIBEN'
+            DB      '-'+080H
+            DB      '&EC4D:BLD'
+            DB      '-'+080H
+            DB      '&80',0
+            DB      'j0',00AH,0,084H
+            DB      '"Quell-/Ladedatei (Q/L)";A$:'
+            DB      08AH
+            DB      'A$',0AEH,0ACH
+            DB      '"Q"',0AAH
+            DB      'A$',0AEH,0ACH
+            DB      '"L"',0A2H
+            DB      '10:',0C9H,084H
+            DB      '"Geraet,Label";G,L:',0D7H
+            DB      'OPEN,G,EIN,L:',08AH
+            DB      'A$',0ADH
+            DB      '"Q"',0A2H,0E1H,':',0C9H
+            DB      0DDH,041H,0,0,0,0
+            DS      00AH,0FFH
+;
+ST02:       LD      HL,0306BH
+            LD      (00150H),HL
+            INC     HL
+            LD      (0015EH),HL
+            LD      (00160H),HL
+            LD      (00162H),HL
+            LD      HL,GRANA
+            CALL    007BDH
+            CALL    00309H
+            LD      C,A
+            CP      'J'
+            JR      Z,ST04
+ST03:       LD      C,'N'
+            CALL    0030FH
+            JP      BC.J012
+;
+ST04:       LD      A,(0010DH)
+            CP      09CH
+            JR      NC,ST03
+            CALL    0030FH
+            LD      A,081H
+            OUT     (0C1H),A            ;!!! ???
+            LD      A,0B3H
+            OUT     (0C0H),A            ;!!! ???
+            LD      HL,07400H
+            LD      DE,09C00H
+            LD      BC,00400H
+            LDIR
+            LD      A,0B7H
+            OUT     (0C0H),A
+            LD      A,085H
+            OUT     (0C1H),A
+            JP      BC.J012
+;
+GRANA:      DB      00AH,'Grafik nachladen ?',0A0H
+            
+
+            DS      0BEH,0FFH
+
             .DEPHASE
 
             END

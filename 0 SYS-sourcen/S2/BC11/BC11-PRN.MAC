@@ -18,139 +18,452 @@
                                 ;*               Stand        : 07.Juni 1984                    *
                                 ;****************************************************************
                                 
-                                ;****************************************************************
-                                ;*               Pruefsummen-Programm                           *
-                                ;*               Aufruf  :     EXEC 0100                        *
-                                ;*               Ergebnis:     Pruefsummen stehen ab 4000H      *
-                                ;****************************************************************
-                                ;           ORG     00100H
-                                            .PHASE  00000H
-  0000                                      DS      00100H,0
-  0100    21 4000                           LD      HL,04000H           ;Ergebnisbereich loeschen
-  0103    11 4001                           LD      DE,04001H
-  0106    01 0100                           LD      BC,00100H
-  0109    36 00                             LD      (HL),0
-  010B    ED B0                             LDIR
-  010D    DD 21 4000                        LD      IX,04000H
-  0111    11 0300                           LD      DE,00300H
-  0114    01 002F                           LD      BC,0002FH
-  0117    C5                    BC.J001:    PUSH    BC
-  0118    21 0000                           LD      HL,00000H
-  011B    01 0100                           LD      BC,BC.D002
-  011E    1A                                LD      A,(DE)
-  011F    D5                                PUSH    DE
-  0120    5F                                LD      E,A
-  0121    16 00                             LD      D,000H
-  0123    19                                ADD     HL,DE
-  0124    D1                                POP     DE
-  0125    13                                INC     DE
-  0126    0B                                DEC     BC
-  0127    78                                LD      A,B
-  0128    B1                                OR      C
-  0129    20 F3                             JR      NZ,$-11
-  012B    DD 75 00                          LD      (IX+00),L
-  012E    DD 74 01                          LD      (IX+01),H
-  0131    DD 23                             INC     IX
-  0133    DD 23                             INC     IX
-  0135    C1                                POP     BC
-  0136    0B                                DEC     BC
-  0137    78                                LD      A,B
-  0138    B1                                OR      C
-  0139    20 DC                             JR      NZ,BC.J001
-  013B    C9                                RET
-  013C                          BC.AAA      EQU     $
-  013C                                      DS      00300H-BC.AAA,0
-                                
-                                            .DEPHASE
-                                
+                                            PAGE    87
 	MACRO-80 3.44	09-Dec-81	PAGE	1-1
 
 
+                                
+                         C                  INCLUDE incBC11a.MAC
+                         C      ;****************************************************************
+                         C      ;*               Variablen - Deklarationen                      *
+                         C      ;****************************************************************
+  01A4                   C      BC.AKJPB    EQU     001A4H
+  00FF                   C      BC.D001     EQU     000FFH
+  0100                   C      BC.D002     EQU     BC.D001+1
+  0101                   C      BC.D003     EQU     BC.D002+1
+  0102                   C      BC.D004     EQU     BC.D003+1
+  0103                   C      BC.D005     EQU     BC.D004+1
+  0104                   C      BC.D006     EQU     BC.D005+1
+  0106                   C      BC.D007     EQU     BC.D006+2
+  0108                   C      BC.D008     EQU     BC.D007+2
+  011E                   C      BC.D009     EQU     BC.D008+22
+  0144                   C      BC.D010     EQU     BC.D009+38
+  0146                   C      BC.D011     EQU     BC.D010+2
+  0148                   C      BC.D012     EQU     BC.D011+2
+  014A                   C      BC.D013     EQU     BC.D012+2
+  014C                   C      BC.D014     EQU     BC.D013+2
+  014E                   C      BC.D015     EQU     BC.D014+2
+  014F                   C      BC.D016     EQU     BC.D015+1
+  0150                   C      BC.D017     EQU     BC.D016+1
+  0152                   C      BC.D018     EQU     BC.D017+2
+  0154                   C      BC.D019     EQU     BC.D018+2
+  0156                   C      BC.D020     EQU     BC.D019+2
+  0158                   C      BC.D021     EQU     BC.D020+2
+  015A                   C      BC.D022     EQU     BC.D021+2
+  015C                   C      BC.D023     EQU     BC.D022+2
+  015E                   C      BC.D024     EQU     BC.D023+2
+  0160                   C      BC.D025     EQU     BC.D024+2
+  0162                   C      BC.D026     EQU     BC.D025+2
+  0164                   C      BC.D027     EQU     BC.D026+2
+  0165                   C      BC.D028     EQU     BC.D027+1
+  0166                   C      BC.D029     EQU     BC.D028+1
+  0168                   C      BC.D030     EQU     BC.D029+2
+  016A                   C      BC.D031     EQU     BC.D030+2
+  016B                   C      BC.D032     EQU     BC.D031+1
+  016C                   C      BC.D033     EQU     BC.D032+1
+  016D                   C      BC.D034     EQU     BC.D033+1
+  016E                   C      BC.D035     EQU     BC.D034+1
+  0187                   C      BC.D036     EQU     BC.D035+25
+  0189                   C      BC.D037     EQU     BC.D036+2
+  018B                   C      BC.D038     EQU     BC.D037+2
+  018D                   C      BC.D039     EQU     BC.D038+2
+  018E                   C      BC.D040     EQU     BC.D039+1
+  0190                   C      BC.D041     EQU     BC.D040+2
+  0191                   C      BC.D042     EQU     BC.D041+1
+  0192                   C      BC.D043     EQU     BC.D042+1
+  0195                   C      BC.D044     EQU     BC.D043+3
+  0196                   C      BC.D045     EQU     BC.D044+1
+  0197                   C      BC.D046     EQU     BC.D045+1
+  019A                   C      BC.D047     EQU     BC.D046+3
+  019C                   C      BC.D048     EQU     BC.D047+2
+  019E                   C      BC.D049     EQU     BC.D048+2
+  019F                   C      BC.D050     EQU     BC.D049+1
+  01A1                   C      BC.D051     EQU     BC.D050+2
+  01A3                   C      BC.D052     EQU     BC.D051+2
+  01A4                   C      BC.D053     EQU     BC.D052+1
+  01A5                   C      BC.D054     EQU     BC.D053+1
+  01A7                   C      BC.D055     EQU     BC.D054+2
+  01A8                   C      BC.D056     EQU     BC.D055+1
+  01AA                   C      BC.D057     EQU     BC.D056+2
+  01AB                   C      BC.D058     EQU     BC.D057+1
+  01AC                   C      BC.D059     EQU     BC.D058+1
+  01AE                   C      BC.D060     EQU     BC.D059+2
+  01AF                   C      BC.D061     EQU     BC.D060+1
+  01B0                   C      BC.D062     EQU     BC.D061+1
+  01B1                   C      BC.D063     EQU     BC.D062+1
+  02B0                   C      BC.D064     EQU     BC.D063+255
+  02F8                   C      BC.D065     EQU     BC.D064+72
+  02FF                   C      BC.D066     EQU     BC.D065+7
+                                
                                             PAGE
 	MACRO-80 3.44	09-Dec-81	PAGE	1-2
 
 
                                 
-                                ;****************************************************************
-                                ;*               Variablen - Deklarationen                      *
-                                ;****************************************************************
-  01A4                          BC.AKJPB    EQU     001A4H
-  00FF                          BC.D001     EQU     000FFH
-  0100                          BC.D002     EQU     BC.D001+1
-  0101                          BC.D003     EQU     BC.D002+1
-  0102                          BC.D004     EQU     BC.D003+1
-  0103                          BC.D005     EQU     BC.D004+1
-  0104                          BC.D006     EQU     BC.D005+1
-  0106                          BC.D007     EQU     BC.D006+2
-  0108                          BC.D008     EQU     BC.D007+2
-  011E                          BC.D009     EQU     BC.D008+22
-  0144                          BC.D010     EQU     BC.D009+38
-  0146                          BC.D011     EQU     BC.D010+2
-  0148                          BC.D012     EQU     BC.D011+2
-  014A                          BC.D013     EQU     BC.D012+2
-  014C                          BC.D014     EQU     BC.D013+2
-  014E                          BC.D015     EQU     BC.D014+2
-  014F                          BC.D016     EQU     BC.D015+1
-  0150                          BC.D017     EQU     BC.D016+1
-  0152                          BC.D018     EQU     BC.D017+2
-  0154                          BC.D019     EQU     BC.D018+2
-  0156                          BC.D020     EQU     BC.D019+2
-  0158                          BC.D021     EQU     BC.D020+2
-  015A                          BC.D022     EQU     BC.D021+2
-  015C                          BC.D023     EQU     BC.D022+2
-  015E                          BC.D024     EQU     BC.D023+2
-  0160                          BC.D025     EQU     BC.D024+2
-  0162                          BC.D026     EQU     BC.D025+2
-  0164                          BC.D027     EQU     BC.D026+2
-  0165                          BC.D028     EQU     BC.D027+1
-  0166                          BC.D029     EQU     BC.D028+1
-  0168                          BC.D030     EQU     BC.D029+2
-  016A                          BC.D031     EQU     BC.D030+2
-  016B                          BC.D032     EQU     BC.D031+1
-  016C                          BC.D033     EQU     BC.D032+1
-  016D                          BC.D034     EQU     BC.D033+1
-  016E                          BC.D035     EQU     BC.D034+1
-  0187                          BC.D036     EQU     BC.D035+25
-  0189                          BC.D037     EQU     BC.D036+2
-  018B                          BC.D038     EQU     BC.D037+2
-  018D                          BC.D039     EQU     BC.D038+2
-  018E                          BC.D040     EQU     BC.D039+1
-  0190                          BC.D041     EQU     BC.D040+2
-  0191                          BC.D042     EQU     BC.D041+1
-  0192                          BC.D043     EQU     BC.D042+1
-  0195                          BC.D044     EQU     BC.D043+3
-  0196                          BC.D045     EQU     BC.D044+1
-  0197                          BC.D046     EQU     BC.D045+1
-  019A                          BC.D047     EQU     BC.D046+3
-  019C                          BC.D048     EQU     BC.D047+2
-  019E                          BC.D049     EQU     BC.D048+2
-  019F                          BC.D050     EQU     BC.D049+1
-  01A1                          BC.D051     EQU     BC.D050+2
-  01A3                          BC.D052     EQU     BC.D051+2
-  01A4                          BC.D053     EQU     BC.D052+1
-  01A5                          BC.D054     EQU     BC.D053+1
-  01A7                          BC.D055     EQU     BC.D054+2
-  01A8                          BC.D056     EQU     BC.D055+1
+                                            .PHASE  00000H
+                         C                  INCLUDE incBC11b.MAC
+                         C      ;
+                         C      ;           Bereich  00100H bis 002FFH
+                         C      ;
+  0000                   C                  DS      010H,0FFH
+  0010    33 33          C                  DB      '33'
+  0012    CD E9F2        C                  CALL    0E9F2H  ;???
+  0015    3E BF          C                  LD      A,0BFH
+  0017    D3 C0          C                  OUT     (0C0H),A
+  0019    3E 87          C                  LD      A,087H
+  001B    D3 C1          C                  OUT     (0C1H),A
+  001D    21 B220        C                  LD      HL,0B220H   ;???
+  0020    11 2FB7        C                  LD      DE,02FB7H   ;???
+  0023    01 00C0        C                  LD      BC,000C0H
+  0026    ED B0          C                  LDIR
+  0028    3E 85          C                  LD      A,085H
+  002A    D3 C1          C                  OUT     (0C1H),A
+  002C    3E B7          C                  LD      A,0B7H
+  002E    D3 C0          C                  OUT     (0C0H),A
+  0030    21 306B        C                  LD      HL,0306BH   ;???
+  0033    22 0150        C                  LD      (00150H),HL ;???
+  0036    23             C                  INC     HL
+  0037    22 015E        C                  LD      (0015EH),HL ;???
+  003A    22 0160        C                  LD      (00160H),HL ;???
+  003D    22 0162        C                  LD      (00162H),HL ;???
+  0040    CD EA0E        C                  CALL    0EA0EH  ;???
+  0043    C9             C                  RET
+  0044                   C                  DS      02CH,0FFH
+                         C      ;
+  0070    33 33          C                  DB      '33'
+  0072    CD E9F2        C                  CALL    0E9F2H  ;???
+  0075    CD C131        C                  CALL    0C131H  ;???
+  0078    CD EA0E        C                  CALL    0EA0EH  ;???
+  007B    C9             C                  RET
+  007C                   C                  DS      4,0FFH
+                         C      ;
+  0080    33 33          C                  DB      '33'
+  0082    CD E9F2        C                  CALL    0E9F2H  ;???
+  0085    CD C96D        C                  CALL    0C96DH  ;???
+  0088    21 0015        C                  LD      HL,00015H
+  008B    22 B213        C                  LD      (0B213H),HL ;???
+  008E    CD EA0E        C                  CALL    0EA0EH  ;???
+  0091    C9             C                  RET
+  0092                   C                  DS      8,0
+                         C      ;
+  009A    DB A1          C                  IN      A,(0A1H)
+  009C    CB 5F          C                  BIT     3,A
+  009E    C9             C                  RET
+  009F    00             C                  NOP
+                         C      ;
+  00A0                   C                  DS      2,0
+  00A2    CD C1C0        C                  CALL    0C1C0H  ;???
+  00A5    C9             C                  RET
+                         C      ;
+  00A6    CD E9F2        C                  CALL    0E9F2H  ;???
+  00A9    CD 0327        C                  CALL    00327H  ;???
+  00AC    D5             C                  PUSH    DE
+  00AD    CD 0092        C                  CALL    00092H  ;???
+  00B0    20 FB          C                  JR      NZ,$-3
+  00B2    CD 009F        C                  CALL    0009FH  ;???
+  00B5    FE FC          C                  CP      0FCH
+  00B7    30 08          C                  JR      NC,$+10
+  00B9    FE 80          C                  CP      080H
+  00BB    38 F0          C                  JR      C,$-14
+  00BD    FE 8C          C                  CP      08CH
+  00BF    30 EC          C                  JR      NC,$-18
+  00C1    D1             C                  POP     DE
+  00C2    E6 0F          C                  AND     00FH
+  00C4    BB             C                  CP      E
+  00C5    30 E5          C                  JR      NC,$-25
+  00C7    47             C                  LD      B,A
+  00C8    04             C                  INC     B
+  00C9    AF             C                  XOR     A
+  00CA    CD 032A        C                  CALL    0032AH  ;???
+  00CD    CD 0092        C                  CALL    00092H  ;???
+  00D0    28 FB          C                  JR      Z,$-3
+  00D2    CD EA0E        C                  CALL    0EA0EH  ;???
+  00D5    C9             C                  RET
+  00D6                   C                  DS      4,0FFH            
+                         C      ;
 	MACRO-80 3.44	09-Dec-81	PAGE	1-3
 
 
-  01AA                          BC.D057     EQU     BC.D056+2
-  01AB                          BC.D058     EQU     BC.D057+1
-  01AC                          BC.D059     EQU     BC.D058+1
-  01AE                          BC.D060     EQU     BC.D059+2
-  01AF                          BC.D061     EQU     BC.D060+1
-  01B0                          BC.D062     EQU     BC.D061+1
-  01B1                          BC.D063     EQU     BC.D062+1
-  02B0                          BC.D064     EQU     BC.D063+255
-  02F8                          BC.D065     EQU     BC.D064+72
-  02FF                          BC.D066     EQU     BC.D065+7
-                                
-                                            PAGE
+  00DA    33 33          C                  DB      '33'
+  00DC    CD E9F2        C                  CALL    0E9F2H  ;???
+  00DF    21 FF01        C                  LD      HL,0FF01H
+  00E2    22 0310        C                  LD      (00310H),HL ;???
+  00E5    21 00F0        C                  LD      HL,000F0H
+  00E8    22 030A        C                  LD      (0030AH),HL ;??? 
+  00EB    00             C                  NOP
+  00EC    CD EA0E        C                  CALL    0EA0EH  ;???
+  00EF    C9             C                  RET
+                         C      ;
+  00F0    CD E8ED        C                  CALL    0E8EDH  ;???
+  00F3    FE 0A          C                  CP      00AH
+  00F5    28 06          C                  JR      Z,$+8
+  00F7    FE 20          C                  CP      ' '
+  00F9    38 F5          C                  JR      C,$-9
+  00FB    C9             C                  RET
+                         C      ;
+  00FC    FF             C                  DB      0FFH
+  00FD    3E 0D          C                  LD      A,00DH
+  00FF    C9             C                  RET
+                         C                  PAGE
 	MACRO-80 3.44	09-Dec-81	PAGE	1-4
 
 
+                         C      
+                         C      ;****************************************************************
+                         C      ;*               Pruefsummen-Programm                           *
+                         C      ;*               Aufruf  :     EXEC 0100                        *
+                         C      ;*               Ergebnis:     Pruefsummen stehen ab 4000H      *
+                         C      ;****************************************************************
+                         C      ;           ORG     00100H
+  0100    21 4000        C                  LD      HL,04000H           ;Ergebnisbereich loeschen
+  0103    11 4001        C                  LD      DE,04001H
+  0106    01 0100        C                  LD      BC,00100H
+  0109    36 00          C                  LD      (HL),0
+  010B    ED B0          C                  LDIR
+  010D    DD 21 4000     C                  LD      IX,04000H
+  0111    11 0300        C                  LD      DE,00300H
+  0114    01 002F        C                  LD      BC,0002FH
+  0117    C5             C      BC.J001:    PUSH    BC
+  0118    21 0000        C                  LD      HL,00000H
+  011B    01 0100        C                  LD      BC,BC.D002
+  011E    1A             C                  LD      A,(DE)
+  011F    D5             C                  PUSH    DE
+  0120    5F             C                  LD      E,A
+  0121    16 00          C                  LD      D,000H
+  0123    19             C                  ADD     HL,DE
+  0124    D1             C                  POP     DE
+  0125    13             C                  INC     DE
+  0126    0B             C                  DEC     BC
+  0127    78             C                  LD      A,B
+  0128    B1             C                  OR      C
+  0129    20 F3          C                  JR      NZ,$-11
+  012B    DD 75 00       C                  LD      (IX+00),L
+  012E    DD 74 01       C                  LD      (IX+01),H
+  0131    DD 23          C                  INC     IX
+  0133    DD 23          C                  INC     IX
+  0135    C1             C                  POP     BC
+  0136    0B             C                  DEC     BC
+  0137    78             C                  LD      A,B
+  0138    B1             C                  OR      C
+  0139    C2 0117        C                  JP      NZ,BC.J001
+  013C    7F             C                  LD      A,A
+  013D    00             C                  NOP
+  013E    00             C                  NOP
+  013F    00             C                  NOP
+  0140    03             C                  INC     BC
+  0141    3E 0A          C                  LD      A,00AH
+  0143    CD 01F3        C                  CALL    001F3H  ;???
+  0146    01 0002        C                  LD      BC,00002H
+  0149    11 0909        C                  LD      DE,00909H   ;???
+  014C    21 0107        C                  LD      HL,00107H   ;???
+  014F    ED B0          C                  LDIR
+  0151    16 1F          C                  LD      D,01FH
+  0153    CD 01FE        C                  CALL    001FEH  ;???
+  0156    01 0419        C                  LD      BC,00419H   ;???
+  0159    CD 0202        C                  CALL    00202H  ;???
+  015C    01 0010        C                  LD      BC,00010H
+  015F    21 0900        C                  LD      HL,00900H
+  0162    CD 01F1        C                  CALL    001F1H  ;???
+  0165    01 0007        C                  LD      BC,00007H
+  0168    21 090F        C                  LD      HL,0090FH
+  016B    CD 01F1        C                  CALL    001F1H  ;???
+  016E    DD 36 0B 00    C                  LD      (IX+11),0
+  0172    01 0600        C                  LD      BC,00600H   ;???
+  0175    CD 0202        C                  CALL    00202H  ;???
+  0178    01 0025        C                  LD      BC,25H
+  017B    21 0885        C                  LD      HL,00885H   ;???
+  017E    CD 01F1        C                  CALL    001F1H  ;???
+  0181    0E 03          C                  LD      C,3
+  0183    21 0895        C                  LD      HL,00895H   ;???
+  0186    CD 01F1        C                  CALL    001F1H  ;???
+  0189    16 53          C                  LD      D,53H
+  018B    CD 01FE        C                  CALL    001FEH  ;???
+  018E    21 0899        C                  LD      HL,00899H   ;???
+  0191    0E 4B          C                  LD      C,4BH
+  0193    CD 01F1        C                  CALL    001F1H  ;???
+  0196    FD 21 07A6     C                  LD      IY,007A6H   ;???
+  019A    CD 010C        C                  CALL    00010CH ;???
+  019D    CA 01D0        C                  JP      Z,001D0H    ;???
+  01A0    21 07AE        C                  LD      HL,007AEH   ;???
+  01A3    7E             C                  LD      A,(HL)
+  01A4    FE 46          C                  CP      046H
+  01A6    CA 0208        C                  JP      Z,00208H    ;???
+  01A9    FE 41          C                  CP      041H
+  01AB    CA 03D3        C                  JP      Z,003D3H    ;???
+	MACRO-80 3.44	09-Dec-81	PAGE	1-5
+
+
+  01AE    FE 53          C                  CP      053H
+  01B0    CA 03C8        C                  JP      Z,003C8H    ;???
+  01B3    01 0500        C                  LD      BC,00500H   ;???
+  01B6    CD 0202        C                  CALL    00202H  ;???
+  01B9    C3 0165        C                  JP      00165H  ;???
+                         C      ;
+  01BC    3A 0794        C                  LD      A,(00794H)  ;???
+  01BF    5F             C                  LD      E,A
+  01C0    CD 01FA        C                  CALL    001FAH  ;???
+  01C3    31 0100        C                  LD      SP,00100H
+  01C6    18 EB          C                  JR      $-19
+                         C      ;
+  01C8    DD 5E 00       C                  LD      E,(IX+0)
+  01CB    3E 04          C                  LD      A,4
+  01CD    CD 0109        C                  CALL    00109H  ;???
+  01D0    1E 44          C                  LD      E,044H
+  01D2    CD 01FA        C                  CALL    001FAH  ;???
+  01D5    C3 010F        C                  JP      0010FH  ;???
+                         C      ;
+  01D8    CD 01DD        C                  CALL    001DDH  ;???
+  01DB    18 EB          C                  JR      $-19
+                         C      ;
+  01DD    DD 5E 01       C                  LD      E,(IX+1)
+  01E0    CD 01FA        C                  CALL    001FAH  ;???
+  01E3    C9             C                  RET
+                         C      ;
+  01E4    3E 03          C                  LD      A,3
+  01E6    21 085A        C                  LD      HL,0085AH   ;???
+  01E9    CD 0109        C                  CALL    00109H  ;???
+  01EC    B7             C                  OR      A
+  01ED    C2 0120        C                  JP      NZ,00120H   ;???
+  01F0    C9             C                  RET
+                         C      ;
+  01F1    3E 0D          C                  LD      A,00DH
+  01F3    11 0044        C                  LD      DE,00044H   ;???
+  01F6    CD 0109        C                  CALL    00109H  ;???
+  01F9    C9             C                  RET
+                         C      ;
+  01FA    3E 05          C                  LD      A,5
+  01FC    18 F8          C                  JR      $-6
+                         C      ;
+  01FE    3E 01          C                  LD      A,1
+  0200    18 02          C                  JR      $+4
+                         C      ;
+  0202    3E 0B          C                  LD      A,00BH
+  0204    1E 44          C                  LD      E,044H
+  0206    18 EE          C                  JR      $-16
+                         C      ;
+  0208    CD 04D5        C                  CALL    004D5H  ;???
+  020B    DD 36 07 00    C                  LD      (IX+7),0
+  020F    16 46          C                  LD      D,046H
+  0211    CD 01FE        C                  CALL    001FEH  ;???
+  0214    0E 0D          C                  LD      C,00DH
+  0216    21 085C        C                  LD      HL,0085CH   ;???
+  0219    CD 01F1        C                  CALL    001F1H  ;???
+  021C    FD 21 07A6     C                  LD      IY,007A6H   ;???
+  0220    CD 010C        C                  CALL    0010CH  ;???
+  0223    3A 07AE        C                  LD      A,(007AEH)  ;???
+  0226    CA 01D0        C                  JP      Z,001D0H    ;???
+  0229    FE 44          C                  CP      044H
+  022B    28 DB          C                  JR      Z,$-35
+  022D    FE 48          C                  CP      048H
+  022F    28 D7          C                  JR      Z,$-39
+  0231    32 0795        C                  LD      (00795H),A  ;???
+  0234    01 000D        C                  LD      BC,0000DH
+  0237    21 0869        C                  LD      HL,00869H   ;???
+  023A    CD 01F1        C                  CALL    001F1H  ;???
+  023D    FD 21 07AA     C                  LD      IY,007AAH   ;???
+  0241    CD 010C        C                  CALL    0010CH  ;???
+  0244    CA 01C3        C                  JP      Z,001C3H    ;???
+  0247    FD 5E 00       C                  LD      E,(IY+0)
+  024A    FD 56 01       C                  LD      D,(IY+1)
+  024D    FD 6E 02       C                  LD      L,(IY+2)
+  0250    FD 66 03       C                  LD      H,(IY+3)
+  0253    23             C                  INC     HL
+  0254    7E             C                  LD      A,(HL)
+  0255    E6 7F          C                  AND     07FH
+  0257    FE 20          C                  CP      020H
+  0259    20 07          C                  JR      NZ,$+9
+  025B    E5             C                  PUSH    HL
+  025C    ED 52          C                  SBC     HL,DE
+  025E    E1             C                  POP     HL
+  025F    2B             C                  DEC     HL
+	MACRO-80 3.44	09-Dec-81	PAGE	1-6
+
+
+  0260    20 F2          C                  JR      NZ,$-12
+  0262    7E             C                  LD      A,(HL)
+  0263    FE 2C          C                  CP      02CH
+  0265    28 01          C                  JR      Z,$+3
+  0267    23             C                  INC     HL
+  0268    36 FF          C                  LD      (HL),0FFH
+  026A    B7             C                  OR      A
+  026B    ED 52          C                  SBC     HL,DE
+  026D    22 0798        C                  LD      (00798H),HL ;???
+  0270    42             C                  LD      B,D
+  0271    4B             C                  LD      C,E
+  0272    11 0928        C                  LD      DE,00928H   ;???
+  0275    FD 6E 00       C                  LD      L,(IY+0)
+  0278    FD 66 01       C                  LD      H,(IY+1)
+  027B    ED B0          C                  LDIR
+  027D    01 0B05        C                  LD      BC,00B05H   ;???
+  0280    CD 05B0        C                  CALL    005B0H  ;???
+  0283    30 02          C                  JR      NC,$+4
+  0285    20 F6          C                  JR      NZ,$-8
+  0287    B7             C                  OR      A
+  0288    CC 05E2        C                  CALL    Z,005E2H    ;???
+  028B    01 0C07        C                  LD      BC,00C07H   ;???
+  028E    CD 05ED        C                  CALL    005EDH  ;???
+  0291    DD 7E 02       C                  LD      A,(IX+2)
+  0294    FE 52          C                  CP      052H
+  0296    28 02          C                  JR      Z,$+4
+  0298    FE 50          C                  CP      050H
+  029A    DD 36 08 06    C                  LD      (IX+8),6
+  029E    28 04          C                  JR      Z,$+6
+  02A0    DD 36 08 04    C                  LD      (IX+8),4
+  02A4    21 0928        C                  LD      HL,00928H   ;???
+  02A7    E5             C                  PUSH    HL
+  02A8    01 00FE        C                  LD      BC,000FEH
+  02AB    7E             C                  LD      A,(HL)
+  02AC    23             C                  INC     HL
+  02AD    0C             C                  INC     C
+  02AE    FE FF          C                  CP      0FFH
+  02B0    28 04          C                  JR      Z,$+6
+  02B2    FE 2C          C                  CP      02CH
+  02B4    20 F5          C                  JR      NZ,$-9
+  02B6    E1             C                  POP     HL
+  02B7    F5             C                  PUSH    AF
+  02B8    E5             C                  PUSH    HL
+  02B9    C5             C                  PUSH    BC
+  02BA    CD 03AD        C                  CALL    003ADH  ;???
+  02BD    C1             C                  POP     BC
+  02BE    E1             C                  POP     HL
+  02BF    DD 7E 08       C                  LD      A,(IX+8)
+  02C2    B9             C                  CP      C
+  02C3    F5             C                  PUSH    AF
+  02C4    38 22          C                  JR      C,$+24H
+  02C6    03             C                  INC     BC
+  02C7    3E 06          C                  LD      A,6
+  02C9    DD BE 08       C                  CP      (IX+8)
+  02CC    11 07A0        C                  LD      DE,007A0H   ;???
+  02CF    28 03          C                  JR      Z,$+5
+  02D1    11 07A2        C                  LD      DE,007A2H   ;???
+  02D4    ED B0          C                  LDIR
+  02D6    F1             C                  POP     AF
+  02D7    DA 039C        C                  JP      C,0039CH    ;???
+  02DA    23             C                  INC     HL
+  02DB    E5             C                  PUSH    HL
+  02DC    CD 02ED        C                  CALL    002EDH  ;???
+  02DF    E1             C                  POP     HL
+  02E0    F1             C                  POP     AF
+  02E1    FE FF          C                  CP      0FFH
+  02E3    20 C2          C                  JR      NZ,$-60
+  02E5    C3 01B3        C                  JP      001B3H  ;???
+  02E8    DD 4E 08       C                  LD      C,(IX+8)
+  02EB    18 DA          C                  JR      $-36
+                         C      ;
+  02ED    CD 0510        C                  CALL    00510H  ;???
+  02F0    CD 0526        C                  CALL    00526H  ;???
+  02F3    3A 079F        C                  LD      A,(0079FH)  ;???
+  02F6    B7             C                  OR      A
+  02F7    20 13          C                  JR      NZ,$+15H
+  02F9    01 0C2D        C                  LD      BC,00C2DH   ;???
+  02FC    CD 0202        C                  CALL    00202H  ;???
+  02FF    01             C                  DB      1
+                         C      ;            
+                                            PAGE
+	MACRO-80 3.44	09-Dec-81	PAGE	1-7
+
+
                                 
-                                            .PHASE  00300H
                                 ;****************************************************************
                                 ;*               Systemroutinen - Sprungverteiler               *
                                 ;****************************************************************
@@ -210,9 +523,6 @@
   036D    7F                                DB      7FH                 ;THEN
   036E    2A17                              DW      2A17H
   0370    50                                DB      50H                 ;NOT
-	MACRO-80 3.44	09-Dec-81	PAGE	1-5
-
-
   0371    0FBD                              DW      0FBDH
   0373    46                                DB      46H                 ;STEP
   0374    0FBC                              DW      0FBCH
@@ -235,6 +545,9 @@
   0394    09C1                              DW      BC.STOP
   0396    16DD                              DW      BC.OUT
   0398    0C06                              DW      BC.ON
+	MACRO-80 3.44	09-Dec-81	PAGE	1-8
+
+
   039A    09FC                              DW      BC.NULL
   039C    16E3                              DW      BC.WAIT
   039E    1236                              DW      BC.DEF
@@ -275,9 +588,6 @@
   03E2    1D6E                              DW      BC.AMRGC
   03E4    1CF2                              DW      BC.ALOAD
   03E6    1CF5                              DW      BC.AMRG
-	MACRO-80 3.44	09-Dec-81	PAGE	1-6
-
-
   03E8    1841                              DW      BC.ASAVE
   03EA    07EF                              DW      BC.LIST
   03EC    07EC                              DW      BC.LLIST
@@ -287,7 +597,7 @@
   03F4    09E7                              DW      BC.CONT
                                 
                                             PAGE
-	MACRO-80 3.44	09-Dec-81	PAGE	1-7
+	MACRO-80 3.44	09-Dec-81	PAGE	1-9
 
 
                                 
@@ -351,9 +661,6 @@
                                 
   043E    D5                    BC.C005:    PUSH    DE
   043F    EB                                EX      DE,HL
-	MACRO-80 3.44	09-Dec-81	PAGE	1-8
-
-
   0440    21 FFD8                           LD      HL,0FFD8H
   0443    39                                ADD     HL,SP
   0444    7C                                LD      A,H
@@ -375,6 +682,9 @@
   045A    B7                                OR      A
   045B    20 0A                             JR      NZ,$+12
   045D    C1                                POP     BC
+	MACRO-80 3.44	09-Dec-81	PAGE	1-10
+
+
   045E    21 2F84                           LD      HL,BC.D126
   0461    CD 07BD                           CALL    BC.C027
   0464    C3 05F4                           JP      BC.J018
@@ -416,9 +726,6 @@
   04AF    3A 01AB                           LD      A,(BC.D058)
   04B2    B7                                OR      A
   04B3    28 25                             JR      Z,$+39
-	MACRO-80 3.44	09-Dec-81	PAGE	1-9
-
-
   04B5    2A 019A                           LD      HL,(BC.D047)
   04B8    FA 1DD5                           JP      M,BC.J068
   04BB    ED 5B 019C                        LD      DE,(BC.D048)
@@ -461,6 +768,9 @@
   04FF    F1                                POP     AF
   0500    D2 0914                           JP      NC,BC.J025
   0503    D5                                PUSH    DE
+	MACRO-80 3.44	09-Dec-81	PAGE	1-11
+
+
   0504    C5                                PUSH    BC
   0505    23                                INC     HL
   0506    7E                                LD      A,M
@@ -481,9 +791,6 @@
   0521    1A                                LD      A,(DE)
   0522    02                                LD      (BC),A
   0523    03                                INC     BC
-	MACRO-80 3.44	09-Dec-81	PAGE	1-10
-
-
   0524    13                                INC     DE
   0525    7C                                LD      A,H
   0526    92                                SUB     D
@@ -546,10 +853,10 @@
   0573    11 0000               BC.C008:    LD      DE,0
   0576    D5                                PUSH    DE
   0577    28 0C                             JR      Z,$+14
-	MACRO-80 3.44	09-Dec-81	PAGE	1-11
-
-
   0579    D1                                POP     DE
+	MACRO-80 3.44	09-Dec-81	PAGE	1-12
+
+
   057A    CD 0985                           CALL    BC.C034
   057D    D5                                PUSH    DE
   057E    28 0E                             JR      Z,$+16
@@ -593,7 +900,7 @@
   05B1    18 E2                             JR      $-28
                                 
                                             PAGE
-	MACRO-80 3.44	09-Dec-81	PAGE	1-12
+	MACRO-80 3.44	09-Dec-81	PAGE	1-13
 
 
                                 
@@ -657,9 +964,6 @@
   0620    3A 0103                           LD      A,(BC.D005)
   0623    B7                                OR      A
   0624    47                                LD      B,A
-	MACRO-80 3.44	09-Dec-81	PAGE	1-13
-
-
   0625    7E                                LD      A,M
   0626    20 43                             JR      NZ,$+69
   0628    FE 30                             CP      030H
@@ -681,6 +985,9 @@
   0642    7E                                LD      A,M
   0643    FE 20                             CP      020H
   0645    20 03                             JR      NZ,$+05
+	MACRO-80 3.44	09-Dec-81	PAGE	1-14
+
+
   0647    23                                INC     HL
   0648    18 F8                             JR      $-06
   064A    EB                                EX      DE,HL
@@ -722,9 +1029,6 @@
   067F    06 3A                             LD      B,03AH
   0681    28 11                             JR      Z,$+19
   0683    FE 49                             CP      049H
-	MACRO-80 3.44	09-Dec-81	PAGE	1-14
-
-
   0685    20 03                             JR      NZ,$+05
   0687    32 0103                           LD      (BC.D005),A
   068A    D6 54                             SUB     054H
@@ -767,6 +1071,9 @@
   06C0    10 08                             DJNZ    $+10
   06C2    CD 0770                           CALL    BC.C025
   06C5    CD 0770                           CALL    BC.C025
+	MACRO-80 3.44	09-Dec-81	PAGE	1-15
+
+
   06C8    18 3A                             JR      $+60
   06CA    2B                                DEC     HL
   06CB    7E                                LD      A,M
@@ -787,9 +1094,6 @@
   06EA    CD 0707                           CALL    BC.C022
   06ED    23                                INC     HL
   06EE    7E                                LD      A,M
-	MACRO-80 3.44	09-Dec-81	PAGE	1-15
-
-
   06EF    2B                                DEC     HL
   06F0    FE 03                             CP      003H
   06F2    C9                                RET
@@ -852,10 +1156,10 @@
   075F    CD 0766                           CALL    BC.C024
   0762    18 AC                             JR      $-82
                                 
+  0764    3E 20                 BC.C023:    LD      A,' '               ;Zeichen ==> BWS
 	MACRO-80 3.44	09-Dec-81	PAGE	1-16
 
 
-  0764    3E 20                 BC.C023:    LD      A,' '               ;Zeichen ==> BWS
   0766    FE 0A                 BC.C024:    CP      00AH
   0768    20 08                             JR      NZ,$+10
   076A    CD 0CEE                           CALL    BC.C048
@@ -917,9 +1221,6 @@
   07D2    FE 0F                             CP      00FH
   07D4    C0                                RET     NZ
   07D5    CD 06F3                           CALL    BC.C020
-	MACRO-80 3.44	09-Dec-81	PAGE	1-17
-
-
   07D8    3A 0100                           LD      A,(BC.D002)
   07DB    2F                                CPL
   07DC    32 0100                           LD      (BC.D002),A
@@ -932,7 +1233,7 @@
   07EB    C9                                RET
                                 
                                             PAGE
-	MACRO-80 3.44	09-Dec-81	PAGE	1-18
+	MACRO-80 3.44	09-Dec-81	PAGE	1-17
 
 
                                 
@@ -996,9 +1297,6 @@
   083F    23                                INC     HL
   0840    02                                LD      (BC),A
   0841    C8                                RET     Z
-	MACRO-80 3.44	09-Dec-81	PAGE	1-19
-
-
   0842    F2 083C                           JP      P,BC.J022
   0845    FE C9                             CP      0C9H
   0847    20 01                             JR      NZ,$+03
@@ -1020,11 +1318,14 @@
   0862    02                                LD      (BC),A
   0863    FA 083B                           JP      M,BC.J021
   0866    03                                INC     BC
+	MACRO-80 3.44	09-Dec-81	PAGE	1-18
+
+
   0867    23                                INC     HL
   0868    18 F0                             JR      $-14
                                 
                                             PAGE
-	MACRO-80 3.44	09-Dec-81	PAGE	1-20
+	MACRO-80 3.44	09-Dec-81	PAGE	1-19
 
 
                                 
@@ -1088,9 +1389,6 @@
   08CC    CD 0318               BC.J024:    CALL    BC.CSTSX            ;nach Ausfuehrung eines TOKEN, Weiterarbeit
   08CF    3C                                INC     A                   ;HL  ==>  :  bzw.  00H
   08D0    CC 0998                           CALL    Z,BC.C037
-	MACRO-80 3.44	09-Dec-81	PAGE	1-21
-
-
   08D3    22 0150                           LD      (BC.D017),HL
   08D6    7E                                LD      A,M
   08D7    FE 3A                             CP      03AH
@@ -1112,6 +1410,9 @@
   08F2    28 20                             JR      Z,$+34
   08F4    F5                                PUSH    AF
   08F5    FC 18A6                           CALL    M,BC.C098
+	MACRO-80 3.44	09-Dec-81	PAGE	1-20
+
+
   08F8    D5                                PUSH    DE
   08F9    E5                                PUSH    HL
   08FA    3E 3C                             LD      A,03CH
@@ -1153,9 +1454,6 @@
   0941    09                                ADD     HL,BC
   0942    4E                                LD      C,M
   0943    23                                INC     HL
-	MACRO-80 3.44	09-Dec-81	PAGE	1-22
-
-
   0944    46                                LD      B,M
   0945    C5                                PUSH    BC
   0946    EB                                EX      DE,HL
@@ -1198,6 +1496,9 @@
   097F    2B                                DEC     HL
   0980    22 0164               BC.J028:    LD      (BC.D027),HL
   0983    EB                                EX      DE,HL
+	MACRO-80 3.44	09-Dec-81	PAGE	1-21
+
+
   0984    C9                                RET
                                 
   0985    2B                    BC.C034:    DEC     HL
@@ -1218,9 +1519,6 @@
   099D    20 0C                             JR      NZ,$+14
   099F    E5                                PUSH    HL
   09A0    2A 0154                           LD      HL,(BC.D019)
-	MACRO-80 3.44	09-Dec-81	PAGE	1-23
-
-
   09A3    7C                                LD      A,H
   09A4    A5                                AND     L
   09A5    3C                                INC     A
@@ -1283,10 +1581,10 @@
   0A0D    CD 171B                           CALL    BC.C091
   0A10    FD 77 04                          LD      (IY+04),A
   0A13    C9                                RET
-	MACRO-80 3.44	09-Dec-81	PAGE	1-24
-
-
                                 
+	MACRO-80 3.44	09-Dec-81	PAGE	1-22
+
+
   0A14    7E                    BC.C038:    LD      A,M
   0A15    FE 41                             CP      'A'
   0A17    D8                                RET     C
@@ -1348,9 +1646,6 @@
   0A72    28 26                 BC.CLEAR:   JR      Z,$+40              ;TOKEN:  C L E A R
   0A74    CD 0A24                           CALL    BC.C041
   0A77    CD 0948                           CALL    BC.C032
-	MACRO-80 3.44	09-Dec-81	PAGE	1-25
-
-
   0A7A    C0                                RET     NZ
   0A7B    E5                                PUSH    HL
   0A7C    2A 0104                           LD      HL,(BC.D006)
@@ -1373,6 +1668,9 @@
                                 
   0A9D    CA 05C2               BC.RUN:     JP      Z,BC.C012           ;TOKEN:  R U N
   0AA0    CD 05C6                           CALL    BC.C013
+	MACRO-80 3.44	09-Dec-81	PAGE	1-23
+
+
   0AA3    01 08CC                           LD      BC,BC.D072
   0AA6    18 1C                             JR      $+30
                                 
@@ -1413,9 +1711,6 @@
   0AE1    1E 08                 BC.J035:    LD      E,8
   0AE3    C3 047E                           JP      BC.J010
                                 
-	MACRO-80 3.44	09-Dec-81	PAGE	1-26
-
-
   0AE6    C0                    BC.RETRN:   RET     NZ                  ;TOKEN:  R E T U R N
   0AE7    16 FF                             LD      D,0FFH
   0AE9    CD 03F6                           CALL    BC.C001
@@ -1459,6 +1754,9 @@
   0B24    57                                LD      D,A
   0B25    18 ED                             JR      $-17
                                 
+	MACRO-80 3.44	09-Dec-81	PAGE	1-24
+
+
   0B27    FE C6                 BC.LET:     CP      0C6H                ;TOKEN:  L E T
   0B29    28 60                             JR      Z,$+98
   0B2B    CD 106A               BC.J036:    CALL    BC.C060
@@ -1478,9 +1776,6 @@
   0B47    CD 2316                           CALL    BC.C133
   0B4A    D1                                POP     DE
   0B4B    E1                                POP     HL
-	MACRO-80 3.44	09-Dec-81	PAGE	1-27
-
-
   0B4C    C9                                RET
                                 
   0B4D    E5                    BC.J037:    PUSH    HL
@@ -1543,11 +1838,11 @@
   0BB0    CD 0451                           CALL    BC.C006
   0BB3    CD 171B                           CALL    BC.C091
   0BB6    3E 29                             LD      A,029H
-	MACRO-80 3.44	09-Dec-81	PAGE	1-28
-
-
   0BB8    CD 0451                           CALL    BC.C006
   0BBB    3E AD                             LD      A,0ADH
+	MACRO-80 3.44	09-Dec-81	PAGE	1-25
+
+
   0BBD    CD 0451                           CALL    BC.C006
   0BC0    F1                                POP     AF
   0BC1    E3                                EX      (SP),HL
@@ -1608,9 +1903,6 @@
   0C0A    47                                LD      B,A
   0C0B    FE 8C                             CP      08CH                ;GOSUB
   0C0D    28 06                             JR      Z,$+08
-	MACRO-80 3.44	09-Dec-81	PAGE	1-29
-
-
   0C0F    3E 88                             LD      A,088H              ;GOTO
   0C11    CD 0451                           CALL    BC.C006
   0C14    2B                                DEC     HL
@@ -1634,6 +1926,9 @@
   0C35    2B                                DEC     HL
   0C36    E5                                PUSH    HL
   0C37    CD 22BF                           CALL    BC.C125
+	MACRO-80 3.44	09-Dec-81	PAGE	1-26
+
+
   0C3A    E1                                POP     HL
   0C3B    28 09                             JR      Z,$+11
   0C3D    CD 0947                           CALL    BC.C031
@@ -1673,9 +1968,6 @@
   0C83    CD 13ED                           CALL    BC.C070
   0C86    2A 0166                           LD      HL,(BC.D029)
   0C89    FD 7E 00                          LD      A,(IY+00)
-	MACRO-80 3.44	09-Dec-81	PAGE	1-30
-
-
   0C8C    86                                ADD     A,M
   0C8D    FD BE 01                          CP      (IY+01)
   0C90    D4 0CEE                           CALL    NC,BC.C048
@@ -1720,6 +2012,9 @@
   0CDB    21 2F9B               BC.C047:    LD      HL,BC.D128
   0CDE    C3 01A4                           JP      BC.AKJPB
                                 
+	MACRO-80 3.44	09-Dec-81	PAGE	1-27
+
+
   0CE1    21 01B1               BC.J039:    LD      HL,BC.D063
   0CE4    77                                LD      M,A
   0CE5    23                                INC     HL
@@ -1738,9 +2033,6 @@
   0D03    C8                                RET     Z
   0D04    F5                                PUSH    AF
   0D05    FD 7E 04                          LD      A,(IY+04)
-	MACRO-80 3.44	09-Dec-81	PAGE	1-31
-
-
   0D08    CD 0772                           CALL    BC.C026
   0D0B    F1                                POP     AF
   0D0C    18 F1                             JR      $-13
@@ -1803,12 +2095,12 @@
   0D73    CD 06E2                           CALL    BC.C019
   0D76    CA 098E                           JP      Z,BC.J029
   0D79    F1                                POP     AF
-	MACRO-80 3.44	09-Dec-81	PAGE	1-32
-
-
   0D7A    28 2F                             JR      Z,$+49
   0D7C    E3                                EX      (SP),HL
   0D7D    CD 106A                           CALL    BC.C060
+	MACRO-80 3.44	09-Dec-81	PAGE	1-28
+
+
   0D80    CD 0E89                           CALL    BC.C053+1
   0D83    E3                                EX      (SP),HL
   0D84    D5                                PUSH    DE
@@ -1868,9 +2160,6 @@
   0DEA    C3 0B4D                           JP      BC.J037
                                 
   0DED    CD 0947                           CALL    BC.C031
-	MACRO-80 3.44	09-Dec-81	PAGE	1-33
-
-
   0DF0    CD 23DE                           CALL    BC.C141
   0DF3    E3                                EX      (SP),HL
   0DF4    CD 2316                           CALL    BC.C133
@@ -1895,6 +2184,9 @@
   0E1A    C9                                RET
   0E1B    CD 0B0B                           CALL    BC.DATA
   0E1E    B7                                OR      A
+	MACRO-80 3.44	09-Dec-81	PAGE	1-29
+
+
   0E1F    20 10                             JR      NZ,$+18
   0E21    23                                INC     HL
   0E22    7E                                LD      A,M
@@ -1933,9 +2225,6 @@
   0E5C    E1                                POP     HL
   0E5D    CD 2305                           CALL    BC.C132
   0E60    E5                                PUSH    HL
-	MACRO-80 3.44	09-Dec-81	PAGE	1-34
-
-
   0E61    CD 2336                           CALL    BC.C136
   0E64    E1                                POP     HL
   0E65    C1                                POP     BC
@@ -1981,6 +2270,9 @@
   0EB0    D4 0E88                           CALL    NC,BC.C053
   0EB3    7E                                LD      A,M
   0EB4    16 00                             LD      D,000H
+	MACRO-80 3.44	09-Dec-81	PAGE	1-30
+
+
   0EB6    D6 AC                             SUB     0ACH
   0EB8    38 15                             JR      C,$+23
   0EBA    FE 03                             CP      003H
@@ -1998,9 +2290,6 @@
   0ED0    B7                                OR      A
   0ED1    C2 0FE2                           JP      NZ,BC.J045
   0ED4    7E                                LD      A,M
-	MACRO-80 3.44	09-Dec-81	PAGE	1-35
-
-
   0ED5    22 014A                           LD      (BC.D013),HL
   0ED8    D6 A5                             SUB     0A5H
   0EDA    D8                                RET     C
@@ -2063,13 +2352,13 @@
   0F46    30 30                             JR      NC,$+50
   0F48    3E 28                 BC.C059:    LD      A,'('
   0F4A    CD 0451                           CALL    BC.C006
-	MACRO-80 3.44	09-Dec-81	PAGE	1-36
-
-
   0F4D    CD 0E9A                           CALL    BC.C056
   0F50    3E 29                             LD      A,')'
   0F52    CD 0451                           CALL    BC.C006
   0F55    C9                                RET
+	MACRO-80 3.44	09-Dec-81	PAGE	1-31
+
+
                                 
   0F56    16 7D                             LD      D,07DH
   0F58    CD 0E9D                           CALL    BC.C057
@@ -2128,9 +2417,6 @@
   0FBA    69                                LD      L,C
   0FBB    E9                                JP      (HL)
                                 
-	MACRO-80 3.44	09-Dec-81	PAGE	1-37
-
-
   0FBC    F6 AF                             OR      0AFH
   0FBE    F5                                PUSH    AF
   0FBF    CD 0A1C                           CALL    BC.C039
@@ -2156,6 +2442,9 @@
                                 
   0FDD    B3                                OR      E
   0FDE    4F                                LD      C,A
+	MACRO-80 3.44	09-Dec-81	PAGE	1-32
+
+
   0FDF    78                                LD      A,B
   0FE0    B2                                OR      D
   0FE1    E9                                JP      (HL)
@@ -2193,9 +2482,6 @@
   1012    23                                INC     HL
   1013    46                                LD      B,M
   1014    23                                INC     HL
-	MACRO-80 3.44	09-Dec-81	PAGE	1-38
-
-
   1015    C5                                PUSH    BC
   1016    4E                                LD      C,M
   1017    23                                INC     HL
@@ -2242,6 +2528,9 @@
   1050    7B                                LD      A,E
   1051    2F                                CPL
   1052    4F                                LD      C,A
+	MACRO-80 3.44	09-Dec-81	PAGE	1-33
+
+
   1053    7A                                LD      A,D
   1054    2F                                CPL
   1055    CD 121D                           CALL    BC.C063
@@ -2258,9 +2547,6 @@
   106A    AF                    BC.C060:    XOR     A
   106B    32 0101                           LD      (BC.D003),A
   106E    46                                LD      B,M
-	MACRO-80 3.44	09-Dec-81	PAGE	1-39
-
-
   106F    CD 0A14               BC.J047:    CALL    BC.C038
   1072    DA 046D                           JP      C,BC.J004
   1075    AF                                XOR     A
@@ -2323,14 +2609,14 @@
   10D6    20 02                             JR      NZ,$+04
   10D8    7D                                LD      A,L
   10D9    93                                SUB     E
-	MACRO-80 3.44	09-Dec-81	PAGE	1-40
-
-
   10DA    D1                                POP     DE
   10DB    28 2C                             JR      Z,$+46
   10DD    E3                                EX      (SP),HL
   10DE    E5                                PUSH    HL
   10DF    C5                                PUSH    BC
+	MACRO-80 3.44	09-Dec-81	PAGE	1-34
+
+
   10E0    01 0008                           LD      BC,00008H
   10E3    2A 0162                           LD      HL,(BC.D026)
   10E6    E5                                PUSH    HL
@@ -2388,9 +2674,6 @@
   1134    E1                                POP     HL
   1135    22 0101                           LD      (BC.D003),HL
   1138    1E 00                             LD      E,000H
-	MACRO-80 3.44	09-Dec-81	PAGE	1-41
-
-
   113A    D5                                PUSH    DE
   113B    11                                DB      11H
   113C    E5                    BC.J048:    PUSH    HL
@@ -2417,6 +2700,9 @@
   115A    23                                INC     HL
   115B    20 E5                             JR      NZ,$-25
   115D    3A 0101                           LD      A,(BC.D003)
+	MACRO-80 3.44	09-Dec-81	PAGE	1-35
+
+
   1160    B7                                OR      A
   1161    C2 0476                           JP      NZ,BC.J007
   1164    F1                                POP     AF
@@ -2453,9 +2739,6 @@
   1195    23                                INC     HL
   1196    F5                                PUSH    AF
   1197    E5                                PUSH    HL
-	MACRO-80 3.44	09-Dec-81	PAGE	1-42
-
-
   1198    CD 23C6                           CALL    BC.C140
   119B    EB                                EX      DE,HL
   119C    E1                                POP     HL
@@ -2503,6 +2786,9 @@
   11D3    23                                INC     HL
   11D4    56                                LD      D,M
   11D5    23                                INC     HL
+	MACRO-80 3.44	09-Dec-81	PAGE	1-36
+
+
   11D6    E3                                EX      (SP),HL
   11D7    F5                                PUSH    AF
   11D8    7C                                LD      A,H
@@ -2518,9 +2804,6 @@
   11E6    F1                                POP     AF
   11E7    3D                                DEC     A
   11E8    44                                LD      B,H
-	MACRO-80 3.44	09-Dec-81	PAGE	1-43
-
-
   11E9    4D                                LD      C,L
   11EA    20 E5                             JR      NZ,$-25
   11EC    29                                ADD     HL,HL
@@ -2583,15 +2866,15 @@
   1245    28 07                             JR      Z,$+09
   1247    FE AD                             CP      0ADH
   1249    20 F7                             JR      NZ,$-07
-	MACRO-80 3.44	09-Dec-81	PAGE	1-44
-
-
   124B    C3 0B0B                           JP      BC.DATA
   124E    B7                                OR      A
   124F    20 0F                             JR      NZ,$+17
   1251    23                                INC     HL
   1252    7E                                LD      A,M
   1253    23                                INC     HL
+	MACRO-80 3.44	09-Dec-81	PAGE	1-37
+
+
   1254    B6                                OR      M
   1255    CA 046D                           JP      Z,BC.J004
   1258    23                                INC     HL
@@ -2648,9 +2931,6 @@
   12B1    4E                                LD      C,M
   12B2    23                                INC     HL
   12B3    46                                LD      B,M
-	MACRO-80 3.44	09-Dec-81	PAGE	1-45
-
-
   12B4    C5                                PUSH    BC
   12B5    18 08                             JR      $+10
   12B7    F5                                PUSH    AF
@@ -2678,6 +2958,9 @@
   12DD    28 0D                             JR      Z,$+15
   12DF    3E 2C                             LD      A,02CH
   12E1    CD 0451                           CALL    BC.C006
+	MACRO-80 3.44	09-Dec-81	PAGE	1-38
+
+
   12E4    E3                                EX      (SP),HL
   12E5    3E 2C                             LD      A,02CH
   12E7    CD 0451                           CALL    BC.C006
@@ -2713,9 +2996,6 @@
   1329    18 09                             JR      $+11
   132B    CD 0E9A                           CALL    BC.C056
   132E    CD 0948                           CALL    BC.C032
-	MACRO-80 3.44	09-Dec-81	PAGE	1-46
-
-
   1331    C2 046D                           JP      NZ,BC.J004
   1334    16 FF                             LD      D,0FFH
   1336    CD 03F6                           CALL    BC.C001
@@ -2764,6 +3044,9 @@
   1379    1F                                RRA
   137A    C3 0E8A                           JP      BC.C054
   137D    ED 5B 0166                        LD      DE,(BC.D029)
+	MACRO-80 3.44	09-Dec-81	PAGE	1-39
+
+
   1381    CD 1583                           CALL    BC.C086
   1384    21 0144                           LD      HL,BC.D010
   1387    CD 2319                           CALL    BC.C134
@@ -2778,9 +3061,6 @@
   1397    71                                LD      M,C
   1398    23                                INC     HL
   1399    70                                LD      M,B
-	MACRO-80 3.44	09-Dec-81	PAGE	1-47
-
-
   139A    18 B4                             JR      $-74
                                 
   139C    E5                    BC.C065:    PUSH    HL
@@ -2843,9 +3123,6 @@
   13F5    7E                                LD      A,M
   13F6    0C                                INC     C
   13F7    B7                                OR      A
-	MACRO-80 3.44	09-Dec-81	PAGE	1-48
-
-
   13F8    28 06                             JR      Z,$+08
   13FA    BA                                CP      D
   13FB    28 03                             JR      Z,$+05
@@ -2853,6 +3130,9 @@
   13FE    20 F4                             JR      NZ,$-10
   1400    FE 22                             CP      022H
   1402    CC 0947                           CALL    Z,BC.C031
+	MACRO-80 3.44	09-Dec-81	PAGE	1-40
+
+
   1405    E3                                EX      (SP),HL
   1406    23                                INC     HL
   1407    EB                                EX      DE,HL
@@ -2908,9 +3188,6 @@
   145B    20 02                             JR      NZ,$+04
   145D    7D                                LD      A,L
   145E    93                                SUB     E
-	MACRO-80 3.44	09-Dec-81	PAGE	1-49
-
-
   145F    38 07                             JR      C,$+09
   1461    22 0148                           LD      (BC.D012),HL
   1464    23                                INC     HL
@@ -2939,6 +3216,9 @@
   148C    93                                SUB     E
   148D    01 1483                           LD      BC,BC.D091
   1490    20 3F                             JR      NZ,$+65
+	MACRO-80 3.44	09-Dec-81	PAGE	1-41
+
+
   1492    2A 015E                           LD      HL,(BC.D024)
   1495    ED 5B 0160                        LD      DE,(BC.D025)
   1499    7C                                LD      A,H
@@ -2973,9 +3253,6 @@
   14C5    7C                                LD      A,H
   14C6    92                                SUB     D
   14C7    20 02                             JR      NZ,$+04
-	MACRO-80 3.44	09-Dec-81	PAGE	1-50
-
-
   14C9    7D                                LD      A,L
   14CA    93                                SUB     E
   14CB    28 DE                             JR      Z,$-32
@@ -3025,6 +3302,9 @@
   1502    09                                ADD     HL,BC
   1503    2B                                DEC     HL
   1504    ED B8                             LDDR
+	MACRO-80 3.44	09-Dec-81	PAGE	1-42
+
+
   1506    62                                LD      H,D
   1507    6B                                LD      L,E
   1508    13                                INC     DE
@@ -3038,9 +3318,6 @@
   1517    E3                                EX      (SP),HL
   1518    CD 0F14                           CALL    BC.C058
   151B    E3                                EX      (SP),HL
-	MACRO-80 3.44	09-Dec-81	PAGE	1-51
-
-
   151C    CD 0E89                           CALL    BC.C053+1
   151F    7E                                LD      A,M
   1520    E5                                PUSH    HL
@@ -3103,9 +3380,6 @@
   1576    20 02                             JR      NZ,$+04
   1578    7D                                LD      A,L
   1579    93                                SUB     E
-	MACRO-80 3.44	09-Dec-81	PAGE	1-52
-
-
   157A    20 05                             JR      NZ,$+07
   157C    47                                LD      B,A
   157D    09                                ADD     HL,BC
@@ -3114,6 +3388,9 @@
   1582    C9                                RET
                                 
   1583    2A 0106               BC.C086:    LD      HL,(BC.D007)
+	MACRO-80 3.44	09-Dec-81	PAGE	1-43
+
+
   1586    2B                                DEC     HL
   1587    2B                                DEC     HL
   1588    2B                                DEC     HL
@@ -3168,9 +3445,6 @@
   15CE    E5                                PUSH    HL
   15CF    7E                                LD      A,M
   15D0    B8                                CP      B
-	MACRO-80 3.44	09-Dec-81	PAGE	1-53
-
-
   15D1    38 02                             JR      C,$+04
   15D3    78                                LD      A,B
   15D4    11 000E                           LD      DE,0000EH
@@ -3200,6 +3474,9 @@
   15FA    D5                                PUSH    DE
   15FB    1A                                LD      A,(DE)
   15FC    90                                SUB     B
+	MACRO-80 3.44	09-Dec-81	PAGE	1-44
+
+
   15FD    18 CB                             JR      $-51
                                 
   15FF    EB                    BC.MIDD:    EX      DE,HL               ;TOKEN:  M I D $
@@ -3233,9 +3510,6 @@
   162B    43                                LD      B,E
   162C    18 A0                             JR      $-94
                                 
-	MACRO-80 3.44	09-Dec-81	PAGE	1-54
-
-
   162E    E1                    BC.INSTR:   POP     HL                  ;TOKEN:  I N S T R
   162F    3E 28                             LD      A,028H
   1631    CD 0451                           CALL    BC.C006
@@ -3286,6 +3560,9 @@
   1682    B9                                CP      C
   1683    30 01                             JR      NC,$+03
   1685    4F                                LD      C,A
+	MACRO-80 3.44	09-Dec-81	PAGE	1-45
+
+
   1686    23                                INC     HL
   1687    23                                INC     HL
   1688    7E                                LD      A,M
@@ -3298,9 +3575,6 @@
   168F    06 00                             LD      B,000H
   1691    09                                ADD     HL,BC
   1692    C1                                POP     BC
-	MACRO-80 3.44	09-Dec-81	PAGE	1-55
-
-
   1693    EB                                EX      DE,HL
   1694    79                                LD      A,C
   1695    96                                SUB     M
@@ -3363,9 +3637,6 @@
   16E2    C9                                RET
                                 
   16E3    CD 170A               BC.WAIT:    CALL    BC.C089             ;TOKEN:  W A I T
-	MACRO-80 3.44	09-Dec-81	PAGE	1-56
-
-
   16E6    47                                LD      B,A
   16E7    C5                                PUSH    BC
   16E8    1E 00                             LD      E,000H
@@ -3375,6 +3646,9 @@
   16F1    CD 0451                           CALL    BC.C006
   16F4    CD 171B                           CALL    BC.C091
   16F7    C1                                POP     BC
+	MACRO-80 3.44	09-Dec-81	PAGE	1-46
+
+
   16F8    ED 78                             IN      A,(C)
   16FA    AB                                XOR     E
   16FB    A0                                AND     B
@@ -3394,7 +3668,7 @@
   170D    D5                                PUSH    DE
   170E    3E 2C                             LD      A,02CH
   1710    CD 0451                           CALL    BC.C006
-  1713    CD 171B                           CALL    BC.C091
+  1713    C3 0003                           JP      00003H              ;CALL    BC.C091
   1716    C1                                POP     BC
   1717    C9                                RET
                                 
@@ -3428,9 +3702,6 @@
   1742    C1                                POP     BC
   1743    E1                                POP     HL
   1744    70                                LD      M,B
-	MACRO-80 3.44	09-Dec-81	PAGE	1-57
-
-
   1745    C9                                RET
                                 
   1746    38 09                 BC.SWTCH:   JR      C,$+11              ;TOKEN:  S W I T C H
@@ -3461,6 +3732,9 @@
   177A    FD 77 02                          LD      (IY+02),A
   177D    C9                                RET
                                 
+	MACRO-80 3.44	09-Dec-81	PAGE	1-47
+
+
   177F                          BC.D095     EQU     $+1
   177E    CD 0A14               BC.C093:    CALL    BC.C038
   1781    DA 046D                           JP      C,BC.J004
@@ -3493,9 +3767,6 @@
   17B5    C9                                RET
                                 
   17B6    CD 030C               BC.C095:    CALL    BC.RIV
-	MACRO-80 3.44	09-Dec-81	PAGE	1-58
-
-
   17B9    D0                                RET     NC
   17BA    1E 14                             LD      E,014H
   17BC    C3 047E                           JP      BC.J010
@@ -3547,6 +3818,9 @@
   181A    CD 030C                           CALL    BC.RIV
   181D    38 A0                             JR      C,$-94
   181F    5F                                LD      E,A
+	MACRO-80 3.44	09-Dec-81	PAGE	1-48
+
+
   1820    96                                SUB     M
   1821    A2                                AND     D
   1822    20 18                             JR      NZ,$+26
@@ -3558,9 +3832,6 @@
   182B    20 EB                             JR      NZ,$-19
   182D    10 EB                             DJNZ    $-19
   182F    22 015E                           LD      (BC.D024),HL
-	MACRO-80 3.44	09-Dec-81	PAGE	1-59
-
-
   1832    3A 01AB                           LD      A,(BC.D058)
   1835    B7                                OR      A
   1836    CC 0CDB                           CALL    Z,BC.C047
@@ -3623,9 +3894,6 @@
   18A0    21 05FC                           LD      HL,BC.D069
   18A3    E3                                EX      (SP),HL
   18A4    E5                                PUSH    HL
-	MACRO-80 3.44	09-Dec-81	PAGE	1-60
-
-
   18A5    EB                                EX      DE,HL
   18A6    FD 21 0315            BC.C098:    LD      IY,BC.LISTX
   18AA    FD 22 018E                        LD      (BC.D040),IY
@@ -3636,6 +3904,9 @@
   18B4    EB                                EX      DE,HL
   18B5    2A 0154                           LD      HL,(BC.D019)
   18B8    7C                                LD      A,H
+	MACRO-80 3.44	09-Dec-81	PAGE	1-49
+
+
   18B9    A5                                AND     L
   18BA    3C                                INC     A
   18BB    C2 0A44                           JP      NZ,BC.J033
@@ -3688,9 +3959,6 @@
   191E    2B                                DEC     HL
   191F    EB                                EX      DE,HL
   1920    ED 4B 019F                        LD      BC,(BC.D050)
-	MACRO-80 3.44	09-Dec-81	PAGE	1-61
-
-
   1924    78                                LD      A,B
   1925    B1                                OR      C
   1926    CA 046D                           JP      Z,BC.J004
@@ -3722,6 +3990,9 @@
   1957    22 019A                           LD      (BC.D047),HL
   195A    EB                                EX      DE,HL
   195B    CD 0947                           CALL    BC.C031
+	MACRO-80 3.44	09-Dec-81	PAGE	1-50
+
+
   195E    B7                    BC.J062:    OR      A
   195F    CA 1A68                           JP      Z,BC.J064
   1962    FE 88                             CP      088H
@@ -3753,9 +4024,6 @@
   1996    21 2E89                           LD      HL,BC.D125
   1999    CD 07BD                           CALL    BC.C027
   199C    CD 1A9A                           CALL    BC.C099
-	MACRO-80 3.44	09-Dec-81	PAGE	1-62
-
-
   199F    E1                                POP     HL
   19A0    CD 0947                           CALL    BC.C031
   19A3    38 FB                             JR      C,$-03
@@ -3808,6 +4076,9 @@
   19F1    E1                                POP     HL
   19F2    AF                                XOR     A
   19F3    06 98                             LD      B,098H
+	MACRO-80 3.44	09-Dec-81	PAGE	1-51
+
+
   19F5    CD 22AB                           CALL    BC.C124
   19F8    CD 24DD                           CALL    BC.C148
   19FB    06 00                             LD      B,000H
@@ -3818,9 +4089,6 @@
   1A01    28 04                             JR      Z,$+06
   1A03    04                                INC     B
   1A04    23                                INC     HL
-	MACRO-80 3.44	09-Dec-81	PAGE	1-63
-
-
   1A05    18 F8                             JR      $-06
   1A07    3A 019E                           LD      A,(BC.D049)
   1A0A    90                                SUB     B
@@ -3883,9 +4151,6 @@
   1A6A    23                                INC     HL
   1A6B    B6                                OR      M
   1A6C    2B                                DEC     HL
-	MACRO-80 3.44	09-Dec-81	PAGE	1-64
-
-
   1A6D    C2 1937                           JP      NZ,BC.J061
   1A70    ED 5B 01AC                        LD      DE,(BC.D059)
   1A74    CD 0592                           CALL    BC.C009
@@ -3897,6 +4162,9 @@
   1A82    23                                INC     HL
   1A83    73                                LD      M,E
   1A84    23                                INC     HL
+	MACRO-80 3.44	09-Dec-81	PAGE	1-52
+
+
   1A85    72                                LD      M,D
   1A86    23                                INC     HL
   1A87    7E                                LD      A,M
@@ -3948,9 +4216,6 @@
   1ACF    7D                                LD      A,L
   1AD0    93                                SUB     E
   1AD1    20 F4                             JR      NZ,$-10
-	MACRO-80 3.44	09-Dec-81	PAGE	1-65
-
-
   1AD3    ED 43 015E                        LD      (BC.D024),BC
   1AD7    C9                                RET
                                 
@@ -3983,6 +4248,9 @@
   1B01    C0                                RET     NZ
   1B02    E1                                POP     HL
   1B03    CD 0592               BC.J065:    CALL    BC.C009
+	MACRO-80 3.44	09-Dec-81	PAGE	1-53
+
+
   1B06    D2 0A44                           JP      NC,BC.J033
   1B09    60                                LD      H,B
   1B0A    69                                LD      L,C
@@ -4013,9 +4281,6 @@
   1B2F    CD 07C9                           CALL    BC.C028
   1B32    FE 3A                             CP      03AH
   1B34    30 10                             JR      NC,$+18
-	MACRO-80 3.44	09-Dec-81	PAGE	1-66
-
-
   1B36    FE 30                             CP      030H
   1B38    38 0C                             JR      C,$+14
   1B3A    D6 30                             SUB     030H
@@ -4060,7 +4325,7 @@
   1B6E    C3 0772                           JP      BC.C026
                                 
                                             PAGE
-	MACRO-80 3.44	09-Dec-81	PAGE	1-67
+	MACRO-80 3.44	09-Dec-81	PAGE	1-54
 
 
                                 
@@ -4109,7 +4374,7 @@
   1B9B    00                                DB      0
                                 
                                             PAGE
-	MACRO-80 3.44	09-Dec-81	PAGE	1-68
+	MACRO-80 3.44	09-Dec-81	PAGE	1-55
 
 
                                 
@@ -4173,9 +4438,6 @@
   1BEF    B7                                OR      A
   1BF0    28 08                             JR      Z,$+10
   1BF2    CD 0766                           CALL    BC.C024
-	MACRO-80 3.44	09-Dec-81	PAGE	1-69
-
-
   1BF5    CD 1C75                           CALL    BC.C103
   1BF8    10 F4                             DJNZ    $-10
   1BFA                          BC.D100     EQU     $
@@ -4197,6 +4459,9 @@
   1C10    5A                                LD      E,D
   1C11    06 FF                 BC.EDX:     LD      B,0FFH
   1C13    CD 1BA4                           CALL    BC.C101
+	MACRO-80 3.44	09-Dec-81	PAGE	1-56
+
+
   1C16    CD 07C9               BC.EDI:     CALL    BC.C028
   1C19    FE 0D                             CP      00DH
   1C1B    28 48                             JR      Z,$+74
@@ -4238,9 +4503,6 @@
   1C52    CD 0766                           CALL    BC.C024
   1C55    77                                LD      M,A
   1C56    23                                INC     HL
-	MACRO-80 3.44	09-Dec-81	PAGE	1-70
-
-
   1C57    18 BD                             JR      $-65
                                 
   1C59    7A                    BC.EDDEL:   LD      A,D
@@ -4283,6 +4545,9 @@
   1C8B    77                                LD      M,A
   1C8C    23                                INC     HL
   1C8D    77                                LD      M,A
+	MACRO-80 3.44	09-Dec-81	PAGE	1-57
+
+
   1C8E    23                                INC     HL
   1C8F    77                                LD      M,A
   1C90    23                                INC     HL
@@ -4303,9 +4568,6 @@
   1CA6    CD 0993                           CALL    BC.C036
   1CA9    ED 5B 0160                        LD      DE,(BC.D025)
   1CAD    7C                                LD      A,H
-	MACRO-80 3.44	09-Dec-81	PAGE	1-71
-
-
   1CAE    92                                SUB     D
   1CAF    20 02                             JR      NZ,$+04
   1CB1    7D                                LD      A,L
@@ -4368,10 +4630,10 @@
   1D12    77                                LD      M,A
   1D13    23                                INC     HL
   1D14    77                                LD      M,A
-	MACRO-80 3.44	09-Dec-81	PAGE	1-72
-
-
   1D15    CD 1D64                           CALL    BC.C104
+	MACRO-80 3.44	09-Dec-81	PAGE	1-58
+
+
   1D18    38 0B                             JR      C,$+13
   1D1A    FE 0A                             CP      00AH
   1D1C    28 DB                             JR      Z,$-35
@@ -4433,9 +4695,6 @@
   1D84    20 04                             JR      NZ,$+06
   1D86    04                                INC     B
   1D87    05                                DEC     B
-	MACRO-80 3.44	09-Dec-81	PAGE	1-73
-
-
   1D88    28 E9                             JR      Z,$-21
   1D8A    4F                                LD      C,A
   1D8B    78                                LD      A,B
@@ -4458,6 +4717,9 @@
   1DA8    18 AE                             JR      $-80
   1DAA    CD 05C2                           CALL    BC.C012
   1DAD    C3 04A0                           JP      BC.J012
+	MACRO-80 3.44	09-Dec-81	PAGE	1-59
+
+
                                 
   1DB0    32 0166               BC.LOADG:   LD      (BC.D029),A         ;TOKEN:  L O A D G O
   1DB3    CD 0947                           CALL    BC.C031
@@ -4498,9 +4760,6 @@
   1E02    20 06                             JR      NZ,$+08
   1E04    CD 0947                           CALL    BC.C031
   1E07    DC 0985                           CALL    C,BC.C034
-	MACRO-80 3.44	09-Dec-81	PAGE	1-74
-
-
   1E0A    ED 53 019C                        LD      (BC.D048),DE
   1E0E    3E AD                             LD      A,0ADH
   1E10    CD 0451                           CALL    BC.C006
@@ -4544,6 +4803,9 @@
   1E56    66                                LD      H,M
   1E57    6F                                LD      L,A
   1E58    ED 52                             SBC     HL,DE
+	MACRO-80 3.44	09-Dec-81	PAGE	1-60
+
+
   1E5A    DA 116B                           JP      C,BC.J049
   1E5D    C1                                POP     BC
   1E5E    E1                                POP     HL
@@ -4563,9 +4825,6 @@
   1E72    E5                                PUSH    HL
   1E73    19                                ADD     HL,DE
   1E74    E3                                EX      (SP),HL
-	MACRO-80 3.44	09-Dec-81	PAGE	1-75
-
-
   1E75    E5                                PUSH    HL
   1E76    50                                LD      D,B
   1E77    59                                LD      E,C
@@ -4628,11 +4887,11 @@
   1ED5    A8                                XOR     B
   1ED6    1F                                RRA
   1ED7    DA 0E90                           JP      C,BC.J042
-	MACRO-80 3.44	09-Dec-81	PAGE	1-76
-
-
   1EDA    E3                                EX      (SP),HL
   1EDB    EB                                EX      DE,HL
+	MACRO-80 3.44	09-Dec-81	PAGE	1-61
+
+
   1EDC    E5                                PUSH    HL
   1EDD    2A 0160                           LD      HL,(BC.D025)
   1EE0    7C                                LD      A,H
@@ -4693,9 +4952,6 @@
   1F3B    3E 2C                             LD      A,02CH
   1F3D    CD 0451                           CALL    BC.C006
   1F40    0C                    BC.CALL1:   INC     C
-	MACRO-80 3.44	09-Dec-81	PAGE	1-77
-
-
   1F41    C5                                PUSH    BC
   1F42    CD 0A24                           CALL    BC.C041
   1F45    C1                                POP     BC
@@ -4719,6 +4975,9 @@
   1F58    C9                                RET
                                 
   1F59    3E 00                 BC.PREC:    LD      A,0                 ;TOKEN:  P R E C I S I O N
+	MACRO-80 3.44	09-Dec-81	PAGE	1-62
+
+
   1F5B    C4 171B                           CALL    NZ,BC.C091
   1F5E    C0                                RET     NZ
   1F5F    FE 0B                             CP      00BH
@@ -4758,9 +5017,6 @@
   1F9A    B7                                OR      A
   1F9B    CA 22F5                           JP      Z,BC.C130
   1F9E    90                                SUB     B
-	MACRO-80 3.44	09-Dec-81	PAGE	1-78
-
-
   1F9F    30 11                             JR      NC,$+19
   1FA1    ED 44                             NEG
   1FA3    D9                                EXX
@@ -4802,12 +5058,15 @@
   1FDF    57                                LD      D,A
   1FE0    23                                INC     HL
   1FE1    7E                                LD      A,M
-  1FE2    DD 9E DD                          SBC     A,(IX-35)
-  1FE5    6F                                LD      L,A
+  1FE2    DD 9D                             DB      0DDH,09DH           ; SBC     A,IXL
+  1FE4    DD 6F                             DB      0DDH,06FH           ; LD      IXL,A
   1FE6    23                                INC     HL
+	MACRO-80 3.44	09-Dec-81	PAGE	1-63
+
+
   1FE7    7E                                LD      A,M
-  1FE8    DD 9E DD                          SBC     A,(IX-35)
-  1FEB    67                                LD      H,A
+  1FE8    DD 9C                             DB      0DDH,09CH           ; SBC     A,IXH
+  1FEA    DD 67                             DB      0DDH,067H           ; LD      IXH,A
   1FEC    23                                INC     HL
   1FED    7E                                LD      A,M
   1FEE    99                                SBC     A,C
@@ -4821,13 +5080,10 @@
   1FF7    79                                LD      A,C
   1FF8    B7                                OR      A
   1FF9    20 27                             JR      NZ,$+41
-  1FFB    DD 4E DD                          LD      C,(IX-35)
-  1FFE    7D                                LD      A,L
-	MACRO-80 3.44	09-Dec-81	PAGE	1-79
-
-
-  1FFF    DD 77 DD                          LD      (IX-35),A
-  2002    6A                                LD      L,D
+  1FFB    DD 4C                             DB      0DDH,04CH           ; LD   C,IXH
+  1FFD    DD 7D                             DB      0DDH,07DH           ; LD   A,IXL
+  1FFF    DD 67                             DB      0DDH,067H           ; LD   IXH,A
+  2001    DD 6A                             DB      0DDH,06AH           ; LD   IXL,D
   2003    AF                                XOR     A
   2004    54                                LD      D,H
   2005    65                                LD      H,L
@@ -4877,8 +5133,10 @@
   2046    C0                                RET     NZ
   2047    14                                INC     D
   2048    C0                                RET     NZ
-  2049    DD 34 C0                          INC     (IX-64)
-  204C    DD 34 C0                          INC     (IX-64)
+  2049    DD 2C                             DB      0DDH,02CH           ; INC  IXL
+  204B    C0                                RET     NZ
+  204C    DD 24                             DB      0DDH,024H           ; INC  IXH
+  204E    C0                                RET     NZ
   204F    0C                                INC     C
   2050    C0                                RET     NZ
   2051    0E 80                             LD      C,080H
@@ -4888,10 +5146,10 @@
   2057    C3 047E                           JP      BC.J010
                                 
   205A    7E                    BC.C114:    LD      A,M
-	MACRO-80 3.44	09-Dec-81	PAGE	1-80
-
-
   205B    83                                ADD     A,E
+	MACRO-80 3.44	09-Dec-81	PAGE	1-64
+
+
   205C    5F                                LD      E,A
   205D    23                                INC     HL
   205E    7E                                LD      A,M
@@ -4899,12 +5157,12 @@
   2060    57                                LD      D,A
   2061    23                                INC     HL
   2062    7E                                LD      A,M
-  2063    DD 8E DD                          ADC     A,(IX-35)
-  2066    6F                                LD      L,A
+  2063    DD 8D                             DB      0DDH,08DH           ; ADC  A,IXL
+  2065    DD 6F                             DB      0DDH,06FH           ; LD   IXL,A
   2067    23                                INC     HL
   2068    7E                                LD      A,M
-  2069    DD 8E DD                          ADC     A,(IX-35)
-  206C    67                                LD      H,A
+  2069    DD 8C                             DB      0DDH,08CH           ; ADC  A,IXH
+  206B    DD 67                             DB      0DDH,067H           ; LD   IXH,A
   206D    23                                INC     HL
   206E    7E                                LD      A,M
   206F    89                                ADC     A,C
@@ -4924,28 +5182,30 @@
   207E    ED 52                             SBC     HL,DE
   2080    EB                                EX      DE,HL
   2081    6F                                LD      L,A
-  2082    DD 9E DD                          SBC     A,(IX-35)
-  2085    6F                                LD      L,A
+  2082    DD 9D                             DB      0DDH,09DH           ; SBC  A,IXL
+  2084    DD 6F                             DB      0DDH,06FH           ; LD   IXL,A
   2086    7D                                LD      A,L
-  2087    DD 9E DD                          SBC     A,(IX-35)
-  208A    67                                LD      H,A
+  2087    DD 9C                             DB      0DDH,09CH           ; SBC  A,IXH
+  2089    DD 67                             DB      0DDH,067H           ; LD   IXH,A
   208B    7D                                LD      A,L
   208C    99                                SBC     A,C
   208D    4F                                LD      C,A
   208E    C9                                RET
-                                
+                                ;
   208F    06 00                 BC.C116:    LD      B,0
   2091    D6 08                             SUB     008H
   2093    38 10                             JR      C,$+18
   2095    43                                LD      B,E
   2096    5A                                LD      E,D
-  2097    DD 56 08                          LD      D,(IX+08)
-  209A    DD 7E DD                          LD      A,(IX-35)
-  209D    6F                                LD      L,A
+  2097    DD 55                             DB      0DDH,055H           ; LD   D,IXL
+  2099    08                                EX      AF,AF'              ;'
+  209A    DD 7C                             DB      0DDH,07CH           ; LD   A,IXH
+  209C    DD 6F                             DB      0DDH,06FH           ; LD   IXL,A
   209E    08                                EX      AF,AF'              ;'
-  209F    DD 71 0E                          LD      (IX+14),C
-  20A2    00                                NOP
+  209F    DD 61                             DB      0DDH,061H           ; LD   IXH,C
+  20A1    0E 00                             LD      C,0
   20A3    18 EC                             JR      $-18
+                                ;
   20A5    C6 09                             ADD     A,009H
   20A7    6F                                LD      L,A
   20A8    AF                                XOR     A
@@ -4953,22 +5213,20 @@
   20AA    C8                                RET     Z
   20AB    79                                LD      A,C
   20AC    1F                    BC.C117:    RRA
-	MACRO-80 3.44	09-Dec-81	PAGE	1-81
-
-
   20AD    4F                                LD      C,A
-  20AE    DD 7E 1F                          LD      A,(IX+31)
-  20B1    DD 77 DD                          LD      (IX-35),A
-  20B4    7D                                LD      A,L
+  20AE    DD 7C                             DB      0DDH,07CH           ; LD   A,IXH
+  20B0    1F                                RRA
+  20B1    DD 67                             DB      0DDH,067H           ; LD   IXH,A
+  20B3    DD 7D                             DB      0DDH,07DH           ; LD   A,IXL
   20B5    1F                                RRA
-  20B6    DD 77 CB                          LD      (IX-53),A
-  20B9    1A                                LD      A,(DE)
+  20B6    DD 6F                             DB      0DDH,06FH           ; LD   IXL,A
+  20B8    CB 1A                             RR      D
   20BA    CB 1B                             RR      E
   20BC    CB 18                             RR      B
   20BE    18 E8                             JR      $-22
                                 
                                             PAGE
-	MACRO-80 3.44	09-Dec-81	PAGE	1-82
+	MACRO-80 3.44	09-Dec-81	PAGE	1-65
 
 
                                 
@@ -5004,7 +5262,7 @@
   20E9    8238                              DW      08238H
                                 
                                             PAGE
-	MACRO-80 3.44	09-Dec-81	PAGE	1-83
+	MACRO-80 3.44	09-Dec-81	PAGE	1-66
 
 
                                 
@@ -5068,9 +5326,6 @@
   2161    E5                                PUSH    HL
   2162    E5                                PUSH    HL
   2163    E5                                PUSH    HL
-	MACRO-80 3.44	09-Dec-81	PAGE	1-84
-
-
   2164    E5                                PUSH    HL
   2165    21 0166                           LD      HL,BC.D029
   2168    7E                    BC.D107:    LD      A,M
@@ -5079,17 +5334,22 @@
   216B    20 0E                             JR      NZ,$+16
   216D    43                                LD      B,E
   216E    5A                                LD      E,D
-  216F    DD 56 08                          LD      D,(IX+08)
-  2172    DD 7E DD                          LD      A,(IX-35)
-  2175    6F                                LD      L,A
+  216F    DD 55                             DB      0DDH,055H           ; LD   D,IXL
+  2171    08                                EX      AF,AF'              ;'
+  2172    DD 7C                             DB      0DDH,07CH           ; LD   A,IXH
+  2174    DD 6F                             DB      0DDH,06FH           ; LD   IXL,A
   2176    08                                EX      AF,AF'              ;'
-  2177    DD 71 4F                          LD      (IX+79),C
+  2177    DD 61                             DB      0DDH,061H           ; LD   IXH,C
+  2179    4F                                LD      C,A
   217A    C9                                RET
   217B    E5                                PUSH    HL
   217C    EB                                EX      DE,HL
   217D    1E 08                             LD      E,008H
   217F    1F                                RRA
   2180    57                                LD      D,A
+	MACRO-80 3.44	09-Dec-81	PAGE	1-67
+
+
   2181    79                                LD      A,C
   2182    30 12                             JR      NC,$+20
   2184    E5                                PUSH    HL
@@ -5109,12 +5369,13 @@
   2195    E1                                POP     HL
   2196    1F                                RRA
   2197    4F                                LD      C,A
-  2198    DD 7E 1F                          LD      A,(IX+31)
-  219B    DD 77 DD                          LD      (IX-35),A
-  219E    7D                                LD      A,L
+  2198    DD 7C                             DB      0DDH,07CH           ; LD   A,IXH
+  219A    1F                                RRA
+  219B    DD 67                             DB      0DDH,067H           ; LD   IXH,A
+  219D    DD 7D                             DB      0DDH,07DH           ; LD   A,IXL 
   219F    1F                                RRA
-  21A0    DD 77 CB                          LD      (IX-53),A
-  21A3    1C                                INC     E
+  21A0    DD 6F                             DB      0DDH,06FH           ; LD   IXL,A
+  21A2    CB 1C                             RR      H
   21A4    CB 1D                             RR      L
   21A6    CB 18                             RR      B
   21A8    1D                                DEC     E
@@ -5133,9 +5394,6 @@
   21C0    DD E1                             POP     IX
   21C2    D1                                POP     DE
   21C3    CD 22BF               BC.C120:    CALL    BC.C125
-	MACRO-80 3.44	09-Dec-81	PAGE	1-85
-
-
   21C6    CA 0470                           JP      Z,BC.J005
   21C9    2E FF                             LD      L,0FFH
   21CB    CD 2263                           CALL    BC.C121
@@ -5175,6 +5433,9 @@
   21F8    78                                LD      A,B
   21F9    D9                                EXX
   21FA    E3                                EX      (SP),HL
+	MACRO-80 3.44	09-Dec-81	PAGE	1-68
+
+
   21FB    B7                                OR      A
   21FC    ED 52                             SBC     HL,DE
   21FE    E3                                EX      (SP),HL
@@ -5198,9 +5459,6 @@
   2219    F1                                POP     AF
   221A    F1                                POP     AF
   221B    37                                SCF
-	MACRO-80 3.44	09-Dec-81	PAGE	1-86
-
-
   221C    18 04                             JR      $+06
   221E    C1                                POP     BC
   221F    FD E1                             POP     IY
@@ -5233,8 +5491,8 @@
   224B    79                                LD      A,C
   224C    B2                                OR      D
   224D    B3                                OR      E
-  224E    DD B6 DD                          OR      (IX-35)
-  2251    B5                                OR      L
+  224E    DD B4                             DB      0DDH,0B4H           ; OR   IXH
+  2250    DD B5                             DB      0DDH,0B5H           ; OR   IXL 
   2252    20 9F                             JR      NZ,$-95
   2254    E5                                PUSH    HL
   2255    21 016B                           LD      HL,BC.D032
@@ -5261,18 +5519,18 @@
   2274    C6 80                             ADD     A,080H
   2276    77                                LD      M,A
   2277    CA 21AD                           JP      Z,BC.J076
+	MACRO-80 3.44	09-Dec-81	PAGE	1-69
+
+
   227A    CD 2321                           CALL    BC.C135
   227D    77                                LD      M,A
-	MACRO-80 3.44	09-Dec-81	PAGE	1-87
-
-
   227E    2B                                DEC     HL
   227F    C9                                RET
                                 
   2280    CD 22BF               BC.J079:    CALL    BC.C125
   2283    2F                                CPL
   2284    B7                                OR      A
-  2285    15                                DB      21
+  2285    21                                DB      21H
   2286    B7                    BC.J080:    OR      A
   2287    E1                                POP     HL
   2288    F2 200E                           JP      P,BC.C112
@@ -5328,9 +5586,6 @@
   22D9    C9                                RET
                                 
   22DA    EB                    BC.C127:    EX      DE,HL
-	MACRO-80 3.44	09-Dec-81	PAGE	1-88
-
-
   22DB    2A 0166               BC.C128:    LD      HL,(BC.D029)
   22DE    E3                                EX      (SP),HL
   22DF    E5                                PUSH    HL
@@ -5350,6 +5605,9 @@
                                 
   22F5    ED 53 0166            BC.C130:    LD      (BC.D029),DE
   22F9    DD 22 0168                        LD      (BC.D030),IX
+	MACRO-80 3.44	09-Dec-81	PAGE	1-70
+
+
   22FD    ED 43 016A                        LD      (BC.D031),BC
   2301    C9                                RET
                                 
@@ -5359,9 +5617,11 @@
   2307    56                                LD      D,M
   2308    23                                INC     HL
   2309    4E                                LD      C,M
-  230A    DD 71 23                          LD      (IX+35),C
+  230A    DD 69                             DB      0DDH,069H           ; LD   IXL,C 
+  230C    23                                INC     HL
   230D    4E                                LD      C,M
-  230E    DD 71 23                          LD      (IX+35),C
+  230E    DD 61                             DB      0DDH,061H           ; LD   IXH,C 
+  2310    23                                INC     HL
   2311    4E                                LD      C,M
   2312    23                                INC     HL
   2313    46                                LD      B,M
@@ -5393,9 +5653,6 @@
   2332    4F                                LD      C,A
   2333    1F                                RRA
   2334    AE                                XOR     M
-	MACRO-80 3.44	09-Dec-81	PAGE	1-89
-
-
   2335    C9                                RET
                                 
   2336    78                    BC.C136:    LD      A,B
@@ -5422,16 +5679,21 @@
   2356    BE                                CP      M
   2357    C0                                RET     NZ
   2358    2B                                DEC     HL
-  2359    DD 7E BE                          LD      A,(IX-66)
+  2359    DD 7C                             DB      0DDH,07CH           ; LD   A,IXH
+  235B    BE                                CP      (HL)
   235C    C0                                RET     NZ
   235D    2B                                DEC     HL
-  235E    DD 7E BE                          LD      A,(IX-66)
+  235E    DD 7D                             DB      0DDH,07DH           ; LD   A,IXL 
+  2360    BE                                CP      (HL)
   2361    C0                                RET     NZ
   2362    2B                                DEC     HL
   2363    7A                                LD      A,D
   2364    BE                                CP      M
   2365    C0                                RET     NZ
   2366    2B                                DEC     HL
+	MACRO-80 3.44	09-Dec-81	PAGE	1-71
+
+
   2367    7B                                LD      A,E
   2368    96                                SUB     M
   2369    C0                                RET     NZ
@@ -5452,15 +5714,12 @@
   2376    4F                                LD      C,A
   2377    57                                LD      D,A
   2378    5F                                LD      E,A
-  2379    DD 77 DD                          LD      (IX-35),A
-  237C    6F                                LD      L,A
+  2379    DD 67                             DB      0DDH,067H           ; LD   IXH,A
+  237B    DD 6F                             DB      0DDH,06FH           ; LD   IXL,A
   237D    B7                                OR      A
   237E    C8                                RET     Z
   237F    E5                                PUSH    HL
   2380    CD 2302                           CALL    BC.C131
-	MACRO-80 3.44	09-Dec-81	PAGE	1-90
-
-
   2383    CD 2321                           CALL    BC.C135
   2386    AE                                XOR     M
   2387    67                                LD      H,A
@@ -5471,8 +5730,8 @@
   238E    3C                                INC     A
   238F    20 0A                             JR      NZ,$+12
   2391    DD 2B                             DEC     IX
-  2393    DD 7E DD                          LD      A,(IX-35)
-  2396    A5                                AND     L
+  2393    DD 7C                             DB      0DDH,07CH           ; LD   A,IXH
+  2395    DD A5                             DB      0DDH,0A5H           ; AND  IXL
   2397    3C                                INC     A
   2398    20 01                             JR      NZ,$+03
   239A    0D                                DEC     C
@@ -5518,14 +5777,14 @@
   23D5    EB                                EX      DE,HL
   23D6    30 F6                             JR      NC,$-08
   23D8    09                                ADD     HL,BC
+	MACRO-80 3.44	09-Dec-81	PAGE	1-72
+
+
   23D9    30 F3                             JR      NC,$-11
   23DB    C3 116B                           JP      BC.J049
                                 
   23DE    FE 26                 BC.C141:    CP      026H
   23E0    CA 2471                           JP      Z,BC.J086
-	MACRO-80 3.44	09-Dec-81	PAGE	1-91
-
-
   23E3    FE 2D                 BC.J084:    CP      02DH
   23E5    F5                                PUSH    AF
   23E6    28 05                             JR      Z,$+07
@@ -5588,9 +5847,6 @@
   244A    F1                                POP     AF
   244B    CC 22D2                           CALL    Z,BC.C126
   244E    EB                                EX      DE,HL
-	MACRO-80 3.44	09-Dec-81	PAGE	1-92
-
-
   244F    C9                                RET
   2450    D5                                PUSH    DE
   2451    57                                LD      D,A
@@ -5607,6 +5863,9 @@
   2461    E1                                POP     HL
   2462    C1                                POP     BC
   2463    D1                                POP     DE
+	MACRO-80 3.44	09-Dec-81	PAGE	1-73
+
+
   2464    18 8F                             JR      $-111
   2466    7B                                LD      A,E
   2467    87                                ADD     A,A
@@ -5653,9 +5912,6 @@
   24A7    C1                                POP     BC
   24A8    DD E1                             POP     IX
   24AA    D1                                POP     DE
-	MACRO-80 3.44	09-Dec-81	PAGE	1-93
-
-
   24AB    C3 1F94                           JP      BC.C109
                                 
   24AE    C8                    BC.C143:    RET     Z
@@ -5693,6 +5949,9 @@
   24DE    32 01AA               BC.C149:    LD      (BC.D057),A
   24E1    21 016E                           LD      HL,BC.D035
   24E4    36 20                             LD      M,020H
+	MACRO-80 3.44	09-Dec-81	PAGE	1-74
+
+
   24E6    E6 08                             AND     008H
   24E8    28 02                             JR      Z,$+04
   24EA    36 2B                             LD      M,02BH
@@ -5718,9 +5977,6 @@
   2511    28 51                             JR      Z,$+83
   2513    57                                LD      D,A
   2514    C6 0B                             ADD     A,00BH
-	MACRO-80 3.44	09-Dec-81	PAGE	1-94
-
-
   2516    FA 2555                           JP      M,BC.J088
   2519    BE                                CP      M
   251A    28 02                             JR      Z,$+04
@@ -5779,13 +6035,13 @@
   2569    FA 2574                           JP      M,BC.J089
   256C    FE 0D                             CP      00DH
   256E    30 04                             JR      NC,$+06
+	MACRO-80 3.44	09-Dec-81	PAGE	1-75
+
+
   2570    3C                                INC     A
   2571    47                                LD      B,A
   2572    3E 02                             LD      A,002H
   2574    D6 02                 BC.J089:    SUB     002H
-	MACRO-80 3.44	09-Dec-81	PAGE	1-95
-
-
   2576    E1                                POP     HL
   2577    F5                                PUSH    AF
   2578    CD 275A                           CALL    BC.C154
@@ -5848,9 +6104,6 @@
   25DC    C1                                POP     BC
   25DD    FA 2683                           JP      M,BC.C151
   25E0    C5                                PUSH    BC
-	MACRO-80 3.44	09-Dec-81	PAGE	1-96
-
-
   25E1    5F                                LD      E,A
   25E2    78                                LD      A,B
   25E3    92                                SUB     D
@@ -5868,6 +6121,9 @@
   25F9    20 01                             JR      NZ,$+03
   25FB    2B                                DEC     HL
   25FC    3D                                DEC     A
+	MACRO-80 3.44	09-Dec-81	PAGE	1-76
+
+
   25FD    F4 27F9                           CALL    P,BC.C157
   2600    E5                    BC.J094:    PUSH    HL
   2601    21 016E                           LD      HL,BC.D035
@@ -5913,9 +6169,6 @@
   2647    3A 01A8                           LD      A,(BC.D056)
   264A    95                                SUB     L
   264B    92                                SUB     D
-	MACRO-80 3.44	09-Dec-81	PAGE	1-97
-
-
   264C    C8                                RET     Z
   264D    7E                                LD      A,M
   264E    FE 20                             CP      020H
@@ -5954,6 +6207,9 @@
   2685    B7                                OR      A
   2686    28 01                             JR      Z,$+03
   2688    3D                                DEC     A
+	MACRO-80 3.44	09-Dec-81	PAGE	1-77
+
+
   2689    83                                ADD     A,E
   268A    FA 268E                           JP      M,BC.J095
   268D    AF                                XOR     A
@@ -5978,9 +6234,6 @@
                                 
   26AA    CD 27F9               BC.J096:    CALL    BC.C157
   26AD    79                                LD      A,C
-	MACRO-80 3.44	09-Dec-81	PAGE	1-98
-
-
   26AE    CD 275D                           CALL    BC.C155
   26B1    4F                                LD      C,A
   26B2    AF                                XOR     A
@@ -6040,12 +6293,12 @@
   2701    0E 00                             LD      C,000H
   2703    CD 276D                           CALL    BC.C156
   2706    F1                                POP     AF
+	MACRO-80 3.44	09-Dec-81	PAGE	1-78
+
+
   2707    F4 2815                           CALL    P,BC.C159
   270A    C1                                POP     BC
   270B    F1                                POP     AF
-	MACRO-80 3.44	09-Dec-81	PAGE	1-99
-
-
   270C    20 01                             JR      NZ,$+03
   270E    2B                                DEC     HL
   270F    F1                                POP     AF
@@ -6108,9 +6361,6 @@
   276F    E5                                PUSH    HL
   2770    CD 1F80                           CALL    BC.C105
   2773    3C                                INC     A
-	MACRO-80 3.44	09-Dec-81	PAGE	1-100
-
-
   2774    CD 2375                           CALL    BC.C139
   2777    CD 22F5                           CALL    BC.C130
   277A    E1                                POP     HL
@@ -6129,15 +6379,22 @@
   278F    7B                                LD      A,E
   2790    96                                SUB     M
   2791    5F                                LD      E,A
+	MACRO-80 3.44	09-Dec-81	PAGE	1-79
+
+
   2792    23                                INC     HL
   2793    7A                                LD      A,D
   2794    9E                                SBC     A,M
   2795    57                                LD      D,A
   2796    23                                INC     HL
-  2797    DD 7E 9E                          LD      A,(IX-98)
-  279A    DD 77 23                          LD      (IX+35),A
-  279D    DD 7E 9E                          LD      A,(IX-98)
-  27A0    DD 77 23                          LD      (IX+35),A
+  2797    DD 7D                             DB      0DDH,07DH           ; LD   A,IXL 
+  2799    9E                                SBC     A,(HL)
+  279A    DD 6F                             DB      0DDH,06FH           ; LD   IXL,A
+  279C    23                                INC     HL
+  279D    DD 7C                             DB      0DDH,07CH           ; LD   A,IXH
+  279F    9E                                SBC     A,(HL)
+  27A0    DD 67                             DB      0DDH,067H           ; LD   IXH,A
+  27A2    23                                INC     HL
   27A3    79                                LD      A,C
   27A4    9E                                SBC     A,M
   27A5    4F                                LD      C,A
@@ -6173,9 +6430,6 @@
   27CE    05F5                              DW      005F5H
   27D0    8000                              DW      08000H
   27D2    9896                              DW      09896H
-	MACRO-80 3.44	09-Dec-81	PAGE	1-101
-
-
                                 
   27D4    0000                              DW      00000H
   27D6    4240                              DW      04240H
@@ -6211,6 +6465,9 @@
   27FF    18 F8                             JR      $-06
                                 
   2801    7B                    BC.C158:    LD      A,E
+	MACRO-80 3.44	09-Dec-81	PAGE	1-80
+
+
   2802    82                                ADD     A,D
   2803    3C                                INC     A
   2804    47                                LD      B,A
@@ -6238,9 +6495,6 @@
   2826    CD 0985                           CALL    BC.C034
   2829    E5                                PUSH    HL
   282A    CD 0592                           CALL    BC.C009
-	MACRO-80 3.44	09-Dec-81	PAGE	1-102
-
-
   282D    D2 0AE1                           JP      NC,BC.J035
   2830    60                                LD      H,B
   2831    69                                LD      L,C
@@ -6297,15 +6551,15 @@
   2887    CA 2981                           JP      Z,BC.J112
   288A    05                                DEC     B
   288B    CA 296D                           JP      Z,BC.J111
+	MACRO-80 3.44	09-Dec-81	PAGE	1-81
+
+
   288E    FE 2B                             CP      02BH
   2890    3E 08                             LD      A,008H
   2892    28 E6                             JR      Z,$-24
   2894    2B                                DEC     HL
   2895    7E                                LD      A,M
   2896    23                                INC     HL
-	MACRO-80 3.44	09-Dec-81	PAGE	1-103
-
-
   2897    FE 2E                             CP      02EH
   2899    CA 28D6                           JP      Z,BC.J109
   289C    BE                                CP      M
@@ -6368,9 +6622,6 @@
   28F5    23                                INC     HL
   28F6    BE                                CP      M
   28F7    20 0F                             JR      NZ,$+17
-	MACRO-80 3.44	09-Dec-81	PAGE	1-104
-
-
   28F9    23                                INC     HL
   28FA    BE                                CP      M
   28FB    20 0B                             JR      NZ,$+13
@@ -6386,6 +6637,9 @@
   290A    2B                                DEC     HL
   290B    1C                                INC     E
   290C    CB 5A                             BIT     3,D
+	MACRO-80 3.44	09-Dec-81	PAGE	1-82
+
+
   290E    20 13                             JR      NZ,$+21
   2910    1D                                DEC     E
   2911    78                                LD      A,B
@@ -6433,9 +6687,6 @@
   2957    E5                                PUSH    HL
   2958    F5                                PUSH    AF
   2959    D5                                PUSH    DE
-	MACRO-80 3.44	09-Dec-81	PAGE	1-105
-
-
   295A    7E                                LD      A,M
   295B    90                                SUB     B
   295C    23                    BC.D113:    INC     HL
@@ -6472,6 +6723,9 @@
   298A    FE 45                             CP      045H
   298C    28 0C                             JR      Z,$+14
   298E    FE 52                             CP      052H
+	MACRO-80 3.44	09-Dec-81	PAGE	1-83
+
+
   2990    28 08                             JR      Z,$+10
   2992    FE 4C                             CP      04CH
   2994    28 04                             JR      Z,$+06
@@ -6498,9 +6752,6 @@
   29B3    E5                                PUSH    HL
   29B4    2A 0166                           LD      HL,(BC.D029)
   29B7    41                                LD      B,C
-	MACRO-80 3.44	09-Dec-81	PAGE	1-106
-
-
   29B8    0E 00                             LD      C,000H
   29BA    7B                                LD      A,E
   29BB    FE 45                             CP      045H
@@ -6558,14 +6809,14 @@
   2A07    E9                                JP      (HL)
                                 
   2A08    0000                  BC.D114:    DW      00000H
+	MACRO-80 3.44	09-Dec-81	PAGE	1-84
+
+
   2A0A    0000                              DW      00000H
   2A0C    8000                              DW      08000H
                                 
   2A0E    CD 22DA               BC.SQR:     CALL    BC.C127             ;TOKEN:  S Q R
   2A11    21 2A08                           LD      HL,BC.D114
-	MACRO-80 3.44	09-Dec-81	PAGE	1-107
-
-
   2A14    CD 22EC                           CALL    BC.C129
   2A17    C1                                POP     BC
   2A18    DD E1                             POP     IX
@@ -6628,9 +6879,6 @@
   2A8A    CD 2AEA                           CALL    BC.C165
   2A8D    21 016B                           LD      HL,BC.D032
   2A90    F1                                POP     AF
-	MACRO-80 3.44	09-Dec-81	PAGE	1-108
-
-
   2A91    B7                                OR      A
   2A92    FA 2A97                           JP      M,BC.J114
   2A95    86                                ADD     A,M
@@ -6647,6 +6895,9 @@
   2A9F    D5CC                              DW      0D5CCH
   2AA1    5645                              DW      05645H
   2AA3    6A15                              DW      06A15H
+	MACRO-80 3.44	09-Dec-81	PAGE	1-85
+
+
                                 
   2AA5    37CF                              DW      037CFH
   2AA7    92A0                              DW      092A0H
@@ -6693,9 +6944,6 @@
   2AE6    CD 213F                           CALL    BC.C118
   2AE9    E1                                POP     HL
   2AEA    CD 22DA               BC.C165:    CALL    BC.C127
-	MACRO-80 3.44	09-Dec-81	PAGE	1-109
-
-
   2AED    7E                                LD      A,M
   2AEE    23                                INC     HL
   2AEF    CD 22EC                           CALL    BC.C129
@@ -6733,6 +6981,9 @@
   2B32    CD 1F94                           CALL    BC.C109
   2B35    CD 2302               BC.J115:    CALL    BC.C131
   2B38    7B                                LD      A,E
+	MACRO-80 3.44	09-Dec-81	PAGE	1-86
+
+
   2B39    59                                LD      E,C
   2B3A    4F                                LD      C,A
   2B3B    36 80                             LD      M,080H
@@ -6758,9 +7009,6 @@
   2B67    CD 22DA                           CALL    BC.C127
   2B6A    CD 23AD                           CALL    BC.INT
   2B6D    C1                                POP     BC
-	MACRO-80 3.44	09-Dec-81	PAGE	1-110
-
-
   2B6E    DD E1                             POP     IX
   2B70    D1                                POP     DE
   2B71    CD 1F91                           CALL    BC.C108
@@ -6819,13 +7067,13 @@
   2BC9    5DE7                              DW      05DE7H
   2BCB    86A5                              DW      086A5H
                                 
+	MACRO-80 3.44	09-Dec-81	PAGE	1-87
+
+
   2BCD    A221                              DW      0A221H
   2BCF    0FDA                              DW      00FDAH
   2BD1    8349                              DW      08349H
                                 
-	MACRO-80 3.44	09-Dec-81	PAGE	1-111
-
-
                                 
                                 
   2BD3    CD 22DA               BC.TAN:     CALL    BC.C127             ;TOKEN:  T A N
@@ -6888,9 +7136,6 @@
   2C3B    AE61                              DW      0AE61H
   2C3D    7D19                              DW      07D19H
                                 
-	MACRO-80 3.44	09-Dec-81	PAGE	1-112
-
-
   2C3F    785D                              DW      0785DH
   2C41    608F                              DW      0608FH
   2C43    7DB9                              DW      07DB9H
@@ -6908,6 +7153,9 @@
   2C55    7E4C                              DW      07E4CH
                                 
   2C57    8E7E                              DW      08E7EH
+	MACRO-80 3.44	09-Dec-81	PAGE	1-88
+
+
   2C59    AAAA                              DW      0AAAAH
   2C5B    7FAA                              DW      07FAAH
                                 
@@ -6916,12 +7164,12 @@
   2C61    807F                              DW      0807FH
                                 
                                             PAGE
-	MACRO-80 3.44	09-Dec-81	PAGE	1-113
+	MACRO-80 3.44	09-Dec-81	PAGE	1-89
 
 
                                 
   2C63    45 4E                 BC.D121:    DB      'EN'                ;"END"
-  2C65    AC                                DB      44+80H
+  2C65    C4                                DB      44H+80H
   2C66    46 4F                             DB      'FO'                ;"FOR"
   2C68    D2                                DB      52H+80H
   2C69    4E 45 58                          DB      'NEX'               ;"NEXT"
@@ -6954,7 +7202,7 @@
   2C9F    52 45                             DB      'RE'                ;"REM"
   2CA1    CD                                DB      4DH+80H
   2CA2    53 54 4F                          DB      'STO'               ;"STOP"
-  2CA5    B2                                DB      50+80H
+  2CA5    D0                                DB      50H+80H
   2CA6    4F 55                             DB      'OU'                ;"OUT"
   2CA8    D4                                DB      54H+80H
   2CA9    4F                                DB      'O'                 ;"ON"
@@ -6966,7 +7214,7 @@
   2CB3    44 45                             DB      'DE'                ;"DEF"
   2CB5    C6                                DB      46H+80H
   2CB6    50 4F 4B                          DB      'POK'               ;"POKE"
-  2CB9    AD                                DB      45+80H
+  2CB9    C5                                DB      45H+80H
   2CBA    50 52 49 4E                       DB      'PRIN'              ;"PRINT"
   2CBE    D4                                DB      54H+80H
   2CBF    BF                                DB      3FH+80H             ;"?"
@@ -6980,9 +7228,6 @@
   2CD2    CE                                DB      4EH+80H
   2CD3    53 41 56                          DB      'SAV'               ;"SAVE"
   2CD6    C5                                DB      45H+80H
-	MACRO-80 3.44	09-Dec-81	PAGE	1-114
-
-
   2CD7    A1                                DB      21H+80H             ;"!"
   2CD8    55 53 49 4E                       DB      'USIN'              ;"USING"
   2CDC    C7                                DB      47H+80H
@@ -7004,6 +7249,9 @@
   2CF5    AD                                DB      2DH+80H             ;"-"
   2CF6    AA                                DB      2AH+80H             ;"*"
   2CF7    AF                                DB      2FH+80H             ;"/"
+	MACRO-80 3.44	09-Dec-81	PAGE	1-90
+
+
   2CF8    DE                                DB      5EH+80H             ;" "
   2CF9    41 4E                             DB      'AN'                ;"AND"
   2CFB    C4                                DB      44H+80H
@@ -7045,9 +7293,6 @@
   2D2E    50 45 45                          DB      'PEE'               ;"PEEK"
   2D31    CB                                DB      4BH+80H
   2D32    4C 45                             DB      'LE'                ;"LEN"
-	MACRO-80 3.44	09-Dec-81	PAGE	1-115
-
-
   2D34    CE                                DB      4EH+80H
   2D35    53 54 52                          DB      'STR'               ;"STR$"
   2D38    A4                                DB      24H+80H
@@ -7088,8 +7333,11 @@
   2D83    54                    
   2D84    C8                                DB      48H+80H
   2D85    4C 4E 55 4C                       DB      'LNUL'              ;"LNULL"
-  2D89    9C                                DB      4CH+80
+  2D89    CC                                DB      4CH+80H
   2D8A    57 49 44 54                       DB      'WIDT'              ;"WIDTH"
+	MACRO-80 3.44	09-Dec-81	PAGE	1-91
+
+
   2D8E    C8                                DB      48H+80H
   2D8F    4C 56 41                          DB      'LVA'               ;"LVAR"
   2D92    D2                                DB      52H+80H
@@ -7110,9 +7358,6 @@
   2DB6    C5                                DB      45H+80H
   2DB7    4C 49 4E                          DB      'LIN'               ;"LINE"
   2DBA    C5                                DB      45H+80H
-	MACRO-80 3.44	09-Dec-81	PAGE	1-116
-
-
   2DBB    4C 4F 41 44                       DB      'LOADG'             ;"LOADGO"
   2DBF    47                    
   2DC0    CF                                DB      4FH+80H
@@ -7175,10 +7420,10 @@
   2E45    49 4C 4C 45                       DB      'ILLEGAL FUNCTIO'   ;"ILLEGAL FUNCTION"
   2E49    47 41 4C 20           
   2E4D    46 55 4E 43           
-	MACRO-80 3.44	09-Dec-81	PAGE	1-117
-
-
   2E51    54 49 4F              
+	MACRO-80 3.44	09-Dec-81	PAGE	1-92
+
+
   2E54    CE                                DB      4EH+80H
   2E55    41 52 49 54                       DB      'ARITHMETIC OVERFLO'
   2E59    48 4D 45 54           
@@ -7240,9 +7485,6 @@
   2F00    43 41 4E                          DB      'CAN'
   2F03    27                                DB      27H
   2F04    54 20 43 4F                       DB      'T CONTINU'
-	MACRO-80 3.44	09-Dec-81	PAGE	1-118
-
-
   2F08    4E 54 49 4E           
   2F0C    55                    
   2F0D    C5                                DB      45H+80H
@@ -7265,6 +7507,9 @@
   2F3E    53 20 44 49           
   2F42    46 46 45 52           
   2F46    45 4E                 
+	MACRO-80 3.44	09-Dec-81	PAGE	1-93
+
+
   2F48    D4                                DB      54H+80H
   2F49    52 45 43 4F                       DB      'RECOVERE'
   2F4D    56 45 52 45           
@@ -7289,7 +7534,7 @@
   2F8C    20 49 4E 50           
   2F90    55 54                 
   2F92    8A                                DB      0AH+80H
-  2F93    20 40 20 4C           BC.D127:    DB      ' @ LINE'
+  2F93    20 20 20 4C           BC.D127:    DB      '   LINE'
   2F97    49 4E 45              
   2F9A    A0                                DB      20H+80H
   2F9B    0A                    BC.D128:    DB      0AH
@@ -7305,12 +7550,9 @@
   2FB4    41                    
   2FB5    CB                                DB      4BH+80H
   2FB6    00                                NOP
-	MACRO-80 3.44	09-Dec-81	PAGE	1-119
-
-
                                 
                                             PAGE
-	MACRO-80 3.44	09-Dec-81	PAGE	1-120
+	MACRO-80 3.44	09-Dec-81	PAGE	1-94
 
 
                                 
@@ -7374,9 +7616,6 @@
   303B    CA 2FB7                           JP      Z,BC.J117
   303E    3C                                INC     A
   303F    20 07                             JR      NZ,$+09
-	MACRO-80 3.44	09-Dec-81	PAGE	1-121
-
-
   3041    CD 0321                           CALL    BC.MEMCK
   3044    60                                LD      H,B
   3045    6F                                LD      L,A
@@ -7398,6 +7637,9 @@
   3066    B7                                OR      A
   3067    ED 52                             SBC     HL,DE
   3069    E1                                POP     HL
+	MACRO-80 3.44	09-Dec-81	PAGE	1-95
+
+
   306A    DA 044D                           JP      C,BC.J002
   306D    11 FF9C                           LD      DE,0FF9CH
   3070    19                                ADD     HL,DE
@@ -7433,28 +7675,28 @@
   30A9    21 07BD                           LD      HL,BC.D070
   30AC    22 01A5                           LD      (BC.D054),HL
   30AF    CD 05B4                           CALL    BC.C011
-  30B2    C3 04A0               BC.ANF:     JP      BC.J012
+  30B2    C3 3210               BC.ANF:     JP      START               ;BC.J012
                                 
                                             PAGE
-	MACRO-80 3.44	09-Dec-81	PAGE	1-122
+	MACRO-80 3.44	09-Dec-81	PAGE	1-96
 
 
                                 
-  30B5    44 45 47 20           BC.D133:    DB      'DEG 2000   B  A  S  I  C   [ K EAW  ZFT ]    '
+  30B5    44 45 47 20           BC.D133:    DB      'DEG 2000  B  A  S  I  C   [K EAW  IfR/Fm]  '
   30B9    32 30 30 30           
-  30BD    20 20 20 42           
-  30C1    20 20 41 20           
-  30C5    20 53 20 20           
-  30C9    49 20 20 43           
-  30CD    20 20 20 5B           
-  30D1    20 4B 20 45           
-  30D5    41 57 20 20           
-  30D9    5A 46 54 20           
-  30DD    5D 20 20 20           
-  30E1    20                    
-  30E2    53 74 61 6E                       DB      'Stand: 10.82'
-  30E6    64 3A 20 31           
-  30EA    30 2E 38 32           
+  30BD    20 20 42 20           
+  30C1    20 41 20 20           
+  30C5    53 20 20 49           
+  30C9    20 20 43 20           
+  30CD    20 20 5B 4B           
+  30D1    20 45 41 57           
+  30D5    20 20 49 66           
+  30D9    52 2F 46 6D           
+  30DD    5D 20 20              
+  30E0    53 74 61 6E                       DB      'Stand: 10.82  '
+  30E4    64 3A 20 31           
+  30E8    30 2E 38 32           
+  30EC    20 20                 
   30EE    8A                                DB      0AH+80H
   30EF    0A                    BC.D134:    DB      0AH
   30F0    6D 61 78 2E                       DB      'max. Speicher'
@@ -7462,25 +7704,147 @@
   30F8    69 63 68 65           
   30FC    72                    
   30FD    A0                                DB      20H+80H
-  30FE    20 42 79 74           BC.D135:    DB      ' Byte frei             '
-  3102    65 20 66 72           
-  3106    65 69 20 20           
+  30FE    20 42 79 74           BC.D135:    DB      ' Bytes frei            '
+  3102    65 73 20 66           
+  3106    72 65 69 20           
   310A    20 20 20 20           
   310E    20 20 20 20           
   3112    20 20 20              
   3115    0A                                DB      0AH
-  3116    44 45 47 20                       DB      'DEG 2000  B A S I C          , Version 2.13'
+  3116    44 45 47 20                       DB      'DEG 2000  B A S I C         , Version 2.1'
   311A    32 30 30 30           
   311E    20 20 42 20           
   3122    41 20 53 20           
   3126    49 20 43 20           
   312A    20 20 20 20           
   312E    20 20 20 20           
-  3132    20 2C 20 56           
-  3136    65 72 73 69           
-  313A    6F 6E 20 32           
-  313E    2E 31 33              
-  3141    8A                                DB      0AH+80H
+  3132    2C 20 56 65           
+  3136    72 73 69 6F           
+  313A    6E 20 32 2E           
+  313E    31                    
+  313F    20 20 20 20                       DB      '                 '
+  3143    20 20 20 20           
+  3147    20 20 20 20           
+  314B    20 20 20 20           
+  314F    20                    
+  3150    8A                                DB      0AH+80H
+  3151                                      DS      0AFH,0
+  3200    04                                DB      004H
+  3201                                      DS      00FH,0FFH
+                                ;
+  3210    21 3220               START:      LD      HL,ST01
+  3213    11 2FB7                           LD      DE,BC.D131
+  3216    01 00C0                           LD      BC,000C0H
+  3219    ED B0                             LDIR
+  321B    C3 32E0                           JP      ST02
+                                ;            
+  321E                                      DS      2,0FFH
+                                ;            
+  3220    04 30 01 00           ST01:       DB      4,030H,1,0
+  3224    4F 50 45 4E                       DB      'OPEN'
+  3228    AD                                DB      '-'+080H
+  3229    26 45 41 42                       DB      '&EAB6:CLOSE'
+  322D    36 3A 43 4C           
+  3231    4F 53 45              
+  3234    AD                                DB      '-'+080H
+  3235    26 45 42 42                       DB      '&EBB9:EIN'
+  3239    39 3A 45 49           
+  323D    4E                    
+  323E    AD                                DB      '-'+080H
+  323F    37 33 3A 41                       DB      '73:AUS'
+  3243    55 53                 
+  3245    AD                                DB      '-'+080H
+  3246    37 39 3A 4C                       DB      '79:LESEN'
+  324A    45 53 45 4E           
+  324E    AD                                DB      '-'+080H
+  324F    26 45 43 31                       DB      '&EC1F:SCHREIBEN'
+  3253    46 3A 53 43           
+  3257    48 52 45 49           
+  325B    42 45 4E              
+  325E    AD                                DB      '-'+080H
+  325F    26 45 43 34                       DB      '&EC4D:BLD'
+	MACRO-80 3.44	09-Dec-81	PAGE	1-97
+
+
+  3263    44 3A 42 4C           
+  3267    44                    
+  3268    AD                                DB      '-'+080H
+  3269    26 38 30 00                       DB      '&80',0
+  326D    6A 30 0A 00                       DB      'j0',00AH,0,084H
+  3271    84                    
+  3272    22 51 75 65                       DB      '"Quell-/Ladedatei (Q/L)";A$:'
+  3276    6C 6C 2D 2F           
+  327A    4C 61 64 65           
+  327E    64 61 74 65           
+  3282    69 20 28 51           
+  3286    2F 4C 29 22           
+  328A    3B 41 24 3A           
+  328E    8A                                DB      08AH
+  328F    41 24 AE AC                       DB      'A$',0AEH,0ACH
+  3293    22 51 22 AA                       DB      '"Q"',0AAH
+  3297    41 24 AE AC                       DB      'A$',0AEH,0ACH
+  329B    22 4C 22 A2                       DB      '"L"',0A2H
+  329F    31 30 3A C9                       DB      '10:',0C9H,084H
+  32A3    84                    
+  32A4    22 47 65 72                       DB      '"Geraet,Label";G,L:',0D7H
+  32A8    61 65 74 2C           
+  32AC    4C 61 62 65           
+  32B0    6C 22 3B 47           
+  32B4    2C 4C 3A D7           
+  32B8    4F 50 45 4E                       DB      'OPEN,G,EIN,L:',08AH
+  32BC    2C 47 2C 45           
+  32C0    49 4E 2C 4C           
+  32C4    3A 8A                 
+  32C6    41 24 AD                          DB      'A$',0ADH
+  32C9    22 51 22 A2                       DB      '"Q"',0A2H,0E1H,':',0C9H
+  32CD    E1 3A C9              
+  32D0    DD 41 00 00                       DB      0DDH,041H,0,0,0,0
+  32D4    00 00                 
+  32D6                                      DS      00AH,0FFH
+                                ;
+  32E0    21 306B               ST02:       LD      HL,0306BH
+  32E3    22 0150                           LD      (00150H),HL
+  32E6    23                                INC     HL
+  32E7    22 015E                           LD      (0015EH),HL
+  32EA    22 0160                           LD      (00160H),HL
+  32ED    22 0162                           LD      (00162H),HL
+  32F0    21 332E                           LD      HL,GRANA
+  32F3    CD 07BD                           CALL    007BDH
+  32F6    CD 0309                           CALL    00309H
+  32F9    4F                                LD      C,A
+  32FA    FE 4A                             CP      'J'
+  32FC    28 08                             JR      Z,ST04
+  32FE    0E 4E                 ST03:       LD      C,'N'
+  3300    CD 030F                           CALL    0030FH
+  3303    C3 04A0                           JP      BC.J012
+                                ;
+  3306    3A 010D               ST04:       LD      A,(0010DH)
+  3309    FE 9C                             CP      09CH
+  330B    30 F1                             JR      NC,ST03
+  330D    CD 030F                           CALL    0030FH
+  3310    3E 81                             LD      A,081H
+  3312    D3 C1                             OUT     (0C1H),A            ;!!! ???
+  3314    3E B3                             LD      A,0B3H
+  3316    D3 C0                             OUT     (0C0H),A            ;!!! ???
+  3318    21 7400                           LD      HL,07400H
+  331B    11 9C00                           LD      DE,09C00H
+  331E    01 0400                           LD      BC,00400H
+  3321    ED B0                             LDIR
+  3323    3E B7                             LD      A,0B7H
+  3325    D3 C0                             OUT     (0C0H),A
+  3327    3E 85                             LD      A,085H
+  3329    D3 C1                             OUT     (0C1H),A
+  332B    C3 04A0                           JP      BC.J012
+                                ;
+  332E    0A 47 72 61           GRANA:      DB      00AH,'Grafik nachladen ?',0A0H
+  3332    66 69 6B 20           
+  3336    6E 61 63 68           
+  333A    6C 61 64 65           
+  333E    6E 20 3F A0           
+                                            
+                                
+  3342                                      DS      0BEH,0FFH
+                                
                                             .DEPHASE
                                 
                                             END
@@ -7490,193 +7854,195 @@
 Macros:
 
 Symbols:
-013C 	BC.AAA          22CE 	BC.ABS          01A4 	BC.AKJPB        
-1CF2 	BC.ALOAD        1D6B 	BC.ALODC        1CF5 	BC.AMRG         
-1D6E 	BC.AMRGC        30B2 	BC.ANF          1841 	BC.ASAVE        
-15A8 	BC.ASC          2BEA 	BC.ATN          0D24 	BC.AUTO         
-03F6 	BC.C001         0419 	BC.C002         041F 	BC.C003         
-0431 	BC.C004         043E 	BC.C005         0451 	BC.C006         
-055F 	BC.C007         0573 	BC.C008         0592 	BC.C009         
-0595 	BC.C010         05B4 	BC.C011         05C2 	BC.C012         
-05C6 	BC.C013         05DB 	BC.C014         05F8 	BC.C015         
-05FC 	BC.C016         0609 	BC.C017         06DD 	BC.C018         
-06E2 	BC.C019         06F3 	BC.C020         06F6 	BC.C021         
-0707 	BC.C022         0764 	BC.C023         0766 	BC.C024         
-0770 	BC.C025         0772 	BC.C026         07BD 	BC.C027         
-07C9 	BC.C028         082A 	BC.C029         0837 	BC.C030         
-0947 	BC.C031         0948 	BC.C032         097B 	BC.C033         
-0985 	BC.C034         0986 	BC.C035         0993 	BC.C036         
-0998 	BC.C037         0A14 	BC.C038         0A1C 	BC.C039         
-0A21 	BC.C040         0A24 	BC.C041         0A27 	BC.C042         
-0A2D 	BC.C043         0A3A 	BC.C044         0A49 	BC.C045         
-0B33 	BC.C046         0CDB 	BC.C047         0CEE 	BC.C048         
-0CFB 	BC.C049         0D0E 	BC.C050         0E3E 	BC.C051         
-0E85 	BC.C052         0E88 	BC.C053         0E8A 	BC.C054         
-0E95 	BC.C055         0E9A 	BC.C056         0E9D 	BC.C057         
-0F14 	BC.C058         0F48 	BC.C059         106A 	BC.C060         
-1217 	BC.C061         1218 	BC.C062         121D 	BC.C063         
-1232 	BC.C064         139C 	BC.C065         13AA 	BC.C066         
-13CA 	BC.C067         13DE 	BC.C068         13E1 	BC.C069         
-13ED 	BC.C070         13EE 	BC.C071         13F0 	BC.C072         
-13F1 	BC.C073         1410 	BC.C074         1431 	BC.C075         
-1434 	BC.C076         1449 	BC.C077         1473 	BC.C078         
-14D2 	BC.C079         1549 	BC.C080         1559 	BC.C081         
-1560 	BC.C082         1563 	BC.C083         1566 	BC.C084         
-1567 	BC.C085         1583 	BC.C086         159D 	BC.C087         
-16FF 	BC.C088         170A 	BC.C089         1718 	BC.C090         
-171B 	BC.C091         171E 	BC.C092         177E 	BC.C093         
-17AB 	BC.C094         17B6 	BC.C095         1895 	BC.C096         
-189F 	BC.C097         18A6 	BC.C098         1A9A 	BC.C099         
-1A9D 	BC.C100         1BA4 	BC.C101         1BFA 	BC.C102         
-1C75 	BC.C103         1D64 	BC.C104         1F80 	BC.C105         
-1F83 	BC.C106         1F88 	BC.C107         1F91 	BC.C108         
-1F94 	BC.C109         1FF0 	BC.C110         1FF3 	BC.C111         
-200E 	BC.C112         2045 	BC.C113         205A 	BC.C114         
-2072 	BC.C115         208F 	BC.C116         20AC 	BC.C117         
-213F 	BC.C118         21AF 	BC.C119         21C3 	BC.C120         
-2263 	BC.C121         228E 	BC.C122         22A6 	BC.C123         
-22AB 	BC.C124         22BF 	BC.C125         22D2 	BC.C126         
-22DA 	BC.C127         22DB 	BC.C128         22EC 	BC.C129         
-22F5 	BC.C130         2302 	BC.C131         2305 	BC.C132         
-2316 	BC.C133         2319 	BC.C134         2321 	BC.C135         
-2336 	BC.C136         2350 	BC.C137         236C 	BC.C138         
-2375 	BC.C139         23C6 	BC.C140         23DE 	BC.C141         
-24A1 	BC.C142         24AE 	BC.C143         24AF 	BC.C144         
-24B6 	BC.C145         24C1 	BC.C146         24C9 	BC.C147         
-24DD 	BC.C148         24DE 	BC.C149         2591 	BC.C150         
-2683 	BC.C151         271F 	BC.C152         2748 	BC.C153         
-275A 	BC.C154         275D 	BC.C155         276D 	BC.C156         
-27F9 	BC.C157         2801 	BC.C158         2815 	BC.C159         
-281B 	BC.C160         29F1 	BC.C161         29F9 	BC.C162         
+22CE 	BC.ABS          01A4 	BC.AKJPB        1CF2 	BC.ALOAD        
+1D6B 	BC.ALODC        1CF5 	BC.AMRG         1D6E 	BC.AMRGC        
+30B2 	BC.ANF          1841 	BC.ASAVE        15A8 	BC.ASC          
+2BEA 	BC.ATN          0D24 	BC.AUTO         03F6 	BC.C001         
+0419 	BC.C002         041F 	BC.C003         0431 	BC.C004         
+043E 	BC.C005         0451 	BC.C006         055F 	BC.C007         
+0573 	BC.C008         0592 	BC.C009         0595 	BC.C010         
+05B4 	BC.C011         05C2 	BC.C012         05C6 	BC.C013         
+05DB 	BC.C014         05F8 	BC.C015         05FC 	BC.C016         
+0609 	BC.C017         06DD 	BC.C018         06E2 	BC.C019         
+06F3 	BC.C020         06F6 	BC.C021         0707 	BC.C022         
+0764 	BC.C023         0766 	BC.C024         0770 	BC.C025         
+0772 	BC.C026         07BD 	BC.C027         07C9 	BC.C028         
+082A 	BC.C029         0837 	BC.C030         0947 	BC.C031         
+0948 	BC.C032         097B 	BC.C033         0985 	BC.C034         
+0986 	BC.C035         0993 	BC.C036         0998 	BC.C037         
+0A14 	BC.C038         0A1C 	BC.C039         0A21 	BC.C040         
+0A24 	BC.C041         0A27 	BC.C042         0A2D 	BC.C043         
+0A3A 	BC.C044         0A49 	BC.C045         0B33 	BC.C046         
+0CDB 	BC.C047         0CEE 	BC.C048         0CFB 	BC.C049         
+0D0E 	BC.C050         0E3E 	BC.C051         0E85 	BC.C052         
+0E88 	BC.C053         0E8A 	BC.C054         0E95 	BC.C055         
+0E9A 	BC.C056         0E9D 	BC.C057         0F14 	BC.C058         
+0F48 	BC.C059         106A 	BC.C060         1217 	BC.C061         
+1218 	BC.C062         121D 	BC.C063         1232 	BC.C064         
+139C 	BC.C065         13AA 	BC.C066         13CA 	BC.C067         
+13DE 	BC.C068         13E1 	BC.C069         13ED 	BC.C070         
+13EE 	BC.C071         13F0 	BC.C072         13F1 	BC.C073         
+1410 	BC.C074         1431 	BC.C075         1434 	BC.C076         
+1449 	BC.C077         1473 	BC.C078         14D2 	BC.C079         
+1549 	BC.C080         1559 	BC.C081         1560 	BC.C082         
+1563 	BC.C083         1566 	BC.C084         1567 	BC.C085         
+1583 	BC.C086         159D 	BC.C087         16FF 	BC.C088         
+170A 	BC.C089         1718 	BC.C090         171B 	BC.C091         
+171E 	BC.C092         177E 	BC.C093         17AB 	BC.C094         
+17B6 	BC.C095         1895 	BC.C096         189F 	BC.C097         
+18A6 	BC.C098         1A9A 	BC.C099         1A9D 	BC.C100         
+1BA4 	BC.C101         1BFA 	BC.C102         1C75 	BC.C103         
+1D64 	BC.C104         1F80 	BC.C105         1F83 	BC.C106         
+1F88 	BC.C107         1F91 	BC.C108         1F94 	BC.C109         
+1FF0 	BC.C110         1FF3 	BC.C111         200E 	BC.C112         
+2045 	BC.C113         205A 	BC.C114         2072 	BC.C115         
+208F 	BC.C116         20AC 	BC.C117         213F 	BC.C118         
+21AF 	BC.C119         21C3 	BC.C120         2263 	BC.C121         
+228E 	BC.C122         22A6 	BC.C123         22AB 	BC.C124         
+22BF 	BC.C125         22D2 	BC.C126         22DA 	BC.C127         
+22DB 	BC.C128         22EC 	BC.C129         22F5 	BC.C130         
+2302 	BC.C131         2305 	BC.C132         2316 	BC.C133         
+2319 	BC.C134         2321 	BC.C135         2336 	BC.C136         
+2350 	BC.C137         236C 	BC.C138         2375 	BC.C139         
+23C6 	BC.C140         23DE 	BC.C141         24A1 	BC.C142         
+24AE 	BC.C143         24AF 	BC.C144         24B6 	BC.C145         
+24C1 	BC.C146         24C9 	BC.C147         24DD 	BC.C148         
+24DE 	BC.C149         2591 	BC.C150         2683 	BC.C151         
+271F 	BC.C152         2748 	BC.C153         275A 	BC.C154         
+275D 	BC.C155         276D 	BC.C156         27F9 	BC.C157         
+2801 	BC.C158         2815 	BC.C159         281B 	BC.C160         
+29F1 	BC.C161         29F9 	BC.C162         2A03 	BC.C163         
+2ADB 	BC.C164         2AEA 	BC.C165         1F26 	BC.CALL         
+1F40 	BC.CALL1        1F4B 	BC.CALL2        15B6 	BC.CHRD         
+0309 	BC.CIN          0A72 	BC.CLEAR        030F 	BC.CON          
+09E7 	BC.CONT         1DF2 	BC.COPY         2B4A 	BC.COS          
+0318 	BC.CSTSX        00FF 	BC.D001         0100 	BC.D002         
+0101 	BC.D003         0102 	BC.D004         0103 	BC.D005         
+0104 	BC.D006         0106 	BC.D007         0108 	BC.D008         
+011E 	BC.D009         0144 	BC.D010         0146 	BC.D011         
+0148 	BC.D012         014A 	BC.D013         014C 	BC.D014         
+014E 	BC.D015         014F 	BC.D016         0150 	BC.D017         
+0152 	BC.D018         0154 	BC.D019         0156 	BC.D020         
+0158 	BC.D021         015A 	BC.D022         015C 	BC.D023         
+015E 	BC.D024         0160 	BC.D025         0162 	BC.D026         
+0164 	BC.D027         0165 	BC.D028         0166 	BC.D029         
+0168 	BC.D030         016A 	BC.D031         016B 	BC.D032         
+016C 	BC.D033         016D 	BC.D034         016E 	BC.D035         
+0187 	BC.D036         0189 	BC.D037         018B 	BC.D038         
+018D 	BC.D039         018E 	BC.D040         0190 	BC.D041         
+0191 	BC.D042         0192 	BC.D043         0195 	BC.D044         
+0196 	BC.D045         0197 	BC.D046         019A 	BC.D047         
+019C 	BC.D048         019E 	BC.D049         019F 	BC.D050         
 	MACRO-80 3.44	09-Dec-81	PAGE	S-1
 
 
-2A03 	BC.C163         2ADB 	BC.C164         2AEA 	BC.C165         
-1F26 	BC.CALL         1F40 	BC.CALL1        1F4B 	BC.CALL2        
-15B6 	BC.CHRD         0309 	BC.CIN          0A72 	BC.CLEAR        
-030F 	BC.CON          09E7 	BC.CONT         1DF2 	BC.COPY         
-2B4A 	BC.COS          0318 	BC.CSTSX        00FF 	BC.D001         
-0100 	BC.D002         0101 	BC.D003         0102 	BC.D004         
-0103 	BC.D005         0104 	BC.D006         0106 	BC.D007         
-0108 	BC.D008         011E 	BC.D009         0144 	BC.D010         
-0146 	BC.D011         0148 	BC.D012         014A 	BC.D013         
-014C 	BC.D014         014E 	BC.D015         014F 	BC.D016         
-0150 	BC.D017         0152 	BC.D018         0154 	BC.D019         
-0156 	BC.D020         0158 	BC.D021         015A 	BC.D022         
-015C 	BC.D023         015E 	BC.D024         0160 	BC.D025         
-0162 	BC.D026         0164 	BC.D027         0165 	BC.D028         
-0166 	BC.D029         0168 	BC.D030         016A 	BC.D031         
-016B 	BC.D032         016C 	BC.D033         016D 	BC.D034         
-016E 	BC.D035         0187 	BC.D036         0189 	BC.D037         
-018B 	BC.D038         018D 	BC.D039         018E 	BC.D040         
-0190 	BC.D041         0191 	BC.D042         0192 	BC.D043         
-0195 	BC.D044         0196 	BC.D045         0197 	BC.D046         
-019A 	BC.D047         019C 	BC.D048         019E 	BC.D049         
-019F 	BC.D050         01A1 	BC.D051         01A3 	BC.D052         
-01A4 	BC.D053         01A5 	BC.D054         01A7 	BC.D055         
-01A8 	BC.D056         01AA 	BC.D057         01AB 	BC.D058         
-01AC 	BC.D059         01AE 	BC.D060         01AF 	BC.D061         
-01B0 	BC.D062         01B1 	BC.D063         02B0 	BC.D064         
-02F8 	BC.D065         02FF 	BC.D066         04F3 	BC.D067         
-0556 	BC.D068         05FC 	BC.D069         07BD 	BC.D070         
-07F4 	BC.D071         08CC 	BC.D072         08FF 	BC.D073         
-0A1E 	BC.D074         0B1E 	BC.D075         0D93 	BC.D076         
-0DF8 	BC.D077         0E3A 	BC.D078         0EA9 	BC.D079         
-0EAC 	BC.D080         0F62 	BC.D081         0F6A 	BC.D082         
-0FDA 	BC.D083         0FF4 	BC.D084         103B 	BC.D085         
-105C 	BC.D086         121D 	BC.D087         121E 	BC.D088         
-1232 	BC.D089         144B 	BC.D090         1483 	BC.D091         
-14C4 	BC.D092         15C2 	BC.D093         161E 	BC.D094         
-177F 	BC.D095         1998 	BC.D096         1B2D 	BC.D097         
-1B71 	BC.D098         1BC9 	BC.D099         1BFA 	BC.D100         
-1F57 	BC.D101         1F88 	BC.D102         1FF3 	BC.D103         
-20C0 	BC.D104         20C6 	BC.D105         213B 	BC.D106         
-2168 	BC.D107         22D2 	BC.D108         23AD 	BC.D109         
-23CB 	BC.D110         253C 	BC.D111         27C2 	BC.D112         
-295C 	BC.D113         2A08 	BC.D114         2A9E 	BC.D115         
-2B4A 	BC.D116         2B9C 	BC.D117         2BA2 	BC.D118         
-2BA8 	BC.D119         2C14 	BC.D120         2C63 	BC.D121         
-2E10 	BC.D122         2E12 	BC.D123         2E75 	BC.D124         
-2E89 	BC.D125         2F84 	BC.D126         2F93 	BC.D127         
-2F9B 	BC.D128         2FA3 	BC.D129         2FAF 	BC.D130         
-2FB7 	BC.D131         2FC9 	BC.D132         30B5 	BC.D133         
-30EF 	BC.D134         30FE 	BC.D135         0B0B 	BC.DATA         
-1236 	BC.DEF          1AA3 	BC.DELET        1065 	BC.DIM          
-1B9C 	BC.EDA          1BE6 	BC.EDD          1C59 	BC.EDDEL        
-1C65 	BC.EDE1         1C68 	BC.EDE2         1BB5 	BC.EDF          
-1C0E 	BC.EDH          1C16 	BC.EDI          1AFE 	BC.EDIT         
-1BAF 	BC.EDK          1BDC 	BC.EDL          09C7 	BC.EDQ          
-1BFF 	BC.EDR          1C11 	BC.EDX          09C3 	BC.END          
-1EB6 	BC.EXCH         2A64 	BC.EXP          131D 	BC.FNEND        
-131D 	BC.FNRTN        086A 	BC.FOR          11F6 	BC.FRE          
-0AA8 	BC.GOSUB        0AC5 	BC.GOTO         03A6 	BC.GRF1         
-2CC0 	BC.GRF2         0C23 	BC.IF           0300 	BC.INIT         
-16D4 	BC.INP          0D55 	BC.INPUT        162E 	BC.INSTR        
-23AD 	BC.INT          031B 	BC.IOCHX        031E 	BC.IOSTX        
+01A1 	BC.D051         01A3 	BC.D052         01A4 	BC.D053         
+01A5 	BC.D054         01A7 	BC.D055         01A8 	BC.D056         
+01AA 	BC.D057         01AB 	BC.D058         01AC 	BC.D059         
+01AE 	BC.D060         01AF 	BC.D061         01B0 	BC.D062         
+01B1 	BC.D063         02B0 	BC.D064         02F8 	BC.D065         
+02FF 	BC.D066         04F3 	BC.D067         0556 	BC.D068         
+05FC 	BC.D069         07BD 	BC.D070         07F4 	BC.D071         
+08CC 	BC.D072         08FF 	BC.D073         0A1E 	BC.D074         
+0B1E 	BC.D075         0D93 	BC.D076         0DF8 	BC.D077         
+0E3A 	BC.D078         0EA9 	BC.D079         0EAC 	BC.D080         
+0F62 	BC.D081         0F6A 	BC.D082         0FDA 	BC.D083         
+0FF4 	BC.D084         103B 	BC.D085         105C 	BC.D086         
+121D 	BC.D087         121E 	BC.D088         1232 	BC.D089         
+144B 	BC.D090         1483 	BC.D091         14C4 	BC.D092         
+15C2 	BC.D093         161E 	BC.D094         177F 	BC.D095         
+1998 	BC.D096         1B2D 	BC.D097         1B71 	BC.D098         
+1BC9 	BC.D099         1BFA 	BC.D100         1F57 	BC.D101         
+1F88 	BC.D102         1FF3 	BC.D103         20C0 	BC.D104         
+20C6 	BC.D105         213B 	BC.D106         2168 	BC.D107         
+22D2 	BC.D108         23AD 	BC.D109         23CB 	BC.D110         
+253C 	BC.D111         27C2 	BC.D112         295C 	BC.D113         
+2A08 	BC.D114         2A9E 	BC.D115         2B4A 	BC.D116         
+2B9C 	BC.D117         2BA2 	BC.D118         2BA8 	BC.D119         
+2C14 	BC.D120         2C63 	BC.D121         2E10 	BC.D122         
+2E12 	BC.D123         2E75 	BC.D124         2E89 	BC.D125         
+2F84 	BC.D126         2F93 	BC.D127         2F9B 	BC.D128         
+2FA3 	BC.D129         2FAF 	BC.D130         2FB7 	BC.D131         
+2FC9 	BC.D132         30B5 	BC.D133         30EF 	BC.D134         
+30FE 	BC.D135         0B0B 	BC.DATA         1236 	BC.DEF          
+1AA3 	BC.DELET        1065 	BC.DIM          1B9C 	BC.EDA          
+1BE6 	BC.EDD          1C59 	BC.EDDEL        1C65 	BC.EDE1         
+1C68 	BC.EDE2         1BB5 	BC.EDF          1C0E 	BC.EDH          
+1C16 	BC.EDI          1AFE 	BC.EDIT         1BAF 	BC.EDK          
+1BDC 	BC.EDL          09C7 	BC.EDQ          1BFF 	BC.EDR          
+1C11 	BC.EDX          09C3 	BC.END          1EB6 	BC.EXCH         
+2A64 	BC.EXP          131D 	BC.FNEND        131D 	BC.FNRTN        
+086A 	BC.FOR          11F6 	BC.FRE          0AA8 	BC.GOSUB        
+0AC5 	BC.GOTO         03A6 	BC.GRF1         2CC0 	BC.GRF2         
+0C23 	BC.IF           0300 	BC.INIT         16D4 	BC.INP          
+0D55 	BC.INPUT        162E 	BC.INSTR        23AD 	BC.INT          
+031B 	BC.IOCHX        031E 	BC.IOSTX        0117 	BC.J001         
+044D 	BC.J002         0457 	BC.J003         046D 	BC.J004         
+0470 	BC.J005         0473 	BC.J006         0476 	BC.J007         
+0479 	BC.J008         047C 	BC.J009         047E 	BC.J010         
+0494 	BC.J011         04A0 	BC.J012         04A9 	BC.J013         
+04C3 	BC.J014         04F1 	BC.J015         04F9 	BC.J016         
+0556 	BC.J017         05F4 	BC.J018         0612 	BC.J019         
+06AD 	BC.J020         083B 	BC.J021         083C 	BC.J022         
+08C8 	BC.J023         08CC 	BC.J024         0914 	BC.J025         
+091B 	BC.J026         091C 	BC.J027         0980 	BC.J028         
+098E 	BC.J029         098F 	BC.J030         0990 	BC.J031         
+09C8 	BC.J032         0A44 	BC.J033         0ADA 	BC.J034         
+0AE1 	BC.J035         0B2B 	BC.J036         0B4D 	BC.J037         
+0B8B 	BC.J038         0CE1 	BC.J039         0CE9 	BC.J040         
+0DCD 	BC.J041         0E90 	BC.J042         0EA9 	BC.J043         
+0EF7 	BC.J044         0FE2 	BC.J045         1045 	BC.J046         
+106F 	BC.J047         113C 	BC.J048         116B 	BC.J049         
+121E 	BC.J050         1260 	BC.J051         126C 	BC.J052         
+13A5 	BC.J053         140C 	BC.J054         1430 	BC.J055         
+1476 	BC.J056         1512 	BC.J057         16D1 	BC.J058         
+17F7 	BC.J059         1807 	BC.J060         1937 	BC.J061         
+195E 	BC.J062         197A 	BC.J063         1A68 	BC.J064         
+1B03 	BC.J065         1B15 	BC.J066         1D2D 	BC.J067         
+1DD5 	BC.J068         1F01 	BC.J069         1F19 	BC.J070         
+1FD6 	BC.J071         200F 	BC.J072         2013 	BC.J073         
+2034 	BC.J074         2055 	BC.J075         21AD 	BC.J076         
+21BF 	BC.J077         225E 	BC.J078         2280 	BC.J079         
+2286 	BC.J080         22C8 	BC.J081         22CA 	BC.J082         
+239B 	BC.J083         23E3 	BC.J084         2439 	BC.J085         
+2471 	BC.J086         24FA 	BC.J087         2555 	BC.J088         
+2574 	BC.J089         259D 	BC.J090         25AA 	BC.J091         
+25B2 	BC.J092         25D3 	BC.J093         2600 	BC.J094         
+268E 	BC.J095         26AA 	BC.J096         26CE 	BC.J097         
+26D7 	BC.J098         26ED 	BC.J099         26FB 	BC.J100         
+2725 	BC.J101         273D 	BC.J102         2745 	BC.J103         
+2821 	BC.J104         285E 	BC.J105         2871 	BC.J106         
+2877 	BC.J107         28BE 	BC.J108         28D6 	BC.J109         
+2941 	BC.J110         296D 	BC.J111         2981 	BC.J112         
+2A44 	BC.J113         2A97 	BC.J114         2B35 	BC.J115         
+2B88 	BC.J116         2FB7 	BC.J117         2FC9 	BC.J118         
+1EF9 	BC.KILL         15C6 	BC.LEFTD        1599 	BC.LEN          
+0B27 	BC.LET          15CD 	BC.LFTD         0D4F 	BC.LINE         
+07EF 	BC.LIST         0315 	BC.LISTX        07EC 	BC.LLIST        
 	MACRO-80 3.44	09-Dec-81	PAGE	S-2
 
 
-0117 	BC.J001         044D 	BC.J002         0457 	BC.J003         
-046D 	BC.J004         0470 	BC.J005         0473 	BC.J006         
-0476 	BC.J007         0479 	BC.J008         047C 	BC.J009         
-047E 	BC.J010         0494 	BC.J011         04A0 	BC.J012         
-04A9 	BC.J013         04C3 	BC.J014         04F1 	BC.J015         
-04F9 	BC.J016         0556 	BC.J017         05F4 	BC.J018         
-0612 	BC.J019         06AD 	BC.J020         083B 	BC.J021         
-083C 	BC.J022         08C8 	BC.J023         08CC 	BC.J024         
-0914 	BC.J025         091B 	BC.J026         091C 	BC.J027         
-0980 	BC.J028         098E 	BC.J029         098F 	BC.J030         
-0990 	BC.J031         09C8 	BC.J032         0A44 	BC.J033         
-0ADA 	BC.J034         0AE1 	BC.J035         0B2B 	BC.J036         
-0B4D 	BC.J037         0B8B 	BC.J038         0CE1 	BC.J039         
-0CE9 	BC.J040         0DCD 	BC.J041         0E90 	BC.J042         
-0EA9 	BC.J043         0EF7 	BC.J044         0FE2 	BC.J045         
-1045 	BC.J046         106F 	BC.J047         113C 	BC.J048         
-116B 	BC.J049         121E 	BC.J050         1260 	BC.J051         
-126C 	BC.J052         13A5 	BC.J053         140C 	BC.J054         
-1430 	BC.J055         1476 	BC.J056         1512 	BC.J057         
-16D1 	BC.J058         17F7 	BC.J059         1807 	BC.J060         
-1937 	BC.J061         195E 	BC.J062         197A 	BC.J063         
-1A68 	BC.J064         1B03 	BC.J065         1B15 	BC.J066         
-1D2D 	BC.J067         1DD5 	BC.J068         1F01 	BC.J069         
-1F19 	BC.J070         1FD6 	BC.J071         200F 	BC.J072         
-2013 	BC.J073         2034 	BC.J074         2055 	BC.J075         
-21AD 	BC.J076         21BF 	BC.J077         225E 	BC.J078         
-2280 	BC.J079         2286 	BC.J080         22C8 	BC.J081         
-22CA 	BC.J082         239B 	BC.J083         23E3 	BC.J084         
-2439 	BC.J085         2471 	BC.J086         24FA 	BC.J087         
-2555 	BC.J088         2574 	BC.J089         259D 	BC.J090         
-25AA 	BC.J091         25B2 	BC.J092         25D3 	BC.J093         
-2600 	BC.J094         268E 	BC.J095         26AA 	BC.J096         
-26CE 	BC.J097         26D7 	BC.J098         26ED 	BC.J099         
-26FB 	BC.J100         2725 	BC.J101         273D 	BC.J102         
-2745 	BC.J103         2821 	BC.J104         285E 	BC.J105         
-2871 	BC.J106         2877 	BC.J107         28BE 	BC.J108         
-28D6 	BC.J109         2941 	BC.J110         296D 	BC.J111         
-2981 	BC.J112         2A44 	BC.J113         2A97 	BC.J114         
-2B35 	BC.J115         2B88 	BC.J116         2FB7 	BC.J117         
-2FC9 	BC.J118         1EF9 	BC.KILL         15C6 	BC.LEFTD        
-1599 	BC.LEN          0B27 	BC.LET          15CD 	BC.LFTD         
-0D4F 	BC.LINE         07EF 	BC.LIST         0315 	BC.LISTX        
-07EC 	BC.LLIST        1C9B 	BC.LLVAR        09F9 	BC.LNULL        
-17FE 	BC.LOAD         1DB0 	BC.LOADG        20EB 	BC.LOG          
-122A 	BC.LPOS         0C59 	BC.LPRNT        1AD8 	BC.LTRCE        
-1C9E 	BC.LVAR         1762 	BC.LWDTH        0321 	BC.MEMCK        
-15FF 	BC.MIDD         05B3 	BC.NEW          0E3B 	BC.NEXT         
-09FC 	BC.NULL         0C06 	BC.ON           16DD 	BC.OUT          
-0327 	BC.PAR          1F6A 	BC.PEEK         1F71 	BC.POKE         
-122F 	BC.POS          1F59 	BC.PREC         0C5C 	BC.PRINT        
-1C84 	BC.RANDO        0DA6 	BC.READ         0303 	BC.RECOV        
-3010 	BC.RECOV1       18B3 	BC.RENB         096A 	BC.REST         
-0AE6 	BC.RETRN        15F6 	BC.RGHTD        030C 	BC.RIV          
-2B0E 	BC.RND          032A 	BC.RUCK         0A9D 	BC.RUN          
-17C5 	BC.SAVE         22A3 	BC.SGN          2B50 	BC.SIN          
-2A0E 	BC.SQR          09C1 	BC.STOP         13BA 	BC.STRD         
-03C6 	BC.SVC1         2D98 	BC.SVC2         1746 	BC.SWTCH        
-2BD3 	BC.TAN          032D 	BC.TB1          0361 	BC.TB2          
-0376 	BC.TB3          03B0 	BC.TB4          1ADB 	BC.TRACE        
-0324 	BC.TRAPX        0306 	BC.USR          172B 	BC.VAL          
-16E3 	BC.WAIT         1765 	BC.WIDTH        0312 	BC.WRTV         
+1C9B 	BC.LLVAR        09F9 	BC.LNULL        17FE 	BC.LOAD         
+1DB0 	BC.LOADG        20EB 	BC.LOG          122A 	BC.LPOS         
+0C59 	BC.LPRNT        1AD8 	BC.LTRCE        1C9E 	BC.LVAR         
+1762 	BC.LWDTH        0321 	BC.MEMCK        15FF 	BC.MIDD         
+05B3 	BC.NEW          0E3B 	BC.NEXT         09FC 	BC.NULL         
+0C06 	BC.ON           16DD 	BC.OUT          0327 	BC.PAR          
+1F6A 	BC.PEEK         1F71 	BC.POKE         122F 	BC.POS          
+1F59 	BC.PREC         0C5C 	BC.PRINT        1C84 	BC.RANDO        
+0DA6 	BC.READ         0303 	BC.RECOV        3010 	BC.RECOV1       
+18B3 	BC.RENB         096A 	BC.REST         0AE6 	BC.RETRN        
+15F6 	BC.RGHTD        030C 	BC.RIV          2B0E 	BC.RND          
+032A 	BC.RUCK         0A9D 	BC.RUN          17C5 	BC.SAVE         
+22A3 	BC.SGN          2B50 	BC.SIN          2A0E 	BC.SQR          
+09C1 	BC.STOP         13BA 	BC.STRD         03C6 	BC.SVC1         
+2D98 	BC.SVC2         1746 	BC.SWTCH        2BD3 	BC.TAN          
+032D 	BC.TB1          0361 	BC.TB2          0376 	BC.TB3          
+03B0 	BC.TB4          1ADB 	BC.TRACE        0324 	BC.TRAPX        
+0306 	BC.USR          172B 	BC.VAL          16E3 	BC.WAIT         
+1765 	BC.WIDTH        0312 	BC.WRTV         332E 	GRANA           
+3220 	ST01            32E0 	ST02            32FE 	ST03            
+3306 	ST04            3210 	START           
 
 
 

@@ -702,8 +702,8 @@ Module CB
                     COMMON.vZ80cpu.F = COMMON.vZ80cpu.F And Not (COMMON.Z_FLAG Or COMMON.P_FLAG)
                     COMMON.vZ80cpu.F = COMMON.vZ80cpu.F Or COMMON.S_FLAG
                 Case Else
-                    Call COMMON.vZ80cpu.FlagZPflag((par1 And i))
             End Select
+            Call COMMON.vZ80cpu.FlagZPflag((par1 And i))
 
         Catch ex As Exception
 

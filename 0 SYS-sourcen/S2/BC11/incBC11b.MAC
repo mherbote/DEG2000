@@ -1,0 +1,345 @@
+;
+;           Bereich  00100H bis 002FFH
+;
+            DS      010H,0FFH
+            DB      '33'
+            CALL    0E9F2H  ;???
+            LD      A,0BFH
+            OUT     (0C0H),A
+            LD      A,087H
+            OUT     (0C1H),A
+            LD      HL,0B220H   ;???
+            LD      DE,02FB7H   ;???
+            LD      BC,000C0H
+            LDIR
+            LD      A,085H
+            OUT     (0C1H),A
+            LD      A,0B7H
+            OUT     (0C0H),A
+            LD      HL,0306BH   ;???
+            LD      (00150H),HL ;???
+            INC     HL
+            LD      (0015EH),HL ;???
+            LD      (00160H),HL ;???
+            LD      (00162H),HL ;???
+            CALL    0EA0EH  ;???
+            RET
+            DS      02CH,0FFH
+;
+            DB      '33'
+            CALL    0E9F2H  ;???
+            CALL    0C131H  ;???
+            CALL    0EA0EH  ;???
+            RET
+            DS      4,0FFH
+;
+            DB      '33'
+            CALL    0E9F2H  ;???
+            CALL    0C96DH  ;???
+            LD      HL,00015H
+            LD      (0B213H),HL ;???
+            CALL    0EA0EH  ;???
+            RET
+            DS      8,0
+;
+            IN      A,(0A1H)
+            BIT     3,A
+            RET
+            NOP
+;
+            DS      2,0
+            CALL    0C1C0H  ;???
+            RET
+;
+            CALL    0E9F2H  ;???
+            CALL    00327H  ;???
+            PUSH    DE
+            CALL    00092H  ;???
+            JR      NZ,$-3
+            CALL    0009FH  ;???
+            CP      0FCH
+            JR      NC,$+10
+            CP      080H
+            JR      C,$-14
+            CP      08CH
+            JR      NC,$-18
+            POP     DE
+            AND     00FH
+            CP      E
+            JR      NC,$-25
+            LD      B,A
+            INC     B
+            XOR     A
+            CALL    0032AH  ;???
+            CALL    00092H  ;???
+            JR      Z,$-3
+            CALL    0EA0EH  ;???
+            RET
+            DS      4,0FFH            
+;
+            DB      '33'
+            CALL    0E9F2H  ;???
+            LD      HL,0FF01H
+            LD      (00310H),HL ;???
+            LD      HL,000F0H
+            LD      (0030AH),HL ;??? 
+            NOP
+            CALL    0EA0EH  ;???
+            RET
+;
+            CALL    0E8EDH  ;???
+            CP      00AH
+            JR      Z,$+8
+            CP      ' '
+            JR      C,$-9
+            RET
+;
+            DB      0FFH
+            LD      A,00DH
+            RET
+            PAGE
+;****************************************************************
+;*               Pruefsummen-Programm                           *
+;*               Aufruf  :     EXEC 0100                        *
+;*               Ergebnis:     Pruefsummen stehen ab 4000H      *
+;****************************************************************
+;           ORG     00100H
+            LD      HL,04000H           ;Ergebnisbereich loeschen
+            LD      DE,04001H
+            LD      BC,00100H
+            LD      (HL),0
+            LDIR
+            LD      IX,04000H
+            LD      DE,00300H
+            LD      BC,0002FH
+BC.J001:    PUSH    BC
+            LD      HL,00000H
+            LD      BC,BC.D002
+            LD      A,(DE)
+            PUSH    DE
+            LD      E,A
+            LD      D,000H
+            ADD     HL,DE
+            POP     DE
+            INC     DE
+            DEC     BC
+            LD      A,B
+            OR      C
+            JR      NZ,$-11
+            LD      (IX+00),L
+            LD      (IX+01),H
+            INC     IX
+            INC     IX
+            POP     BC
+            DEC     BC
+            LD      A,B
+            OR      C
+            JP      NZ,BC.J001
+            LD      A,A
+            NOP
+            NOP
+            NOP
+            INC     BC
+            LD      A,00AH
+            CALL    001F3H  ;???
+            LD      BC,00002H
+            LD      DE,00909H   ;???
+            LD      HL,00107H   ;???
+            LDIR
+            LD      D,01FH
+            CALL    001FEH  ;???
+            LD      BC,00419H   ;???
+            CALL    00202H  ;???
+            LD      BC,00010H
+            LD      HL,00900H
+            CALL    001F1H  ;???
+            LD      BC,00007H
+            LD      HL,0090FH
+            CALL    001F1H  ;???
+            LD      (IX+11),0
+            LD      BC,00600H   ;???
+            CALL    00202H  ;???
+            LD      BC,25H
+            LD      HL,00885H   ;???
+            CALL    001F1H  ;???
+            LD      C,3
+            LD      HL,00895H   ;???
+            CALL    001F1H  ;???
+            LD      D,53H
+            CALL    001FEH  ;???
+            LD      HL,00899H   ;???
+            LD      C,4BH
+            CALL    001F1H  ;???
+            LD      IY,007A6H   ;???
+            CALL    00010CH ;???
+            JP      Z,001D0H    ;???
+            LD      HL,007AEH   ;???
+            LD      A,(HL)
+            CP      046H
+            JP      Z,00208H    ;???
+            CP      041H
+            JP      Z,003D3H    ;???
+            CP      053H
+            JP      Z,003C8H    ;???
+            LD      BC,00500H   ;???
+            CALL    00202H  ;???
+            JP      00165H  ;???
+;
+            LD      A,(00794H)  ;???
+            LD      E,A
+            CALL    001FAH  ;???
+            LD      SP,00100H
+            JR      $-19
+;
+            LD      E,(IX+0)
+            LD      A,4
+            CALL    00109H  ;???
+            LD      E,044H
+            CALL    001FAH  ;???
+            JP      0010FH  ;???
+;
+            CALL    001DDH  ;???
+            JR      $-19
+;
+            LD      E,(IX+1)
+            CALL    001FAH  ;???
+            RET
+;
+            LD      A,3
+            LD      HL,0085AH   ;???
+            CALL    00109H  ;???
+            OR      A
+            JP      NZ,00120H   ;???
+            RET
+;
+            LD      A,00DH
+            LD      DE,00044H   ;???
+            CALL    00109H  ;???
+            RET
+;
+            LD      A,5
+            JR      $-6
+;
+            LD      A,1
+            JR      $+4
+;
+            LD      A,00BH
+            LD      E,044H
+            JR      $-16
+;
+            CALL    004D5H  ;???
+            LD      (IX+7),0
+            LD      D,046H
+            CALL    001FEH  ;???
+            LD      C,00DH
+            LD      HL,0085CH   ;???
+            CALL    001F1H  ;???
+            LD      IY,007A6H   ;???
+            CALL    0010CH  ;???
+            LD      A,(007AEH)  ;???
+            JP      Z,001D0H    ;???
+            CP      044H
+            JR      Z,$-35
+            CP      048H
+            JR      Z,$-39
+            LD      (00795H),A  ;???
+            LD      BC,0000DH
+            LD      HL,00869H   ;???
+            CALL    001F1H  ;???
+            LD      IY,007AAH   ;???
+            CALL    0010CH  ;???
+            JP      Z,001C3H    ;???
+            LD      E,(IY+0)
+            LD      D,(IY+1)
+            LD      L,(IY+2)
+            LD      H,(IY+3)
+            INC     HL
+            LD      A,(HL)
+            AND     07FH
+            CP      020H
+            JR      NZ,$+9
+            PUSH    HL
+            SBC     HL,DE
+            POP     HL
+            DEC     HL
+            JR      NZ,$-12
+            LD      A,(HL)
+            CP      02CH
+            JR      Z,$+3
+            INC     HL
+            LD      (HL),0FFH
+            OR      A
+            SBC     HL,DE
+            LD      (00798H),HL ;???
+            LD      B,D
+            LD      C,E
+            LD      DE,00928H   ;???
+            LD      L,(IY+0)
+            LD      H,(IY+1)
+            LDIR
+            LD      BC,00B05H   ;???
+            CALL    005B0H  ;???
+            JR      NC,$+4
+            JR      NZ,$-8
+            OR      A
+            CALL    Z,005E2H    ;???
+            LD      BC,00C07H   ;???
+            CALL    005EDH  ;???
+            LD      A,(IX+2)
+            CP      052H
+            JR      Z,$+4
+            CP      050H
+            LD      (IX+8),6
+            JR      Z,$+6
+            LD      (IX+8),4
+            LD      HL,00928H   ;???
+            PUSH    HL
+            LD      BC,000FEH
+            LD      A,(HL)
+            INC     HL
+            INC     C
+            CP      0FFH
+            JR      Z,$+6
+            CP      02CH
+            JR      NZ,$-9
+            POP     HL
+            PUSH    AF
+            PUSH    HL
+            PUSH    BC
+            CALL    003ADH  ;???
+            POP     BC
+            POP     HL
+            LD      A,(IX+8)
+            CP      C
+            PUSH    AF
+            JR      C,$+24H
+            INC     BC
+            LD      A,6
+            CP      (IX+8)
+            LD      DE,007A0H   ;???
+            JR      Z,$+5
+            LD      DE,007A2H   ;???
+            LDIR
+            POP     AF
+            JP      C,0039CH    ;???
+            INC     HL
+            PUSH    HL
+            CALL    002EDH  ;???
+            POP     HL
+            POP     AF
+            CP      0FFH
+            JR      NZ,$-60
+            JP      001B3H  ;???
+            LD      C,(IX+8)
+            JR      $-36
+;
+            CALL    00510H  ;???
+            CALL    00526H  ;???
+            LD      A,(0079FH)  ;???
+            OR      A
+            JR      NZ,$+15H
+            LD      BC,00C2DH   ;???
+            CALL    00202H  ;???
+            DB      1
+;            
+

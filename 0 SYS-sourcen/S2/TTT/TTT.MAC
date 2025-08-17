@@ -1,0 +1,85 @@
+            TITLE   'Test von Port FCH'
+            PAGE    87
+;--------------------------\            ; Vorspann fuer BIN-Datei
+            DB      0EFH                ; Startbyte ---> 
+            DS      12,0
+            DB      001H                ; HS-Bereich : 1
+            DW      00100H              ; Ladeadresse: 0100H
+;--------------------------/
+            .PHASE  00100H
+
+            LD      IY,00200H
+            LD      (IY),020H
+            BIT     4,(IY)
+            BIT     5,(IY)
+            BIT     7,(IY)
+            HALT
+
+;--------------------------
+            LD      HL,TEXT
+            LD      DE,03000H+2*80+5
+            LD      BC,TEXTE-TEXT
+            LDIR
+            LD      HL,F1
+            LD      BC,008FCH
+            OTIR
+
+            LD      HL,03000H+4*80+20
+            LD      DE,80
+            LD      A,'A'
+            LD      (HL),A
+            ADD     HL,DE
+            LD      A,'B'
+            LD      (HL),A
+            ADD     HL,DE
+            LD      A,'C'
+            LD      (HL),A
+            ADD     HL,DE
+            LD      A,'D'
+            LD      (HL),A
+            LD      HL,F2
+            LD      BC,008FCH
+            OTIR
+
+            LD      HL,TEXT
+            LD      DE,03000H+2*80+5
+            LD      BC,TEXTE-TEXT
+            LDIR
+            LD      HL,F3
+            LD      BC,008FCH
+            OTIR
+
+            HALT
+
+TEXT:       DB      'Das ist ein Testtext !!!'
+TEXTE       EQU     $
+
+
+F1:         DB      0F2H
+            DB      5
+            DB      5+(TEXTE-TEXT)
+            DB      2
+            DB      3                   ; Yellow
+            DB      2                   ; Blue
+            DB      4                   ; Red
+            DB      0FFH
+
+F2:         DB      0F3H
+            DB      20
+            DB      4
+            DB      7
+            DB      1                   ; Black
+            DB      11                  ; White
+            DB      4                   ; Red
+            DB      0FFH
+
+F3:         DB      0F1H
+            DB      5+(TEXTE-TEXT)
+            DB      2
+            DB      2                   ; Blue
+            DB      3                   ; Yellow
+            DB      4                   ; Red
+            DB      0FFH
+
+            END
+

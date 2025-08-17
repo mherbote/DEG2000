@@ -24,7 +24,7 @@ Module COMMON
     '#Const WANT_INT0 = 1                                                       'activate CPU's interrupt
     '#Const WANT_SPC0 = 1                                                       'activate SP over-/underrun handling 0000<->FFFF
     '#Const WANT_PCC0 = 1                                                       'activate PC overrun        handling FFFF->0000
-    '#Const Z80_UNDOC0 = 1                                                      'compile undocumented Z80 instructions
+    Public Const Z80_UNDOC0 = 1                                                 'compile undocumented Z80 instructions
 
     '#Const DEBUG0 = 0
     '#Const DEBUG1 = 0
@@ -423,4 +423,111 @@ Module COMMON
         If nLen > sText.Length Then nLen = sText.Length
         Return (sText.Substring(sText.Length - nLen))
     End Function
+
+#Region "zentrale Routinen"
+    Public Sub inc(ByRef par1 As Byte, Optional ByRef par2 As Byte = 0)
+        Call COMMON.vZ80cpu.FlagHflag1((par1 And &HF) + 1 > &HF)
+        Call COMMON.vZ80cpu.RegPlus1(par1)
+
+        Call COMMON.vZ80cpu.FlagPflag1(par1 = &H80)
+        Call COMMON.vZ80cpu.FlagSflag1((par1 And &H80))
+        Call COMMON.vZ80cpu.FlagZflag2(par1 <> 0)
+        Call COMMON.vZ80cpu.FlagNflag2()
+
+        If par2 > 0 Then par2 = par1
+    End Sub ' inc
+    Public Sub dec(ByRef par1 As Byte, Optional ByRef par2 As Byte = 0)
+        'Call COMMON.vZ80cpu.FlagHflag1(((CInt(par1) - 1) And &HF))
+        par1 = (CInt(par1) - 1) And &HFF
+        Call COMMON.vZ80cpu.FlagHflag1(par1 And &HF)
+        Call COMMON.vZ80cpu.FlagPflag1(par1 = &H7F)
+        Call COMMON.vZ80cpu.FlagSflag1(par1 And &H80)
+        Call COMMON.vZ80cpu.FlagZflag2(par1 <> 0)
+        Call COMMON.vZ80cpu.FlagNflag1()
+
+        If par2 > 0 Then par2 = par1
+    End Sub ' dec
+    Public Sub add(ByVal par1 As Byte)
+        Dim i As Integer
+        Dim j As SByte
+
+        Call COMMON.vZ80cpu.FlagHflag1((COMMON.vZ80cpu.A And &HF) + (par1 And &HF) > &HF)
+        Call COMMON.vZ80cpu.FlagCflag1(CInt(COMMON.vZ80cpu.A) + CInt(par1) > 255)
+        i = CInt(COMMON.vZ80cpu.A) + CInt(par1)         'CInt(COMMON.Byte2SByte(COMMON.vZ80cpu.A)) + CInt(COMMON.Byte2SByte(par1))
+        j = COMMON.Byte2SByte(i)
+        COMMON.vZ80cpu.A = i And &HFF
+
+        Call COMMON.vZ80cpu.FlagPflag1((j < -128) Or (j > 127))
+        Call COMMON.vZ80cpu.FlagSflag1((i And &H80))
+        Call COMMON.vZ80cpu.FlagZflag2(COMMON.vZ80cpu.A <> 0)
+        Call COMMON.vZ80cpu.FlagNflag2()
+    End Sub ' add
+    Public Sub adc(ByVal par1 As Byte)
+        Dim i As Integer
+        Dim j As SByte
+        Dim carry As Integer
+
+        If (COMMON.vZ80cpu.F And COMMON.C_FLAG) = COMMON.C_FLAG Then carry = 1 Else carry = 0
+        Call COMMON.vZ80cpu.FlagHflag1((COMMON.vZ80cpu.A And &HF) + (par1 And &HF) + carry > &HF)
+        Call COMMON.vZ80cpu.FlagCflag1(CInt(COMMON.vZ80cpu.A) + CInt(par1) + carry > 255)
+        i = CInt(COMMON.vZ80cpu.A) + CInt(par1) + carry           'i = CInt(COMMON.Byte2SByte(COMMON.vZ80cpu.A)) + CInt(COMMON.Byte2SByte(par1)) + carry
+        j = COMMON.Byte2SByte(i)
+        COMMON.vZ80cpu.A = i And &HFF
+
+        Call COMMON.vZ80cpu.FlagPflag1((j < -128) Or (j > 127))
+        Call COMMON.vZ80cpu.FlagSflag1((i And &H80))
+        Call COMMON.vZ80cpu.FlagZflag2(COMMON.vZ80cpu.A <> 0)
+        Call COMMON.vZ80cpu.FlagNflag2()
+    End Sub ' adc
+    Public Sub sub1(ByVal par1 As Byte)
+        Dim i As Integer
+
+        Call COMMON.vZ80cpu.FlagHflag1((par1 And &HF) > (COMMON.vZ80cpu.A And &HF))
+        Call COMMON.vZ80cpu.FlagCflag1(par1 > COMMON.vZ80cpu.A)
+        i = CInt(COMMON.vZ80cpu.A) - CInt(par1)         'i = CInt(COMMON.Byte2SByte(COMMON.vZ80cpu.A)) - CInt(COMMON.Byte2SByte(par1))
+        COMMON.vZ80cpu.A = i And &HFF
+
+        Call COMMON.vZ80cpu.FlagPflag1((i < -128) Or (i > 127))
+        Call COMMON.vZ80cpu.FlagSflag1((i And &H80))
+        Call COMMON.vZ80cpu.FlagZflag2(COMMON.vZ80cpu.A <> 0)
+        Call COMMON.vZ80cpu.FlagNflag1()
+    End Sub ' sub
+    Public Sub sbc(ByVal par1 As Byte)
+        Dim i As Integer
+        Dim carry As Integer
+
+        If (COMMON.vZ80cpu.F And COMMON.C_FLAG) = COMMON.C_FLAG Then carry = 1 Else carry = 0
+        Call COMMON.vZ80cpu.FlagHflag1((CInt(par1) And &HF) + carry > (COMMON.vZ80cpu.A And &HF))
+        Call COMMON.vZ80cpu.FlagCflag1(CInt(par1) + carry > COMMON.vZ80cpu.A)
+        i = CInt(COMMON.vZ80cpu.A) - CInt(par1) - carry                 'i = CInt(COMMON.Byte2SByte(COMMON.vZ80cpu.A)) - CInt(COMMON.Byte2SByte(par1)) - carry
+        COMMON.vZ80cpu.A = i And &HFF
+
+        Call COMMON.vZ80cpu.FlagPflag1((i < -128) Or (i > 127))
+        Call COMMON.vZ80cpu.FlagSflag1((i And &H80))
+        Call COMMON.vZ80cpu.FlagZflag2(COMMON.vZ80cpu.A <> 0)
+        Call COMMON.vZ80cpu.FlagNflag1()
+    End Sub ' sbc
+    Public Sub and1(ByVal par1 As Byte)
+        COMMON.vZ80cpu.A = COMMON.vZ80cpu.A And par1
+        Call COMMON.vZ80cpu.FlagSflag1((COMMON.vZ80cpu.A And &H80))
+        Call COMMON.vZ80cpu.FlagZflag2(COMMON.vZ80cpu.A <> 0)
+        Call COMMON.vZ80cpu.FlagPflag2(COMMON.vZ80cpu.parrity(COMMON.vZ80cpu.A) = 1)
+        COMMON.vZ80cpu.F = COMMON.vZ80cpu.F Or H_FLAG
+        COMMON.vZ80cpu.F = COMMON.vZ80cpu.F And Not (N_FLAG Or C_FLAG)
+    End Sub ' and
+    Public Sub or1(ByVal par1 As Byte)
+        COMMON.vZ80cpu.A = COMMON.vZ80cpu.A Or par1
+        Call COMMON.vZ80cpu.FlagSflag1((COMMON.vZ80cpu.A And &H80))
+        Call COMMON.vZ80cpu.FlagZflag2(COMMON.vZ80cpu.A <> 0)
+        Call COMMON.vZ80cpu.FlagPflag2(COMMON.vZ80cpu.parrity(COMMON.vZ80cpu.A) = 1)
+        COMMON.vZ80cpu.F = COMMON.vZ80cpu.F And Not (COMMON.H_FLAG Or COMMON.N_FLAG Or COMMON.C_FLAG)
+    End Sub ' or1
+    Public Sub xor1(ByVal par1 As Byte)
+        COMMON.vZ80cpu.A = COMMON.vZ80cpu.A Xor par1
+        Call COMMON.vZ80cpu.FlagSflag1((COMMON.vZ80cpu.A And &H80))
+        Call COMMON.vZ80cpu.FlagZflag2(COMMON.vZ80cpu.A <> 0)
+        Call COMMON.vZ80cpu.FlagPflag2(COMMON.vZ80cpu.parrity(COMMON.vZ80cpu.A) = 1)
+        COMMON.vZ80cpu.F = COMMON.vZ80cpu.F And Not (COMMON.H_FLAG Or COMMON.N_FLAG Or COMMON.C_FLAG)
+    End Sub ' xor
+#End Region
 End Module

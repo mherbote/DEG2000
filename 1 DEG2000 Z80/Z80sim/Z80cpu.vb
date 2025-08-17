@@ -27,9 +27,11 @@
     Public x_flag As Integer                                                    ' flag for -x option
     Public i_flag As Integer                                                    ' flag for -i option
     Public f_flag As Integer                                                    ' flag for -f option
+
 #If Z80_UNDOC0 = 1 Then
     Public z_flag As Integer                                                    ' flag for -z option
 #End If
+
     Public cntl_c As Integer                                                    ' flag for cntl-c entered 
     Public cntl_bs As Integer                                                   ' flag for cntl-\ entered
 

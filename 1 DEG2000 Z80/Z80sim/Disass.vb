@@ -653,6 +653,8 @@ ende:
                     len1 = 2
                 Case &H46
                     Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   B,(" + ireg + "+" + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.Speicher_lesen_Byte(p + 2)) + ")"})
+                Case &H4C
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   C," + ireg + "H"})
                 Case &H4E
                     Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   C,(" + ireg + "+" + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.Speicher_lesen_Byte(p + 2)) + ")"})
                 Case &H56
@@ -661,8 +663,16 @@ ende:
                     Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   E,(" + ireg + "+" + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.Speicher_lesen_Byte(p + 2)) + ")"})
                 Case &H66
                     Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   H,(" + ireg + "+" + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.Speicher_lesen_Byte(p + 2)) + ")"})
+                Case &H67
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   " + ireg + "H,A"})
+                Case &H6A
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   " + ireg + "L,D"})
                 Case &H6E
                     Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   L,(" + ireg + "+" + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.Speicher_lesen_Byte(p + 2)) + ")"})
+                Case &H6F
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   " + ireg + "L,A"})
+                Case &H7D
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   A," + ireg + "L"})
                 Case &H7E
                     Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   A,(" + ireg + "+" + COMMON.HexAnzeige_Byte(COMMON.vZ80cpu.Speicher_lesen_Byte(p + 2)) + ")"})
                 Case &H86
@@ -768,6 +778,104 @@ ende:
                     Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   SP," + ireg})
                     len1 = 2
                     '
+#If Z80_UNDOC0 = 1 Then
+                Case &H24
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "INC  " + ireg + "H"})
+                Case &H25
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "DEC  " + ireg + "H"})
+                Case &H2C
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "INC  " + ireg + "L"})
+                Case &H2D
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "DEC  " + ireg + "L"})
+
+                Case &H44
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   B," + ireg + "H"})
+                Case &H45
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   B," + ireg + "L"})
+                Case &H4C
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   C," + ireg + "H"})
+                Case &H4D
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   C," + ireg + "L"})
+
+                Case &H54
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   D," + ireg + "H"})
+                Case &H55
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   D," + ireg + "L"})
+                Case &H5C
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   E," + ireg + "H"})
+                Case &H5D
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   E," + ireg + "L"})
+
+                Case &H60
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   " + ireg + "H,B"})
+                Case &H61
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   " + ireg + "H,C"})
+                Case &H62
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   " + ireg + "H,D"})
+                Case &H63
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   " + ireg + "H,E"})
+                Case &H64
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   " + ireg + "H," + ireg + "H"})
+                Case &H65
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   " + ireg + "H," + ireg + "L"})
+                Case &H67
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   " + ireg + "H,A"})
+
+                Case &H68
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   " + ireg + "L,B"})
+                Case &H69
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   " + ireg + "L,C"})
+                Case &H6A
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   " + ireg + "L,D"})
+                Case &H6B
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   " + ireg + "L,E"})
+                Case &H6C
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   " + ireg + "L," + ireg + "H"})
+                Case &H6D
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   " + ireg + "L," + ireg + "L"})
+                Case &H6F
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   " + ireg + "L,A"})
+
+                Case &H7C
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   A," + ireg + "H"})
+                Case &H7D
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "LD   A," + ireg + "L"})
+
+                Case &H84
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "ADD  A," + ireg + "H"})
+                Case &H85
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "ADD  A," + ireg + "L"})
+                Case &H8C
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "ADC  A," + ireg + "H"})
+                Case &H8D
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "ADC  A," + ireg + "L"})
+                Case &H94
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "SUB  " + ireg + "H"})
+                Case &H95
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "SUB  " + ireg + "L"})
+                Case &H9C
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "SBC  " + ireg + "H"})
+                Case &H9D
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "SBC  " + ireg + "L"})
+
+                Case &HA4
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "AND  " + ireg + "H"})
+                Case &HA5
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "AND  " + ireg + "L"})
+                Case &HAC
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "XOR  " + ireg + "H"})
+                Case &HAC
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "XOR  " + ireg + "L"})
+                Case &HB4
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "OR   " + ireg + "H"})
+                Case &HB5
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "OR   " + ireg + "L"})
+
+                Case &HBC
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "CP   " + ireg + "H"})
+                Case &HBD
+                    Call COMMON.PrintGrid(Haupt.CMDliste, {s + "CP   " + ireg + "L"})
+#End If
                 Case Else
                     Call COMMON.PrintGrid(Haupt.CMDliste, {s + unknown})
             End Select

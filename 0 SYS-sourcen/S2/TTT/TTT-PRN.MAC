@@ -1,0 +1,113 @@
+'Test von Port FCH'	MACRO-80 3.44	09-Dec-81	PAGE	1
+
+
+                                            TITLE   'Test von Port FCH'
+                                            PAGE    87
+'Test von Port FCH'	MACRO-80 3.44	09-Dec-81	PAGE	1-1
+
+
+                                
+                                ;--------------------------\            ; Vorspann fuer BIN-Datei
+  0000*   EF                                DB      0EFH                ; Startbyte ---> 
+  0001*                                     DS      12,0
+  000D*   01                                DB      001H                ; HS-Bereich : 1
+  000E*   0100                              DW      00100H              ; Ladeadresse: 0100H
+                                ;--------------------------/
+                                            .PHASE  00100H
+                                
+  0100    FD 21 0200                        LD      IY,00200H
+  0104    FD 36 00 20                       LD      (IY),020H
+  0108    FD CB 00 66                       BIT     4,(IY)
+  010C    FD CB 00 6E                       BIT     5,(IY)
+  0110    FD CB 00 7E                       BIT     7,(IY)
+  0114    76                                HALT
+                                
+                                ;--------------------------
+  0115    21 0159                           LD      HL,TEXT
+  0118    11 30A5                           LD      DE,03000H+2*80+5
+  011B    01 0018                           LD      BC,TEXTE-TEXT
+  011E    ED B0                             LDIR
+  0120    21 0171                           LD      HL,F1
+  0123    01 08FC                           LD      BC,008FCH
+  0126    ED B3                             OTIR
+                                
+  0128    21 3154                           LD      HL,03000H+4*80+20
+  012B    11 0050                           LD      DE,80
+  012E    3E 41                             LD      A,'A'
+  0130    77                                LD      (HL),A
+  0131    19                                ADD     HL,DE
+  0132    3E 42                             LD      A,'B'
+  0134    77                                LD      (HL),A
+  0135    19                                ADD     HL,DE
+  0136    3E 43                             LD      A,'C'
+  0138    77                                LD      (HL),A
+  0139    19                                ADD     HL,DE
+  013A    3E 44                             LD      A,'D'
+  013C    77                                LD      (HL),A
+  013D    21 0179                           LD      HL,F2
+  0140    01 08FC                           LD      BC,008FCH
+  0143    ED B3                             OTIR
+                                
+  0145    21 0159                           LD      HL,TEXT
+  0148    11 30A5                           LD      DE,03000H+2*80+5
+  014B    01 0018                           LD      BC,TEXTE-TEXT
+  014E    ED B0                             LDIR
+  0150    21 0181                           LD      HL,F3
+  0153    01 08FC                           LD      BC,008FCH
+  0156    ED B3                             OTIR
+                                
+  0158    76                                HALT
+                                
+  0159    44 61 73 20           TEXT:       DB      'Das ist ein Testtext !!!'
+  015D    69 73 74 20           
+  0161    65 69 6E 20           
+  0165    54 65 73 74           
+  0169    74 65 78 74           
+  016D    20 21 21 21           
+  0171                          TEXTE       EQU     $
+                                
+                                
+  0171    F2                    F1:         DB      0F2H
+  0172    05                                DB      5
+  0173    1D                                DB      5+(TEXTE-TEXT)
+  0174    02                                DB      2
+  0175    03                                DB      3                   ; Yellow
+  0176    02                                DB      2                   ; Blue
+  0177    04                                DB      4                   ; Red
+  0178    FF                                DB      0FFH
+                                
+  0179    F3                    F2:         DB      0F3H
+  017A    14                                DB      20
+  017B    04                                DB      4
+  017C    07                                DB      7
+  017D    01                                DB      1                   ; Black
+  017E    0B                                DB      11                  ; White
+  017F    04                                DB      4                   ; Red
+  0180    FF                                DB      0FFH
+                                
+  0181    F1                    F3:         DB      0F1H
+  0182    1D                                DB      5+(TEXTE-TEXT)
+  0183    02                                DB      2
+'Test von Port FCH'	MACRO-80 3.44	09-Dec-81	PAGE	1-2
+
+
+  0184    02                                DB      2                   ; Blue
+  0185    03                                DB      3                   ; Yellow
+  0186    04                                DB      4                   ; Red
+  0187    FF                                DB      0FFH
+                                
+                                            END
+'Test von Port FCH'	MACRO-80 3.44	09-Dec-81	PAGE	S
+
+
+Macros:
+
+Symbols:
+0171 	F1              0179 	F2              0181 	F3              
+0159 	TEXT            0171 	TEXTE           
+
+
+
+No Fatal error(s)
+
+

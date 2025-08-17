@@ -34,12 +34,14 @@ D0.DD:      LD      A,2
             CALL    D0.TA02
             LD      HL,0                ;ZPOS = 0 , SPOS = 0
             LD      (MS.ZPOS),HL
-            LD      B,41
-            LD      HL,$+8
+            LD      B,DD1-DD0
+            LD      HL,DD0
             CALL    MO.MONI             ;Anzeige der DEBUG-Version
             JR      DD1                 ;$+43
-            DB      'DEBUG --- Version 1.0     '
+
+DD0:        DB      'DEBUG ---  Version 1.0     '
             DB      'Auswahlanzeige'
+
 DD1:        LD      A,20
             LD      (MS.CMD),A
             LD      HL,03412H           ;ZPOS = 18 , SPOS = 52
@@ -183,8 +185,8 @@ D0.OUPQ1:   LD      B,8
 ;
 ;
 ;
-D0.OUPQ2:   CALL    D0.AS               ;ZPOS = 10 , SPOS = 16
-            LD      HL,0100AH	
+D0.OUPQ2:   CALL    D0.AS
+            LD      HL,0100AH           ;ZPOS = 10 , SPOS = 16	
             CALL    D0.DDU19	
             LD      B,8	
             LD      HL,D0.TIO1	
@@ -226,8 +228,8 @@ D0.ADPQ1:   LD      B,7
 ;
 ;
 ;
-D0.ADPQ2:   CALL    D0.AS               ;ZPOS = 10 , SPOS = 14
-            LD      HL,00E0AH
+D0.ADPQ2:   CALL    D0.AS
+            LD      HL,00E0AH           ;ZPOS = 10 , SPOS = 14
             CALL    D0.DDU19
             CALL    D0.AH2
             LD      B,1
@@ -418,7 +420,7 @@ D0.PRL2:    CALL    D0.PRUP2
             JR      NZ,D0.PRF
             LD      (HL),A
             CP      (HL)
-            JR      NZ,D0.PRL
+            JR      NZ,D0.PRL3
             INC     HL
             INC     DE
             BIT     2,D
@@ -701,6 +703,8 @@ D0.DDU04:   LD      (MS.ZPOS),HL
             CALL    D0.DDU01
             RET
 ;           Anzeige :    $$$$$
+;
+;
 D0.DDU05:   LD      C,0C0H              ;Richtung: Ost
             PUSH    BC
             LD      (MS.ZPOS),HL
@@ -736,14 +740,14 @@ D0.DDU06:   LD      C,0C6H              ;Richtung: Sued
             LD      (MS.ZPOS),HL
             LD      A,001H              ;Zeichen : $	           (05)
             LD      B,1
-            ;CALL    D0.DDU01
+            ;CALL    D0.DDU01           ;???
             LD      HL,(MS.ZPOS)
             INC     L
             POP     BC
             CALL    D0.DDU04
             LD      A,001H              ;Zeichen : $	           (04)
             LD      BC,00100H
-            ;CALL    D0.DDU01
+            ;CALL    D0.DDU01           ;???
             RET
 ;
 D0.DDU07:   LD      BC,00E04H           ;Rahmen Zeichnen   
@@ -867,7 +871,11 @@ D0.DDU18:   PUSH    BC                  ; |---------|
             LD      HL,(MS.ZPOS)        ;    < B >
             INC     L
             DEC     H
-            POP     BC
+            LD      A,H
+            CP      0FFH
+            JR      NZ,DDU18A
+            LD      H,79
+DDU18A:     POP     BC
             PUSH    BC
             LD      B,C
             CALL    D0.DDU04

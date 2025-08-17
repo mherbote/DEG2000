@@ -11,7 +11,7 @@
   0000*   EF                                DB      0EFH                ; Startbyte ---> 
   0001*                                     DS      12,0
   000D*   02                                DB      002H                ; HS-Bereich : 2
-  000E*   8000                              DW      08000H              ; Ladeadresse: 9000H
+  000E*   8000                              DW      08000H              ; Ladeadresse: 8000H
                                 ;--------------------------/
                          C                  INCLUDE S21EQU1.MAC
   00E0                   C      S0.PROM     EQU     0E0H
@@ -21,8 +21,8 @@
   B7E0                   C      S0.PFFI     EQU     0B7E0H
   BBF0                   C      S0.PFFA     EQU     0BBF0H
                          C      ;
-  B136                   C      K2.FRADR    EQU     0B136H
   B134                   C      K2.SKADR    EQU     0B134H
+  B136                   C      K2.FRADR    EQU     0B136H
                          C      ;
   B18A                   C      MS.ZPOL     EQU     0B18AH
   B18B                   C      MS.SPOL     EQU     MS.ZPOL+1
@@ -92,7 +92,7 @@
 
 
   B290                   C      S2.PAR1     EQU     S2.DH+1
-  B292                   C      S2.DMANF    EQU     S2.PAR1+2
+  B292                   C      S2.DMANF    EQU     S2.PAR1+2           ;Pufferadresse? S0.PFFI
   B294                   C      S2.DMCUR    EQU     S2.DMANF+2
   B296                   C      S2.DMBA     EQU     S2.DMCUR+2
   B298                   C      S2.DMBE     EQU     S2.DMBA+2
@@ -129,51 +129,51 @@
   C995                   C      S1.HXN1     EQU     0C995H
   C9E4                   C      S1.MEAU2    EQU     0C9E4H
                          C      ;
-  CB10                   C      MO.MONI     EQU     0CB10H
-  CB3F                   C      MO.BWSUS    EQU     0CB3FH
-  CD99                   C      MO.ROLL     EQU     0CD99H
-  CF45                   C      MO.BWSE     EQU     0CF45H
-  CF4C                   C      MO.PNSP     EQU     0CF4CH
+  CB16                   C      MO.MONI     EQU     0CB16H
+  CB45                   C      MO.BWSUS    EQU     0CB45H
+  CD9F                   C      MO.ROLL     EQU     0CD9FH
+  CF4B                   C      MO.BWSE     EQU     0CF4BH
+  CF52                   C      MO.PNSP     EQU     0CF52H
                          C      ;
-  D408                   C      TA.LOE      EQU     0D408H
-  D420                   C      TA.LOES     EQU     0D420H
+  D40E                   C      TA.LOE      EQU     0D40EH
+  D426                   C      TA.LOES     EQU     0D426H
                          C      ;
-  E657                   C      S9.CIN      EQU     0E657H
-  E68B                   C      S9.CSTSX    EQU     0E68BH
-  E6A6                   C      S9.CON      EQU     0E6A6H
-  EE58                   C      S9.SAVE     EQU     0EE58H
-  EE78                   C      S9.LOAD     EQU     0EE78H
+  D551                   C      K1.ARMB     EQU     0D551H
+  D5B7                   C      K1.ARBT     EQU     0D5B7H
+  D5C2                   C      K1.BLKP     EQU     0D5C2H
+  D5D0                   C      K1.BLKM     EQU     0D5D0H
+  D5DE                   C      K1.RCZP     EQU     0D5DEH
+  D5EC                   C      K1.RCZM     EQU     0D5ECH
+  D5FA                   C      K1.RCZN     EQU     0D5FAH
+  D602                   C      K1.LHLBC    EQU     0D602H
+  D60F                   C      K1.BM       EQU     0D60FH
+  D615                   C      K1.F17      EQU     0D615H
+  D62D                   C      K1.RGL1     EQU     0D62DH
+  D63E                   C      K1.RGL2     EQU     0D63EH
+  D6F1                   C      K1.GNSTS    EQU     0D6F1H
+  D748                   C      K1.GNRE     EQU     0D748H
+  D765                   C      K1.GNRA     EQU     0D765H
+  D780                   C      K1.GNRW     EQU     0D780H
+  D7A5                   C      K1.GNRP     EQU     0D7A5H
+  D7C0                   C      K1.GNRM     EQU     0D7C0H
+  D7F1                   C      K1.GNLP     EQU     0D7F1H
+  D7F3                   C      K1.GNLPN    EQU     0D7F3H
+  D82B                   C      K1.GNLMN    EQU     0D82BH
+  D89B                   C      K1.GNRD     EQU     0D89BH
+  D8B0                   C      K1.PUFT     EQU     0D8B0H
+  D90B                   C      K1.GNWR     EQU     0D90BH
+  D92F                   C      K1.GNRWR    EQU     0D92FH
                          C      ;
-  D548                   C      K1.ARMB     EQU     0D548H
-  D576                   C      K1.ARBT     EQU     0D576H
-  D581                   C      K1.BLKP     EQU     0D581H
-  D58F                   C      K1.BLKM     EQU     0D58FH
-  D59D                   C      K1.RCZP     EQU     0D59DH
-  D5AB                   C      K1.RCZM     EQU     0D5ABH
-  D5B9                   C      K1.RCZN     EQU     0D5B9H
-  D5C1                   C      K1.LHLBC    EQU     0D5C1H
-  D5CE                   C      K1.BM       EQU     0D5CEH
-  D5D5                   C      K1.F17      EQU     0D5D5H
-  D5ED                   C      K1.RGL1     EQU     0D5EDH
-  D5FE                   C      K1.RGL2     EQU     0D5FEH
-  D6B1                   C      K1.GNSTS    EQU     0D6B1H
-  D708                   C      K1.GNRE     EQU     0D708H
-  D725                   C      K1.GNRA     EQU     0D725H
-  D740                   C      K1.GNRW     EQU     0D740H
-  D765                   C      K1.GNRP     EQU     0D765H
-  D780                   C      K1.GNRM     EQU     0D780H
-  D7B1                   C      K1.GNLP     EQU     0D7B1H
-  D7B3                   C      K1.GNLPN    EQU     0D7B3H
-  D7EB                   C      K1.GNLMN    EQU     0D7EBH
-  D870                   C      K1.PUFT     EQU     0D870H
-  D85B                   C      K1.GNRD     EQU     0D85BH
-  D8CB                   C      K1.GNWR     EQU     0D8CBH
-  D8EF                   C      K1.GNRWR    EQU     0D8EFH
+  DF0C                   C      LO.EIN      EQU     0DF0CH
+  E279                   C      LO.EIN1     EQU     0E279H
                          C      ;
-  DECC                   C      LO.EIN      EQU     0DECCH
-  E239                   C      LO.EIN1     EQU     0E239H
+  E697                   C      S9.CIN      EQU     0E697H
+  E6CB                   C      S9.CSTSX    EQU     0E6CBH
+  E6E6                   C      S9.CON      EQU     0E6E6H
+  EE98                   C      S9.SAVE     EQU     0EE98H
+  EEB8                   C      S9.LOAD     EQU     0EEB8H
                          C      ;
-  F5CF                   C      S0.BWSUS    EQU     0F5CFH
+  F60F                   C      S0.BWSUS    EQU     0F60FH
 'S o f t w a r e  T R A C E   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-3
 
 
@@ -1795,7 +1795,7 @@
   9294    C0                                DB      0C0H
   9295    E0                                DB      0E0H
   9296    0000                              DW      0
-  9298    CD99                              DW      MROLL               ;MO.ROLL
+  9298    CD9F                              DW      MROLL               ;MO.ROLL
                                 
   929A    0000                  STPO2:      DW      0                   ;ZPOS= 1 , SPOS= 1
   929C    0101                              DW      00101H              ;ZMIN= 1 , SMIN= 1
@@ -1815,7 +1815,7 @@
   92B4    C0                                DB      0C0H
   92B5    E0                                DB      0E0H
   92B6    0000                              DW      0
-  92B8    CD99                              DW      MROLL               ;MO.ROLL
+  92B8    CD9F                              DW      MROLL               ;MO.ROLL
                                 
   92BA                          RPOS:       DS      16,0
   92CA    00                    ST1:        DB      0
@@ -1847,7 +1847,7 @@
   B198                          CMD         EQU     MS.CMD
   B199                          MTK         EQU     MS.TK
                                 
-  CD99                          MROLL       EQU     MO.ROLL
+  CD9F                          MROLL       EQU     MO.ROLL
                                 
   B23C                          TK          EQU     TS.TK
                                 
@@ -1928,21 +1928,21 @@ B2BE 	DDSP            C293 	INIT6           89AF 	J09
 9156 	J56             916C 	J57             9188 	J571            
 9194 	J58             9198 	J59             9205 	J60             
 921B 	J601            922E 	J61             924D 	J611            
-9262 	J62             9283 	J621            D576 	K1.ARBT         
-D548 	K1.ARMB         D58F 	K1.BLKM         D581 	K1.BLKP         
-D5CE 	K1.BM           D5D5 	K1.F17          D7EB 	K1.GNLMN        
-D7B1 	K1.GNLP         D7B3 	K1.GNLPN        D725 	K1.GNRA         
-D85B 	K1.GNRD         D708 	K1.GNRE         D780 	K1.GNRM         
-D765 	K1.GNRP         D740 	K1.GNRW         D8EF 	K1.GNRWR        
-D6B1 	K1.GNSTS        D8CB 	K1.GNWR         D5C1 	K1.LHLBC        
-D870 	K1.PUFT         D5AB 	K1.RCZM         D5B9 	K1.RCZN         
-D59D 	K1.RCZP         D5ED 	K1.RGL1         D5FE 	K1.RGL2         
+9262 	J62             9283 	J621            D5B7 	K1.ARBT         
+D551 	K1.ARMB         D5D0 	K1.BLKM         D5C2 	K1.BLKP         
+D60F 	K1.BM           D615 	K1.F17          D82B 	K1.GNLMN        
+D7F1 	K1.GNLP         D7F3 	K1.GNLPN        D765 	K1.GNRA         
+D89B 	K1.GNRD         D748 	K1.GNRE         D7C0 	K1.GNRM         
+D7A5 	K1.GNRP         D780 	K1.GNRW         D92F 	K1.GNRWR        
+D6F1 	K1.GNSTS        D90B 	K1.GNWR         D602 	K1.LHLBC        
+D8B0 	K1.PUFT         D5EC 	K1.RCZM         D5FA 	K1.RCZN         
+D5DE 	K1.RCZP         D62D 	K1.RGL1         D63E 	K1.RGL2         
 B136 	K2.FRADR        B134 	K2.SKADR        88FD 	LIST            
-DECC 	LO.EIN          E239 	LO.EIN1         882C 	LOAD            
+DF0C 	LO.EIN          E279 	LO.EIN1         882C 	LOAD            
 8F2D 	MAIN            5018 	MAX             B194 	MBWSA           
-CF45 	MO.BWSE         CB3F 	MO.BWSUS        CB10 	MO.MONI         
-CF4C 	MO.PNSP         CD99 	MO.ROLL         8817 	MONI            
-881A 	MRES            CD99 	MROLL           B194 	MS.BWSA         
+CF4B 	MO.BWSE         CB45 	MO.BWSUS        CB16 	MO.MONI         
+CF52 	MO.PNSP         CD9F 	MO.ROLL         8817 	MONI            
+881A 	MRES            CD9F 	MROLL           B194 	MS.BWSA         
 B198 	MS.CMD          B19E 	MS.CZEIT        B196 	MS.DIRDEL       
 B197 	MS.DIRES        B19D 	MS.MCUR         B19C 	MS.MCZ          
 B19A 	MS.RADR         B191 	MS.SMAX         B18F 	MS.SMIN         
@@ -1950,7 +1950,7 @@ B193 	MS.SPANZ        B18B 	MS.SPOL         B18D 	MS.SPOS
 B199 	MS.TK           B192 	MS.ZANZ         B190 	MS.ZMAX         
 B18E 	MS.ZMIN         B18A 	MS.ZPOL         B18C 	MS.ZPOS         
 B199 	MTK             881D 	PRIO            92BA 	RPOS            
-A000 	S0.BWSA         F5CF 	S0.BWSUS        BBF0 	S0.PFFA         
+A000 	S0.BWSA         F60F 	S0.BWSUS        BBF0 	S0.PFFA         
 B7E0 	S0.PFFI         00E0 	S0.PROM         0050 	S0.SPANZ        
 0018 	S0.ZANZ         C328 	S1.AEIN         C3BF 	S1.ANZEI        
 C8B0 	S1.ANZU1        C8C0 	S1.ANZU2        C5FF 	S1.BHKON        
@@ -1973,8 +1973,8 @@ B290 	S2.PAR1         B265 	S2.PRGN         B26C 	S2.RBBR
 B2AF 	S2.S1           B2B0 	S2.S2           B2AD 	S2.SMHL         
 B273 	S2.SP1          B274 	S2.SP2          B275 	S2.SP3          
 B28C 	S2.TE           B276 	S2.TRB          B272 	S2.ZP           
-B262 	S2.ZZ           E657 	S9.CIN          E6A6 	S9.CON          
-E68B 	S9.CSTSX        EE78 	S9.LOAD         EE58 	S9.SAVE         
+B262 	S2.ZZ           E697 	S9.CIN          E6E6 	S9.CON          
+E6CB 	S9.CSTSX        EEB8 	S9.LOAD         EE98 	S9.SAVE         
 8823 	SAVE            A000 	SBWSA           92CA 	ST1             
 92CB 	ST2             92CC 	ST3             92CE 	ST4             
 92CF 	ST5             92D0 	ST6             92D8 	ST7             
@@ -1982,7 +1982,7 @@ E68B 	S9.CSTSX        EE78 	S9.LOAD         EE58 	S9.SAVE
 929A 	STPO2           92AA 	STPO3           95FB 	STSP            
 8930 	STX2            8918 	STX3            8922 	STX4            
 8933 	STX9            8F52 	SUB             880E 	SYSTB           
-D408 	TA.LOE          D420 	TA.LOES         8811 	TA1             
+D40E 	TA.LOE          D426 	TA.LOES         8811 	TA1             
 8814 	TA2             919B 	TAB2            B23C 	TK              
 B249 	TS.BFOL1        B24B 	TS.BFOL2        B22D 	TS.EINA         
 B23E 	TS.EMERK        B241 	TS.KGMER        B248 	TS.MBF          

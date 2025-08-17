@@ -851,14 +851,6 @@ Public Class CPU1
         Call and1(COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.PC))
         op_andn = 7
     End Function 'E6    'op_andn
-    Private Sub and1(ByVal par1 As Byte)
-        COMMON.vZ80cpu.A = COMMON.vZ80cpu.A And par1
-        Call COMMON.vZ80cpu.FlagSflag1((COMMON.vZ80cpu.A And &H80))
-        Call COMMON.vZ80cpu.FlagZflag2(COMMON.vZ80cpu.A <> 0)
-        Call COMMON.vZ80cpu.FlagPflag2(COMMON.vZ80cpu.parrity(COMMON.vZ80cpu.A) = 1)
-        COMMON.vZ80cpu.F = COMMON.vZ80cpu.F Or H_FLAG
-        COMMON.vZ80cpu.F = COMMON.vZ80cpu.F And Not (N_FLAG Or C_FLAG)
-    End Sub ' and
 #End Region
 #Region "OR"
     '------------------------------------
@@ -901,13 +893,6 @@ Public Class CPU1
         Call or1(COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.PC))
         op_orn = 7
     End Function 'F6    'op_orn
-    Private Sub or1(ByVal par1 As Byte)
-        COMMON.vZ80cpu.A = COMMON.vZ80cpu.A Or par1
-        Call COMMON.vZ80cpu.FlagSflag1((COMMON.vZ80cpu.A And &H80))
-        Call COMMON.vZ80cpu.FlagZflag2(COMMON.vZ80cpu.A <> 0)
-        Call COMMON.vZ80cpu.FlagPflag2(COMMON.vZ80cpu.parrity(COMMON.vZ80cpu.A) = 1)
-        COMMON.vZ80cpu.F = COMMON.vZ80cpu.F And Not (COMMON.H_FLAG Or COMMON.N_FLAG Or COMMON.C_FLAG)
-    End Sub ' or1
 #End Region
 #Region "XOR"
     '------------------------------------
@@ -950,13 +935,6 @@ Public Class CPU1
         Call xor1(COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.PC))
         op_xorn = 7
     End Function 'EE    'op_xorn
-    Private Sub xor1(ByVal par1 As Byte)
-        COMMON.vZ80cpu.A = COMMON.vZ80cpu.A Xor par1
-        Call COMMON.vZ80cpu.FlagSflag1((COMMON.vZ80cpu.A And &H80))
-        Call COMMON.vZ80cpu.FlagZflag2(COMMON.vZ80cpu.A <> 0)
-        Call COMMON.vZ80cpu.FlagPflag2(COMMON.vZ80cpu.parrity(COMMON.vZ80cpu.A) = 1)
-        COMMON.vZ80cpu.F = COMMON.vZ80cpu.F And Not (COMMON.H_FLAG Or COMMON.N_FLAG Or COMMON.C_FLAG)
-    End Sub ' xor1
 #End Region
 
 #Region "ADD"
@@ -1003,21 +981,6 @@ Public Class CPU1
         Call add(P)
         op_addn = 7
     End Function 'C6    'op_addn
-    Private Sub add(ByVal par1 As Byte)
-        Dim i As Integer
-        Dim j As SByte
-
-        Call COMMON.vZ80cpu.FlagHflag1((COMMON.vZ80cpu.A And &HF) + (par1 And &HF) > &HF)
-        Call COMMON.vZ80cpu.FlagCflag1(CInt(COMMON.vZ80cpu.A) + CInt(par1) > 255)
-        i = CInt(COMMON.vZ80cpu.A) + CInt(par1)         'CInt(COMMON.Byte2SByte(COMMON.vZ80cpu.A)) + CInt(COMMON.Byte2SByte(par1))
-        j = COMMON.Byte2SByte(i)
-        COMMON.vZ80cpu.A = i And &HFF
-
-        Call COMMON.vZ80cpu.FlagPflag1((j < -128) Or (j > 127))
-        Call COMMON.vZ80cpu.FlagSflag1((i And &H80))
-        Call COMMON.vZ80cpu.FlagZflag2(COMMON.vZ80cpu.A <> 0)
-        Call COMMON.vZ80cpu.FlagNflag2()
-    End Sub ' add
 #End Region
 #Region "ADC"
     '------------------------------------
@@ -1063,23 +1026,6 @@ Public Class CPU1
         Call adc(P)
         op_adcn = 7
     End Function 'CE    'op_adcn
-    Private Sub adc(ByVal par1 As Byte)
-        Dim i As Integer
-        Dim j As SByte
-        Dim carry As Integer
-
-        If (COMMON.vZ80cpu.F And COMMON.C_FLAG) = COMMON.C_FLAG Then carry = 1 Else carry = 0
-        Call COMMON.vZ80cpu.FlagHflag1((COMMON.vZ80cpu.A And &HF) + (par1 And &HF) + carry > &HF)
-        Call COMMON.vZ80cpu.FlagCflag1(CInt(COMMON.vZ80cpu.A) + CInt(par1) + carry > 255)
-        i = CInt(COMMON.vZ80cpu.A) + CInt(par1) + carry           'i = CInt(COMMON.Byte2SByte(COMMON.vZ80cpu.A)) + CInt(COMMON.Byte2SByte(par1)) + carry
-        j = COMMON.Byte2SByte(i)
-        COMMON.vZ80cpu.A = i And &HFF
-
-        Call COMMON.vZ80cpu.FlagPflag1((j < -128) Or (j > 127))
-        Call COMMON.vZ80cpu.FlagSflag1((i And &H80))
-        Call COMMON.vZ80cpu.FlagZflag2(COMMON.vZ80cpu.A <> 0)
-        Call COMMON.vZ80cpu.FlagNflag2()
-    End Sub ' adc
 #End Region
 #Region "SUB"
     '------------------------------------
@@ -1125,19 +1071,6 @@ Public Class CPU1
         Call sub1(P)
         op_subn = 7
     End Function 'D6    'op_subn
-    Private Sub sub1(ByVal par1 As Byte)
-        Dim i As Integer
-
-        Call COMMON.vZ80cpu.FlagHflag1((par1 And &HF) > (COMMON.vZ80cpu.A And &HF))
-        Call COMMON.vZ80cpu.FlagCflag1(par1 > COMMON.vZ80cpu.A)
-        i = CInt(COMMON.vZ80cpu.A) - CInt(par1)         'i = CInt(COMMON.Byte2SByte(COMMON.vZ80cpu.A)) - CInt(COMMON.Byte2SByte(par1))
-        COMMON.vZ80cpu.A = i And &HFF
-
-        Call COMMON.vZ80cpu.FlagPflag1((i < -128) Or (i > 127))
-        Call COMMON.vZ80cpu.FlagSflag1((i And &H80))
-        Call COMMON.vZ80cpu.FlagZflag2(COMMON.vZ80cpu.A <> 0)
-        Call COMMON.vZ80cpu.FlagNflag1()
-    End Sub ' sub
 #End Region
 #Region "SBC"
     '------------------------------------
@@ -1183,21 +1116,6 @@ Public Class CPU1
         Call sbc(P)
         op_sbcn = 7
     End Function 'DE    'op_sbcn
-    Private Sub sbc(ByVal par1 As Byte)
-        Dim i As Integer
-        Dim carry As Integer
-
-        If (COMMON.vZ80cpu.F And COMMON.C_FLAG) = COMMON.C_FLAG Then carry = 1 Else carry = 0
-        Call COMMON.vZ80cpu.FlagHflag1((CInt(par1) And &HF) + carry > (COMMON.vZ80cpu.A And &HF))
-        Call COMMON.vZ80cpu.FlagCflag1(CInt(par1) + carry > COMMON.vZ80cpu.A)
-        i = CInt(COMMON.vZ80cpu.A) - CInt(par1) - carry                 'i = CInt(COMMON.Byte2SByte(COMMON.vZ80cpu.A)) - CInt(COMMON.Byte2SByte(par1)) - carry
-        COMMON.vZ80cpu.A = i And &HFF
-
-        Call COMMON.vZ80cpu.FlagPflag1((i < -128) Or (i > 127))
-        Call COMMON.vZ80cpu.FlagSflag1((i And &H80))
-        Call COMMON.vZ80cpu.FlagZflag2(COMMON.vZ80cpu.A <> 0)
-        Call COMMON.vZ80cpu.FlagNflag1()
-    End Sub ' sbc
 #End Region
 #Region "CP"
     '------------------------------------
@@ -1308,15 +1226,6 @@ Public Class CPU1
         Call inc(COMMON.vZ80cpu.A)
         op_inca = 4
     End Function '3C    'op_inca
-    Private Sub inc(ByRef par1 As Byte)
-        Call COMMON.vZ80cpu.FlagHflag1((par1 And &HF) + 1 > &HF)
-        Call COMMON.vZ80cpu.RegPlus1(par1)
-
-        Call COMMON.vZ80cpu.FlagPflag1(par1 = &H80)
-        Call COMMON.vZ80cpu.FlagSflag1((par1 And &H80))
-        Call COMMON.vZ80cpu.FlagZflag2(par1 <> 0)
-        Call COMMON.vZ80cpu.FlagNflag2()
-    End Sub ' inc
 #End Region
 #Region "DEC"
     '------------------------------------     '05 0D 15 1D 25 2D 35 3D
@@ -1378,15 +1287,6 @@ Public Class CPU1
         Call dec(COMMON.vZ80cpu.A)
         op_deca = 4
     End Function '3D    'op_deca
-    Private Sub dec(ByRef par1 As Byte)
-        'Call COMMON.vZ80cpu.FlagHflag1(((CInt(par1) - 1) And &HF))
-        par1 = (CInt(par1) - 1) And &HFF
-        Call COMMON.vZ80cpu.FlagHflag1(par1 And &HF)
-        Call COMMON.vZ80cpu.FlagPflag1(par1 = &H7F)
-        Call COMMON.vZ80cpu.FlagSflag1(par1 And &H80)
-        Call COMMON.vZ80cpu.FlagZflag2(par1 <> 0)
-        Call COMMON.vZ80cpu.FlagNflag1()
-    End Sub ' dec
 #End Region
 #Region "RL_RR"
     '------------------------------------

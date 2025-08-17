@@ -21,8 +21,8 @@
   B7E0                   C      S0.PFFI     EQU     0B7E0H
   BBF0                   C      S0.PFFA     EQU     0BBF0H
                          C      ;
-  B136                   C      K2.FRADR    EQU     0B136H
   B134                   C      K2.SKADR    EQU     0B134H
+  B136                   C      K2.FRADR    EQU     0B136H
                          C      ;
   B18A                   C      MS.ZPOL     EQU     0B18AH
   B18B                   C      MS.SPOL     EQU     MS.ZPOL+1
@@ -138,42 +138,42 @@
   D40E                   C      TA.LOE      EQU     0D40EH
   D426                   C      TA.LOES     EQU     0D426H
                          C      ;
-  E694                   C      S9.CIN      EQU     0E694H
-  E6C8                   C      S9.CSTSX    EQU     0E6C8H
-  E6E3                   C      S9.CON      EQU     0E6E3H
-  EE95                   C      S9.SAVE     EQU     0EE95H
-  EEB5                   C      S9.LOAD     EQU     0EEB5H
-                         C      ;
   D551                   C      K1.ARMB     EQU     0D551H
-  D5B3                   C      K1.ARBT     EQU     0D5B3H
-  D5BE                   C      K1.BLKP     EQU     0D5BEH
-  D5CC                   C      K1.BLKM     EQU     0D5CCH
-  D5DA                   C      K1.RCZP     EQU     0D5DAH
-  D5E8                   C      K1.RCZM     EQU     0D5E8H
-  D5F6                   C      K1.RCZN     EQU     0D5F6H
-  D5FE                   C      K1.LHLBC    EQU     0D5FEH
-  D60B                   C      K1.BM       EQU     0D60BH
-  D612                   C      K1.F17      EQU     0D612H
-  D62A                   C      K1.RGL1     EQU     0D62AH
-  D63B                   C      K1.RGL2     EQU     0D63BH
-  D6EE                   C      K1.GNSTS    EQU     0D6EEH
-  D745                   C      K1.GNRE     EQU     0D745H
-  D762                   C      K1.GNRA     EQU     0D762H
-  D77D                   C      K1.GNRW     EQU     0D77DH
-  D7A2                   C      K1.GNRP     EQU     0D7A2H
-  D7BD                   C      K1.GNRM     EQU     0D7BDH
-  D7EE                   C      K1.GNLP     EQU     0D7EEH
-  D7F0                   C      K1.GNLPN    EQU     0D7F0H
-  D828                   C      K1.GNLMN    EQU     0D828H
-  D898                   C      K1.GNRD     EQU     0D898H
-  D8AD                   C      K1.PUFT     EQU     0D8ADH
-  D908                   C      K1.GNWR     EQU     0D908H
-  D92C                   C      K1.GNRWR    EQU     0D92CH
+  D5B7                   C      K1.ARBT     EQU     0D5B7H
+  D5C2                   C      K1.BLKP     EQU     0D5C2H
+  D5D0                   C      K1.BLKM     EQU     0D5D0H
+  D5DE                   C      K1.RCZP     EQU     0D5DEH
+  D5EC                   C      K1.RCZM     EQU     0D5ECH
+  D5FA                   C      K1.RCZN     EQU     0D5FAH
+  D602                   C      K1.LHLBC    EQU     0D602H
+  D60F                   C      K1.BM       EQU     0D60FH
+  D615                   C      K1.F17      EQU     0D615H
+  D62D                   C      K1.RGL1     EQU     0D62DH
+  D63E                   C      K1.RGL2     EQU     0D63EH
+  D6F1                   C      K1.GNSTS    EQU     0D6F1H
+  D748                   C      K1.GNRE     EQU     0D748H
+  D765                   C      K1.GNRA     EQU     0D765H
+  D780                   C      K1.GNRW     EQU     0D780H
+  D7A5                   C      K1.GNRP     EQU     0D7A5H
+  D7C0                   C      K1.GNRM     EQU     0D7C0H
+  D7F1                   C      K1.GNLP     EQU     0D7F1H
+  D7F3                   C      K1.GNLPN    EQU     0D7F3H
+  D82B                   C      K1.GNLMN    EQU     0D82BH
+  D89B                   C      K1.GNRD     EQU     0D89BH
+  D8B0                   C      K1.PUFT     EQU     0D8B0H
+  D90B                   C      K1.GNWR     EQU     0D90BH
+  D92F                   C      K1.GNRWR    EQU     0D92FH
                          C      ;
-  DF09                   C      LO.EIN      EQU     0DF09H
-  E276                   C      LO.EIN1     EQU     0E276H
+  DF0C                   C      LO.EIN      EQU     0DF0CH
+  E279                   C      LO.EIN1     EQU     0E279H
                          C      ;
-  F60C                   C      S0.BWSUS    EQU     0F60CH
+  E697                   C      S9.CIN      EQU     0E697H
+  E6CB                   C      S9.CSTSX    EQU     0E6CBH
+  E6E6                   C      S9.CON      EQU     0E6E6H
+  EE98                   C      S9.SAVE     EQU     0EE98H
+  EEB8                   C      S9.LOAD     EQU     0EEB8H
+                         C      ;
+  F60F                   C      S0.BWSUS    EQU     0F60FH
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-3
 
 
@@ -213,13 +213,14 @@
   8045    73 69 6F 6E           
   8049    20 32 2E 31           
   804D    00                                DB      0
+                                
   804E    CD C3BF                           CALL    S1.ANZEI
   8051    0013                              DW      00013H              ;ZPOS=20 , SPOS= 1
   8053    A4                                DB      TXT11-TXT10+80H
-  8054    81CC                              DW      TXT10
+  8054    81DB                              DW      TXT10
   8056    00                                DB      0
                                 
-  8057    CD 8AA2                           CALL    PANZ
+  8057    CD 8AFC                           CALL    PANZ
   805A    21 0101                           LD      HL,00101H           ;ZMIN= 1 , SMIN= 1
   805D    22 B18E                           LD      (MS.ZMIN),HL
   8060    25                                DEC     H                   ;ZPOS= 1 , SMIN= 1
@@ -227,7 +228,7 @@
   8062    22 B18C                           LD      (MS.ZPOS),HL
   8065    21 5011                           LD      HL,05011H           ;ZMAX=17 , SMAX=80
   8068    22 B190                           LD      (MS.ZMAX),HL
-  806B    CD 8A64                           CALL    TARE
+  806B    CD 8ABE                           CALL    TARE
   806E    C9                                RET
                                 
                                             PAGE
@@ -235,210 +236,213 @@
 
 
                                 
-  806F    31 3D 52 45           TXT1:       DB      '1=RE 2=RW 3=RA   4=L- 5=PT 6=L+  '
-  8073    20 32 3D 52           
-  8077    57 20 33 3D           
-  807B    52 41 20 20           
-  807F    20 34 3D 4C           
-  8083    2D 20 35 3D           
-  8087    50 54 20 36           
-  808B    3D 4C 2B 20           
-  808F    20                    
-  8090    37 3D 52 2D                       DB      '7=R- 8=CW 9=R+  10=BM 11=W 12=SL'
-  8094    20 38 3D 43           
-  8098    57 20 39 3D           
-  809C    52 2B 20 20           
-  80A0    31 30 3D 42           
-  80A4    4D 20 31 31           
-  80A8    3D 57 20 31           
-  80AC    32 3D 53 4C           
+  806F    20 20 31 3D           TXT1:       DB      '  1=RE  2=RW  3=RA     4=L-  5=PT  6=L+ '
+  8073    52 45 20 20           
+  8077    32 3D 52 57           
+  807B    20 20 33 3D           
+  807F    52 41 20 20           
+  8083    20 20 20 34           
+  8087    3D 4C 2D 20           
+  808B    20 35 3D 50           
+  808F    54 20 20 36           
+  8093    3D 4C 2B 20           
+  8097    20 20 37 3D                       DB      '  7=R-  8=CW  9=R+    10=BM 11=W  12=SL '
+  809B    52 2D 20 20           
+  809F    38 3D 43 57           
+  80A3    20 20 39 3D           
+  80A7    52 2B 20 20           
+  80AB    20 20 31 30           
+  80AF    3D 42 4D 20           
+  80B3    31 31 3D 57           
+  80B7    20 20 31 32           
+  80BB    3D 53 4C 20           
                                 
-  80B0    31 3D 63 6F           TXT2:       DB      '1=copy Satz_1 2=copy BM__1 3=copy SL_1  '
-  80B4    70 79 20 53           
-  80B8    61 74 7A 5F           
-  80BC    31 20 32 3D           
-  80C0    63 6F 70 79           
-  80C4    20 42 4D 5F           
-  80C8    5F 31 20 33           
-  80CC    3D 63 6F 70           
-  80D0    79 20 53 4C           
-  80D4    5F 31 20 20           
-  80D8    20 34 3D 63                       DB      ' 4=copy Satz_2  5=copy BM__2 6=copy SL_2'
-  80DC    6F 70 79 20           
-  80E0    53 61 74 7A           
-  80E4    5F 32 20 20           
-  80E8    35 3D 63 6F           
-  80EC    70 79 20 42           
-  80F0    4D 5F 5F 32           
-  80F4    20 36 3D 63           
-  80F8    6F 70 79 20           
-  80FC    53 4C 5F 32           
-  8100    37 3D 70 72                       DB      '7=printSatz_1 8=printASC_1 9=R+_1       '
-  8104    69 6E 74 53           
-  8108    61 74 7A 5F           
-  810C    31 20 38 3D           
-  8110    70 72 69 6E           
-  8114    74 41 53 43           
-  8118    5F 31 20 39           
-  811C    3D 52 2B 5F           
-  8120    31 20 20 20           
-  8124    20 20 20 20           
-  8128    31 30 3D 70                       DB      '10=printSatz_2 11=printASC_2 12=R+_2 '
-  812C    72 69 6E 74           
-  8130    53 61 74 7A           
-  8134    5F 32 20 31           
-  8138    31 3D 70 72           
-  813C    69 6E 74 41           
-  8140    53 43 5F 32           
-  8144    20 31 32 3D           
-  8148    52 2B 5F 32           
-  814C    20                    
+  80BF    31 3D 63 6F           TXT2:       DB      '1=copy Satz_1 2=copy BM__1  3=copy SL_1 '
+  80C3    70 79 20 53           
+  80C7    61 74 7A 5F           
+  80CB    31 20 32 3D           
+  80CF    63 6F 70 79           
+  80D3    20 42 4D 5F           
+  80D7    5F 31 20 20           
+  80DB    33 3D 63 6F           
+  80DF    70 79 20 53           
+  80E3    4C 5F 31 20           
+  80E7    34 3D 63 6F                       DB      '4=copy Satz_2 5=copy BM__2  6=copy SL_2 '
+  80EB    70 79 20 53           
+  80EF    61 74 7A 5F           
+  80F3    32 20 35 3D           
+  80F7    63 6F 70 79           
+  80FB    20 42 4D 5F           
+  80FF    5F 32 20 20           
+  8103    36 3D 63 6F           
+  8107    70 79 20 53           
+  810B    4C 5F 32 20           
+  810F    37 3D 70 72                       DB      '7=printSatz_1 8=printASC_1  9=R+_1      '
+  8113    69 6E 74 53           
+  8117    61 74 7A 5F           
+  811B    31 20 38 3D           
+  811F    70 72 69 6E           
+  8123    74 41 53 43           
+  8127    5F 31 20 20           
+  812B    39 3D 52 2B           
+  812F    5F 31 20 20           
+  8133    20 20 20 20           
+  8137    31 30 3D 70                       DB      '10=printSatz_2 11=printASC_2 12=R+_2 '
+  813B    72 69 6E 74           
+  813F    53 61 74 7A           
+  8143    5F 32 20 31           
+  8147    31 3D 70 72           
+  814B    69 6E 74 41           
+  814F    53 43 5F 32           
+  8153    20 31 32 3D           
+  8157    52 2B 5F 32           
+  815B    20                    
                                 
-  814D    31 3D 50 6F           TXT14:      DB      '1=Pos1_auf 2=Pos1_+ 3=Pos1_-  '
-  8151    73 31 5F 61           
-  8155    75 66 20 32           
-  8159    3D 50 6F 73           
-  815D    31 5F 2B 20           
-  8161    33 3D 50 6F           
-  8165    73 31 5F 2D           
-  8169    20 20                 
-  816B    34 3D 50 6F                       DB      '4=Pos2_auf 5=Pos2_+ 6=Pos2_-'
-  816F    73 32 5F 61           
-  8173    75 66 20 35           
-  8177    3D 50 6F 73           
-  817B    32 5F 2B 20           
-  817F    36 3D 50 6F           
-  8183    73 32 5F 2D           
+  815C    31 3D 50 6F           TXT14:      DB      '1=Pos1_auf 2=Pos1_+ 3=Pos1_-  '
+  8160    73 31 5F 61           
+  8164    75 66 20 32           
+  8168    3D 50 6F 73           
+  816C    31 5F 2B 20           
+  8170    33 3D 50 6F           
+  8174    73 31 5F 2D           
+  8178    20 20                 
+  817A    34 3D 50 6F                       DB      '4=Pos2_auf 5=Pos2_+ 6=Pos2_-'
+  817E    73 32 5F 61           
+  8182    75 66 20 35           
+  8186    3D 50 6F 73           
+  818A    32 5F 2B 20           
+  818E    36 3D 50 6F           
+  8192    73 32 5F 2D           
                                 
                                 
-  8187    63 6F 70 69           TXT3:       DB      'copieren '
-  818B    65 72 65 6E           
-  818F    20                    
-  8190    53 61 74 7A           TXT4:       DB      'Satz  '
-  8194    20 20                 
+  8196    63 6F 70 69           TXT3:       DB      'copieren '
+  819A    65 72 65 6E           
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-5
 
 
-  8196    62 69 73 20           TXT5:       DB      'bis BM  '
-  819A    42 4D 20 20           
-  819E    62 69 73 20           TXT6:       DB      'bis SL  '
-  81A2    53 4C 20 20           
-  81A6    76 6F 6E 20           TXT7:       DB      'von Ger. 2 => 1'
-  81AA    47 65 72 2E           
-  81AE    20 32 20 3D           
-  81B2    3E 20 31              
-  81B5    76 6F 6E 20           TXT8:       DB      'von Ger. 1 => 2'
+  819E    20                    
+  819F    53 61 74 7A           TXT4:       DB      'Satz  '
+  81A3    20 20                 
+  81A5    62 69 73 20           TXT5:       DB      'bis BM  '
+  81A9    42 4D 20 20           
+  81AD    62 69 73 20           TXT6:       DB      'bis SL  '
+  81B1    53 4C 20 20           
+  81B5    76 6F 6E 20           TXT7:       DB      'von Ger. 2 => 1'
   81B9    47 65 72 2E           
-  81BD    20 31 20 3D           
-  81C1    3E 20 32              
-  81C4    47 65 72 61           TXT9:       DB      'Geraet: '
-  81C8    65 74 3A 20           
-  81CC    53 61 74 7A           TXT10:      DB      'Satzlaenge: ....H   CRC-Summe: ....H'
-  81D0    6C 61 65 6E           
-  81D4    67 65 3A 20           
-  81D8    2E 2E 2E 2E           
-  81DC    48 20 20 20           
-  81E0    43 52 43 2D           
-  81E4    53 75 6D 6D           
-  81E8    65 3A 20 2E           
-  81EC    2E 2E 2E 48           
-  81F0    2A 20 2A 20           TXT11:      DB      '* * *   B A N D M A R K E   * * *'
-  81F4    2A 20 20 20           
-  81F8    42 20 41 20           
-  81FC    4E 20 44 20           
-  8200    4D 20 41 20           
-  8204    52 20 4B 20           
-  8208    45 20 20 20           
-  820C    2A 20 2A 20           
-  8210    2A                    
-  8211    1E1E                  TXT12:      DW      1E1EH
-  8213    47 65 72 61           TXT13:      DB      'Geraet . auf Datei: 003 Satz: 001 positionieren'
-  8217    65 74 20 2E           
-  821B    20 61 75 66           
-  821F    20 44 61 74           
-  8223    65 69 3A 20           
-  8227    30 30 33 20           
-  822B    53 61 74 7A           
-  822F    3A 20 30 30           
-  8233    31 20 70 6F           
-  8237    73 69 74 69           
-  823B    6F 6E 69 65           
-  823F    72 65 6E              
-  8242    47 65 72 61           TXT15:      DB      'Geraet . um 000 Dateien und 000 Saetze '
-  8246    65 74 20 2E           
-  824A    20 75 6D 20           
-  824E    30 30 30 20           
-  8252    44 61 74 65           
-  8256    69 65 6E 20           
-  825A    75 6E 64 20           
-  825E    30 30 30 20           
-  8262    53 61 65 74           
-  8266    7A 65 20              
-  8269    76 6F 72 73           TXT16:      DB      'vorsetzen'
-  826D    65 74 7A 65           
-  8271    6E                    
-  8272    7A 75 72 75           TXT17:      DB      'zuruecksetzen'
-  8276    65 63 6B 73           
-  827A    65 74 7A 65           
-  827E    6E                    
-  827F                          TXT18       EQU     $
+  81BD    20 32 20 3D           
+  81C1    3E 20 31              
+  81C4    76 6F 6E 20           TXT8:       DB      'von Ger. 1 => 2'
+  81C8    47 65 72 2E           
+  81CC    20 31 20 3D           
+  81D0    3E 20 32              
+  81D3    47 65 72 61           TXT9:       DB      'Geraet: '
+  81D7    65 74 3A 20           
+  81DB    53 61 74 7A           TXT10:      DB      'Satzlaenge: ....H   CRC-Summe: ....H'
+  81DF    6C 61 65 6E           
+  81E3    67 65 3A 20           
+  81E7    2E 2E 2E 2E           
+  81EB    48 20 20 20           
+  81EF    43 52 43 2D           
+  81F3    53 75 6D 6D           
+  81F7    65 3A 20 2E           
+  81FB    2E 2E 2E 48           
+  81FF    2A 20 2A 20           TXT11:      DB      '* * *   B A N D M A R K E   * * *'
+  8203    2A 20 20 20           
+  8207    42 20 41 20           
+  820B    4E 20 44 20           
+  820F    4D 20 41 20           
+  8213    52 20 4B 20           
+  8217    45 20 20 20           
+  821B    2A 20 2A 20           
+  821F    2A                    
+  8220    1E1E                  TXT12:      DW      1E1EH
+  8222    47 65 72 61           TXT13:      DB      'Geraet . auf Datei: 003 Satz: 001 positionieren'
+  8226    65 74 20 2E           
+  822A    20 61 75 66           
+  822E    20 44 61 74           
+  8232    65 69 3A 20           
+  8236    30 30 33 20           
+  823A    53 61 74 7A           
+  823E    3A 20 30 30           
+  8242    31 20 70 6F           
+  8246    73 69 74 69           
+  824A    6F 6E 69 65           
+  824E    72 65 6E              
+  8251    47 65 72 61           TXT15:      DB      'Geraet . um 000 Dateien und 000 Saetze '
+  8255    65 74 20 2E           
+  8259    20 75 6D 20           
+  825D    30 30 30 20           
+  8261    44 61 74 65           
+  8265    69 65 6E 20           
+  8269    75 6E 64 20           
+  826D    30 30 30 20           
+  8271    53 61 65 74           
+  8275    7A 65 20              
+  8278    76 6F 72 73           TXT16:      DB      'vorsetzen'
+  827C    65 74 7A 65           
+  8280    6E                    
+  8281    7A 75 72 75           TXT17:      DB      'zuruecksetzen'
+  8285    65 63 6B 73           
+  8289    65 74 7A 65           
+  828D    6E                    
+  828E                          TXT18       EQU     $
                                 
                                             PAGE
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-6
 
 
                                 
-  827F    82DF                  RE2:        DW      RERE1               ;PF 1/0
-  8281    82EF                              DW      RERW1               ;PF 2/0
-  8283    82FC                              DW      RERA1               ;PF 3/0
-  8285    830F                              DW      RELM1               ;PF 4/0
-  8287    83B5                              DW      REPT1               ;PF 5/0
-  8289    833D                              DW      RELP1               ;PF 6/0
-  828B    83D6                              DW      RERM1               ;PF 7/0
-  828D    841E                              DW      RECW1               ;PF 8/0
-  828F    840A                              DW      RERP1               ;PF 9/0
-  8291    834A                              DW      REBM1               ;PF10/0
-  8293    85ED                              DW      REW1                ;PF11/0
-  8295    837A                              DW      RESL1               ;PF12/0
+  828E    82EE                  RE2:        DW      RERE1               ;PF 1/0
+  8290    82FE                              DW      RERW1               ;PF 2/0
+  8292    830B                              DW      RERA1               ;PF 3/0
+  8294    831E                              DW      RELM1               ;PF 4/0
+  8296    83C4                              DW      REPT1               ;PF 5/0
+  8298    834C                              DW      RELP1               ;PF 6/0
+  829A    83E5                              DW      RERM1               ;PF 7/0
+  829C    842D                              DW      RECW1               ;PF 8/0
+  829E    8419                              DW      RERP1               ;PF 9/0
+  82A0    8359                              DW      REBM1               ;PF10/0
+  82A2    85FC                              DW      REW1                ;PF11/0
+  82A4    8389                              DW      RESL1               ;PF12/0
                                 
-  8297    82E4                              DW      RERE2               ;PF 1/1
-  8299    82F4                              DW      RERW2               ;PF 2/1
-  829B    8301                              DW      RERA2               ;PF 3/1
-  829D    8314                              DW      RELM2               ;PF 4/1
-  829F    83BD                              DW      REPT2               ;PF 5/1
-  82A1    8342                              DW      RELP2               ;PF 6/1
-  82A3    83DE                              DW      RERM2               ;PF 7/1
-  82A5    8426                              DW      RECW2               ;PF 8/1
-  82A7    8412                              DW      RERP2               ;PF 9/1
-  82A9    834F                              DW      REBM2               ;PF10/1
-  82AB    85F5                              DW      REW2                ;PF11/1
-  82AD    837F                              DW      RESL2               ;PF12/1
+  82A6    82F3                              DW      RERE2               ;PF 1/1
+  82A8    8303                              DW      RERW2               ;PF 2/1
+  82AA    8310                              DW      RERA2               ;PF 3/1
+  82AC    8323                              DW      RELM2               ;PF 4/1
+  82AE    83CC                              DW      REPT2               ;PF 5/1
+  82B0    8351                              DW      RELP2               ;PF 6/1
+  82B2    83ED                              DW      RERM2               ;PF 7/1
+  82B4    8435                              DW      RECW2               ;PF 8/1
+  82B6    8421                              DW      RERP2               ;PF 9/1
+  82B8    835E                              DW      REBM2               ;PF10/1
+  82BA    8604                              DW      REW2                ;PF11/1
+  82BC    838E                              DW      RESL2               ;PF12/1
                                 
-  82AF    84AB                              DW      RECS1               ;PF 1/2
-  82B1    851B                              DW      RECB1               ;PF 2/2
-  82B3    858F                              DW      RECE1               ;PF 3/2
-  82B5    84DE                              DW      RECS2               ;PF 4/2
-  82B7    854A                              DW      RECB2               ;PF 5/2
-  82B9    85BE                              DW      RECE2               ;PF 6/2
-  82BB    8698                              DW      REHC1               ;PF 7/2
-  82BD    8722                              DW      REHC3               ;PF 8/2
-  82BF    840A                              DW      RERP1               ;PF 9/2
-  82C1    86A0                              DW      REHC2               ;PF10/2
-  82C3    872A                              DW      REHC4               ;PF11/2
-  82C5    8412                              DW      RERP2               ;PF12/2
+  82BE    84BA                              DW      RECS1               ;PF 1/2
+  82C0    852A                              DW      RECB1               ;PF 2/2
+  82C2    859E                              DW      RECE1               ;PF 3/2
+  82C4    84ED                              DW      RECS2               ;PF 4/2
+  82C6    8559                              DW      RECB2               ;PF 5/2
+  82C8    85CD                              DW      RECE2               ;PF 6/2
+  82CA    86A7                              DW      REHC1               ;PF 7/2
+  82CC    8731                              DW      REHC3               ;PF 8/2
+  82CE    8419                              DW      RERP1               ;PF 9/2
+  82D0    86AF                              DW      REHC2               ;PF10/2
+  82D2    8739                              DW      REHC4               ;PF11/2
+  82D4    8421                              DW      RERP2               ;PF12/2
                                 
-  82C7    8747                              DW      P1A                 ;PF 1/3
-  82C9    87E5                              DW      P1P                 ;PF 2/3
-  82CB    887A                              DW      P1M                 ;PF 3/3
-  82CD    8751                              DW      P2A                 ;PF 4/3
-  82CF    87EF                              DW      P2P                 ;PF 5/3
-  82D1    8884                              DW      P2M                 ;PF 6/3
-  82D3    0000                              DW      0                   ;PF 7/3
-  82D5    0000                              DW      0                   ;PF 8/3
-  82D7    0000                              DW      0                   ;PF 9/3
-  82D9    0000                              DW      0                   ;PF10/3
-  82DB    0000                              DW      0                   ;PF11/3
-  82DD    0000                              DW      0                   ;PF12/3
+  82D6    8756                              DW      P1A                 ;PF 1/3
+  82D8    87F4                              DW      P1P                 ;PF 2/3
+  82DA    8889                              DW      P1M                 ;PF 3/3
+  82DC    8760                              DW      P2A                 ;PF 4/3
+  82DE    87FE                              DW      P2P                 ;PF 5/3
+  82E0    8893                              DW      P2M                 ;PF 6/3
+  82E2    0000                              DW      0                   ;PF 7/3
+  82E4    0000                              DW      0                   ;PF 8/3
+  82E6    0000                              DW      0                   ;PF 9/3
+  82E8    0000                              DW      0                   ;PF10/3
+  82EA    0000                              DW      0                   ;PF11/3
+  82EC    0000                              DW      0                   ;PF12/3
                                 
                                             PAGE
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-7
@@ -448,59 +452,59 @@
                                 ;****************************************************************
                                 ;*               Kassettengeraet reservieren ein                *
                                 ;****************************************************************
-  82DF    CD D62A               RERE1:      CALL    K1.RGL1
-  82E2    18 03                             JR      RERE3
-  82E4    CD D63B               RERE2:      CALL    K1.RGL2
-  82E7    CD D745               RERE3:      CALL    K1.GNRE
-  82EA    CD 8A3B                           CALL    TADEF
-  82ED    18 3B                             JR      RELM5
+  82EE    CD D62D               RERE1:      CALL    K1.RGL1
+  82F1    18 03                             JR      RERE3
+  82F3    CD D63E               RERE2:      CALL    K1.RGL2
+  82F6    CD D748               RERE3:      CALL    K1.GNRE
+  82F9    CD 8A95                           CALL    TADEF
+  82FC    18 3B                             JR      RELM5
                                 ;****************************************************************
                                 ;*               Kassettengeraet rewind                         *
                                 ;****************************************************************
-  82EF    CD D62A               RERW1:      CALL    K1.RGL1
-  82F2    18 03                             JR      RERW3
-  82F4    CD D63B               RERW2:      CALL    K1.RGL2
-  82F7    CD D77D               RERW3:      CALL    K1.GNRW
-  82FA    18 2E                             JR      RELM5
+  82FE    CD D62D               RERW1:      CALL    K1.RGL1
+  8301    18 03                             JR      RERW3
+  8303    CD D63E               RERW2:      CALL    K1.RGL2
+  8306    CD D780               RERW3:      CALL    K1.GNRW
+  8309    18 2E                             JR      RELM5
                                 ;****************************************************************
                                 ;*               Kassettengeraet reservieren aus                *
                                 ;****************************************************************
-  82FC    CD D62A               RERA1:      CALL    K1.RGL1
-  82FF    18 03                             JR      RERA3
-  8301    CD D63B               RERA2:      CALL    K1.RGL2
-  8304    CD D745               RERA3:      CALL    K1.GNRE
-  8307    CD D762                           CALL    K1.GNRA
-  830A    CD 8A64                           CALL    TARE
-  830D    18 1E                             JR      RELM6
+  830B    CD D62D               RERA1:      CALL    K1.RGL1
+  830E    18 03                             JR      RERA3
+  8310    CD D63E               RERA2:      CALL    K1.RGL2
+  8313    CD D748               RERA3:      CALL    K1.GNRE
+  8316    CD D765                           CALL    K1.GNRA
+  8319    CD 8ABE                           CALL    TARE
+  831C    18 1E                             JR      RELM6
                                 ;****************************************************************
                                 ;*               Kassettengeraet eine Datei zurueck             *
                                 ;****************************************************************
-  830F    CD D62A               RELM1:      CALL    K1.RGL1
-  8312    18 03                             JR      RELM3
-  8314    CD D63B               RELM2:      CALL    K1.RGL2
-  8317    16 00                 RELM3:      LD      D,0
-  8319    FD 7E FD                          LD      A,(IY-3)            ;RCZx = 0 ?
-  831C    FD B6 FC                          OR      (IY-4)
-  831F    20 01                             JR      NZ,$+3
-  8321    14                                INC     D
-  8322    CD D828                           CALL    K1.GNLMN
-  8325    3E 01                 RELM4:      LD      A,1                 ;Schnellschreiben erlaubt
-  8327    32 B242                           LD      (TS.ZSMER),A
-  832A    CD 8A3B               RELM5:      CALL    TADEF
-  832D    CD D6EE               RELM6:      CALL    K1.GNSTS
-  8330    CD 8918                           CALL    ANZLO
-  8333    CD 8AA2                           CALL    PANZ
-  8336    21 0000                           LD      HL,0
-  8339    22 B18C                           LD      (MS.ZPOS),HL
-  833C    C9                                RET
+  831E    CD D62D               RELM1:      CALL    K1.RGL1
+  8321    18 03                             JR      RELM3
+  8323    CD D63E               RELM2:      CALL    K1.RGL2
+  8326    16 00                 RELM3:      LD      D,0
+  8328    FD 7E FD                          LD      A,(IY-3)            ;RCZx = 0 ?
+  832B    FD B6 FC                          OR      (IY-4)
+  832E    20 01                             JR      NZ,$+3
+  8330    14                                INC     D
+  8331    CD D82B                           CALL    K1.GNLMN
+  8334    3E 01                 RELM4:      LD      A,1                 ;Schnellschreiben erlaubt
+  8336    32 B242                           LD      (TS.ZSMER),A
+  8339    CD 8A95               RELM5:      CALL    TADEF
+  833C    CD D6F1               RELM6:      CALL    K1.GNSTS
+  833F    CD 8927                           CALL    ANZLO
+  8342    CD 8AFC                           CALL    PANZ
+  8345    21 0000                           LD      HL,0
+  8348    22 B18C                           LD      (MS.ZPOS),HL
+  834B    C9                                RET
                                 ;****************************************************************
                                 ;*               Kassettengeraet eine Datei vor                 *
                                 ;****************************************************************
-  833D    CD D62A               RELP1:      CALL    K1.RGL1
-  8340    18 03                             JR      RELP3
-  8342    CD D63B               RELP2:      CALL    K1.RGL2
-  8345    CD D7EE               RELP3:      CALL    K1.GNLP
-  8348    18 DB                             JR      RELM4
+  834C    CD D62D               RELP1:      CALL    K1.RGL1
+  834F    18 03                             JR      RELP3
+  8351    CD D63E               RELP2:      CALL    K1.RGL2
+  8354    CD D7F1               RELP3:      CALL    K1.GNLP
+  8357    18 DB                             JR      RELM4
                                 
                                             PAGE
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-8
@@ -510,71 +514,71 @@
                                 ;****************************************************************
                                 ;*               Schreiben einer Bandmarke                      *
                                 ;****************************************************************
-  834A    CD D62A               REBM1:      CALL    K1.RGL1
-  834D    18 03                             JR      REBM3
-  834F    CD D63B               REBM2:      CALL    K1.RGL2
-  8352    CD C3BF               REBM3:      CALL    S1.ANZEI
-  8355    0010                              DW      00010H
-  8357    15                                DB      21
-  8358    42 61 6E 64                       DB      'Bandmarke schreiben ?'
-  835C    6D 61 72 6B           
-  8360    65 20 73 63           
-  8364    68 72 65 69           
-  8368    62 65 6E 20           
-  836C    3F                    
-  836D    01                                DB      1
-  836E    80                                DB      10000000B
-  836F    8378                              DW      BMNQ
-  8371    8375                              DW      BMPQ
-  8373    0000                              DW      0
-  8375    CD 8A2A               BMPQ:       CALL    WR3
-  8378    18 B0                 BMNQ:       JR      RELM5
+  8359    CD D62D               REBM1:      CALL    K1.RGL1
+  835C    18 03                             JR      REBM3
+  835E    CD D63E               REBM2:      CALL    K1.RGL2
+  8361    CD C3BF               REBM3:      CALL    S1.ANZEI
+  8364    0010                              DW      00010H
+  8366    15                                DB      21
+  8367    42 61 6E 64                       DB      'Bandmarke schreiben ?'
+  836B    6D 61 72 6B           
+  836F    65 20 73 63           
+  8373    68 72 65 69           
+  8377    62 65 6E 20           
+  837B    3F                    
+  837C    01                                DB      1
+  837D    80                                DB      10000000B
+  837E    8387                              DW      BMNQ
+  8380    8384                              DW      BMPQ
+  8382    0000                              DW      0
+  8384    CD 8A84               BMPQ:       CALL    WR3
+  8387    18 B0                 BMNQ:       JR      RELM5
                                 ;****************************************************************
                                 ;*               Schreiben einer Schlussluecke                  *
                                 ;****************************************************************
-  837A    CD D62A               RESL1:      CALL    K1.RGL1
-  837D    18 03                             JR      RESL3
-  837F    CD D63B               RESL2:      CALL    K1.RGL2
-  8382    CD C3BF               RESL3:      CALL    S1.ANZEI
-  8385    0010                              DW      00010H
-  8387    19                                DB      25
-  8388    53 63 68 6C                       DB      'Schlussluecke schreiben ?'
-  838C    75 73 73 6C           
-  8390    75 65 63 6B           
-  8394    65 20 73 63           
-  8398    68 72 65 69           
-  839C    62 65 6E 20           
-  83A0    3F                    
-  83A1    01                                DB      1
-  83A2    80                                DB      10000000B
-  83A3    8378                              DW      BMNQ
-  83A5    83A9                              DW      SLPQ
-  83A7    0000                              DW      0
-  83A9    DD 36 04 61           SLPQ:       LD      (IX+4),61H
-  83AD    CD D551                           CALL    K1.ARMB
-  83B0    CD D5B3                           CALL    K1.ARBT
-  83B3    18 C3                             JR      BMNQ
+  8389    CD D62D               RESL1:      CALL    K1.RGL1
+  838C    18 03                             JR      RESL3
+  838E    CD D63E               RESL2:      CALL    K1.RGL2
+  8391    CD C3BF               RESL3:      CALL    S1.ANZEI
+  8394    0010                              DW      00010H
+  8396    19                                DB      25
+  8397    53 63 68 6C                       DB      'Schlussluecke schreiben ?'
+  839B    75 73 73 6C           
+  839F    75 65 63 6B           
+  83A3    65 20 73 63           
+  83A7    68 72 65 69           
+  83AB    62 65 6E 20           
+  83AF    3F                    
+  83B0    01                                DB      1
+  83B1    80                                DB      10000000B
+  83B2    8387                              DW      BMNQ
+  83B4    83B8                              DW      SLPQ
+  83B6    0000                              DW      0
+  83B8    DD 36 04 61           SLPQ:       LD      (IX+4),61H
+  83BC    CD D551                           CALL    K1.ARMB
+  83BF    CD D5B7                           CALL    K1.ARBT
+  83C2    18 C3                             JR      BMNQ
                                 ;****************************************************************
                                 ;*               Eingabe- <==> Ausgabe-Puffer  Tausch           *
                                 ;****************************************************************
-  83B5    21 B7E0               REPT1:      LD      HL,S0.PFFI
-  83B8    11 BBF0                           LD      DE,S0.PFFA
-  83BB    18 06                             JR      REPT3
-  83BD    21 BBF0               REPT2:      LD      HL,S0.PFFA
-  83C0    11 B7E0                           LD      DE,S0.PFFI
-  83C3    22 B292               REPT3:      LD      (S2.DMANF),HL
-  83C6    06 00                             LD      B,0
-  83C8    7E                    REPT4:      LD      A,(HL)
-  83C9    08                                EX      AF,AF'              ;'
-  83CA    1A                                LD      A,(DE)
-  83CB    77                                LD      (HL),A
-  83CC    08                                EX      AF,AF'              ;'
-  83CD    12                                LD      (DE),A
-  83CE    23                                INC     HL
-  83CF    13                                INC     DE
-  83D0    10 F6                             DJNZ    REPT4
-  83D2    CD 893D                           CALL    SAN1
-  83D5    C9                                RET
+  83C4    21 B7E0               REPT1:      LD      HL,S0.PFFI
+  83C7    11 BBF0                           LD      DE,S0.PFFA
+  83CA    18 06                             JR      REPT3
+  83CC    21 BBF0               REPT2:      LD      HL,S0.PFFA
+  83CF    11 B7E0                           LD      DE,S0.PFFI
+  83D2    22 B292               REPT3:      LD      (S2.DMANF),HL
+  83D5    06 00                             LD      B,0
+  83D7    7E                    REPT4:      LD      A,(HL)
+  83D8    08                                EX      AF,AF'              ;'
+  83D9    1A                                LD      A,(DE)
+  83DA    77                                LD      (HL),A
+  83DB    08                                EX      AF,AF'              ;'
+  83DC    12                                LD      (DE),A
+  83DD    23                                INC     HL
+  83DE    13                                INC     DE
+  83DF    10 F6                             DJNZ    REPT4
+  83E1    CD 894C                           CALL    SAN1
+  83E4    C9                                RET
                                 
                                             PAGE
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-9
@@ -584,33 +588,33 @@
                                 ;****************************************************************
                                 ;*               einen Datenblock einlesen und anzeigen         *
                                 ;****************************************************************
-  83D6    CD D62A               RERM1:      CALL    K1.RGL1             ;rueckwaerts
-  83D9    21 B7E0                           LD      HL,S0.PFFI
-  83DC    18 06                             JR      RERM3
-  83DE    CD D63B               RERM2:      CALL    K1.RGL2
-  83E1    21 BBF0                           LD      HL,S0.PFFA
-  83E4    22 B292               RERM3:      LD      (S2.DMANF),HL
-  83E7    CD D7BD                           CALL    K1.GNRM
-  83EA    CD D7BD                           CALL    K1.GNRM
-  83ED    CD 89FE               RERM4:      CALL    RD3
-  83F0    CD D5B3                           CALL    K1.ARBT
-  83F3    CD 893D                           CALL    SAN1
-  83F6    CD D60B                           CALL    K1.BM
-  83F9    28 06                             JR      Z,RERM5             ;Datenblock = Bandmarke ?
-  83FB    CD D5DA                           CALL    K1.RCZP
-  83FE    C3 8325                           JP      RELM4
+  83E5    CD D62D               RERM1:      CALL    K1.RGL1             ;rueckwaerts
+  83E8    21 B7E0                           LD      HL,S0.PFFI
+  83EB    18 06                             JR      RERM3
+  83ED    CD D63E               RERM2:      CALL    K1.RGL2
+  83F0    21 BBF0                           LD      HL,S0.PFFA
+  83F3    22 B292               RERM3:      LD      (S2.DMANF),HL
+  83F6    CD D7C0                           CALL    K1.GNRM
+  83F9    CD D7C0                           CALL    K1.GNRM
+  83FC    CD 8A58               RERM4:      CALL    RD3
+  83FF    CD D5B7                           CALL    K1.ARBT
+  8402    CD 894C                           CALL    SAN1
+  8405    CD D60F                           CALL    K1.BM
+  8408    28 06                             JR      Z,RERM5             ;Datenblock = Bandmarke ?
+  840A    CD D5DE                           CALL    K1.RCZP
+  840D    C3 8334                           JP      RELM4
                                 
-  8401    CD D5BE               RERM5:      CALL    K1.BLKP
-  8404    CD D5F6                           CALL    K1.RCZN
-  8407    C3 8325                           JP      RELM4
+  8410    CD D5C2               RERM5:      CALL    K1.BLKP
+  8413    CD D5FA                           CALL    K1.RCZN
+  8416    C3 8334                           JP      RELM4
                                 
-  840A    CD D62A               RERP1:      CALL    K1.RGL1             ;vorwaerts
-  840D    21 B7E0                           LD      HL,S0.PFFI
-  8410    18 06                             JR      RERP3
-  8412    CD D63B               RERP2:      CALL    K1.RGL2
-  8415    21 BBF0                           LD      HL,S0.PFFA
-  8418    22 B292               RERP3:      LD      (S2.DMANF),HL
-  841B    C3 83ED                           JP      RERM4
+  8419    CD D62D               RERP1:      CALL    K1.RGL1             ;vorwaerts
+  841C    21 B7E0                           LD      HL,S0.PFFI
+  841F    18 06                             JR      RERP3
+  8421    CD D63E               RERP2:      CALL    K1.RGL2
+  8424    21 BBF0                           LD      HL,S0.PFFA
+  8427    22 B292               RERP3:      LD      (S2.DMANF),HL
+  842A    C3 83FC                           JP      RERM4
                                 
                                             PAGE
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-10
@@ -620,56 +624,56 @@
                                 ;****************************************************************
                                 ;*               Satz korrigieren und zurueckschreiben          *
                                 ;****************************************************************
-  841E    CD D62A               RECW1:      CALL    K1.RGL1
-  8421    21 B7E0                           LD      HL,S0.PFFI
-  8424    18 06                             JR      RECW3
-  8426    CD D63B               RECW2:      CALL    K1.RGL2
-  8429    21 BBF0                           LD      HL,S0.PFFA
-  842C    22 B292               RECW3:      LD      (S2.DMANF),HL
-  842F    CD 8918                           CALL    ANZLO
-  8432    CD 8A85                           CALL    PAN
-  8435    CD D426                           CALL    TA.LOES
-  8438    21 8456                           LD      HL,RECW4            ;POS QUIT
-  843B    22 B223                           LD      (TS.TAB4),HL
-  843E    21 8498               RECW9:      LD      HL,ANZUM            ;INS MOD
-  8441    22 B1FF                           LD      (TS.TAB2),HL
-  8444    21 832A                           LD      HL,RELM5            ;NEQ QUIT
-  8447    22 B21B                           LD      (TS.TAB3+4),HL
-  844A    21 C86E                           LD      HL,S1.EINDB         ;alphanum. Tasten
-  844D    22 B22D                           LD      (TS.EINA),HL
-  8450    CD C8B0                           CALL    S1.ANZU1
-  8453    C3 C831                           JP      S1.DB111+3
+  842D    CD D62D               RECW1:      CALL    K1.RGL1
+  8430    21 B7E0                           LD      HL,S0.PFFI
+  8433    18 06                             JR      RECW3
+  8435    CD D63E               RECW2:      CALL    K1.RGL2
+  8438    21 BBF0                           LD      HL,S0.PFFA
+  843B    22 B292               RECW3:      LD      (S2.DMANF),HL
+  843E    CD 8927                           CALL    ANZLO
+  8441    CD 8ADF                           CALL    PAN
+  8444    CD D426                           CALL    TA.LOES
+  8447    21 8465                           LD      HL,RECW4            ;POS QUIT
+  844A    22 B223                           LD      (TS.TAB4),HL
+  844D    21 84A7               RECW9:      LD      HL,ANZUM            ;INS MOD
+  8450    22 B1FF                           LD      (TS.TAB2),HL
+  8453    21 8339                           LD      HL,RELM5            ;NEQ QUIT
+  8456    22 B21B                           LD      (TS.TAB3+4),HL
+  8459    21 C86E                           LD      HL,S1.EINDB         ;alphanum. Tasten
+  845C    22 B22D                           LD      (TS.EINA),HL
+  845F    CD C8B0                           CALL    S1.ANZU1
+  8462    C3 C831                           JP      S1.DB111+3
                                 
-  8456    CD D5FE               RECW4:      CALL    K1.LHLBC
-  8459    CD C8CD                           CALL    S1.SYDB2
-  845C    CD 893D                           CALL    SAN1
-  845F    CD C3BF                           CALL    S1.ANZEI
-  8462    0010                              DW      00010H
-  8464    17                                DB      23
-  8465    53 61 74 7A                       DB      'Satz zurueckschreiben ?'
-  8469    20 7A 75 72           
-  846D    75 65 63 6B           
-  8471    73 63 68 72           
-  8475    65 69 62 65           
-  8479    6E 20 3F              
-  847C    01                                DB      1
-  847D    80                                DB      10000000B
-  847E    842F                              DW      RECW3+3
-  8480    8484                              DW      RECW5
-  8482    0000                              DW      0
+  8465    CD D602               RECW4:      CALL    K1.LHLBC
+  8468    CD C8CD                           CALL    S1.SYDB2
+  846B    CD 894C                           CALL    SAN1
+  846E    CD C3BF                           CALL    S1.ANZEI
+  8471    0010                              DW      00010H
+  8473    17                                DB      23
+  8474    53 61 74 7A                       DB      'Satz zurueckschreiben ?'
+  8478    20 7A 75 72           
+  847C    75 65 63 6B           
+  8480    73 63 68 72           
+  8484    65 69 62 65           
+  8488    6E 20 3F              
+  848B    01                                DB      1
+  848C    80                                DB      10000000B
+  848D    843E                              DW      RECW3+3
+  848F    8493                              DW      RECW5
+  8491    0000                              DW      0
                                 
-  8484    DD 46 09              RECW5:      LD      B,(IX+9)
-  8487    DD 4E 0A                          LD      C,(IX+10)
-  848A    C5                                PUSH    BC
-  848B    CD D7BD                           CALL    K1.GNRM
-  848E    2A B292                           LD      HL,(S2.DMANF)
-  8491    C1                                POP     BC
-  8492    CD D92C                           CALL    K1.GNRWR
-  8495    C3 832A                           JP      RELM5
+  8493    DD 46 09              RECW5:      LD      B,(IX+9)
+  8496    DD 4E 0A                          LD      C,(IX+10)
+  8499    C5                                PUSH    BC
+  849A    CD D7C0                           CALL    K1.GNRM
+  849D    2A B292                           LD      HL,(S2.DMANF)
+  84A0    C1                                POP     BC
+  84A1    CD D92F                           CALL    K1.GNRWR
+  84A4    C3 8339                           JP      RELM5
                                 
                                 
-  8498    CD D5FE               ANZUM:      CALL    K1.LHLBC
-  849B    C3 C8C0                           JP      S1.ANZU2
+  84A7    CD D602               ANZUM:      CALL    K1.LHLBC
+  84AA    C3 C8C0                           JP      S1.ANZU2
                                 
                                             PAGE
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-11
@@ -679,57 +683,57 @@
                                 ;****************************************************************
                                 ;*               satzweises Copieren                            *
                                 ;****************************************************************
-  849E    22 B292               RECS:       LD      (S2.DMANF),HL
-  84A1    CD C3BF                           CALL    S1.ANZEI
-  84A4    0010                              DW      00010H
-  84A6    8F                                DB      15+80H
-  84A7    8187                              DW      TXT3
-  84A9    00                                DB      0
-  84AA    C9                                RET
+  84AD    22 B292               RECS:       LD      (S2.DMANF),HL
+  84B0    CD C3BF                           CALL    S1.ANZEI
+  84B3    0010                              DW      00010H
+  84B5    8F                                DB      15+80H
+  84B6    8196                              DW      TXT3
+  84B8    00                                DB      0
+  84B9    C9                                RET
                                 
-  84AB    21 B7E0               RECS1:      LD      HL,S0.PFFI
-  84AE    CD 849E                           CALL    RECS
-  84B1    CD C3BF                           CALL    S1.ANZEI
-  84B4    0F10                              DW      00F10H
-  84B6    8F                                DB      15+80H
-  84B7    81A6                              DW      TXT7
-  84B9    01                                DB      1
-  84BA    80                                DB      10000000B
-  84BB    832A                              DW      RELM5
-  84BD    84C1                              DW      RECS3
-  84BF    0000                              DW      0
+  84BA    21 B7E0               RECS1:      LD      HL,S0.PFFI
+  84BD    CD 84AD                           CALL    RECS
+  84C0    CD C3BF                           CALL    S1.ANZEI
+  84C3    0F10                              DW      00F10H
+  84C5    8F                                DB      15+80H
+  84C6    81B5                              DW      TXT7
+  84C8    01                                DB      1
+  84C9    80                                DB      10000000B
+  84CA    8339                              DW      RELM5
+  84CC    84D0                              DW      RECS3
+  84CE    0000                              DW      0
                                 
-  84C1    CD D63B               RECS3:      CALL    K1.RGL2
-  84C4    CD D898                           CALL    K1.GNRD
-  84C7    CD 893D                           CALL    SAN1
-  84CA    CD D5FE                           CALL    K1.LHLBC
-  84CD    CD D62A                           CALL    K1.RGL1
-  84D0    78                    RECS5:      LD      A,B
-  84D1    B1                                OR      C
-  84D2    CA 8375                           JP      Z,BMPQ
-  84D5    CD 8A0F                           CALL    WR1
-  84D8    CD D908                           CALL    K1.GNWR
-  84DB    C3 832A                           JP      RELM5
+  84D0    CD D63E               RECS3:      CALL    K1.RGL2
+  84D3    CD D89B                           CALL    K1.GNRD
+  84D6    CD 894C                           CALL    SAN1
+  84D9    CD D602                           CALL    K1.LHLBC
+  84DC    CD D62D                           CALL    K1.RGL1
+  84DF    78                    RECS5:      LD      A,B
+  84E0    B1                                OR      C
+  84E1    CA 8384                           JP      Z,BMPQ
+  84E4    CD 8A69                           CALL    WR1
+  84E7    CD D90B                           CALL    K1.GNWR
+  84EA    C3 8339                           JP      RELM5
                                 
                                 
-  84DE    21 BBF0               RECS2:      LD      HL,S0.PFFA
-  84E1    CD 849E                           CALL    RECS
-  84E4    CD C3BF                           CALL    S1.ANZEI
-  84E7    0F10                              DW      00F10H
-  84E9    8F                                DB      15+80H
-  84EA    81B5                              DW      TXT8
-  84EC    01                                DB      1
-  84ED    80                                DB      10000000B
-  84EE    832A                              DW      RELM5
-  84F0    84F4                              DW      RECS4
-  84F2    0000                              DW      0
+  84ED    21 BBF0               RECS2:      LD      HL,S0.PFFA
+  84F0    CD 84AD                           CALL    RECS
+  84F3    CD C3BF                           CALL    S1.ANZEI
+  84F6    0F10                              DW      00F10H
+  84F8    8F                                DB      15+80H
+  84F9    81C4                              DW      TXT8
+  84FB    01                                DB      1
+  84FC    80                                DB      10000000B
+  84FD    8339                              DW      RELM5
+  84FF    8503                              DW      RECS4
+  8501    0000                              DW      0
                                 
-  84F4    CD D62A               RECS4:      CALL    K1.RGL1
-  84F7    CD D898                           CALL    K1.GNRD
-  84FA    CD 893D                           CALL    SAN1
-  84FD    CD D5FE                           CALL    K1.LHLBC
-  8500    CD D63B                           CALL    K1.RGL2
-  8503    18 CB                             JR      RECS5
+  8503    CD D62D               RECS4:      CALL    K1.RGL1
+  8506    CD D89B                           CALL    K1.GNRD
+  8509    CD 894C                           CALL    SAN1
+  850C    CD D602                           CALL    K1.LHLBC
+  850F    CD D63E                           CALL    K1.RGL2
+  8512    18 CB                             JR      RECS5
                                 
                                             PAGE
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-12
@@ -739,131 +743,131 @@
                                 ;****************************************************************
                                 ;*               Copieren bis Bandmarke                         *
                                 ;****************************************************************
-  8505    22 B292               RECB:       LD      (S2.DMANF),HL
-  8508    CD C3BF                           CALL    S1.ANZEI
-  850B    0010                              DW      00010H
-  850D    89                                DB      9+80H
-  850E    8187                              DW      TXT3
-  8510    00                                DB      0
+  8514    22 B292               RECB:       LD      (S2.DMANF),HL
+  8517    CD C3BF                           CALL    S1.ANZEI
+  851A    0010                              DW      00010H
+  851C    89                                DB      9+80H
+  851D    8196                              DW      TXT3
+  851F    00                                DB      0
                                 
-  8511    CD C3BF                           CALL    S1.ANZEI
-  8514    0910                              DW      00910H
-  8516    88                                DB      8+80H
-  8517    8196                              DW      TXT5
-  8519    00                                DB      0
-  851A    C9                                RET
+  8520    CD C3BF                           CALL    S1.ANZEI
+  8523    0910                              DW      00910H
+  8525    88                                DB      8+80H
+  8526    81A5                              DW      TXT5
+  8528    00                                DB      0
+  8529    C9                                RET
                                 
-  851B    21 B7E0               RECB1:      LD      HL,S0.PFFI
-  851E    CD 8505                           CALL    RECB
-  8521    CD C3BF                           CALL    S1.ANZEI
-  8524    1110                              DW      01110H
-  8526    8F                                DB      15+80H
-  8527    81A6                              DW      TXT7
-  8529    01                                DB      1
-  852A    80                                DB      10000000B
-  852B    832A                              DW      RELM5
-  852D    8531                              DW      RECB3
-  852F    0000                              DW      0
+  852A    21 B7E0               RECB1:      LD      HL,S0.PFFI
+  852D    CD 8514                           CALL    RECB
+  8530    CD C3BF                           CALL    S1.ANZEI
+  8533    1110                              DW      01110H
+  8535    8F                                DB      15+80H
+  8536    81B5                              DW      TXT7
+  8538    01                                DB      1
+  8539    80                                DB      10000000B
+  853A    8339                              DW      RELM5
+  853C    8540                              DW      RECB3
+  853E    0000                              DW      0
                                 
-  8531    CD D63B               RECB3:      CALL    K1.RGL2
-  8534    CD 89DB                           CALL    RD
-  8537    CA 832A                           JP      Z,RELM5
-  853A    CD D5FE                           CALL    K1.LHLBC
-  853D    CD D62A                           CALL    K1.RGL1
-  8540    78                                LD      A,B
-  8541    B1                                OR      C
-  8542    CA 8375                           JP      Z,BMPQ
-  8545    CD 8A20                           CALL    WR
-  8548    18 E7                             JR      RECB3
+  8540    CD D63E               RECB3:      CALL    K1.RGL2
+  8543    CD 8A35                           CALL    RD
+  8546    CA 8339                           JP      Z,RELM5
+  8549    CD D602                           CALL    K1.LHLBC
+  854C    CD D62D                           CALL    K1.RGL1
+  854F    78                                LD      A,B
+  8550    B1                                OR      C
+  8551    CA 8384                           JP      Z,BMPQ
+  8554    CD 8A7A                           CALL    WR
+  8557    18 E7                             JR      RECB3
                                 
                                 
-  854A    21 BBF0               RECB2:      LD      HL,S0.PFFA
-  854D    CD 8505                           CALL    RECB
-  8550    CD C3BF                           CALL    S1.ANZEI
-  8553    1110                              DW      01110H
-  8555    8F                                DB      15+80H
-  8556    81B5                              DW      TXT8
-  8558    01                                DB      1
-  8559    80                                DB      10000000B
-  855A    832A                              DW      RELM5
-  855C    8560                              DW      RECB4
-  855E    0000                              DW      0
+  8559    21 BBF0               RECB2:      LD      HL,S0.PFFA
+  855C    CD 8514                           CALL    RECB
+  855F    CD C3BF                           CALL    S1.ANZEI
+  8562    1110                              DW      01110H
+  8564    8F                                DB      15+80H
+  8565    81C4                              DW      TXT8
+  8567    01                                DB      1
+  8568    80                                DB      10000000B
+  8569    8339                              DW      RELM5
+  856B    856F                              DW      RECB4
+  856D    0000                              DW      0
                                 
-  8560    CD D62A               RECB4:      CALL    K1.RGL1
-  8563    CD 89DB                           CALL    RD
-  8566    CA 832A                           JP      Z,RELM5
-  8569    CD D5FE                           CALL    K1.LHLBC
-  856C    CD D63B                           CALL    K1.RGL2
-  856F    78                                LD      A,B
-  8570    B1                                OR      C
-  8571    CA 8375                           JP      Z,BMPQ
-  8574    CD 8A20                           CALL    WR
-  8577    18 E7                             JR      RECB4
+  856F    CD D62D               RECB4:      CALL    K1.RGL1
+  8572    CD 8A35                           CALL    RD
+  8575    CA 8339                           JP      Z,RELM5
+  8578    CD D602                           CALL    K1.LHLBC
+  857B    CD D63E                           CALL    K1.RGL2
+  857E    78                                LD      A,B
+  857F    B1                                OR      C
+  8580    CA 8384                           JP      Z,BMPQ
+  8583    CD 8A7A                           CALL    WR
+  8586    18 E7                             JR      RECB4
                                 
                                 ;****************************************************************
                                 ;*               Copieren bis Schlussluecke                     *
                                 ;****************************************************************
-  8579    22 B292               RECE:       LD      (S2.DMANF),HL
-  857C    CD C3BF                           CALL    S1.ANZEI
-  857F    0010                              DW      00010H
-  8581    89                                DB      9+80H
-  8582    8187                              DW      TXT3
-  8584    00                                DB      0
+  8588    22 B292               RECE:       LD      (S2.DMANF),HL
+  858B    CD C3BF                           CALL    S1.ANZEI
+  858E    0010                              DW      00010H
+  8590    89                                DB      9+80H
+  8591    8196                              DW      TXT3
+  8593    00                                DB      0
                                 
-  8585    CD C3BF                           CALL    S1.ANZEI
-  8588    0910                              DW      00910H
-  858A    88                                DB      8+80H
-  858B    819E                              DW      TXT6
-  858D    00                                DB      0
-  858E    C9                                RET
+  8594    CD C3BF                           CALL    S1.ANZEI
+  8597    0910                              DW      00910H
+  8599    88                                DB      8+80H
+  859A    81AD                              DW      TXT6
+  859C    00                                DB      0
+  859D    C9                                RET
                                 
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-13
 
 
-  858F    21 B7E0               RECE1:      LD      HL,S0.PFFI
-  8592    CD 8579                           CALL    RECE
-  8595    CD C3BF                           CALL    S1.ANZEI
-  8598    1110                              DW      01110H
-  859A    8F                                DB      15+80H
-  859B    81A6                              DW      TXT7
-  859D    01                                DB      1
-  859E    80                                DB      10000000B
-  859F    832A                              DW      RELM5
-  85A1    85A5                              DW      RECE3
-  85A3    0000                              DW      0
+  859E    21 B7E0               RECE1:      LD      HL,S0.PFFI
+  85A1    CD 8588                           CALL    RECE
+  85A4    CD C3BF                           CALL    S1.ANZEI
+  85A7    1110                              DW      01110H
+  85A9    8F                                DB      15+80H
+  85AA    81B5                              DW      TXT7
+  85AC    01                                DB      1
+  85AD    80                                DB      10000000B
+  85AE    8339                              DW      RELM5
+  85B0    85B4                              DW      RECE3
+  85B2    0000                              DW      0
                                 
-  85A5    CD D63B               RECE3:      CALL    K1.RGL2
-  85A8    CD 89DB                           CALL    RD
-  85AB    28 0B                             JR      Z,RECE6
-  85AD    CD D5FE                           CALL    K1.LHLBC
-  85B0    CD D62A                           CALL    K1.RGL1
-  85B3    CD 8A1C                           CALL    WR2
-  85B6    18 ED                             JR      RECE3
-  85B8    CD D62A               RECE6:      CALL    K1.RGL1
-  85BB    C3 83A9                           JP      SLPQ
+  85B4    CD D63E               RECE3:      CALL    K1.RGL2
+  85B7    CD 8A35                           CALL    RD
+  85BA    28 0B                             JR      Z,RECE6
+  85BC    CD D602                           CALL    K1.LHLBC
+  85BF    CD D62D                           CALL    K1.RGL1
+  85C2    CD 8A76                           CALL    WR2
+  85C5    18 ED                             JR      RECE3
+  85C7    CD D62D               RECE6:      CALL    K1.RGL1
+  85CA    C3 83B8                           JP      SLPQ
                                 
                                 
-  85BE    21 BBF0               RECE2:      LD      HL,S0.PFFA
-  85C1    CD 8579                           CALL    RECE
-  85C4    CD C3BF                           CALL    S1.ANZEI
-  85C7    1110                              DW      01110H
-  85C9    8F                                DB      15+80H
-  85CA    81B5                              DW      TXT8
-  85CC    01                                DB      1
-  85CD    80                                DB      10000000B
-  85CE    832A                              DW      RELM5
-  85D0    85D4                              DW      RECE4
-  85D2    0000                              DW      0
+  85CD    21 BBF0               RECE2:      LD      HL,S0.PFFA
+  85D0    CD 8588                           CALL    RECE
+  85D3    CD C3BF                           CALL    S1.ANZEI
+  85D6    1110                              DW      01110H
+  85D8    8F                                DB      15+80H
+  85D9    81C4                              DW      TXT8
+  85DB    01                                DB      1
+  85DC    80                                DB      10000000B
+  85DD    8339                              DW      RELM5
+  85DF    85E3                              DW      RECE4
+  85E1    0000                              DW      0
                                 
-  85D4    CD D62A               RECE4:      CALL    K1.RGL1
-  85D7    CD 89DB                           CALL    RD
-  85DA    28 0B                             JR      Z,RECE8
-  85DC    CD D5FE                           CALL    K1.LHLBC
-  85DF    CD D63B                           CALL    K1.RGL2
-  85E2    CD 8A1C                           CALL    WR2
-  85E5    18 ED                             JR      RECE4
-  85E7    CD D63B               RECE8:      CALL    K1.RGL2
-  85EA    C3 83A9                           JP      SLPQ
+  85E3    CD D62D               RECE4:      CALL    K1.RGL1
+  85E6    CD 8A35                           CALL    RD
+  85E9    28 0B                             JR      Z,RECE8
+  85EB    CD D602                           CALL    K1.LHLBC
+  85EE    CD D63E                           CALL    K1.RGL2
+  85F1    CD 8A76                           CALL    WR2
+  85F4    18 ED                             JR      RECE4
+  85F6    CD D63E               RECE8:      CALL    K1.RGL2
+  85F9    C3 83B8                           JP      SLPQ
                                 
                                             PAGE
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-14
@@ -873,78 +877,78 @@
                                 ;****************************************************************
                                 ;*               Erzeugen eines neuen Satzes                    *
                                 ;****************************************************************
-  85ED    CD D62A               REW1:       CALL    K1.RGL1
-  85F0    21 B7E0                           LD      HL,S0.PFFI
-  85F3    18 06                             JR      REW3
+  85FC    CD D62D               REW1:       CALL    K1.RGL1
+  85FF    21 B7E0                           LD      HL,S0.PFFI
+  8602    18 06                             JR      REW3
                                 
-  85F5    CD D63B               REW2:       CALL    K1.RGL2
-  85F8    21 BBF0                           LD      HL,S0.PFFA
+  8604    CD D63E               REW2:       CALL    K1.RGL2
+  8607    21 BBF0                           LD      HL,S0.PFFA
                                 
-  85FB    22 B292               REW3:       LD      (S2.DMANF),HL
-  85FE    DD 74 08                          LD      (IX+8),H
-  8601    DD 75 07                          LD      (IX+7),L
-  8604    CD 8918                           CALL    ANZLO
-  8607    CD 8A85                           CALL    PAN
-  860A    CD 893D               REW4:       CALL    SAN1
-  860D    CD C3BF                           CALL    S1.ANZEI
-  8610    0C13                              DW      00C13H              ;ZPOS=20 , SPOS=13
-  8612    00                                DB      0
-  8613    04                                DB      4
-  8614    A8                                DB      10101000B
-  8615    8378                              DW      BMNQ
-  8617    861B                              DW      REW5
-  8619    E276                              DW      LO.EIN1
+  860A    22 B292               REW3:       LD      (S2.DMANF),HL
+  860D    DD 74 08                          LD      (IX+8),H
+  8610    DD 75 07                          LD      (IX+7),L
+  8613    CD 8927                           CALL    ANZLO
+  8616    CD 8ADF                           CALL    PAN
+  8619    CD 894C               REW4:       CALL    SAN1
+  861C    CD C3BF                           CALL    S1.ANZEI
+  861F    0C13                              DW      00C13H              ;ZPOS=20 , SPOS=13
+  8621    00                                DB      0
+  8622    04                                DB      4
+  8623    A8                                DB      10101000B
+  8624    8387                              DW      BMNQ
+  8626    862A                              DW      REW5
+  8628    E279                              DW      LO.EIN1
                                 
-  861B    21 0C13               REW5:       LD      HL,00C13H
-  861E    22 B18C                           LD      (MS.ZPOS),HL
-  8621    3E 0B                             LD      A,11
-  8623    32 B198                           LD      (MS.CMD),A
-  8626    CD CB16                           CALL    MO.MONI
-  8629    CD C5CC                           CALL    S1.HBKON
-  862C    57                                LD      D,A
-  862D    CD C5CC                           CALL    S1.HBKON
-  8630    5F                                LD      E,A
-  8631    B2                                OR      D
-  8632    28 D6                             JR      Z,REW4
-  8634    DD 72 09                          LD      (IX+9),D
-  8637    DD 73 0A                          LD      (IX+10),E
-  863A    CD 893D                           CALL    SAN1
-  863D    CD D426               REW6:       CALL    TA.LOES
-  8640    21 8649                           LD      HL,REW7             ;POS QUIT
-  8643    22 B223                           LD      (TS.TAB4),HL
-  8646    C3 843E                           JP      RECW9
+  862A    21 0C13               REW5:       LD      HL,00C13H
+  862D    22 B18C                           LD      (MS.ZPOS),HL
+  8630    3E 0B                             LD      A,11
+  8632    32 B198                           LD      (MS.CMD),A
+  8635    CD CB16                           CALL    MO.MONI
+  8638    CD C5CC                           CALL    S1.HBKON
+  863B    57                                LD      D,A
+  863C    CD C5CC                           CALL    S1.HBKON
+  863F    5F                                LD      E,A
+  8640    B2                                OR      D
+  8641    28 D6                             JR      Z,REW4
+  8643    DD 72 09                          LD      (IX+9),D
+  8646    DD 73 0A                          LD      (IX+10),E
+  8649    CD 894C                           CALL    SAN1
+  864C    CD D426               REW6:       CALL    TA.LOES
+  864F    21 8658                           LD      HL,REW7             ;POS QUIT
+  8652    22 B223                           LD      (TS.TAB4),HL
+  8655    C3 844D                           JP      RECW9
                                 
-  8649    CD D5FE               REW7:       CALL    K1.LHLBC
-  864C    CD C8CD                           CALL    S1.SYDB2
-  864F    CD 893D                           CALL    SAN1
-  8652    CD C3BF                           CALL    S1.ANZEI
-  8655    0010                              DW      00010H
-  8657    10                                DB      16
-  8658    53 61 74 7A                       DB      'Satz schreiben ?'
-  865C    20 73 63 68           
-  8660    72 65 69 62           
-  8664    65 6E 20 3F           
-  8668    01                                DB      1
-  8669    88                                DB      10001000B
-  866A    863D                              DW      REW6
-  866C    8670                              DW      REW8
-  866E    867F                              DW      REW9
+  8658    CD D602               REW7:       CALL    K1.LHLBC
+  865B    CD C8CD                           CALL    S1.SYDB2
+  865E    CD 894C                           CALL    SAN1
+  8661    CD C3BF                           CALL    S1.ANZEI
+  8664    0010                              DW      00010H
+  8666    10                                DB      16
+  8667    53 61 74 7A                       DB      'Satz schreiben ?'
+  866B    20 73 63 68           
+  866F    72 65 69 62           
+  8673    65 6E 20 3F           
+  8677    01                                DB      1
+  8678    88                                DB      10001000B
+  8679    864C                              DW      REW6
+  867B    867F                              DW      REW8
+  867D    868E                              DW      REW9
                                 
-  8670    2A B292               REW8:       LD      HL,(S2.DMANF)
-  8673    DD 74 08                          LD      (IX+8),H
-  8676    DD 75 07                          LD      (IX+7),L
-  8679    CD D908                           CALL    K1.GNWR
-  867C    C3 832A                           JP      RELM5
+  867F    2A B292               REW8:       LD      HL,(S2.DMANF)
+  8682    DD 74 08                          LD      (IX+8),H
+  8685    DD 75 07                          LD      (IX+7),L
+  8688    CD D90B                           CALL    K1.GNWR
+  868B    C3 8339                           JP      RELM5
                                 
-  867F    3A B23C               REW9:       LD      A,(TS.TK)
-  8682    FE 38                             CP      '8'
-  8684    C0                                RET     NZ
-  8685    2A B292                           LD      HL,(S2.DMANF)
-  8688    DD 74 08                          LD      (IX+8),H
-  868B    DD 75 07                          LD      (IX+7),L
-  868E    DD 36 04 08                       LD      (IX+4),8
-  8692    CD D90C                           CALL    K1.GNWR+4
-  8695    C3 832A                           JP      RELM5
+  868E    3A B23C               REW9:       LD      A,(TS.TK)
+  8691    FE 38                             CP      '8'
+  8693    C0                                RET     NZ
+  8694    2A B292                           LD      HL,(S2.DMANF)
+  8697    DD 74 08                          LD      (IX+8),H
+  869A    DD 75 07                          LD      (IX+7),L
+  869D    DD 36 04 08                       LD      (IX+4),8
+  86A1    CD D90F                           CALL    K1.GNWR+4
+  86A4    C3 8339                           JP      RELM5
                                 
                                             PAGE
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-15
@@ -954,98 +958,98 @@
                                 ;****************************************************************
                                 ;*               Druckausgabe des Kassetteninhaltes             *
                                 ;****************************************************************
-  8698    CD D62A               REHC1:      CALL    K1.RGL1
-  869B    21 B7E0                           LD      HL,S0.PFFI
-  869E    18 06                             JR      REHC5
+  86A7    CD D62D               REHC1:      CALL    K1.RGL1
+  86AA    21 B7E0                           LD      HL,S0.PFFI
+  86AD    18 06                             JR      REHC5
                                 
-  86A0    CD D63B               REHC2:      CALL    K1.RGL2
-  86A3    21 BBF0                           LD      HL,S0.PFFA
+  86AF    CD D63E               REHC2:      CALL    K1.RGL2
+  86B2    21 BBF0                           LD      HL,S0.PFFA
                                 
-  86A6    22 B292               REHC5:      LD      (S2.DMANF),HL
-  86A9    CD D60B                           CALL    K1.BM
-  86AC    20 0C                             JR      NZ,REHC7
+  86B5    22 B292               REHC5:      LD      (S2.DMANF),HL
+  86B8    CD D60F                           CALL    K1.BM
+  86BB    20 0C                             JR      NZ,REHC7
                                 
-  86AE    21 81F0                           LD      HL,TXT11            ;Bandmarke
-  86B1    01 0023                           LD      BC,TXT13-TXT11
-  86B4    CD 8A75                           CALL    PRINT
-  86B7    C3 83ED               REHC6:      JP      RERM4
+  86BD    21 81FF                           LD      HL,TXT11            ;Bandmarke
+  86C0    01 0023                           LD      BC,TXT13-TXT11
+  86C3    CD 8ACF                           CALL    PRINT
+  86C6    C3 83FC               REHC6:      JP      RERM4
                                 
-  86BA    2A B194               REHC7:      LD      HL,(MS.BWSA)        ;Datei- und Satzzaehler ausdrucken
-  86BD    06 00                             LD      B,0
-  86BF    3A B135                           LD      A,(K2.SKADR+1)
-  86C2    C6 09                             ADD     A,9
-  86C4    4F                                LD      C,A
-  86C5    09                                ADD     HL,BC
-  86C6    3A B134                           LD      A,(K2.SKADR)
-  86C9    3D                                DEC     A
-  86CA    CD CF52                           CALL    MO.PNSP
-  86CD    01 001A                           LD      BC,26
-  86D0    CD 8A75                           CALL    PRINT
-  86D3    2A B194                           LD      HL,(MS.BWSA)        ;CRC-Summe ausdrucken
-  86D6    3E 13                             LD      A,19
-  86D8    CD CF52                           CALL    MO.PNSP
-  86DB    11 0011                           LD      DE,17
-  86DE    19                                ADD     HL,DE
-  86DF    01 0013                           LD      BC,19
-  86E2    CD 8A75                           CALL    PRINT
-  86E5    0E 1E                             LD      C,1EH
-  86E7    CD C030                           CALL    S1.SM+3
+  86C9    2A B194               REHC7:      LD      HL,(MS.BWSA)        ;Datei- und Satzzaehler ausdrucken
+  86CC    06 00                             LD      B,0
+  86CE    3A B135                           LD      A,(K2.SKADR+1)
+  86D1    C6 09                             ADD     A,9
+  86D3    4F                                LD      C,A
+  86D4    09                                ADD     HL,BC
+  86D5    3A B134                           LD      A,(K2.SKADR)
+  86D8    3D                                DEC     A
+  86D9    CD CF52                           CALL    MO.PNSP
+  86DC    01 001A                           LD      BC,26
+  86DF    CD 8ACF                           CALL    PRINT
+  86E2    2A B194                           LD      HL,(MS.BWSA)        ;CRC-Summe ausdrucken
+  86E5    3E 13                             LD      A,19
+  86E7    CD CF52                           CALL    MO.PNSP
+  86EA    11 0011                           LD      DE,17
+  86ED    19                                ADD     HL,DE
+  86EE    01 0013                           LD      BC,19
+  86F1    CD 8ACF                           CALL    PRINT
+  86F4    0E 1E                             LD      C,1EH
+  86F6    CD C030                           CALL    S1.SM+3
                                 
-  86EA    CD D5FE                           CALL    K1.LHLBC
-  86ED    C5                                PUSH    BC
-  86EE    D1                                POP     DE
-  86EF    D9                                EXX
-  86F0    ED 5B B292                        LD      DE,(S2.DMANF)
-  86F4    CD C995               HC1:        CALL    S1.HXN1
-  86F7    06 10                             LD      B,16
-  86F9    CD C9E4                           CALL    S1.MEAU2
-  86FC    D5                                PUSH    DE
-  86FD    CD CF4B                           CALL    MO.BWSE
-  8700    01 0007                           LD      BC,7
-  8703    09                                ADD     HL,BC
-  8704    01 0045                           LD      BC,69
-  8707    CD 8A75                           CALL    PRINT
-  870A    0E 1E                             LD      C,1EH
-  870C    CD C030                           CALL    S1.SM+3
-  870F    D1                                POP     DE
-  8710    D9                                EXX
-  8711    C5                                PUSH    BC
-  8712    D1                                POP     DE
-  8713    78                                LD      A,B
-  8714    B1                                OR      C
-  8715    28 03                             JR      Z,HC9
-  8717    D9                                EXX
-  8718    18 DA                             JR      HC1
+  86F9    CD D602                           CALL    K1.LHLBC
+  86FC    C5                                PUSH    BC
+  86FD    D1                                POP     DE
+  86FE    D9                                EXX
+  86FF    ED 5B B292                        LD      DE,(S2.DMANF)
+  8703    CD C995               HC1:        CALL    S1.HXN1
+  8706    06 10                             LD      B,16
+  8708    CD C9E4                           CALL    S1.MEAU2
+  870B    D5                                PUSH    DE
+  870C    CD CF4B                           CALL    MO.BWSE
+  870F    01 0007                           LD      BC,7
+  8712    09                                ADD     HL,BC
+  8713    01 0045                           LD      BC,69
+  8716    CD 8ACF                           CALL    PRINT
+  8719    0E 1E                             LD      C,1EH
+  871B    CD C030                           CALL    S1.SM+3
+  871E    D1                                POP     DE
+  871F    D9                                EXX
+  8720    C5                                PUSH    BC
+  8721    D1                                POP     DE
+  8722    78                                LD      A,B
+  8723    B1                                OR      C
+  8724    28 03                             JR      Z,HC9
+  8726    D9                                EXX
+  8727    18 DA                             JR      HC1
                                 
-  871A    0E 1E                 HC9:        LD      C,1EH
-  871C    CD C030                           CALL    S1.SM+3
-  871F    C3 86B7                           JP      REHC6
+  8729    0E 1E                 HC9:        LD      C,1EH
+  872B    CD C030                           CALL    S1.SM+3
+  872E    C3 86C6                           JP      REHC6
                                 
                                 
                                 
-  8722    CD D62A               REHC3:      CALL    K1.RGL1
-  8725    11 B7E0                           LD      DE,S0.PFFI
-  8728    18 06                             JR      RHC5
+  8731    CD D62D               REHC3:      CALL    K1.RGL1
+  8734    11 B7E0                           LD      DE,S0.PFFI
+  8737    18 06                             JR      RHC5
                                 
-  872A    CD D63B               REHC4:      CALL    K1.RGL2
-  872D    11 BBF0                           LD      DE,S0.PFFA
+  8739    CD D63E               REHC4:      CALL    K1.RGL2
+  873C    11 BBF0                           LD      DE,S0.PFFA
                                 
-  8730    ED 53 B292            RHC5:       LD      (S2.DMANF),DE
-  8734    CD D5FE                           CALL    K1.LHLBC
+  873F    ED 53 B292            RHC5:       LD      (S2.DMANF),DE
+  8743    CD D602                           CALL    K1.LHLBC
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-16
 
 
-  8737    1A                    RHC6:       LD      A,(DE)
-  8738    13                                INC     DE
-  8739    C5                                PUSH    BC
-  873A    4F                                LD      C,A
-  873B    CD C030                           CALL    S1.SM+3
-  873E    C1                                POP     BC
-  873F    0B                                DEC     BC
-  8740    78                                LD      A,B
-  8741    B1                                OR      C
-  8742    20 F3                             JR      NZ,RHC6
-  8744    C3 83ED                           JP      RERM4
+  8746    1A                    RHC6:       LD      A,(DE)
+  8747    13                                INC     DE
+  8748    C5                                PUSH    BC
+  8749    4F                                LD      C,A
+  874A    CD C030                           CALL    S1.SM+3
+  874D    C1                                POP     BC
+  874E    0B                                DEC     BC
+  874F    78                                LD      A,B
+  8750    B1                                OR      C
+  8751    20 F3                             JR      NZ,RHC6
+  8753    C3 83FC                           JP      RERM4
                                 
                                             PAGE
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-17
@@ -1055,92 +1059,92 @@
                                 ;****************************************************************
                                 ;*               Kassette auf "Datei" , "Satz" positionieren    *
                                 ;****************************************************************
-  8747    CD D62A               P1A:        CALL    K1.RGL1
-  874A    21 B7E0                           LD      HL,S0.PFFI
-  874D    3E 31                             LD      A,'1'
-  874F    18 08                             JR      PA1
+  8756    CD D62D               P1A:        CALL    K1.RGL1
+  8759    21 B7E0                           LD      HL,S0.PFFI
+  875C    3E 31                             LD      A,'1'
+  875E    18 08                             JR      PA1
                                 
-  8751    CD D63B               P2A:        CALL    K1.RGL2
-  8754    21 BBF0                           LD      HL,S0.PFFA
-  8757    3E 32                             LD      A,'2'
+  8760    CD D63E               P2A:        CALL    K1.RGL2
+  8763    21 BBF0                           LD      HL,S0.PFFA
+  8766    3E 32                             LD      A,'2'
                                 
-  8759    F5                    PA1:        PUSH    AF
-  875A    22 B292                           LD      (S2.DMANF),HL
-  875D    CD C3BF                           CALL    S1.ANZEI
-  8760    0010                              DW      00010H              ;ZPOS=17 , SPOS= 1
-  8762    AF                                DB      TXT15-TXT13+80H
-  8763    8213                              DW      TXT13
-  8765    00                                DB      0
+  8768    F5                    PA1:        PUSH    AF
+  8769    22 B292                           LD      (S2.DMANF),HL
+  876C    CD C3BF                           CALL    S1.ANZEI
+  876F    0010                              DW      00010H              ;ZPOS=17 , SPOS= 1
+  8771    AF                                DB      TXT15-TXT13+80H
+  8772    8222                              DW      TXT13
+  8774    00                                DB      0
                                 
-  8766    21 0710                           LD      HL,00710H           ;ZPOS=17 , SPOS= 8
-  8769    22 B18C                           LD      (MS.ZPOS),HL
-  876C    3E 0B                             LD      A,11                ;HL:=ZPOS,SPOS
-  876E    32 B198                           LD      (MS.CMD),A
-  8771    CD CB16                           CALL    MO.MONI
-  8774    F1                                POP     AF
-  8775    77                                LD      (HL),A
-  8776    CD F60C                           CALL    S0.BWSUS
-  8779    CD C3BF               PAA1:       CALL    S1.ANZEI            ;Eingabe Dateinummer
-  877C    1410                              DW      01410H              ;ZPOS=17 , SPOS=21
-  877E    00                                DB      0
-  877F    03                                DB      3
-  8780    88                                DB      10001000B
-  8781    8378                              DW      BMNQ
-  8783    8787                              DW      PAA2
-  8785    C328                              DW      S1.AEIN
+  8775    21 0710                           LD      HL,00710H           ;ZPOS=17 , SPOS= 8
+  8778    22 B18C                           LD      (MS.ZPOS),HL
+  877B    3E 0B                             LD      A,11                ;HL:=ZPOS,SPOS
+  877D    32 B198                           LD      (MS.CMD),A
+  8780    CD CB16                           CALL    MO.MONI
+  8783    F1                                POP     AF
+  8784    77                                LD      (HL),A
+  8785    CD 8B3D                           CALL    BWSUS
+  8788    CD C3BF               PAA1:       CALL    S1.ANZEI            ;Eingabe Dateinummer
+  878B    1410                              DW      01410H              ;ZPOS=17 , SPOS=21
+  878D    00                                DB      0
+  878E    03                                DB      3
+  878F    88                                DB      10001000B
+  8790    8387                              DW      BMNQ
+  8792    8796                              DW      PAA2
+  8794    C328                              DW      S1.AEIN
                                 
-  8787    21 1410               PAA2:       LD      HL,01410H           ;ZPOS=17 , SPOS=21
-  878A    22 B18C                           LD      (MS.ZPOS),HL
-  878D    3E 0B                             LD      A,11
-  878F    32 B198                           LD      (MS.CMD),A
-  8792    CD CB16                           CALL    MO.MONI
-  8795    EB                                EX      DE,HL
-  8796    CD C592                           CALL    S1.IDH
-  8799    7D                                LD      A,L
-  879A    32 B265                           LD      (S2.PRGN),A
-  879D    CD C3BF                           CALL    S1.ANZEI            ;Eingabe Satznummer
-  87A0    1E10                              DW      01E10H              ;ZPOS=17 , SPOS=31
-  87A2    00                                DB      0
-  87A3    03                                DB      3
-  87A4    88                                DB      10001000B
-  87A5    8779                              DW      PAA1
-  87A7    87AB                              DW      PAA3
-  87A9    C328                              DW      S1.AEIN
+  8796    21 1410               PAA2:       LD      HL,01410H           ;ZPOS=17 , SPOS=21
+  8799    22 B18C                           LD      (MS.ZPOS),HL
+  879C    3E 0B                             LD      A,11
+  879E    32 B198                           LD      (MS.CMD),A
+  87A1    CD CB16                           CALL    MO.MONI
+  87A4    EB                                EX      DE,HL
+  87A5    CD C592                           CALL    S1.IDH
+  87A8    7D                                LD      A,L
+  87A9    32 B265                           LD      (S2.PRGN),A
+  87AC    CD C3BF                           CALL    S1.ANZEI            ;Eingabe Satznummer
+  87AF    1E10                              DW      01E10H              ;ZPOS=17 , SPOS=31
+  87B1    00                                DB      0
+  87B2    03                                DB      3
+  87B3    88                                DB      10001000B
+  87B4    8788                              DW      PAA1
+  87B6    87BA                              DW      PAA3
+  87B8    C328                              DW      S1.AEIN
                                 
-  87AB    21 1E10               PAA3:       LD      HL,01E10H           ;ZPOS=17 , SPOS=31
-  87AE    22 B18C                           LD      (MS.ZPOS),HL
-  87B1    3E 0B                             LD      A,11
-  87B3    32 B198                           LD      (MS.CMD),A
-  87B6    CD CB16                           CALL    MO.MONI
-  87B9    EB                                EX      DE,HL
-  87BA    CD C592                           CALL    S1.IDH
-  87BD    7D                                LD      A,L
-  87BE    32 B266                           LD      (S2.PRGN+1),A
-  87C1    CD D77D                           CALL    K1.GNRW
+  87BA    21 1E10               PAA3:       LD      HL,01E10H           ;ZPOS=17 , SPOS=31
+  87BD    22 B18C                           LD      (MS.ZPOS),HL
+  87C0    3E 0B                             LD      A,11
+  87C2    32 B198                           LD      (MS.CMD),A
+  87C5    CD CB16                           CALL    MO.MONI
+  87C8    EB                                EX      DE,HL
+  87C9    CD C592                           CALL    S1.IDH
+  87CC    7D                                LD      A,L
+  87CD    32 B266                           LD      (S2.PRGN+1),A
+  87D0    CD D780                           CALL    K1.GNRW
                                 
-  87C4    3A B265                           LD      A,(S2.PRGN)         ;auf entspr. Datei setzen
-  87C7    B7                                OR      A
-  87C8    28 07                             JR      Z,PAA4
-  87CA    3D                                DEC     A
-  87CB    28 04                             JR      Z,PAA4
-  87CD    57                                LD      D,A
-  87CE    CD D7F0                           CALL    K1.GNLPN
+  87D3    3A B265                           LD      A,(S2.PRGN)         ;auf entspr. Datei setzen
+  87D6    B7                                OR      A
+  87D7    28 07                             JR      Z,PAA4
+  87D9    3D                                DEC     A
+  87DA    28 04                             JR      Z,PAA4
+  87DC    57                                LD      D,A
+  87DD    CD D7F3                           CALL    K1.GNLPN
                                 
-  87D1    3A B266               PAA4:       LD      A,(S2.PRGN+1)       ;auf entspr. Satz positionieren
-  87D4    B7                                OR      A
-  87D5    28 0B                             JR      Z,PAA5
-  87D7    3D                                DEC     A
-  87D8    28 08                             JR      Z,PAA5
-  87DA    47                                LD      B,A
-  87DB    C5                                PUSH    BC
+  87E0    3A B266               PAA4:       LD      A,(S2.PRGN+1)       ;auf entspr. Satz positionieren
+  87E3    B7                                OR      A
+  87E4    28 0B                             JR      Z,PAA5
+  87E6    3D                                DEC     A
+  87E7    28 08                             JR      Z,PAA5
+  87E9    47                                LD      B,A
+  87EA    C5                                PUSH    BC
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-18
 
 
-  87DC    CD D7A2                           CALL    K1.GNRP
-  87DF    C1                                POP     BC
-  87E0    10 F9                             DJNZ    $-5
+  87EB    CD D7A5                           CALL    K1.GNRP
+  87EE    C1                                POP     BC
+  87EF    10 F9                             DJNZ    $-5
                                 
-  87E2    C3 83ED               PAA5:       JP      RERM4
+  87F1    C3 83FC               PAA5:       JP      RERM4
                                 
                                             PAGE
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-19
@@ -1150,88 +1154,88 @@
                                 ;****************************************************************
                                 ;*               Positionieren um "Dateien","Saetze" vor        *
                                 ;****************************************************************
-  87E5    CD D62A               P1P:        CALL    K1.RGL1
-  87E8    21 B7E0                           LD      HL,S0.PFFI
-  87EB    3E 31                             LD      A,'1'
-  87ED    18 08                             JR      PP1
+  87F4    CD D62D               P1P:        CALL    K1.RGL1
+  87F7    21 B7E0                           LD      HL,S0.PFFI
+  87FA    3E 31                             LD      A,'1'
+  87FC    18 08                             JR      PP1
                                 
-  87EF    CD D63B               P2P:        CALL    K1.RGL2
-  87F2    21 BBF0                           LD      HL,S0.PFFA
-  87F5    3E 32                             LD      A,'2'
+  87FE    CD D63E               P2P:        CALL    K1.RGL2
+  8801    21 BBF0                           LD      HL,S0.PFFA
+  8804    3E 32                             LD      A,'2'
                                 
-  87F7    F5                    PP1:        PUSH    AF
-  87F8    22 B292                           LD      (S2.DMANF),HL
-  87FB    CD C3BF                           CALL    S1.ANZEI
-  87FE    0010                              DW      00010H              ;ZPOS=17 , SPOS= 1
-  8800    B0                                DB      TXT17-TXT15+80H
-  8801    8242                              DW      TXT15
-  8803    00                                DB      0
+  8806    F5                    PP1:        PUSH    AF
+  8807    22 B292                           LD      (S2.DMANF),HL
+  880A    CD C3BF                           CALL    S1.ANZEI
+  880D    0010                              DW      00010H              ;ZPOS=17 , SPOS= 1
+  880F    B0                                DB      TXT17-TXT15+80H
+  8810    8251                              DW      TXT15
+  8812    00                                DB      0
                                 
-  8804    21 0710                           LD      HL,00710H           ;ZPOS=17 , SPOS= 8
-  8807    22 B18C                           LD      (MS.ZPOS),HL
-  880A    3E 0B                             LD      A,11                ;HL:=ZPOS,SPOS
-  880C    32 B198                           LD      (MS.CMD),A
-  880F    CD CB16                           CALL    MO.MONI
-  8812    F1                                POP     AF
-  8813    77                                LD      (HL),A
-  8814    CD F60C                           CALL    S0.BWSUS
-  8817    CD C3BF               PPA1:       CALL    S1.ANZEI            ;Eingabe Dateinummer
-  881A    0C10                              DW      00C10H              ;ZPOS=17 , SPOS=13
-  881C    00                                DB      0
-  881D    03                                DB      3
-  881E    88                                DB      10001000B
-  881F    8378                              DW      BMNQ
-  8821    8825                              DW      PPA2
-  8823    C328                              DW      S1.AEIN
+  8813    21 0710                           LD      HL,00710H           ;ZPOS=17 , SPOS= 8
+  8816    22 B18C                           LD      (MS.ZPOS),HL
+  8819    3E 0B                             LD      A,11                ;HL:=ZPOS,SPOS
+  881B    32 B198                           LD      (MS.CMD),A
+  881E    CD CB16                           CALL    MO.MONI
+  8821    F1                                POP     AF
+  8822    77                                LD      (HL),A
+  8823    CD 8B3D                           CALL    BWSUS
+  8826    CD C3BF               PPA1:       CALL    S1.ANZEI            ;Eingabe Dateinummer
+  8829    0C10                              DW      00C10H              ;ZPOS=17 , SPOS=13
+  882B    00                                DB      0
+  882C    03                                DB      3
+  882D    88                                DB      10001000B
+  882E    8387                              DW      BMNQ
+  8830    8834                              DW      PPA2
+  8832    C328                              DW      S1.AEIN
                                 
-  8825    21 0C10               PPA2:       LD      HL,00C10H           ;ZPOS=17 , SPOS=13
-  8828    22 B18C                           LD      (MS.ZPOS),HL
-  882B    3E 0B                             LD      A,11
-  882D    32 B198                           LD      (MS.CMD),A
-  8830    CD CB16                           CALL    MO.MONI
-  8833    EB                                EX      DE,HL
-  8834    CD C592                           CALL    S1.IDH
-  8837    7D                                LD      A,L
-  8838    32 B265                           LD      (S2.PRGN),A
-  883B    CD C3BF                           CALL    S1.ANZEI            ;Eingabe Satznummer
-  883E    1C10                              DW      01C10H              ;ZPOS=17 , SPOS=29
-  8840    00                                DB      0
-  8841    03                                DB      3
-  8842    88                                DB      10001000B
-  8843    8817                              DW      PPA1
-  8845    8849                              DW      PPA3
-  8847    C328                              DW      S1.AEIN
+  8834    21 0C10               PPA2:       LD      HL,00C10H           ;ZPOS=17 , SPOS=13
+  8837    22 B18C                           LD      (MS.ZPOS),HL
+  883A    3E 0B                             LD      A,11
+  883C    32 B198                           LD      (MS.CMD),A
+  883F    CD CB16                           CALL    MO.MONI
+  8842    EB                                EX      DE,HL
+  8843    CD C592                           CALL    S1.IDH
+  8846    7D                                LD      A,L
+  8847    32 B265                           LD      (S2.PRGN),A
+  884A    CD C3BF                           CALL    S1.ANZEI            ;Eingabe Satznummer
+  884D    1C10                              DW      01C10H              ;ZPOS=17 , SPOS=29
+  884F    00                                DB      0
+  8850    03                                DB      3
+  8851    88                                DB      10001000B
+  8852    8826                              DW      PPA1
+  8854    8858                              DW      PPA3
+  8856    C328                              DW      S1.AEIN
                                 
-  8849    21 1C10               PPA3:       LD      HL,01C10H           ;ZPOS=17 , SPOS=29
-  884C    22 B18C                           LD      (MS.ZPOS),HL
-  884F    3E 0B                             LD      A,11
-  8851    32 B198                           LD      (MS.CMD),A
-  8854    CD CB16                           CALL    MO.MONI
-  8857    EB                                EX      DE,HL
-  8858    CD C592                           CALL    S1.IDH
-  885B    7D                                LD      A,L
-  885C    32 B266                           LD      (S2.PRGN+1),A
+  8858    21 1C10               PPA3:       LD      HL,01C10H           ;ZPOS=17 , SPOS=29
+  885B    22 B18C                           LD      (MS.ZPOS),HL
+  885E    3E 0B                             LD      A,11
+  8860    32 B198                           LD      (MS.CMD),A
+  8863    CD CB16                           CALL    MO.MONI
+  8866    EB                                EX      DE,HL
+  8867    CD C592                           CALL    S1.IDH
+  886A    7D                                LD      A,L
+  886B    32 B266                           LD      (S2.PRGN+1),A
                                 
-  885F    3A B265                           LD      A,(S2.PRGN)         ;auf entspr. Datei setzen
-  8862    B7                                OR      A
-  8863    28 04                             JR      Z,PPA4
-  8865    57                                LD      D,A
-  8866    CD D7F0                           CALL    K1.GNLPN
+  886E    3A B265                           LD      A,(S2.PRGN)         ;auf entspr. Datei setzen
+  8871    B7                                OR      A
+  8872    28 04                             JR      Z,PPA4
+  8874    57                                LD      D,A
+  8875    CD D7F3                           CALL    K1.GNLPN
                                 
-  8869    3A B266               PPA4:       LD      A,(S2.PRGN+1)       ;auf entspr. Satz positionieren
-  886C    B7                                OR      A
-  886D    28 08                             JR      Z,PPA5
-  886F    47                                LD      B,A
-  8870    C5                                PUSH    BC
-  8871    CD D7A2                           CALL    K1.GNRP
-  8874    C1                                POP     BC
-  8875    10 F9                             DJNZ    $-5
+  8878    3A B266               PPA4:       LD      A,(S2.PRGN+1)       ;auf entspr. Satz positionieren
+  887B    B7                                OR      A
+  887C    28 08                             JR      Z,PPA5
+  887E    47                                LD      B,A
+  887F    C5                                PUSH    BC
+  8880    CD D7A5                           CALL    K1.GNRP
+  8883    C1                                POP     BC
+  8884    10 F9                             DJNZ    $-5
                                 
                                 
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-20
 
 
-  8877    C3 87E2               PPA5:       JP      PAA5
+  8886    C3 87F1               PPA5:       JP      PAA5
                                 
                                             PAGE
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-21
@@ -1241,93 +1245,93 @@
                                 ;****************************************************************
                                 ;*               Positionieren um "Dateien","Saetze" zurueck    *
                                 ;****************************************************************
-  887A    CD D62A               P1M:        CALL    K1.RGL1
-  887D    21 B7E0                           LD      HL,S0.PFFI
-  8880    3E 31                             LD      A,'1'
-  8882    18 08                             JR      PQ1
+  8889    CD D62D               P1M:        CALL    K1.RGL1
+  888C    21 B7E0                           LD      HL,S0.PFFI
+  888F    3E 31                             LD      A,'1'
+  8891    18 08                             JR      PQ1
                                 
-  8884    CD D63B               P2M:        CALL    K1.RGL2
-  8887    21 BBF0                           LD      HL,S0.PFFA
-  888A    3E 32                             LD      A,'2'
+  8893    CD D63E               P2M:        CALL    K1.RGL2
+  8896    21 BBF0                           LD      HL,S0.PFFA
+  8899    3E 32                             LD      A,'2'
                                 
-  888C    F5                    PQ1:        PUSH    AF
-  888D    22 B292                           LD      (S2.DMANF),HL
-  8890    CD C3BF                           CALL    S1.ANZEI
-  8893    0010                              DW      00010H              ;ZPOS=17 , SPOS= 1
-  8895    A7                                DB      TXT16-TXT15+80H
-  8896    8242                              DW      TXT15
-  8898    00                                DB      0
+  889B    F5                    PQ1:        PUSH    AF
+  889C    22 B292                           LD      (S2.DMANF),HL
+  889F    CD C3BF                           CALL    S1.ANZEI
+  88A2    0010                              DW      00010H              ;ZPOS=17 , SPOS= 1
+  88A4    A7                                DB      TXT16-TXT15+80H
+  88A5    8251                              DW      TXT15
+  88A7    00                                DB      0
                                 
-  8899    CD C3BF                           CALL    S1.ANZEI
-  889C    2710                              DW      02710H              ;ZPOS=17 , SPOS=40
-  889E    8D                                DB      TXT18-TXT17+80H
-  889F    8272                              DW      TXT17
-  88A1    00                                DB      0
+  88A8    CD C3BF                           CALL    S1.ANZEI
+  88AB    2710                              DW      02710H              ;ZPOS=17 , SPOS=40
+  88AD    8D                                DB      TXT18-TXT17+80H
+  88AE    8281                              DW      TXT17
+  88B0    00                                DB      0
                                 
-  88A2    21 0710                           LD      HL,00710H           ;ZPOS=17 , SPOS= 8
-  88A5    22 B18C                           LD      (MS.ZPOS),HL
-  88A8    3E 0B                             LD      A,11                ;HL:=ZPOS,SPOS
-  88AA    32 B198                           LD      (MS.CMD),A
-  88AD    CD CB16                           CALL    MO.MONI
-  88B0    F1                                POP     AF
-  88B1    77                                LD      (HL),A
-  88B2    CD F60C                           CALL    S0.BWSUS
-  88B5    CD C3BF               PQA1:       CALL    S1.ANZEI            ;Eingabe Dateinummer
-  88B8    0C10                              DW      00C10H              ;ZPOS=17 , SPOS=13
-  88BA    00                                DB      0
-  88BB    03                                DB      3
-  88BC    88                                DB      10001000B
-  88BD    8378                              DW      BMNQ
-  88BF    88C3                              DW      PQA2
-  88C1    C328                              DW      S1.AEIN
+  88B1    21 0710                           LD      HL,00710H           ;ZPOS=17 , SPOS= 8
+  88B4    22 B18C                           LD      (MS.ZPOS),HL
+  88B7    3E 0B                             LD      A,11                ;HL:=ZPOS,SPOS
+  88B9    32 B198                           LD      (MS.CMD),A
+  88BC    CD CB16                           CALL    MO.MONI
+  88BF    F1                                POP     AF
+  88C0    77                                LD      (HL),A
+  88C1    CD 8B3D                           CALL    BWSUS
+  88C4    CD C3BF               PQA1:       CALL    S1.ANZEI            ;Eingabe Dateinummer
+  88C7    0C10                              DW      00C10H              ;ZPOS=17 , SPOS=13
+  88C9    00                                DB      0
+  88CA    03                                DB      3
+  88CB    88                                DB      10001000B
+  88CC    8387                              DW      BMNQ
+  88CE    88D2                              DW      PQA2
+  88D0    C328                              DW      S1.AEIN
                                 
-  88C3    21 0C10               PQA2:       LD      HL,00C10H           ;ZPOS=17 , SPOS=13
-  88C6    22 B18C                           LD      (MS.ZPOS),HL
-  88C9    3E 0B                             LD      A,11
-  88CB    32 B198                           LD      (MS.CMD),A
-  88CE    CD CB16                           CALL    MO.MONI
-  88D1    EB                                EX      DE,HL
-  88D2    CD C592                           CALL    S1.IDH
-  88D5    7D                                LD      A,L
-  88D6    32 B265                           LD      (S2.PRGN),A
-  88D9    CD C3BF                           CALL    S1.ANZEI            ;Eingabe Satznummer
-  88DC    1C10                              DW      01C10H              ;ZPOS=17 , SPOS=29
-  88DE    00                                DB      0
-  88DF    03                                DB      3
-  88E0    88                                DB      10001000B
-  88E1    88B5                              DW      PQA1
-  88E3    88E7                              DW      PQA3
-  88E5    C328                              DW      S1.AEIN
+  88D2    21 0C10               PQA2:       LD      HL,00C10H           ;ZPOS=17 , SPOS=13
+  88D5    22 B18C                           LD      (MS.ZPOS),HL
+  88D8    3E 0B                             LD      A,11
+  88DA    32 B198                           LD      (MS.CMD),A
+  88DD    CD CB16                           CALL    MO.MONI
+  88E0    EB                                EX      DE,HL
+  88E1    CD C592                           CALL    S1.IDH
+  88E4    7D                                LD      A,L
+  88E5    32 B265                           LD      (S2.PRGN),A
+  88E8    CD C3BF                           CALL    S1.ANZEI            ;Eingabe Satznummer
+  88EB    1C10                              DW      01C10H              ;ZPOS=17 , SPOS=29
+  88ED    00                                DB      0
+  88EE    03                                DB      3
+  88EF    88                                DB      10001000B
+  88F0    88C4                              DW      PQA1
+  88F2    88F6                              DW      PQA3
+  88F4    C328                              DW      S1.AEIN
                                 
-  88E7    21 1C10               PQA3:       LD      HL,01C10H           ;ZPOS=17 , SPOS=29
-  88EA    22 B18C                           LD      (MS.ZPOS),HL
-  88ED    3E 0B                             LD      A,11
-  88EF    32 B198                           LD      (MS.CMD),A
-  88F2    CD CB16                           CALL    MO.MONI
-  88F5    EB                                EX      DE,HL
-  88F6    CD C592                           CALL    S1.IDH
-  88F9    7D                                LD      A,L
-  88FA    32 B266                           LD      (S2.PRGN+1),A
+  88F6    21 1C10               PQA3:       LD      HL,01C10H           ;ZPOS=17 , SPOS=29
+  88F9    22 B18C                           LD      (MS.ZPOS),HL
+  88FC    3E 0B                             LD      A,11
+  88FE    32 B198                           LD      (MS.CMD),A
+  8901    CD CB16                           CALL    MO.MONI
+  8904    EB                                EX      DE,HL
+  8905    CD C592                           CALL    S1.IDH
+  8908    7D                                LD      A,L
+  8909    32 B266                           LD      (S2.PRGN+1),A
                                 
-  88FD    3A B265                           LD      A,(S2.PRGN)         ;auf entspr. Datei setzen
-  8900    B7                                OR      A
-  8901    28 04                             JR      Z,PQA4
-  8903    57                                LD      D,A
-  8904    CD D828                           CALL    K1.GNLMN
+  890C    3A B265                           LD      A,(S2.PRGN)         ;auf entspr. Datei setzen
+  890F    B7                                OR      A
+  8910    28 04                             JR      Z,PQA4
+  8912    57                                LD      D,A
+  8913    CD D82B                           CALL    K1.GNLMN
                                 
-  8907    3A B266               PQA4:       LD      A,(S2.PRGN+1)       ;auf entspr. Satz positionieren
-  890A    B7                                OR      A
-  890B    28 08                             JR      Z,PQA5
-  890D    47                                LD      B,A
+  8916    3A B266               PQA4:       LD      A,(S2.PRGN+1)       ;auf entspr. Satz positionieren
+  8919    B7                                OR      A
+  891A    28 08                             JR      Z,PQA5
+  891C    47                                LD      B,A
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-22
 
 
-  890E    C5                                PUSH    BC
-  890F    CD D7BD                           CALL    K1.GNRM
-  8912    C1                                POP     BC
-  8913    10 F9                             DJNZ    $-5
+  891D    C5                                PUSH    BC
+  891E    CD D7C0                           CALL    K1.GNRM
+  8921    C1                                POP     BC
+  8922    10 F9                             DJNZ    $-5
                                 
-  8915    C3 8877               PQA5:       JP      PPA5
+  8924    C3 8886               PQA5:       JP      PPA5
                                 
                                             PAGE
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-23
@@ -1337,91 +1341,119 @@
                                 ;****************************************************************
                                 ;*               Zeile 17 loeschen                              *
                                 ;****************************************************************
-  8918    2A B18E               ANZLO:      LD      HL,(MS.ZMIN)
-  891B    E5                                PUSH    HL
-  891C    2A B190                           LD      HL,(MS.ZMAX)
-  891F    E5                                PUSH    HL
-  8920    21 0111                           LD      HL,00111H
-  8923    22 B18E                           LD      (MS.ZMIN),HL
-  8926    21 5011                           LD      HL,05011H
-  8929    22 B190                           LD      (MS.ZMAX),HL
-  892C    3E 05                             LD      A,5
-  892E    32 B198                           LD      (MS.CMD),A
-  8931    CD CB16                           CALL    MO.MONI
-  8934    E1                                POP     HL
-  8935    22 B190                           LD      (MS.ZMAX),HL
-  8938    E1                                POP     HL
-  8939    22 B18E                           LD      (MS.ZMIN),HL
-  893C    C9                                RET
+  8927    2A B18E               ANZLO:      LD      HL,(MS.ZMIN)
+  892A    E5                                PUSH    HL
+  892B    2A B190                           LD      HL,(MS.ZMAX)
+  892E    E5                                PUSH    HL
+  892F    21 0111                           LD      HL,00111H
+  8932    22 B18E                           LD      (MS.ZMIN),HL
+  8935    21 5011                           LD      HL,05011H
+  8938    22 B190                           LD      (MS.ZMAX),HL
+  893B    3E 05                             LD      A,5
+  893D    32 B198                           LD      (MS.CMD),A
+  8940    CD CB16                           CALL    MO.MONI
+  8943    E1                                POP     HL
+  8944    22 B190                           LD      (MS.ZMAX),HL
+  8947    E1                                POP     HL
+  8948    22 B18E                           LD      (MS.ZMIN),HL
+  894B    C9                                RET
                                 ;****************************************************************
                                 ;*               Satzlaenge und Satzinhalt anzeigen             *
                                 ;****************************************************************
-  893D    3A B193               SAN1:       LD      A,(MS.SPANZ)        ;ersten 16 BWSA-Zeilen loeschen
-  8940    21 A000                           LD      HL,S0.BWSA
-  8943    F5                    SAN3:       PUSH    AF
-  8944    06 10                             LD      B,16
-  8946    36 20                 SAN4:       LD      (HL),' '
-  8948    23                                INC     HL
-  8949    10 FB                             DJNZ    SAN4
-  894B    F1                                POP     AF
-  894C    3D                                DEC     A
-  894D    20 F4                             JR      NZ,SAN3
-  894F    2A B194                           LD      HL,(MS.BWSA)        ;BWS-Pos. "Satzlaenge"
-  8952    3E 13                             LD      A,19
-  8954    CD CF52                           CALL    MO.PNSP
-  8957    11 000C                           LD      DE,12
-  895A    19                                ADD     HL,DE
-  895B    DD 7E 09                          LD      A,(IX+9)            ;Satzlaenge anzeigen
-  895E    CD C5FF                           CALL    S1.BHKON
-  8961    DD 7E 0A                          LD      A,(IX+10)
-  8964    CD C5FF                           CALL    S1.BHKON
-  8967    CD D60B                           CALL    K1.BM
-  896A    28 2C                             JR      Z,SAN2
-  896C    11 000F                           LD      DE,15               ;CRC-Summe  anzeigen
-  896F    19                                ADD     HL,DE
-  8970    E5                                PUSH    HL
-  8971    CD D5FE                           CALL    K1.LHLBC
-  8974    CD C652                           CALL    S1.CHK
-  8977    E1                                POP     HL
-  8978    7A                                LD      A,D
-  8979    CD C5FF                           CALL    S1.BHKON
-  897C    7B                                LD      A,E
-  897D    CD C5FF                           CALL    S1.BHKON
-  8980    ED 5B B292                        LD      DE,(S2.DMANF)       ;Satzinhalt anzeigen
-  8984    CD D5FE                           CALL    K1.LHLBC
-  8987    DD 72 08                          LD      (IX+8),D
-  898A    DD 73 07                          LD      (IX+7),E
-  898D    ED B0                             LDIR
-  898F    CD D5FE                           CALL    K1.LHLBC
-  8992    C5                                PUSH    BC
-  8993    D1                                POP     DE
-  8994    CD C935                           CALL    S1.MEAA
-  8997    C9                                RET
-  8998    21 0101               SAN2:       LD      HL,00101H           ;Bandmarke anzeigen
-  899B    22 B18E                           LD      (MS.ZMIN),HL
-  899E    21 5011                           LD      HL,05011H           ;ZMAX=17 , SMAX=80
-  89A1    22 B190                           LD      (MS.ZMAX),HL
-  89A4    3E 05                             LD      A,5                 ;Bildfenster loeschen
-  89A6    32 B198                           LD      (MS.CMD),A
-  89A9    CD CB16                           CALL    MO.MONI
-  89AC    CD C3BF                           CALL    S1.ANZEI
-  89AF    0000                              DW      0
-  89B1    27                                DB      39
-  89B2    67 65 6C 65                       DB      'gelesener Datenblock ist eine Bandmarke'
-  89B6    73 65 6E 65           
-  89BA    72 20 44 61           
-  89BE    74 65 6E 62           
-  89C2    6C 6F 63 6B           
-  89C6    20 69 73 74           
-  89CA    20 65 69 6E           
-  89CE    65 20 42 61           
+  894C    3A B193               SAN1:       LD      A,(MS.SPANZ)        ;ersten 16 BWSA-Zeilen loeschen
+  894F    21 A000                           LD      HL,S0.BWSA
+  8952    F5                    SAN3:       PUSH    AF
+  8953    06 10                             LD      B,16
+  8955    36 20                 SAN4:       LD      (HL),' '
+  8957    23                                INC     HL
+  8958    10 FB                             DJNZ    SAN4
+  895A    F1                                POP     AF
+  895B    3D                                DEC     A
+  895C    20 F4                             JR      NZ,SAN3
+  895E    2A B194                           LD      HL,(MS.BWSA)        ;BWS-Pos. "Satzlaenge"
+  8961    3E 13                             LD      A,19
+  8963    CD CF52                           CALL    MO.PNSP
+  8966    11 000C                           LD      DE,12
+  8969    19                                ADD     HL,DE
+  896A    DD 7E 09                          LD      A,(IX+9)            ;Satzlaenge anzeigen
+  896D    CD C5FF                           CALL    S1.BHKON
+  8970    DD 7E 0A                          LD      A,(IX+10)
+  8973    CD C5FF                           CALL    S1.BHKON
+  8976    CD D60F                           CALL    K1.BM
+  8979    28 30                             JR      Z,SAN2
+  897B    FE 02                             CP      2
+  897D    28 6F                             JR      Z,SAN5
+  897F    11 000F                           LD      DE,15               ;CRC-Summe  anzeigen
+  8982    19                                ADD     HL,DE
+  8983    E5                                PUSH    HL
+  8984    CD D602                           CALL    K1.LHLBC
+  8987    CD C652                           CALL    S1.CHK
+  898A    E1                                POP     HL
+  898B    7A                                LD      A,D
+  898C    CD C5FF                           CALL    S1.BHKON
+  898F    7B                                LD      A,E
+  8990    CD C5FF                           CALL    S1.BHKON
+  8993    ED 5B B292                        LD      DE,(S2.DMANF)       ;Satzinhalt anzeigen
+  8997    CD D602                           CALL    K1.LHLBC
+  899A    DD 72 08                          LD      (IX+8),D
+  899D    DD 73 07                          LD      (IX+7),E
+  89A0    ED B0                             LDIR
+  89A2    CD D602                           CALL    K1.LHLBC
+  89A5    C5                                PUSH    BC
+  89A6    D1                                POP     DE
+  89A7    CD C935                           CALL    S1.MEAA
+  89AA    C9                                RET
+                                
+  89AB    21 0101               SAN2:       LD      HL,00101H           ;Bandmarke anzeigen
+  89AE    22 B18E                           LD      (MS.ZMIN),HL
+  89B1    21 5011                           LD      HL,05011H           ;ZMAX=17 , SMAX=80
+  89B4    22 B190                           LD      (MS.ZMAX),HL
+  89B7    3E 05                             LD      A,5                 ;Bildfenster loeschen
+  89B9    32 B198                           LD      (MS.CMD),A
+  89BC    CD CB16                           CALL    MO.MONI
+  89BF    CD C3BF                           CALL    S1.ANZEI
+  89C2    0000                              DW      0
+  89C4    27                                DB      39
+  89C5    67 65 6C 65                       DB      'gelesener Datenblock ist eine Bandmarke'
+  89C9    73 65 6E 65           
+  89CD    72 20 44 61           
+  89D1    74 65 6E 62           
+  89D5    6C 6F 63 6B           
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-24
 
 
-  89D2    6E 64 6D 61           
-  89D6    72 6B 65              
-  89D9    00                                DB      0
-  89DA    C9                                RET
+  89D9    20 69 73 74           
+  89DD    20 65 69 6E           
+  89E1    65 20 42 61           
+  89E5    6E 64 6D 61           
+  89E9    72 6B 65              
+  89EC    00                                DB      0
+  89ED    C9                                RET
+                                
+  89EE    21 0101               SAN5:       LD      HL,00101H           ;Schlussluecke anzeigen
+  89F1    22 B18E                           LD      (MS.ZMIN),HL
+  89F4    21 5011                           LD      HL,05011H           ;ZMAX=17 , SMAX=80
+  89F7    22 B190                           LD      (MS.ZMAX),HL
+  89FA    3E 05                             LD      A,5                 ;Bildfenster loeschen
+  89FC    32 B198                           LD      (MS.CMD),A
+  89FF    CD CB16                           CALL    MO.MONI
+  8A02    CD C3BF                           CALL    S1.ANZEI
+  8A05    0000                              DW      0
+  8A07    2B                                DB      43
+  8A08    67 65 6C 65                       DB      'gelesener Datenblock ist eine Schlussluecke'
+  8A0C    73 65 6E 65           
+  8A10    72 20 44 61           
+  8A14    74 65 6E 62           
+  8A18    6C 6F 63 6B           
+  8A1C    20 69 73 74           
+  8A20    20 65 69 6E           
+  8A24    65 20 53 63           
+  8A28    68 6C 75 73           
+  8A2C    73 6C 75 65           
+  8A30    63 6B 65              
+  8A33    00                                DB      0
+  8A34    C9                                RET
+                                
                                 
                                             PAGE
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-25
@@ -1431,52 +1463,52 @@
                                 ;****************************************************************
                                 ;*               einen Satz einlesen und anzeigen               *
                                 ;****************************************************************
-  89DB    CD 89FE               RD:         CALL    RD3
-  89DE    DD 7E 01                          LD      A,(IX+1)            ;Schlussluecke erreicht ?
-  89E1    FE 14                             CP      14H
-  89E3    C8                                RET     Z                   ;ja
-  89E4    CD D5B3                           CALL    K1.ARBT             ;nein
-  89E7    CD D60B                           CALL    K1.BM
-  89EA    28 05                             JR      Z,RD1
-  89EC    CD D5DA                           CALL    K1.RCZP
-  89EF    18 06                             JR      RD2
-  89F1    CD D5BE               RD1:        CALL    K1.BLKP
-  89F4    CD D5F6                           CALL    K1.RCZN
-  89F7    CD 893D               RD2:        CALL    SAN1                ;Satzlaenge und Satzinhalt anzeigen
-  89FA    3E 01                             LD      A,1
-  89FC    B7                                OR      A
-  89FD    C9                                RET
+  8A35    CD 8A58               RD:         CALL    RD3
+  8A38    DD 7E 01                          LD      A,(IX+1)            ;Schlussluecke erreicht ?
+  8A3B    FE 14                             CP      14H
+  8A3D    C8                                RET     Z                   ;ja
+  8A3E    CD D5B7                           CALL    K1.ARBT             ;nein
+  8A41    CD D60F                           CALL    K1.BM
+  8A44    28 05                             JR      Z,RD1
+  8A46    CD D5DE                           CALL    K1.RCZP
+  8A49    18 06                             JR      RD2
+  8A4B    CD D5C2               RD1:        CALL    K1.BLKP
+  8A4E    CD D5FA                           CALL    K1.RCZN
+  8A51    CD 894C               RD2:        CALL    SAN1                ;Satzlaenge und Satzinhalt anzeigen
+  8A54    3E 01                             LD      A,1
+  8A56    B7                                OR      A
+  8A57    C9                                RET
                                 
-  89FE    DD 36 04 02           RD3:        LD      (IX+4),2
-  8A02    CD D551                           CALL    K1.ARMB
-  8A05    CD D612                           CALL    K1.F17
-  8A08    CD D60B                           CALL    K1.BM
-  8A0B    C8                                RET     Z
-  8A0C    C3 D8AD                           JP      K1.PUFT
+  8A58    DD 36 04 02           RD3:        LD      (IX+4),2
+  8A5C    CD D551                           CALL    K1.ARMB
+  8A5F    CD D615                           CALL    K1.F17
+  8A62    CD D60F                           CALL    K1.BM
+  8A65    C8                                RET     Z
+  8A66    C3 D8B0                           JP      K1.PUFT
                                 ;****************************************************************
                                 ;*               Pufferlaenge und -adresse ==> E/A-Tabelle      *
                                 ;****************************************************************
-  8A0F    DD 74 08              WR1:        LD      (IX+8),H
-  8A12    DD 75 07                          LD      (IX+7),L
-  8A15    DD 70 09                          LD      (IX+9),B
-  8A18    DD 71 0A                          LD      (IX+10),C
-  8A1B    C9                                RET
+  8A69    DD 74 08              WR1:        LD      (IX+8),H
+  8A6C    DD 75 07                          LD      (IX+7),L
+  8A6F    DD 70 09                          LD      (IX+9),B
+  8A72    DD 71 0A                          LD      (IX+10),C
+  8A75    C9                                RET
                                 ;****************************************************************
                                 ;*               Datenblock bzw. Bandmarke schreiben            *
                                 ;****************************************************************
-  8A1C    78                    WR2:        LD      A,B
-  8A1D    B1                                OR      C
-  8A1E    28 0A                             JR      Z,WR3
-  8A20    CD 8A0F               WR:         CALL    WR1
-  8A23    CD D908                           CALL    K1.GNWR
-  8A26    CD D6EE                           CALL    K1.GNSTS
-  8A29    C9                                RET
-  8A2A    DD 36 04 51           WR3:        LD      (IX+4),51H
-  8A2E    CD D551                           CALL    K1.ARMB
-  8A31    CD D5B3                           CALL    K1.ARBT
-  8A34    CD D5BE                           CALL    K1.BLKP
-  8A37    CD D5F6                           CALL    K1.RCZN
-  8A3A    C9                                RET
+  8A76    78                    WR2:        LD      A,B
+  8A77    B1                                OR      C
+  8A78    28 0A                             JR      Z,WR3
+  8A7A    CD 8A69               WR:         CALL    WR1
+  8A7D    CD D90B                           CALL    K1.GNWR
+  8A80    CD D6F1                           CALL    K1.GNSTS
+  8A83    C9                                RET
+  8A84    DD 36 04 51           WR3:        LD      (IX+4),51H
+  8A88    CD D551                           CALL    K1.ARMB
+  8A8B    CD D5B7                           CALL    K1.ARBT
+  8A8E    CD D5C2                           CALL    K1.BLKP
+  8A91    CD D5FA                           CALL    K1.RCZN
+  8A94    C9                                RET
                                 
                                             PAGE
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-26
@@ -1486,47 +1518,47 @@
                                 ;****************************************************************
                                 ;*               Tastendefinitionen                             *
                                 ;****************************************************************
-  8A3B    CD D40E               TADEF:      CALL    TA.LOE
-  8A3E    21 827F                           LD      HL,RE2
-  8A41    11 B19F                           LD      DE,TS.TAB1
-  8A44    01 0060                           LD      BC,RERE1-RE2
-  8A47    ED B0                             LDIR
+  8A95    CD D40E               TADEF:      CALL    TA.LOE
+  8A98    21 828E                           LD      HL,RE2
+  8A9B    11 B19F                           LD      DE,TS.TAB1
+  8A9E    01 0060                           LD      BC,RERE1-RE2
+  8AA1    ED B0                             LDIR
                                 
-  8A49    21 C114               TAD1:       LD      HL,S1.SYSTB
-  8A4C    22 B21D                           LD      (TS.TAB3+6),HL
-  8A4F    21 8AA2                           LD      HL,PANZ
-  8A52    22 B233                           LD      (TS.TAB5),HL
-  8A55    22 B235                           LD      (TS.TAB5+2),HL
-  8A58    22 B237                           LD      (TS.TAB5+4),HL
-  8A5B    22 B239                           LD      (TS.TAB5+6),HL
-  8A5E    3E 80                             LD      A,10000000B
-  8A60    32 B23F                           LD      (TS.SPMER),A
-  8A63    C9                                RET
+  8AA3    21 C114               TAD1:       LD      HL,S1.SYSTB
+  8AA6    22 B21D                           LD      (TS.TAB3+6),HL
+  8AA9    21 8AFC                           LD      HL,PANZ
+  8AAC    22 B233                           LD      (TS.TAB5),HL
+  8AAF    22 B235                           LD      (TS.TAB5+2),HL
+  8AB2    22 B237                           LD      (TS.TAB5+4),HL
+  8AB5    22 B239                           LD      (TS.TAB5+6),HL
+  8AB8    3E 80                             LD      A,10000000B
+  8ABA    32 B23F                           LD      (TS.SPMER),A
+  8ABD    C9                                RET
                                 
                                 
-  8A64    CD D40E               TARE:       CALL    TA.LOE
-  8A67    21 82DF                           LD      HL,RERE1
-  8A6A    22 B19F                           LD      (TS.TAB1),HL
-  8A6D    21 82E4                           LD      HL,RERE2
-  8A70    22 B1B7                           LD      (TS.TAB1+24),HL
-  8A73    18 D4                             JR      TAD1
+  8ABE    CD D40E               TARE:       CALL    TA.LOE
+  8AC1    21 82EE                           LD      HL,RERE1
+  8AC4    22 B19F                           LD      (TS.TAB1),HL
+  8AC7    21 82F3                           LD      HL,RERE2
+  8ACA    22 B1B7                           LD      (TS.TAB1+24),HL
+  8ACD    18 D4                             JR      TAD1
                                 
                                 ;****************************************************************
                                 ;*               Druckeranschlussroutine                        *
                                 ;****************************************************************
-  8A75    E5                    PRINT:      PUSH    HL
-  8A76    C5                                PUSH    BC
-  8A77    7E                                LD      A,(HL)
-  8A78    4F                                LD      C,A
-  8A79    CD C030                           CALL    S1.SM+3
-  8A7C    C1                                POP     BC
-  8A7D    E1                                POP     HL
-  8A7E    23                                INC     HL
-  8A7F    0B                                DEC     BC
-  8A80    78                                LD      A,B
-  8A81    B1                                OR      C
-  8A82    20 F1                             JR      NZ,PRINT
-  8A84    C9                                RET
+  8ACF    E5                    PRINT:      PUSH    HL
+  8AD0    C5                                PUSH    BC
+  8AD1    7E                                LD      A,(HL)
+  8AD2    4F                                LD      C,A
+  8AD3    CD C030                           CALL    S1.SM+3
+  8AD6    C1                                POP     BC
+  8AD7    E1                                POP     HL
+  8AD8    23                                INC     HL
+  8AD9    0B                                DEC     BC
+  8ADA    78                                LD      A,B
+  8ADB    B1                                OR      C
+  8ADC    20 F1                             JR      NZ,PRINT
+  8ADE    C9                                RET
                                 
                                             PAGE
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-27
@@ -1536,58 +1568,87 @@
                                 ;****************************************************************
                                 ;*               aktive P-Tasten anzeigen                       *
                                 ;****************************************************************
-  8A85    2A B194               PAN:        LD      HL,(MS.BWSA)
-  8A88    3E 14                             LD      A,20                ;Zeile 21 und 22 loeschen
-  8A8A    CD CF52                           CALL    MO.PNSP
-  8A8D    E5                                PUSH    HL
-  8A8E    E5                                PUSH    HL
-  8A8F    D1                                POP     DE
-  8A90    13                                INC     DE
-  8A91    06 00                             LD      B,0
-  8A93    3A B193                           LD      A,(MS.SPANZ)
-  8A96    87                                ADD     A,A
-  8A97    3D                                DEC     A
-  8A98    4F                                LD      C,A
-  8A99    36 20                             LD      (HL),' '
-  8A9B    ED B0                             LDIR
-  8A9D    CD F60C                           CALL    S0.BWSUS
-  8AA0    E1                                POP     HL
-  8AA1    C9                                RET
+  8ADF    2A B194               PAN:        LD      HL,(MS.BWSA)
+  8AE2    3E 14                             LD      A,20                ;Zeile 21 und 22 loeschen
+  8AE4    CD CF52                           CALL    MO.PNSP
+  8AE7    E5                                PUSH    HL
+  8AE8    E5                                PUSH    HL
+  8AE9    D1                                POP     DE
+  8AEA    13                                INC     DE
+  8AEB    06 00                             LD      B,0
+  8AED    3A B193                           LD      A,(MS.SPANZ)
+  8AF0    87                                ADD     A,A
+  8AF1    3D                                DEC     A
+  8AF2    4F                                LD      C,A
+  8AF3    36 20                             LD      (HL),' '
+  8AF5    ED B0                             LDIR
+  8AF7    CD 8B3D                           CALL    BWSUS
+  8AFA    E1                                POP     HL
+  8AFB    C9                                RET
                                 
-  8AA2    CD 8A85               PANZ:       CALL    PAN
-  8AA5    E5                                PUSH    HL
-  8AA6    3A B23E                           LD      A,(TS.EMERK)
-  8AA9    FE 02                             CP      2
-  8AAB    38 0A                             JR      C,PANZ1
-  8AAD    28 27                             JR      Z,PANZ2
-  8AAF    21 814D                           LD      HL,TXT14            ;Ebene 3
-  8AB2    01 003A                           LD      BC,TXT3-TXT14
-  8AB5    18 25                             JR      PANZ4
+  8AFC    CD 8ADF               PANZ:       CALL    PAN
+  8AFF    E5                                PUSH    HL
+  8B00    3A B23E                           LD      A,(TS.EMERK)
+  8B03    FE 02                             CP      2
+  8B05    38 0A                             JR      C,PANZ1
+  8B07    28 27                             JR      Z,PANZ2
+  8B09    21 815C                           LD      HL,TXT14            ;Ebene 3
+  8B0C    01 003A                           LD      BC,TXT3-TXT14
+  8B0F    18 25                             JR      PANZ4
                                 
-  8AB7    06 00                 PANZ1:      LD      B,0                 ;Ebene 0 und 1
-  8AB9    08                                EX      AF,AF'              ;'
-  8ABA    3A B193                           LD      A,(MS.SPANZ)
-  8ABD    4F                                LD      C,A
-  8ABE    E1                                POP     HL                  ;Anzeige in Zeile 22:  Geraet: i
-  8ABF    E5                                PUSH    HL
-  8AC0    09                                ADD     HL,BC
-  8AC1    EB                                EX      DE,HL
-  8AC2    21 81C4                           LD      HL,TXT9
-  8AC5    01 0008                           LD      BC,TXT10-TXT9
-  8AC8    ED B0                             LDIR
-  8ACA    08                                EX      AF,AF'              ;'
-  8ACB    C6 31                             ADD     A,31H
-  8ACD    12                                LD      (DE),A
-  8ACE    21 806F                           LD      HL,TXT1
-  8AD1    01 0041                           LD      BC,TXT2-TXT1
-  8AD4    18 06                             JR      PANZ4
+  8B11    06 00                 PANZ1:      LD      B,0                 ;Ebene 0 und 1
+  8B13    08                                EX      AF,AF'              ;'
+  8B14    3A B193                           LD      A,(MS.SPANZ)
+  8B17    4F                                LD      C,A
+  8B18    E1                                POP     HL                  ;Anzeige in Zeile 22:  Geraet: i
+  8B19    E5                                PUSH    HL
+  8B1A    09                                ADD     HL,BC
+  8B1B    EB                                EX      DE,HL
+  8B1C    21 81D3                           LD      HL,TXT9
+  8B1F    01 0008                           LD      BC,TXT10-TXT9
+  8B22    ED B0                             LDIR
+  8B24    08                                EX      AF,AF'              ;'
+  8B25    C6 31                             ADD     A,31H
+  8B27    12                                LD      (DE),A
+  8B28    21 806F                           LD      HL,TXT1
+  8B2B    01 0050                           LD      BC,TXT2-TXT1
+  8B2E    18 06                             JR      PANZ4
                                 
-  8AD6    21 80B0               PANZ2:      LD      HL,TXT2             ;Ebene 2
-  8AD9    01 009D                           LD      BC,TXT14-TXT2
-  8ADC    D1                    PANZ4:      POP     DE                  ;Anzeige in Zeile 21
-  8ADD    ED B0                             LDIR
-  8ADF    CD F60C                           CALL    S0.BWSUS
-  8AE2    C9                                RET
+  8B30    21 80BF               PANZ2:      LD      HL,TXT2             ;Ebene 2
+  8B33    01 009D                           LD      BC,TXT14-TXT2
+  8B36    D1                    PANZ4:      POP     DE                  ;Anzeige in Zeile 21
+  8B37    ED B0                             LDIR
+  8B39    CD 8B3D                           CALL    BWSUS
+  8B3C    C9                                RET
+                                
+  8B3D    CD F60F               BWSUS:      CALL    S0.BWSUS
+  8B40    21 8B51                           LD      HL,BWSUS1           ;Farbwerte fuer Titel setzen
+  8B43    01 08FC                           LD      BC,008FCH
+  8B46    ED B3                             OTIR
+  8B48    21 8B59                           LD      HL,BWSUS2           ;Farbwerte fuer PF-Tasten setzen
+  8B4B    01 08FC                           LD      BC,008FCH
+  8B4E    ED B3                             OTIR
+  8B50    C9                                RET
+  8B51    F2                    BWSUS1:     DB      0F2H
+  8B52    00                                DB      0                   ;Spalte Anfang
+  8B53    28                                DB      40                  ;Spalte Ende
+  8B54    12                                DB      18                  ;Zeile
+  8B55    03                                DB      3                   ;BColor = Yellow
+  8B56    02                                DB      2                   ;FColor = Blue
+  8B57    04                                DB      4                   ;CColor = Red
+  8B58    FF                                DB      0FFH
+                                
+  8B59    F2                    BWSUS2:     DB      0F2H
+  8B5A    00                                DB      0                   ;Spalte Anfang
+  8B5B    9F                                DB      2*80-1              ;Spalte Ende
+  8B5C    14                                DB      20                  ;Zeile
+  8B5D    06                                DB      6                   ;BColor = Gray
+  8B5E    01                                DB      1                   ;FColor = White
+  8B5F    04                                DB      4                   ;CColor = Red
+  8B60    FF                                DB      0FFH
+'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	1-28
+
+
                                 
                                 ;
                                             .DEPHASE
@@ -1600,18 +1661,19 @@
 Macros:
 
 Symbols:
-8918 	ANZLO           8498 	ANZUM           8378 	BMNQ            
-8375 	BMPQ            86F4 	HC1             871A 	HC9             
-D5B3 	K1.ARBT         D551 	K1.ARMB         D5CC 	K1.BLKM         
-D5BE 	K1.BLKP         D60B 	K1.BM           D612 	K1.F17          
-D828 	K1.GNLMN        D7EE 	K1.GNLP         D7F0 	K1.GNLPN        
-D762 	K1.GNRA         D898 	K1.GNRD         D745 	K1.GNRE         
-D7BD 	K1.GNRM         D7A2 	K1.GNRP         D77D 	K1.GNRW         
-D92C 	K1.GNRWR        D6EE 	K1.GNSTS        D908 	K1.GNWR         
-D5FE 	K1.LHLBC        D8AD 	K1.PUFT         D5E8 	K1.RCZM         
-D5F6 	K1.RCZN         D5DA 	K1.RCZP         D62A 	K1.RGL1         
-D63B 	K1.RGL2         B136 	K2.FRADR        B134 	K2.SKADR        
-DF09 	LO.EIN          E276 	LO.EIN1         CF4B 	MO.BWSE         
+8927 	ANZLO           84A7 	ANZUM           8387 	BMNQ            
+8384 	BMPQ            8B3D 	BWSUS           8B51 	BWSUS1          
+8B59 	BWSUS2          8703 	HC1             8729 	HC9             
+D5B7 	K1.ARBT         D551 	K1.ARMB         D5D0 	K1.BLKM         
+D5C2 	K1.BLKP         D60F 	K1.BM           D615 	K1.F17          
+D82B 	K1.GNLMN        D7F1 	K1.GNLP         D7F3 	K1.GNLPN        
+D765 	K1.GNRA         D89B 	K1.GNRD         D748 	K1.GNRE         
+D7C0 	K1.GNRM         D7A5 	K1.GNRP         D780 	K1.GNRW         
+D92F 	K1.GNRWR        D6F1 	K1.GNSTS        D90B 	K1.GNWR         
+D602 	K1.LHLBC        D8B0 	K1.PUFT         D5EC 	K1.RCZM         
+D5FA 	K1.RCZN         D5DE 	K1.RCZP         D62D 	K1.RGL1         
+D63E 	K1.RGL2         B136 	K2.FRADR        B134 	K2.SKADR        
+DF0C 	LO.EIN          E279 	LO.EIN1         CF4B 	MO.BWSE         
 CB45 	MO.BWSUS        CB16 	MO.MONI         CF52 	MO.PNSP         
 CD9F 	MO.ROLL         B194 	MS.BWSA         B198 	MS.CMD          
 B19E 	MS.CZEIT        B196 	MS.DIRDEL       B197 	MS.DIRES        
@@ -1619,46 +1681,46 @@ B19D 	MS.MCUR         B19C 	MS.MCZ          B19A 	MS.RADR
 B191 	MS.SMAX         B18F 	MS.SMIN         B193 	MS.SPANZ        
 B18B 	MS.SPOL         B18D 	MS.SPOS         B199 	MS.TK           
 B192 	MS.ZANZ         B190 	MS.ZMAX         B18E 	MS.ZMIN         
-B18A 	MS.ZPOL         B18C 	MS.ZPOS         8747 	P1A             
-887A 	P1M             87E5 	P1P             8751 	P2A             
-8884 	P2M             87EF 	P2P             8759 	PA1             
-8779 	PAA1            8787 	PAA2            87AB 	PAA3            
-87D1 	PAA4            87E2 	PAA5            8A85 	PAN             
-8AA2 	PANZ            8AB7 	PANZ1           8AD6 	PANZ2           
-8ADC 	PANZ4           87F7 	PP1             8817 	PPA1            
-8825 	PPA2            8849 	PPA3            8869 	PPA4            
-8877 	PPA5            888C 	PQ1             88B5 	PQA1            
-88C3 	PQA2            88E7 	PQA3            8907 	PQA4            
-8915 	PQA5            8A75 	PRINT           89DB 	RD              
-89F1 	RD1             89F7 	RD2             89FE 	RD3             
-827F 	RE2             834A 	REBM1           834F 	REBM2           
-8352 	REBM3           8505 	RECB            851B 	RECB1           
-854A 	RECB2           8531 	RECB3           8560 	RECB4           
-8579 	RECE            858F 	RECE1           85BE 	RECE2           
-85A5 	RECE3           85D4 	RECE4           85B8 	RECE6           
-85E7 	RECE8           849E 	RECS            84AB 	RECS1           
-84DE 	RECS2           84C1 	RECS3           84F4 	RECS4           
-84D0 	RECS5           841E 	RECW1           8426 	RECW2           
-842C 	RECW3           8456 	RECW4           8484 	RECW5           
-843E 	RECW9           8011 	REDD            8698 	REHC1           
-86A0 	REHC2           8722 	REHC3           872A 	REHC4           
-86A6 	REHC5           86B7 	REHC6           86BA 	REHC7           
-830F 	RELM1           8314 	RELM2           8317 	RELM3           
-8325 	RELM4           832A 	RELM5           832D 	RELM6           
-833D 	RELP1           8342 	RELP2           8345 	RELP3           
-83B5 	REPT1           83BD 	REPT2           83C3 	REPT3           
-83C8 	REPT4           82FC 	RERA1           8301 	RERA2           
-8304 	RERA3           82DF 	RERE1           82E4 	RERE2           
-82E7 	RERE3           83D6 	RERM1           83DE 	RERM2           
-83E4 	RERM3           83ED 	RERM4           8401 	RERM5           
-840A 	RERP1           8412 	RERP2           8418 	RERP3           
-82EF 	RERW1           82F4 	RERW2           82F7 	RERW3           
-837A 	RESL1           837F 	RESL2           8382 	RESL3           
-85ED 	REW1            85F5 	REW2            85FB 	REW3            
-860A 	REW4            861B 	REW5            863D 	REW6            
-8649 	REW7            8670 	REW8            867F 	REW9            
-8730 	RHC5            8737 	RHC6            A000 	S0.BWSA         
-F60C 	S0.BWSUS        BBF0 	S0.PFFA         B7E0 	S0.PFFI         
+B18A 	MS.ZPOL         B18C 	MS.ZPOS         8756 	P1A             
+8889 	P1M             87F4 	P1P             8760 	P2A             
+8893 	P2M             87FE 	P2P             8768 	PA1             
+8788 	PAA1            8796 	PAA2            87BA 	PAA3            
+87E0 	PAA4            87F1 	PAA5            8ADF 	PAN             
+8AFC 	PANZ            8B11 	PANZ1           8B30 	PANZ2           
+8B36 	PANZ4           8806 	PP1             8826 	PPA1            
+8834 	PPA2            8858 	PPA3            8878 	PPA4            
+8886 	PPA5            889B 	PQ1             88C4 	PQA1            
+88D2 	PQA2            88F6 	PQA3            8916 	PQA4            
+8924 	PQA5            8ACF 	PRINT           8A35 	RD              
+8A4B 	RD1             8A51 	RD2             8A58 	RD3             
+828E 	RE2             8359 	REBM1           835E 	REBM2           
+8361 	REBM3           8514 	RECB            852A 	RECB1           
+8559 	RECB2           8540 	RECB3           856F 	RECB4           
+8588 	RECE            859E 	RECE1           85CD 	RECE2           
+85B4 	RECE3           85E3 	RECE4           85C7 	RECE6           
+85F6 	RECE8           84AD 	RECS            84BA 	RECS1           
+84ED 	RECS2           84D0 	RECS3           8503 	RECS4           
+84DF 	RECS5           842D 	RECW1           8435 	RECW2           
+843B 	RECW3           8465 	RECW4           8493 	RECW5           
+844D 	RECW9           8011 	REDD            86A7 	REHC1           
+86AF 	REHC2           8731 	REHC3           8739 	REHC4           
+86B5 	REHC5           86C6 	REHC6           86C9 	REHC7           
+831E 	RELM1           8323 	RELM2           8326 	RELM3           
+8334 	RELM4           8339 	RELM5           833C 	RELM6           
+834C 	RELP1           8351 	RELP2           8354 	RELP3           
+83C4 	REPT1           83CC 	REPT2           83D2 	REPT3           
+83D7 	REPT4           830B 	RERA1           8310 	RERA2           
+8313 	RERA3           82EE 	RERE1           82F3 	RERE2           
+82F6 	RERE3           83E5 	RERM1           83ED 	RERM2           
+83F3 	RERM3           83FC 	RERM4           8410 	RERM5           
+8419 	RERP1           8421 	RERP2           8427 	RERP3           
+82FE 	RERW1           8303 	RERW2           8306 	RERW3           
+8389 	RESL1           838E 	RESL2           8391 	RESL3           
+85FC 	REW1            8604 	REW2            860A 	REW3            
+8619 	REW4            862A 	REW5            864C 	REW6            
+8658 	REW7            867F 	REW8            868E 	REW9            
+873F 	RHC5            8746 	RHC6            A000 	S0.BWSA         
+F60F 	S0.BWSUS        BBF0 	S0.PFFA         B7E0 	S0.PFFI         
 00E0 	S0.PROM         0050 	S0.SPANZ        0018 	S0.ZANZ         
 C328 	S1.AEIN         C3BF 	S1.ANZEI        C8B0 	S1.ANZU1        
 C8C0 	S1.ANZU2        C5FF 	S1.BHKON        C652 	S1.CHK          
@@ -1677,31 +1739,31 @@ B270 	S2.KADR         B290 	S2.PAR1         B265 	S2.PRGN
 B26C 	S2.RBBR         B2AF 	S2.S1           B2B0 	S2.S2           
 B2AD 	S2.SMHL         B273 	S2.SP1          B274 	S2.SP2          
 B275 	S2.SP3          B28C 	S2.TE           B276 	S2.TRB          
-B272 	S2.ZP           B262 	S2.ZZ           E694 	S9.CIN          
-E6E3 	S9.CON          E6C8 	S9.CSTSX        EEB5 	S9.LOAD         
+B272 	S2.ZP           B262 	S2.ZZ           E697 	S9.CIN          
 'REcord Display and Change   D E G 2 0 0 0 V2'	MACRO-80 3.44	09-Dec-81	PAGE	S-1
 
 
-EE95 	S9.SAVE         893D 	SAN1            8998 	SAN2            
-8943 	SAN3            8946 	SAN4            83A9 	SLPQ            
-D40E 	TA.LOE          D426 	TA.LOES         8A49 	TAD1            
-8A3B 	TADEF           8A64 	TARE            B249 	TS.BFOL1        
-B24B 	TS.BFOL2        B22D 	TS.EINA         B23E 	TS.EMERK        
-B241 	TS.KGMER        B248 	TS.MBF          B247 	TS.MIO          
-B231 	TS.NEWL         B23B 	TS.PTAST        B23D 	TS.PTK          
-B23F 	TS.SPMER        B24D 	TS.STACK        B19F 	TS.TAB1         
-B1FF 	TS.TAB2         B217 	TS.TAB3         B223 	TS.TAB4         
-B233 	TS.TAB5         B22F 	TS.TABU         B23C 	TS.TK           
-B240 	TS.UMERK        B245 	TS.ZEI21        B243 	TS.ZEIT1        
-B244 	TS.ZEIT2        B242 	TS.ZSMER        B246 	TS.ZSTC         
-806F 	TXT1            81CC 	TXT10           81F0 	TXT11           
-8211 	TXT12           8213 	TXT13           814D 	TXT14           
-8242 	TXT15           8269 	TXT16           8272 	TXT17           
-827F 	TXT18           80B0 	TXT2            8187 	TXT3            
-8190 	TXT4            8196 	TXT5            819E 	TXT6            
-81A6 	TXT7            81B5 	TXT8            81C4 	TXT9            
-8A20 	WR              8A0F 	WR1             8A1C 	WR2             
-8A2A 	WR3             
+E6E6 	S9.CON          E6CB 	S9.CSTSX        EEB8 	S9.LOAD         
+EE98 	S9.SAVE         894C 	SAN1            89AB 	SAN2            
+8952 	SAN3            8955 	SAN4            89EE 	SAN5            
+83B8 	SLPQ            D40E 	TA.LOE          D426 	TA.LOES         
+8AA3 	TAD1            8A95 	TADEF           8ABE 	TARE            
+B249 	TS.BFOL1        B24B 	TS.BFOL2        B22D 	TS.EINA         
+B23E 	TS.EMERK        B241 	TS.KGMER        B248 	TS.MBF          
+B247 	TS.MIO          B231 	TS.NEWL         B23B 	TS.PTAST        
+B23D 	TS.PTK          B23F 	TS.SPMER        B24D 	TS.STACK        
+B19F 	TS.TAB1         B1FF 	TS.TAB2         B217 	TS.TAB3         
+B223 	TS.TAB4         B233 	TS.TAB5         B22F 	TS.TABU         
+B23C 	TS.TK           B240 	TS.UMERK        B245 	TS.ZEI21        
+B243 	TS.ZEIT1        B244 	TS.ZEIT2        B242 	TS.ZSMER        
+B246 	TS.ZSTC         806F 	TXT1            81DB 	TXT10           
+81FF 	TXT11           8220 	TXT12           8222 	TXT13           
+815C 	TXT14           8251 	TXT15           8278 	TXT16           
+8281 	TXT17           828E 	TXT18           80BF 	TXT2            
+8196 	TXT3            819F 	TXT4            81A5 	TXT5            
+81AD 	TXT6            81B5 	TXT7            81C4 	TXT8            
+81D3 	TXT9            8A7A 	WR              8A69 	WR1             
+8A76 	WR2             8A84 	WR3             
 
 
 

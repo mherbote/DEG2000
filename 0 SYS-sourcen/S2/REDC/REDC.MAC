@@ -33,6 +33,7 @@ REDD:       LD      HL,REDD
             DB      40
             DB      'Record Display and Change    Version 2.1'
             DB      0
+
             CALL    S1.ANZEI
             DW      00013H              ;ZPOS=20 , SPOS= 1
             DB      TXT11-TXT10+80H
@@ -51,12 +52,12 @@ REDD:       LD      HL,REDD
             RET
 
             PAGE
-TXT1:       DB      '1=RE 2=RW 3=RA   4=L- 5=PT 6=L+  '
-            DB      '7=R- 8=CW 9=R+  10=BM 11=W 12=SL'
+TXT1:       DB      '  1=RE  2=RW  3=RA     4=L-  5=PT  6=L+ '
+            DB      '  7=R-  8=CW  9=R+    10=BM 11=W  12=SL '
 
-TXT2:       DB      '1=copy Satz_1 2=copy BM__1 3=copy SL_1  '
-            DB      ' 4=copy Satz_2  5=copy BM__2 6=copy SL_2'
-            DB      '7=printSatz_1 8=printASC_1 9=R+_1       '
+TXT2:       DB      '1=copy Satz_1 2=copy BM__1  3=copy SL_1 '
+            DB      '4=copy Satz_2 5=copy BM__2  6=copy SL_2 '
+            DB      '7=printSatz_1 8=printASC_1  9=R+_1      '
             DB      '10=printSatz_2 11=printASC_2 12=R+_2 '
 
 TXT14:      DB      '1=Pos1_auf 2=Pos1_+ 3=Pos1_-  '
@@ -710,7 +711,7 @@ PA1:        PUSH    AF
             CALL    MO.MONI
             POP     AF
             LD      (HL),A
-            CALL    S0.BWSUS
+            CALL    BWSUS
 PAA1:       CALL    S1.ANZEI            ;Eingabe Dateinummer
             DW      01410H              ;ZPOS=17 , SPOS=21
             DB      0
@@ -798,7 +799,7 @@ PP1:        PUSH    AF
             CALL    MO.MONI
             POP     AF
             LD      (HL),A
-            CALL    S0.BWSUS
+            CALL    BWSUS
 PPA1:       CALL    S1.ANZEI            ;Eingabe Dateinummer
             DW      00C10H              ;ZPOS=17 , SPOS=13
             DB      0
@@ -888,7 +889,7 @@ PQ1:        PUSH    AF
             CALL    MO.MONI
             POP     AF
             LD      (HL),A
-            CALL    S0.BWSUS
+            CALL    BWSUS
 PQA1:       CALL    S1.ANZEI            ;Eingabe Dateinummer
             DW      00C10H              ;ZPOS=17 , SPOS=13
             DB      0
@@ -987,6 +988,8 @@ SAN4:       LD      (HL),' '
             CALL    S1.BHKON
             CALL    K1.BM
             JR      Z,SAN2
+            CP      2
+            JR      Z,SAN5
             LD      DE,15               ;CRC-Summe  anzeigen
             ADD     HL,DE
             PUSH    HL
@@ -1007,6 +1010,7 @@ SAN4:       LD      (HL),' '
             POP     DE
             CALL    S1.MEAA
             RET
+
 SAN2:       LD      HL,00101H           ;Bandmarke anzeigen
             LD      (MS.ZMIN),HL
             LD      HL,05011H           ;ZMAX=17 , SMAX=80
@@ -1020,6 +1024,21 @@ SAN2:       LD      HL,00101H           ;Bandmarke anzeigen
             DB      'gelesener Datenblock ist eine Bandmarke'
             DB      0
             RET
+
+SAN5:       LD      HL,00101H           ;Schlussluecke anzeigen
+            LD      (MS.ZMIN),HL
+            LD      HL,05011H           ;ZMAX=17 , SMAX=80
+            LD      (MS.ZMAX),HL
+            LD      A,5                 ;Bildfenster loeschen
+            LD      (MS.CMD),A
+            CALL    MO.MONI
+            CALL    S1.ANZEI
+            DW      0
+            DB      43
+            DB      'gelesener Datenblock ist eine Schlussluecke'
+            DB      0
+            RET
+
 
             PAGE
 ;****************************************************************
@@ -1136,7 +1155,7 @@ PAN:        LD      HL,(MS.BWSA)
             LD      C,A
             LD      (HL),' '
             LDIR
-            CALL    S0.BWSUS
+            CALL    BWSUS
             POP     HL
             RET
 
@@ -1172,8 +1191,34 @@ PANZ2:      LD      HL,TXT2             ;Ebene 2
             LD      BC,TXT14-TXT2
 PANZ4:      POP     DE                  ;Anzeige in Zeile 21
             LDIR
-            CALL    S0.BWSUS
+            CALL    BWSUS
             RET
+
+BWSUS:      CALL    S0.BWSUS
+            LD      HL,BWSUS1           ;Farbwerte fuer Titel setzen
+            LD      BC,008FCH
+            OTIR
+            LD      HL,BWSUS2           ;Farbwerte fuer PF-Tasten setzen
+            LD      BC,008FCH
+            OTIR
+            RET
+BWSUS1:     DB      0F2H
+            DB      0                   ;Spalte Anfang
+            DB      40                  ;Spalte Ende
+            DB      18                  ;Zeile
+            DB      3                   ;BColor = Yellow
+            DB      2                   ;FColor = Blue
+            DB      4                   ;CColor = Red
+            DB      0FFH
+
+BWSUS2:     DB      0F2H
+            DB      0                   ;Spalte Anfang
+            DB      2*80-1              ;Spalte Ende
+            DB      20                  ;Zeile
+            DB      6                   ;BColor = Gray
+            DB      1                   ;FColor = White
+            DB      4                   ;CColor = Red
+            DB      0FFH
 
 ;
             .DEPHASE

@@ -88,8 +88,57 @@ Module DD
             op_sim(&HFC) = New opfunc(AddressOf trap_dd) : op_sim(&HFD) = New opfunc(AddressOf trap_dd) : op_sim(&HFE) = New opfunc(AddressOf trap_dd) : op_sim(&HFF) = New opfunc(AddressOf trap_dd)
 
 #If Z80_UNDOC0 = 1 Then
-            op_sim(&H6F) = New opfunc(AddressOf op_undoc_ldixl)
-            op_sim(&HBD) = New opfunc(AddressOf op_undoc_cpixl)
+            op_sim(&H24) = New opfunc(AddressOf op_undoc_incixh)
+            op_sim(&H25) = New opfunc(AddressOf op_undoc_decixh)
+            op_sim(&H2C) = New opfunc(AddressOf op_undoc_incixl)
+            op_sim(&H2D) = New opfunc(AddressOf op_undoc_decixl)
+            op_sim(&H44) = New opfunc(AddressOf op_undoc_bixh)
+            op_sim(&H45) = New opfunc(AddressOf op_undoc_bixl)
+            op_sim(&H4C) = New opfunc(AddressOf op_undoc_cixh)
+            op_sim(&H4D) = New opfunc(AddressOf op_undoc_cixl)
+            op_sim(&H54) = New opfunc(AddressOf op_undoc_dixh)
+            op_sim(&H55) = New opfunc(AddressOf op_undoc_dixl)
+            op_sim(&H5C) = New opfunc(AddressOf op_undoc_eixh)
+            op_sim(&H5D) = New opfunc(AddressOf op_undoc_eixl)
+
+            op_sim(&H60) = New opfunc(AddressOf op_undoc_ixhb)
+            op_sim(&H61) = New opfunc(AddressOf op_undoc_ixhc)
+            op_sim(&H62) = New opfunc(AddressOf op_undoc_ixhd)
+            op_sim(&H63) = New opfunc(AddressOf op_undoc_ixhe)
+            op_sim(&H64) = New opfunc(AddressOf op_undoc_ixhixh)
+            op_sim(&H65) = New opfunc(AddressOf op_undoc_ixhixl)
+            op_sim(&H67) = New opfunc(AddressOf op_undoc_ixha)
+
+            op_sim(&H68) = New opfunc(AddressOf op_undoc_ixlb)
+            op_sim(&H69) = New opfunc(AddressOf op_undoc_ixlc)
+            op_sim(&H6A) = New opfunc(AddressOf op_undoc_ixld)
+            op_sim(&H6B) = New opfunc(AddressOf op_undoc_ixle)
+            op_sim(&H6C) = New opfunc(AddressOf op_undoc_ixlixh)
+            op_sim(&H6D) = New opfunc(AddressOf op_undoc_ixlixl)
+            op_sim(&H6F) = New opfunc(AddressOf op_undoc_ixla)
+
+            op_sim(&H7C) = New opfunc(AddressOf op_undoc_aixh)
+            op_sim(&H7D) = New opfunc(AddressOf op_undoc_aixl)
+
+            op_sim(&H84) = New opfunc(AddressOf op_undoc_add_aixh)
+            op_sim(&H85) = New opfunc(AddressOf op_undoc_add_aixl)
+            op_sim(&H8C) = New opfunc(AddressOf op_undoc_adc_aixh)
+            op_sim(&H8D) = New opfunc(AddressOf op_undoc_adc_aixl)
+
+            op_sim(&H94) = New opfunc(AddressOf op_undoc_sub_aixh)
+            op_sim(&H95) = New opfunc(AddressOf op_undoc_sub_aixl)
+            op_sim(&H9C) = New opfunc(AddressOf op_undoc_sbc_aixh)
+            op_sim(&H9D) = New opfunc(AddressOf op_undoc_sbc_aixl)
+
+            op_sim(&HA4) = New opfunc(AddressOf op_undoc_and_aixh)
+            op_sim(&HA5) = New opfunc(AddressOf op_undoc_and_aixl)
+            op_sim(&HAC) = New opfunc(AddressOf op_undoc_xor_aixh)
+            op_sim(&HAD) = New opfunc(AddressOf op_undoc_xor_aixl)
+            op_sim(&HB4) = New opfunc(AddressOf op_undoc_or_aixh)
+            op_sim(&HB5) = New opfunc(AddressOf op_undoc_or_aixl)
+
+            op_sim(&HBC) = New opfunc(AddressOf op_undoc_cp_aixh)
+            op_sim(&HBD) = New opfunc(AddressOf op_undoc_cp_aixl)
 #End If
         End Sub ' New
     End Class ' op_dd
@@ -107,32 +156,32 @@ Module DD
 #Region "ADD IX,xx"
     '------------------------------------
     Private Function op_addxb() As Integer                                      '&H09         'ADD IX,BC
-        op_addxb = add(COMMON.vZ80cpu.B, COMMON.vZ80cpu.C)
+        op_addxb = fadd(COMMON.vZ80cpu.B, COMMON.vZ80cpu.C)
     End Function '09    'op_addxb
     Private Function op_addxd() As Integer                                      '&H19         'ADD IX,DE
-        op_addxd = add(COMMON.vZ80cpu.D, COMMON.vZ80cpu.E)
+        op_addxd = fadd(COMMON.vZ80cpu.D, COMMON.vZ80cpu.E)
     End Function '19    'op_addxd
     Private Function op_addxx() As Integer                                      '&H29         'ADD IX,IX
-        op_addxx = add((COMMON.vZ80cpu.IX And &HFF00) >> 8, COMMON.vZ80cpu.IX And &HFF)
+        op_addxx = fadd((COMMON.vZ80cpu.IX And &HFF00) >> 8, COMMON.vZ80cpu.IX And &HFF)
     End Function '29    'op_addxx
     Private Function op_addxs() As Integer                                      '&H39         'ADD IX,SP
-        op_addxs = add((COMMON.vZ80cpu.STACK And &HFF00) >> 8, COMMON.vZ80cpu.STACK And &HFF)
+        op_addxs = fadd((COMMON.vZ80cpu.STACK And &HFF00) >> 8, COMMON.vZ80cpu.STACK And &HFF)
     End Function '39    'op_addxs
-    Private Function add(ByVal par1 As Byte, ByVal par2 As Byte) As Integer
+    Private Function fadd(ByVal par1 As Byte, ByVal par2 As Byte) As Integer
         Dim carry As Integer
         Dim ixh As Integer
         Dim ixl As Integer
 
         ixh = (COMMON.vZ80cpu.IX And &HFF00) >> 8
         ixl = COMMON.vZ80cpu.IX And &HFF
-        If CInt(ixl) + CInt(Par2) > 255 Then carry = 1 Else carry = 0
+        If CInt(ixl) + CInt(par2) > 255 Then carry = 1 Else carry = 0
         ixl = ixl + par2
         Call COMMON.vZ80cpu.FlagHflag1((ixh And &HF) + (par1 And &HF) + carry > &HF)
         Call COMMON.vZ80cpu.FlagCflag1(ixh + par1 + carry > 255)
         ixh = ixh + par1 + carry
         COMMON.vZ80cpu.IX = ((ixh And &HFF) << 8) + (ixl And &HFF)
         Call COMMON.vZ80cpu.FlagNflag2()
-        add = 15
+        fadd = 15
     End Function ' add
 #End Region
 #Region "LD IX,nn  LD (nn),IX  INC IX"
@@ -431,24 +480,450 @@ Module DD
     End Function 'F9    'op_ldspx
 #End Region
 
-#Region "undocumented Z80 instructions: LD IXL,A  CP IXL"
-    'BMK undocumented Z80 instructions
-    '=================================
 #If Z80_UNDOC0 = 1 Then
-    Private Function op_undoc_ldixl() As Integer                                '&H6F         'LD IXL,A
-        If COMMON.vZ80cpu.F And COMMON.Z_FLAG = COMMON.Z_FLAG Then
-            op_undoc_ldixl = trap_dd()
+#Region "undocumented Z80 instructions"
+    '    =============================
+#Region "INC  IX."
+    Private Function op_undoc_incixh() As Integer                               '&H24         'INC  IXH
+        Dim x, y As Byte
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_incixh = trap_dd()
+
+        Else
+            x = (COMMON.vZ80cpu.IX And &HFF00) >> 8
+            y = 1
+            Call inc(x, y)
+            COMMON.vZ80cpu.IX = y * 256 + (COMMON.vZ80cpu.IX And &HFF)
+            op_undoc_incixh = 4
+        End If
+    End Function
+    Private Function op_undoc_incixl() As Integer                               '&H2C         'INC  IXL
+        Dim x, y As Byte
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_incixl = trap_dd()
+        Else
+            x = (COMMON.vZ80cpu.IX And &HFF)
+            y = 1
+            Call inc(x, y)
+            COMMON.vZ80cpu.IX = (COMMON.vZ80cpu.IX And &HFF00) + y
+            op_undoc_incixl = 4
+        End If
+    End Function
+#End Region
+#Region "DEC  IX."
+    Private Function op_undoc_decixh() As Integer                               '&H25         'DEC  IXH
+        Dim x, y As Byte
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_decixh = trap_dd()
+        Else
+            x = (COMMON.vZ80cpu.IX And &HFF00) >> 8
+            y = 1
+            Call dec(x, y)
+            COMMON.vZ80cpu.IX = y * 256 + (COMMON.vZ80cpu.IX And &HFF)
+            op_undoc_decixh = 4
+        End If
+    End Function
+    Private Function op_undoc_decixl() As Integer                               '&H2D         'DEC  IXL
+        Dim x, y As Byte
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_decixl = trap_dd()
+        Else
+            x = (COMMON.vZ80cpu.IX And &HFF)
+            y = 1
+            Call dec(x, y)
+            COMMON.vZ80cpu.IX = (COMMON.vZ80cpu.IX And &HFF00) + y
+            op_undoc_decixl = 4
+        End If
+    End Function
+#End Region
+
+#Region "LD   B,IX."
+    Private Function op_undoc_bixh() As Integer                                 '&H44         'LD   B,IXH
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_bixh = trap_dd()
+        Else
+            COMMON.vZ80cpu.B = (COMMON.vZ80cpu.IX And &HFF00) >> 8
+            op_undoc_bixh = 9
+        End If
+    End Function
+    Private Function op_undoc_bixl() As Integer                                 '&H45         'LD   B,IXL
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_bixl = trap_dd()
+        Else
+            COMMON.vZ80cpu.B = (COMMON.vZ80cpu.IX And &HFF) >> 8
+            op_undoc_bixl = 9
+        End If
+    End Function
+#End Region
+#Region "LD   C,IX."
+    Private Function op_undoc_cixh() As Integer                                 '&H4C         'LD   C,IXH
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_cixh = trap_dd()
+        Else
+            COMMON.vZ80cpu.C = (COMMON.vZ80cpu.IX And &HFF00) >> 8
+            op_undoc_cixh = 9
+        End If
+    End Function
+    Private Function op_undoc_cixl() As Integer                                 '&H4D         'LD   C,IXL
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_cixl = trap_dd()
+        Else
+            COMMON.vZ80cpu.C = (COMMON.vZ80cpu.IX And &HFF)
+            op_undoc_cixl = 9
+        End If
+    End Function
+#End Region
+#Region "LD   D,IX."
+    Private Function op_undoc_dixh() As Integer                                 '&H54         'LD   D,IXH
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_dixh = trap_dd()
+        Else
+            COMMON.vZ80cpu.D = (COMMON.vZ80cpu.IX And &HFF00) >> 8
+            op_undoc_dixh = 9
+        End If
+    End Function
+    Private Function op_undoc_dixl() As Integer                                 '&H55         'LD   D,IXL
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_dixl = trap_dd()
+        Else
+            COMMON.vZ80cpu.D = (COMMON.vZ80cpu.IX And &HFF)
+            op_undoc_dixl = 9
+        End If
+    End Function
+#End Region
+#Region "LD   E,IX."
+    Private Function op_undoc_eixh() As Integer                                 '&H5C         'LD   E,IXH
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_eixh = trap_dd()
+        Else
+            COMMON.vZ80cpu.E = (COMMON.vZ80cpu.IX And &HFF00) >> 8
+            op_undoc_eixh = 9
+        End If
+    End Function
+    Private Function op_undoc_eixl() As Integer                                 '&H5D         'LD   E,IXL
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_eixl = trap_dd()
+        Else
+            COMMON.vZ80cpu.E = (COMMON.vZ80cpu.IX And &HFF)
+            op_undoc_eixl = 9
+        End If
+    End Function
+#End Region
+
+#Region "LD   IXH,reg"
+    Private Function op_undoc_ixhb() As Integer                                 '&H60         'LD   IXH,B
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_ixhb = trap_dd()
+        Else
+            COMMON.vZ80cpu.IX = COMMON.vZ80cpu.B * 256 + (COMMON.vZ80cpu.IX And &HFF)
+            op_undoc_ixhb = 9
+        End If
+    End Function
+    Private Function op_undoc_ixhc() As Integer                                 '&H61         'LD   IXH,C
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_ixhc = trap_dd()
+        Else
+            COMMON.vZ80cpu.IX = COMMON.vZ80cpu.C * 256 + (COMMON.vZ80cpu.IX And &HFF)
+            op_undoc_ixhc = 9
+        End If
+    End Function
+    Private Function op_undoc_ixhd() As Integer                                 '&H62         'LD   IXH,D
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_ixhd = trap_dd()
+        Else
+            COMMON.vZ80cpu.IX = COMMON.vZ80cpu.D * 256 + (COMMON.vZ80cpu.IX And &HFF)
+            op_undoc_ixhd = 9
+        End If
+    End Function
+    Private Function op_undoc_ixhe() As Integer                                 '&H63         'LD   IXH,E
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_ixhe = trap_dd()
+        Else
+            COMMON.vZ80cpu.IX = COMMON.vZ80cpu.E * 256 + (COMMON.vZ80cpu.IX And &HFF)
+            op_undoc_ixhe = 9
+        End If
+    End Function
+    Private Function op_undoc_ixhixh() As Integer                               '&H64         'LD   IXH,IXH
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_ixhixh = trap_dd()
+        Else
+            op_undoc_ixhixh = 9
+        End If
+    End Function
+    Private Function op_undoc_ixhixl() As Integer                               '&H65         'LD   IXH,IXL
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_ixhixl = trap_dd()
+        Else
+            COMMON.vZ80cpu.IX = ((COMMON.vZ80cpu.IX And &HFF) << 8) + (COMMON.vZ80cpu.IX And &HFF)
+            op_undoc_ixhixl = 9
+        End If
+    End Function
+    Private Function op_undoc_ixha() As Integer                                 '&H67         'LD   IXH,A
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_ixha = trap_dd()
+        Else
+            COMMON.vZ80cpu.IX = COMMON.vZ80cpu.A * 256 + (COMMON.vZ80cpu.IX And &HFF)
+            op_undoc_ixha = 9
+        End If
+    End Function
+#End Region
+#Region "LD   IXL,reg"
+    Private Function op_undoc_ixlb() As Integer                                 '&H68         'LD   IXL,B
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_ixlb = trap_dd()
+        Else
+            COMMON.vZ80cpu.IX = (COMMON.vZ80cpu.IX And &HFF00) + COMMON.vZ80cpu.B
+            op_undoc_ixlb = 9
+        End If
+    End Function
+    Private Function op_undoc_ixlc() As Integer                                 '&H69         'LD   IXL,C
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_ixlc = trap_dd()
+        Else
+            COMMON.vZ80cpu.IX = (COMMON.vZ80cpu.IX And &HFF00) + COMMON.vZ80cpu.C
+            op_undoc_ixlc = 9
+        End If
+    End Function
+    Private Function op_undoc_ixld() As Integer                                 '&H6A         'LD   IXL,D
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_ixld = trap_dd()
+        Else
+            COMMON.vZ80cpu.IX = (COMMON.vZ80cpu.IX And &HFF00) + COMMON.vZ80cpu.D
+            op_undoc_ixld = 9
+        End If
+    End Function
+    Private Function op_undoc_ixle() As Integer                                 '&H6B         'LD   IXL,E
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_ixle = trap_dd()
+        Else
+            COMMON.vZ80cpu.IX = (COMMON.vZ80cpu.IX And &HFF00) + COMMON.vZ80cpu.E
+            op_undoc_ixle = 9
+        End If
+    End Function
+    Private Function op_undoc_ixlixh() As Integer                               '&H6C         'LD   IXL,IXH
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_ixlixh = trap_dd()
+        Else
+            COMMON.vZ80cpu.IX = (COMMON.vZ80cpu.IX And &HFF00) + ((COMMON.vZ80cpu.IX And &HFF00) >> 8)
+            op_undoc_ixlixh = 9
+        End If
+    End Function
+    Private Function op_undoc_ixlixl() As Integer                               '&H6C         'LD   IXL,IXL
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_ixlixl = trap_dd()
+        Else
+            op_undoc_ixlixl = 9
+        End If
+    End Function
+    Private Function op_undoc_ixla() As Integer                                 '&H6F         'LD   IXL,A
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_ixla = trap_dd()
         Else
             COMMON.vZ80cpu.IX = (COMMON.vZ80cpu.IX And &HFF00) Or COMMON.vZ80cpu.A
-            op_undoc_ldixl = 9
+            op_undoc_ixla = 9
         End If
     End Function '6F    'op_undoc_ldixl
-    Private Function op_undoc_cpixl() As Integer                                '&HBD         'CP IXL
+#End Region
+
+#Region "LD   A,IX."
+    Private Function op_undoc_aixh() As Integer                                 '&H7C         'LD   A,IXH
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_aixh = trap_dd()
+        Else
+            COMMON.vZ80cpu.A = (COMMON.vZ80cpu.IX And &HFF00) >> 8
+            op_undoc_aixh = 9
+        End If
+    End Function '6F    'op_undoc_ldixl
+    Private Function op_undoc_aixl() As Integer                                 '&H7D         'LD   A,IXL
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_aixl = trap_dd()
+        Else
+            COMMON.vZ80cpu.A = (COMMON.vZ80cpu.IX And &HFF)
+            op_undoc_aixl = 9
+        End If
+    End Function '6F    'op_undoc_ldixl
+#End Region
+#Region "ADD   A,IX."
+    Private Function op_undoc_add_aixh() As Integer                             '&H84         'ADD  A,IXH
+        Dim par1 As Byte
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_add_aixh = trap_dd()
+        Else
+            par1 = (COMMON.vZ80cpu.IX And &HFF00) >> 8
+            Call add(par1)
+            op_undoc_add_aixh = 4
+        End If
+    End Function
+    Private Function op_undoc_add_aixl() As Integer                             '&H85         'ADD  A,IXL
+        Dim par1 As Byte
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_add_aixl = trap_dd()
+        Else
+            par1 = (COMMON.vZ80cpu.IX And &HFF)
+            Call add(par1)
+            op_undoc_add_aixl = 4
+        End If
+    End Function
+#End Region
+#Region "ADC   A,IX."
+    Private Function op_undoc_adc_aixh() As Integer                             '&H8C         'ADC  A,IXH
+        Dim par1 As Byte
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_adc_aixh = trap_dd()
+        Else
+            par1 = (COMMON.vZ80cpu.IX And &HFF00) >> 8
+            Call adc(par1)
+            op_undoc_adc_aixh = 4
+        End If
+    End Function
+    Private Function op_undoc_adc_aixl() As Integer                             '&H8D         'ADC  A,IXL
+        Dim par1 As Byte
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_adc_aixl = trap_dd()
+        Else
+            par1 = (COMMON.vZ80cpu.IX And &HFF)
+            Call adc(par1)
+            op_undoc_adc_aixl = 4
+        End If
+    End Function
+#End Region
+#Region "SUB  A,IX."
+    Private Function op_undoc_sub_aixh() As Integer                             '&H94         'SUB  IXH
+        Dim par1 As Byte
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_sub_aixh = trap_dd()
+        Else
+            par1 = (COMMON.vZ80cpu.IX And &HFF00) >> 8
+            Call sub1(par1)
+            op_undoc_sub_aixh = 4
+        End If
+    End Function
+    Private Function op_undoc_sub_aixl() As Integer                             '&H95         'SUB  IXL
+        Dim par1 As Byte
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_sub_aixl = trap_dd()
+        Else
+            par1 = (COMMON.vZ80cpu.IX And &HFF)
+            Call sub1(par1)
+            op_undoc_sub_aixl = 4
+        End If
+    End Function
+#End Region
+#Region "SUB  A,IX."
+    Private Function op_undoc_sbc_aixh() As Integer                             '&H9C         'SBC  A,IXH
+        Dim par1 As Byte
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_sbc_aixh = trap_dd()
+        Else
+            par1 = (COMMON.vZ80cpu.IX And &HFF00) >> 8
+            Call sbc(par1)
+            op_undoc_sbc_aixh = 4
+        End If
+    End Function
+    Private Function op_undoc_sbc_aixl() As Integer                             '&H9D         'SBC  A,IXL
+        Dim par1 As Byte
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_sbc_aixl = trap_dd()
+        Else
+            par1 = (COMMON.vZ80cpu.IX And &HFF)
+            Call sbc(par1)
+            op_undoc_sbc_aixl = 4
+        End If
+    End Function
+#End Region
+
+#Region "AND  A,IX."
+    Private Function op_undoc_and_aixh() As Integer                             '&HA4         'AND  A,IXH
+        Dim par1 As Byte
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_and_aixh = trap_dd()
+        Else
+            par1 = (COMMON.vZ80cpu.IX And &HFF00) >> 8
+            Call and1(par1)
+            op_undoc_and_aixh = 4
+        End If
+    End Function
+    Private Function op_undoc_and_aixl() As Integer                             '&HA5         'AND  A,IXL
+        Dim par1 As Byte
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_and_aixl = trap_dd()
+        Else
+            par1 = (COMMON.vZ80cpu.IX And &HFF)
+            Call and1(par1)
+            op_undoc_and_aixl = 4
+        End If
+    End Function
+#End Region
+#Region "XOR  A,IX."
+    Private Function op_undoc_xor_aixh() As Integer                             '&HAC         'XOR  A,IXH
+        Dim par1 As Byte
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_xor_aixh = trap_dd()
+        Else
+            par1 = (COMMON.vZ80cpu.IX And &HFF00) >> 8
+            Call xor1(par1)
+            op_undoc_xor_aixh = 4
+        End If
+    End Function
+    Private Function op_undoc_xor_aixl() As Integer                             '&HAD         'XOR  A,IXL
+        Dim par1 As Byte
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_xor_aixl = trap_dd()
+        Else
+            par1 = (COMMON.vZ80cpu.IX And &HFF)
+            Call xor1(par1)
+            op_undoc_xor_aixl = 4
+        End If
+    End Function
+#End Region
+#Region "OR   A,IX."
+    Private Function op_undoc_or_aixh() As Integer                             '&HB4         'OR   A,IXH
+        Dim par1 As Byte
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_or_aixh = trap_dd()
+        Else
+            par1 = (COMMON.vZ80cpu.IX And &HFF00) >> 8
+            Call or1(par1)
+            op_undoc_or_aixh = 4
+        End If
+    End Function
+    Private Function op_undoc_or_aixl() As Integer                             '&HB5         'OR   A,IXL
+        Dim par1 As Byte
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_or_aixl = trap_dd()
+        Else
+            par1 = (COMMON.vZ80cpu.IX And &HFF)
+            Call or1(par1)
+            op_undoc_or_aixl = 4
+        End If
+    End Function
+#End Region
+
+#Region "CP   IX."
+    Private Function op_undoc_cp_aixh() As Integer                              '&HBC         'CP IXH
         Dim i As Integer
         Dim P As Byte
 
-        If COMMON.vZ80cpu.F And COMMON.Z_FLAG = COMMON.Z_FLAG Then
-            op_undoc_cpixl = trap_dd()
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_cp_aixh = trap_dd()
+        Else
+            P = (COMMON.vZ80cpu.IX And &HFF00) >> 8
+            Call COMMON.vZ80cpu.FlagHflag1((P And &HF) > (COMMON.vZ80cpu.A And &HF))
+            Call COMMON.vZ80cpu.FlagCflag1(P > COMMON.vZ80cpu.A)
+            i = CInt(COMMON.Byte2SByte(COMMON.vZ80cpu.A)) - CInt(COMMON.Byte2SByte(P))
+            Call COMMON.vZ80cpu.FlagPflag1(i < -128 Or i > 127)
+            Call COMMON.vZ80cpu.FlagSflag1((i And 128))
+            Call COMMON.vZ80cpu.FlagZflag2(i <> 0)
+            Call COMMON.vZ80cpu.FlagNflag1()
+            op_undoc_cp_aixh = 9
+        End If
+    End Function 'BD    'op_undoc_cpixl
+    Private Function op_undoc_cp_aixl() As Integer                              '&HBD         'CP IXL
+        Dim i As Integer
+        Dim P As Byte
+
+        If Z80_UNDOC0 = 0 Then
+            op_undoc_cp_aixl = trap_dd()
         Else
             P = COMMON.vZ80cpu.IX And &HFF
             Call COMMON.vZ80cpu.FlagHflag1((P And &HF) > (COMMON.vZ80cpu.A And &HF))
@@ -458,15 +933,17 @@ Module DD
             Call COMMON.vZ80cpu.FlagSflag1((i And 128))
             Call COMMON.vZ80cpu.FlagZflag2(i <> 0)
             Call COMMON.vZ80cpu.FlagNflag1()
-            op_undoc_cpixl = 9
+            op_undoc_cp_aixl = 9
         End If
     End Function 'BD    'op_undoc_cpixl
-#End If
 #End Region
+
+#End Region
+#End If
 
     '====================================
     Public Function op_dd_handel() As Integer
         Call COMMON.vZ80cpu.PCplus1()
         op_dd_handel = op_dd1.op_sim(COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.PC)).Invoke()
     End Function ' op_dd_handel
-End Module
+End Module ' DD
