@@ -53,11 +53,11 @@ text=auto
 *.jpg   binary
 *.png   binary
 *.gif   binary
-*.rel   binary
-*.REL   binary
+#*.rel   binary
+#*.REL   binary
 *.ico   binary
-*.pfx   binary
-*.snk   binary
+#*.pfx   binary
+#*.snk   binary
 *.com   binary
 *.COM   binary
 *.exe   binary
@@ -71,9 +71,6 @@ text=auto
 *.pdf   binary
 *.PDF   binary
 *.xlsx  binary
-*.psd   binary
-*.docx  binary
-*.DOCX  binary
 
 ###############################################################################
 # diff behavior for common document formats
