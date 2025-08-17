@@ -50,27 +50,27 @@ text=auto
 *.MAC   binary
 *.asm   binary
 *.ASM   binary
-#*.jpg   binary
-#*.png   binary
-#*.gif   binary
+*.jpg   binary
+*.png   binary
+*.gif   binary
 #*.rel   binary
 #*.REL   binary
-#*.ico   binary
+*.ico   binary
 #*.pfx   binary
 #*.snk   binary
-#*.com   binary
-#*.COM   binary
-#*.exe   binary
-#*.EXE   binary
-#*.bin   binary
-#*.BIN   binary
-#*.CAS   binary
-#*.FNT   binary
-#*.TTF   binary
-#*.wav   binary
-#*.pdf   binary
-#*.PDF   binary
-#*.xlsx  binary
+*.com   binary
+*.COM   binary
+*.exe   binary
+*.EXE   binary
+*.bin   binary
+*.BIN   binary
+*.CAS   binary
+*.FNT   binary
+*.TTF   binary
+*.wav   binary
+*.pdf   binary
+*.PDF   binary
+*.xlsx  binary
 
 ###############################################################################
 # diff behavior for common document formats
