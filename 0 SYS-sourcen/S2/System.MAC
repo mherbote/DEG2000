@@ -5470,6 +5470,7 @@ S9.BASC:    CALL    S0.BASCL
             LD      HL,S9.FT1
             LD      DE,S9.BASC1
             CALL    S1.FEHR
+;            
 S9.BASC1:   LD      HL,S1.RES           ;RESET-Adresse eintragen
             LD      (BC.RECOV1+1),HL
             LD      HL,S9.ANFPG         ;Anfangsprogramm laden
@@ -5495,6 +5496,7 @@ S9.BSCR:    LD      HL,BC.PAR
             LD      HL,S9.FT2
             LD      DE,S9.BASC2
             CALL    S1.FEHR
+;            
 S9.BASC2:   CALL    S9.BSC
             JP      BC.RECOV
 

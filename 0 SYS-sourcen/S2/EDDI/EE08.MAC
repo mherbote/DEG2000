@@ -1,0 +1,2981 @@
+;            PN      EE08
+
+;***************
+LHLDX       EQU     $
+EE.LHLDX:   POP     HL
+            PUSH    HL
+            LD      L,(HL)              ;HL:=d
+            LD      H,0
+            PUSH    IX                  ;IX:=IX+d
+            EX      DE,HL
+            ADD     IX,DE
+            EX      DE,HL
+            LD      L,(IX+0)            ;HL:=(IX+d)
+            LD      H,(IX+1)
+            POP     IX
+            POP     IY
+            INC     IY
+            JP      (IY)
+;***************
+LDXHL       EQU     $
+EE.LDXHL:   EX      DE,HL
+            POP     HL
+            PUSH    HL
+            LD      L,(HL)              ;HL:=d
+            LD      H,0
+            PUSH    IX                  ;IX:=IX+d
+            EX      DE,HL
+            ADD     IX,DE
+            EX      DE,HL
+            LD      (IX+0),E            ;(IX+d):=HL
+            LD      (IX+1),D
+            JR      $-26                ;0011
+;***************
+JPST:       POP     HL
+JPHL:       JP      (HL)
+;***************
+JPDX:       POP     HL
+            PUSH    HL
+            LD      L,(HL)
+            LD      H,0
+            PUSH    IX
+            EX      DE,HL
+            ADD     IX,DE
+            EX      DE,HL
+            PUSH    IX
+            POP     HL
+            POP     IX
+            POP     IY
+            INC     IY
+            PUSH    IY
+            JP      (HL)
+;***************
+INREC:      LD      A,'>'               ;Eingabeanfordg. und Eingabe
+            CALL    JPDX
+            DB      13                  ;rel. Adr. Output
+            CALL    JPDX
+            DB      10                  ;rel. Adr. Input
+            LD      A,00DH
+            RET
+;***************
+            DW      0
+            DW      0
+            DW      0
+;***************
+HLX32:      LD      HL,32               ;HL:=IX+32
+            EX      DE,HL
+            PUSH    IX
+            ADD     IX,DE
+            EX      DE,HL
+            PUSH    IX
+            POP     HL
+            POP     IX
+            RET
+;*               letzten vier Hexazeichen als Adresse nach IX+21 f.
+;*               in IX+20  Anzahl der Hexazeichen
+CVXA:       LD      A,(DE)              ;DE:=Anfang nach ' '
+            CP      ' '
+            INC     DE
+            JR      Z,$-04              ;0068
+;
+            DEC     DE
+            XOR     A
+            CALL    HLX32
+            LD      (HL),A
+            INC     HL
+            LD      (HL),A
+            INC     HL
+            LD      (HL),A
+            LD      A,(DE)
+            DEC     HL
+            DEC     HL
+            SUB     030H
+            RET     M
+;
+            CP      00AH
+            JR      C,$+10              ;008A
+            SUB     007H
+            CP      00AH
+            RET     M
+;
+            CP      010H
+            RET     P
+;
+            INC     DE
+            INC     (HL)
+            INC     HL
+            RLD
+            INC     HL
+            RLD
+            JR      $-26                ;0078
+;***************
+CVHLX:      CALL    CVXA
+            INC     HL
+            LD      B,H
+            LD      C,L
+            LD      L,(HL)
+            INC     BC
+            LD      A,(BC)
+            LD      H,A
+            RET
+;***************
+OTAX2:      PUSH    AF                  ;Ausgabe (A) --> 2 X
+            RRA
+            RRA
+            RRA
+            RRA
+            CALL    OTAX3
+            POP     AF
+OTAX3:      PUSH    HL
+            AND     00FH
+            ADD     A,030H
+            CP      03AH
+            JR      C,$+4               ;00B3
+;
+            ADD     A,007H
+            CALL    JPDX
+            DB      13                  ;rel. Adr. Output
+            POP     HL
+            RET
+;***************
+OTHLX:      LD      A,H                 ;Ausgabe HL --> 4 X
+            CALL    OTAX2
+            LD      A,L
+            JP      OTAX2
+;***************
+OTP1:       RLD
+            SET     4,A
+            SET     5,A
+            JR      C,$+4               ;00CB
+;
+            JR      Z,$+9               ;00D2
+;
+            EXX
+            CALL    JPDX
+            DB      13
+            EXX
+            SCF
+            RES     4,A
+            RES     5,A
+            RET
+;***************
+OTLN1:      CALL    HLX32
+            LD      DE,00017H
+            SBC     HL,DE
+OTPD:       XOR     A
+            CALL    OTP1
+            CALL    OTP1
+            RLD
+            DEC     HL
+            CALL    OTP1
+            SCF
+            CALL    OTP1
+            RLD
+            RET
+;***************
+OTADC:      AND     00FH
+            JR      Z,$+10              ;00FF
+;
+            LD      C,'0'
+            OR      C
+            CALL    JPDX
+            DB      13
+            RET
+;
+            LD      A,C
+            JR      $-06                ;00FA
+;***************
+OTLN2:      LD      C,' '
+            LD      A,(IX+09)
+            LD      B,A
+            RRA
+            RRA
+            RRA
+            RRA
+            CALL    OTADC
+            LD      A,B
+            CALL    OTADC
+            LD      A,(IX+08)
+            LD      B,A
+            RRA
+            RRA
+            RRA
+            RRA
+            CALL    OTADC
+            LD      A,B
+            LD      C,'0'
+            CALL    OTADC
+            DB      0
+            CALL    OTC00
+            DB      '. '
+            DB      0
+            RET
+;***************
+OTC00       EQU     $
+EE.OTC00:   EX      (SP),HL             ;Ausgabe  character  bis 00H
+            LD      A,(HL)
+            INC     HL
+            OR      A
+            JR      Z,$+10              ;013A
+;
+            EXX
+            CALL    JPDX
+            DB      13
+            EXX
+            JR      $-11                ;012D
+;
+            EX      (SP),HL
+            RET
+;***************
+ CVAPB:     LD      B,0                 ;Konv. in A: dezi gep. --> binaer
+            AND     A
+            RET     Z
+;
+            INC     B
+            DEC     A
+            DAA
+            JR      NZ,$-3              ;0140
+;
+            LD      A,B
+            RET
+;***************
+CVABP:      LD      B,A                 ;Konv. in A: binaer --> dezi gep.
+            AND     A
+            RET     Z
+;
+            XOR     A
+            INC     A
+            DAA
+            DJNZ    $-2                 ;014B
+            RET
+;***************
+APHLB:      LD      A,L                 ;HL+B decimal
+            ADD     A,B
+            DAA
+            LD      L,A
+            LD      A,H
+            ADC     A,0
+            JR      $+9                 ;0160
+;
+SPHLB:      LD      A,L                 ;HL-B decimal
+            SUB     B
+            DAA
+            LD      L,A
+            LD      A,H
+            SBC     A,0
+            DAA
+            LD      H,A
+            RET
+;***************
+ICPHL:      LD      B,1                 ;inc HL
+            JR      $-21                ;0150
+;***************
+DCPHL:      LD      B,1                 ;dec HL
+            JR      $-16                ;0159
+;***************
+ALNRB:      CALL    LHLDX               ;add packed LNR+B
+            DB      8
+            CALL    APHLB
+            CALL    LDXHL
+            DB      8
+            RET
+;***************
+SLNRB:      CALL    LHLDX               ;sub packed LNR-B
+            DB      8
+            CALL    SPHLB
+            JR      $-12                ;0172
+;***************
+ICLNR:      LD      B,1                 ;inc packed LNR
+            JR      $-23                ;016B
+;***************
+DCLNR:      LD      B,1                 ;dec packed LNR
+            JR      $-15                ;0177
+;***************
+UP1:        EX      DE,HL               ;suchen ' ' ab (DE)
+            LD      A,' '
+            CPI
+            JR      NZ,$-2              ;018B
+;
+            EX      DE,HL
+            CALL    CVHLX
+            PUSH    DE
+            CALL    LDXHL
+            DB      18H                 ;bufend
+            POP     DE
+            CALL    CVHLX
+            CALL    LDXHL
+            DB      1AH                 ;bufbeg
+            RET
+;***************
+UP2:        CALL    UP1
+            CALL    LHLDX
+            DB      24
+            LD      A,H
+            OR      L
+            RET     NZ
+;
+            CALL    LHLDX
+            DB      8
+            CALL    LDXHL
+            DB      18H
+            RET
+;***************
+UP3:        CALL    UP1
+UP4:        CALL    LHLDX
+            DB      24
+            LD      A,L
+            OR      H
+            RET     NZ
+;
+            LD      L,1
+            JR      $-17                ;01AF
+;***************
+UP5:        CALL    LHLDX
+            DB      34
+            LD      A,00DH
+            CPI
+            JR      NZ,$-2              ;01C8
+;
+            CALL    LDXHL
+            DB      34
+            CALL    LHLDX
+            DB      2
+            DEC     HL
+            SBC     HL,DE
+            RET
+;***************
+EE.UP6:     LD      HL,0
+            CALL    LDXHL
+            DB      32
+            CALL    LHLDX
+            DB      0
+            CALL    LDXHL
+            DB      34
+            CALL    UP5
+            RET     C
+;
+            CALL    LHLDX
+            DB      32
+            CALL    ICPHL
+            CALL    LDXHL
+            DB      32
+            CALL    LHLDX
+            DB      24
+            SBC     HL,DE
+            JR      NZ,$-21             ;01E7
+;
+            CALL    LHLDX
+            DB      34
+            CALL    LDXHL
+            DB      36
+            CALL    UP5
+            RET     C
+;
+            CALL    LHLDX
+            DB      34
+            CALL    LDXHL
+            DB      38
+            CALL    LHLDX
+            DB      26
+            EX      DE,HL
+            CALL    LHLDX
+            DB      32
+            SBC     HL,DE
+            RET     NC
+;
+            CALL    UP5
+            JR      C,$+15              ;0230
+;
+            CALL    LHLDX
+            DB      32
+            CALL    ICPHL
+            CALL    LDXHL
+            DB      32
+            JR      $-36                ;020A
+;
+            AND     A
+            RET
+;***************
+JP7:        CALL    UP2
+            JP      UP4
+;***************
+LDTAB:      CALL    LHLDX               ;lade Tabzeichen nach IX+31
+            DB      2                   ;Adresse in HL
+            LD      A,00DH
+            DEC     HL
+            CP      (HL)
+            JR      NZ,$-2              ;023E
+;
+            INC     HL
+            INC     A
+            LD      A,(HL)
+            LD      (IX+31),A
+            RET
+;***************
+UP8:        CALL    LDTAB
+            INC     HL
+            LD      A,(HL)
+            CP      00DH
+            RET     Z
+;
+            SUB     E
+            JR      C,$-6               ;024C
+;
+            PUSH    BC
+            DAA
+            LD      H,A
+            CALL    NZ,CVAPB
+            INC     B
+            POP     BC
+            RET
+;***************
+UP9:        CALL    EE.UP6
+            RET     C
+            CALL    LDTAB
+            CALL    LHLDX
+            DB      8
+            CALL    LDXHL
+            DB      28
+            CALL    LHLDX
+            DB      24
+            CALL    LDXHL
+            DB      8
+            LD      DE,0
+            LD      A,(IX+30)
+            CP      0
+            CALL    Z,OTLN2
+UP91:       CALL    LHLDX
+            DB      36
+            LD      C,(HL)
+            PUSH    DE
+            INC     HL
+            CALL    LDXHL
+            DB      36
+            POP     DE
+            LD      A,C
+            CP      (IX+31)             ;Tabzeichen
+            JR      Z,$+42              ;02B9
+;
+            CALL    JPDX
+            DEC     C
+            EX      DE,HL
+            EX      AF,AF'              ;'
+            CALL    ICPHL
+            EX      AF,AF'              ;'
+            EX      DE,HL
+            CP      00DH
+            JR      NZ,$-31             ;027F
+;
+            CALL    ICLNR
+            CALL    LHLDX
+            DB      38
+            EX      DE,HL
+            CALL    LHLDX
+            DB      36
+            SBC     HL,DE
+            JR      C,$-58              ;0274
+;
+            CALL    LHLDX
+            DB      28
+            CALL    LDXHL
+            DB      8
+            RET
+;
+            CALL    UP8
+            JR      Z,$-61              ;027F
+;
+            LD      C,A
+            DEC     C
+            JP      M,UP91
+;
+            CALL    OTC00
+            DB      ' '
+            DB      0
+            EX      DE,HL
+            CALL    ICPHL
+            EX      DE,HL
+            JR      $-14                ;02BF
+;***************
+PN1N2:      LD      (IX+30),0FFH        ;ohne  LNR
+            JP      UP9
+;
+QN1N2:      LD      (IX+30),0           ;mit   LNR
+            JR      $-07                ;02D3
+;***************
+UP10:       SBC     HL,DE
+            LD      B,H
+            LD      C,L
+            CALL    LHLDX
+            DB      2
+            PUSH    HL
+            ADD     HL,BC
+            EX      DE,HL
+            PUSH    HL
+            CALL    LHLDX
+            DB      4
+            SBC     HL,DE
+            JR      NC,$+5              ;02F3
+;
+            POP     DE
+            POP     HL
+            RET
+;***************
+UP11:       EX      DE,HL
+            PUSH    BC
+            CALL    LDXHL
+            DB      2
+            CALL    LHLDX
+            DB      6
+            ADD     HL,BC
+            EX      DE,HL
+            PUSH    HL
+            SBC     HL,DE
+            LD      B,H
+            LD      C,L
+            POP     DE
+            EXX
+            POP     BC
+            POP     DE
+            EXX
+            POP     HL
+            INC     BC
+            LDDR
+            EXX
+            CALL    LHLDX
+            DB      6
+            EX      DE,HL
+            LDIR
+            RET
+;***************
+UP12:       LD      H,B
+            LD      L,C
+            LD      A,'>'               ;suchen '>' nach rechts
+            CPI
+            JR      NZ,$-2              ;031A
+;
+            PUSH    HL
+            LD      BC,0
+            LD      A,(HL)
+            INC     HL
+            CP      ' '                 ;ASCII - Test
+            JR      C,$+7               ;032D
+;
+            CP      07FH
+            JR      NC,$+3              ;032D
+;
+            INC     BC
+            PUSH    HL
+            AND     A
+            SBC     HL,DE               ;bufpos-bufend
+            POP     HL
+            JR      C,$-16              ;0322
+;
+            POP     DE                  ;Adr.'>'+1 , NC , Z
+            RET                         ;BC: Anz. nicht ASCII
+;***************
+UP13:       CALL    LHLDX
+            DB      0
+            CALL    LDXHL
+            DB      34
+            LD      HL,0
+            PUSH    HL
+            CALL    UP5
+            POP     HL
+            JR      C,$+24              ;035E
+;
+            CALL    ICPHL
+            EX      DE,HL
+            CALL    LHLDX
+            DB      8
+            SBC     HL,DE
+            EX      DE,HL
+            JR      NZ,$-18             ;0341
+;
+            CALL    LHLDX
+            DB      34
+            CALL    LDXHL
+            DB      6
+            RET
+;***************
+UP14:       LD      D,H
+            LD      E,L
+            INC     DE
+            CALL    LDXHL
+            DB      8
+            JR      $-47                ;0336
+;***************
+DN1N2:      CALL    EE.UP6
+            RET     C
+;
+            CALL    LHLDX
+            DB      36
+            EX      DE,HL
+            CALL    LHLDX
+            DB      38
+UP15:       PUSH    HL
+            PUSH    DE
+            SBC     HL,DE
+            LD      B,H                 ;Laenge
+            LD      C,L
+            CALL    LHLDX
+            DB      2
+            SBC     HL,BC
+            CALL    LDXHL
+            DB      2
+            POP     HL
+            EX      DE,HL
+            INC     HL
+            SBC     HL,DE
+            LD      B,H
+            LD      C,L
+            POP     HL
+            LDIR
+            RET
+;***************
+INLIN:      CALL    INREC               ;Zeile anfordern ,
+            EX      DE,HL               ;Modus und Zeilennummer auswerten
+            CALL    LDXHL               ;>> bufbeg   ,  <-' bufend
+            DB      24                  ;bufend
+            LD      A,'>'               ;'>' nach links suchen
+            EX      DE,HL
+            LD      BC,0FFFFH
+            CPDR
+            RET     NZ                  ;nicht gefunden : NZ
+;
+            CP      (HL)                ;davor auch '>' ?
+            DEC     HL
+            JR      NZ,$-5              ;039D
+;
+            INC     HL
+            INC     HL
+            CALL    LDXHL
+            DB      26                  ;bufbeg
+            LD      BC,7                ;C - Modus ?
+            EX      DE,HL
+            LD      A,'C'
+            CPDR
+            JR      NZ,$+6              ;03B8
+;
+            INC     HL
+            INC     HL
+            JR      $+10                ;03C0
+;
+            LD      BC,5                ;I - Modus ?
+            LD      A,'I'
+            CPIR
+            RET     NZ
+;
+            LD      (IX+28),A           ;Modus eintragen
+            EX      DE,HL
+            LD      A,(DE)
+            CP      '>'
+            JR      NZ,$+4              ;03CB
+;
+            AND     A
+            RET
+;
+            CALL    CVHLX               ;Zeilennummer auswerten
+            CALL    LDXHL
+            DB      8                   ;LNR
+            XOR     A
+            RET
+;
+            PAGE
+;***************
+MDIGN:      CALL    OTC00
+            DB      ' - DATA IGNORED'
+            DW      0000DH
+            RET
+;***************
+MIERR:      CALL    OTC00
+            DB      'INPUT ERROR'
+            DB      0
+            JP      MDIGN
+;***************
+MFREE:      CALL    OTC00
+            DB      'FREE:'
+            DB      0
+            EX      DE,HL
+            JP      OTHLX
+;***************
+MREJC:      CALL    OTC00
+            DB      ' - REJECTED'
+            DW      0000DH
+            RET
+;***************
+MFD:        CALL    MFREE
+            JP      MDIGN
+;***************
+MFR:        CALL    MFREE
+            JP      MREJC
+;***************
+MFILE:      CALL    OTC00
+            DB      'FILE EMPTY'
+            DB      0
+            JP      MREJC
+;***************
+MCERR:      CALL    OTC00
+            DB      'INVALID COMMAND'
+            DW      0000DH
+            RET
+;***************
+MMAXL:      CALL    OTC00
+            DB      'MAXLINE:'
+            DB      0
+            CALL    LHLDX
+            DB      8
+            CALL    OTHLX
+            CALL    OTC00
+            DW      0000DH
+            RET
+;***************
+MFILR:      CALL    OTC00
+            DB      'FILE READY'
+            DW      0000DH
+            RET
+;***************
+MPERR:      CALL    OTC00
+            DB      'ILLEGAL PARAMETER'
+            DW      0000DH
+            RET
+;***************
+MFERR:      CALL    OTC00
+            DB      'NO FILE AT SPECIFIED LOCATION'
+            DW      0000DH
+            RET
+;***************
+CHOPT:      CALL    OTC00
+            DB      'CHANGE OPTIONS ('
+            DB      0
+            LD      A,(IX+40)
+            CALL    JPDX
+            DB      13
+            CALL    OTC00
+            DB      ') ?'
+            DB      0
+            CALL    INREC
+            DEC     DE
+            LD      A,(DE)
+            CP      '>'
+            RET     Z                   ;leere Eingabe oder letztes
+;                                       ;Zeichen Option
+            LD      (IX+40),A
+            RET
+;
+            PAGE
+;***************
+INIT:       CALL    CHOPT
+            LD      A,(IX+40)
+            CP      'X'
+            RET     Z
+;
+            CP      'N'                 ;"new"
+            JR      Z,$+12              ;04F3
+;
+            CP      'F'                 ;"file"
+            JR      Z,$+47              ;051A
+;
+            CP      'T'                 ;"test"
+            JR      Z,$+50              ;0521
+;
+            JR      $+55                ;0528
+;
+            CALL    OTC00
+            DB      'NEW '
+            DB      0
+            CALL    LHLDX
+            DB      0
+            LD      (HL),00DH
+            INC     HL
+            LD      (HL),';'
+            INC     HL
+            LD      (HL),006H
+            INC     HL
+            LD      (HL),00DH
+            CALL    LDXHL
+            DB      2
+            LD      HL,0                ;LNR:=0
+            CALL    LDXHL
+            DB      8
+            CALL    MFILR
+            INC     A
+            RET
+;***************
+            CALL    UP16
+            JR      Z,$-42              ;04F3
+;
+            JR      $-10                ;0515
+;***************
+            CALL    UP16
+            JR      Z,$-72              ;04DC
+;
+            JR      $-07                ;051F
+;***************
+            XOR     A
+            DW      0
+            JR      $-7                 ;0524
+;***************
+UP16:       CALL    LHLDX
+            DB      0
+            LD      A,(HL)
+            CP      00DH
+            JP      NZ,MFERR
+;
+            CALL    LHLDX
+            DB      2
+            LD      A,(HL)
+            CP      00DH
+            JP      NZ,MFERR
+;
+            AND     A
+            RET
+;***************
+UP17:       CALL    LHLDX               ;DE:=bufend
+            DB      24
+            EX      DE,HL
+            CALL    LHLDX               ;HL:=bufbeg
+            DB      26
+            LD      B,H
+            LD      C,L
+            CALL    UP12
+            RET     NZ
+;
+            PUSH    BC                  ;Anz. nicht ASCII
+            PUSH    DE                  ;'>'+1
+            CALL    UP13
+            POP     DE
+            POP     BC
+            LD      H,B
+            LD      L,C
+            ADD     HL,DE
+            PUSH    BC
+            PUSH    DE
+            INC     HL
+            CALL    UP10
+            POP     DE
+            POP     BC
+            RET     C
+            CALL    LHLDX
+            DB      6
+            LD      A,(DE)
+            CP      ' '
+            JR      C,$+9               ;0575
+;
+            CP      07FH
+            JR      NC,$+5              ;0575
+;
+            DEC     BC
+            LD      (HL),A
+            INC     HL
+            INC     DE
+            LD      A,B
+            OR      C
+            JR      NZ,$-15             ;0569
+;
+            LD      A,00DH
+            LD      (HL),A
+            XOR     A
+            RET
+
+            PAGE
+;***************
+MEDIT:      CALL    OTC00
+            DB      00DH
+            DB      'DEG 2000   Texteditor  E D D I   VM 2.1      '
+            DW      00D0DH
+            DB      0
+            RET
+;***************
+RTSYS:      CALL    MEDIT
+            PUSH    IX
+            POP     HL
+            LD      DE,16
+            ADD     HL,DE
+            JP      (HL)
+;***************
+START       EQU     $
+EE.START:   CALL    MEDIT
+            CALL    INIT
+            JR      Z,RTSYS
+;
+            LD      HL,1
+            CALL    LDXHL               ;laden Zeilennummer
+            DB      8
+            CALL    DCLNR
+CREG        EQU     $            
+EE.CREG:    CALL    OTC00
+            DB      'C'
+            DB      0
+            CALL    OTLN1
+            CALL    OTC00
+            DB      '>'
+            DB      0
+            CALL    JPDX
+            DB      19
+            CALL    INLIN
+            JR      Z,$+7               ;05EC
+;
+            CALL    MIERR
+            JR      CREG
+;
+            LD      A,(IX+28)
+            CP      'C'
+            JR      Z,$+36              ;0615
+;
+            CALL    UP17
+            JR      Z,$+21              ;060B
+;
+            JR      NC,$-42             ;05CE
+;
+            CALL    LHLDX
+            DB      2                   ;EOF
+            EX      DE,HL
+            CALL    LHLDX
+            DB      4                   ;EOR
+            SBC     HL,DE
+            EX      DE,HL
+            CALL    MFD
+            JR      $-59                ;05CE
+;***************
+EE.UP18:    CALL    ICLNR
+            CALL    OTC00
+            DB      'I'
+            DB      0
+            JR      $-61                ;05D6
+;***************
+CMOD:       CALL    LHLDX
+            DB      26
+            INC     HL
+            LD      A,(HL)
+            CP      ' '                 ;11H
+            JR      Z,$-18              ;060B JRC -18
+            CALL    LHLDX
+            LD      A,(DE)
+            INC     HL
+            LD      A,(HL)
+            CP      ' '                 ;11H
+            JR      Z,$+15              ;0636 JRC +15
+;
+            CP      'a'
+            JR      C,$-8               ;0623
+;
+            CP      07BH
+            JR      NC,$-12             ;0623
+;
+            SUB     020H
+            LD      (HL),A
+            JR      $-17                ;0623
+;
+            CALL    LHLDX
+            DB      26                  ;bufbeg
+            EX      DE,HL
+            LD      HL,LHLDX+600H
+            CALL    CFIND
+            JR      NZ,$+3              ;0644
+;
+            JP      (HL)
+;***************
+UP19:       CALL    LHLDX
+            DB      26                  ;bufbeg
+            EX      DE,HL
+            CALL    LHLDX
+            DB      22
+            CALL    CFNDC
+            JR      NZ,$+3              ;....
+;
+            JP      (HL)
+            CALL    LHLDX
+            DB      26                  ;bufbeg
+            EX      DE,HL
+            INC     DE
+            CALL    CVHLX
+            JR      C,$+8               ;0664
+;
+            CALL    MCERR
+            JP      CREG
+;
+            CALL    MAXLN
+            JR      $-6                 ;0661
+;***************
+CFIND:      LD      BC,00CFFH
+            LD      A,(DE)
+            CPIR
+            RET     NZ
+;
+            PUSH    HL
+            PUSH    DE
+            PUSH    BC
+            INC     DE
+            LD      A,(DE)
+            CPI
+            JR      Z,$-4               ;0673
+;
+            CP      ','
+            JR      Z,$+6               ;0681
+;
+            CP      ' '                 ;11H
+            JR      NZ,$+13             ;068C JRNC +13
+;
+            DEC     HL
+            LD      A,00DH
+            CP      (HL)
+            JR      NZ,$+7              ;068C
+;
+            POP     BC
+            POP     BC
+            POP     DE                  ;POP BC
+            INC     HL
+            RET
+;
+            POP     BC
+            POP     DE
+            POP     HL
+            JR      $-35                ;066C
+;***************
+MAXLN:      CALL    LDXHL
+            DB      8
+            CALL    LHLDX
+            DB      0
+            EX      DE,HL
+            LD      HL,0
+            INC     DE                  ;suche 0DH nach rechts
+            LD      A,(DE)
+            CP      00DH
+            JR      NZ,$-4              ;069D
+;
+            PUSH    HL
+            CALL    LHLDX
+            DB      2
+            SBC     HL,DE
+            POP     HL
+            JR      Z,$+7               ;06B2
+;
+            CALL    ICPHL
+            JR      $-19                ;069D
+;
+            EX      DE,HL
+            CALL    LHLDX
+            DB      8
+            SBC     HL,DE
+            RET     C
+;
+            EX      DE,HL
+            CALL    LDXHL
+            DB      8
+            JP      MMAXL
+;***************
+ENTRY:      DB      '>ENTRY'
+            DB      00DH
+            JP      START+3
+;***************
+DEBLP:      CALL    LHLDX
+            DB      26                  ;bufbeg
+            LD      A,(HL)
+            INC     HL
+            CP      ' '
+            JR      NZ,$-4              ;06D0
+;
+            EX      DE,HL
+            RET
+;***************
+UP20:       CALL    DEBLP
+            CALL    LDTAB
+            INC     HL
+            PUSH    HL
+            CALL    CVHLX
+            LD      A,L
+            AND     A
+            POP     HL
+            RET     Z
+;
+            LD      (HL),A
+            INC     HL
+            LD      (HL),00DH
+            PUSH    DE
+            EX      DE,HL
+            CALL    LHLDX
+            DB      4
+            SBC     HL,DE
+            EX      DE,HL
+            EX      AF,AF'              ;'
+            CALL    LDXHL
+            DB      2
+            EX      AF,AF'              ;'
+            POP     HL
+            EX      DE,HL
+            RET     Z
+;
+            JR      $-30                ;06DF
+;***************
+MTAB:       CALL    OTC00
+            DB      'TAB '
+            DB      0
+            CALL    LDTAB
+            PUSH    HL
+            CALL    JPDX
+            DB      13
+            POP     HL
+            CALL    OTC00
+            DB      ' '
+            DB      0
+            INC     HL
+            LD      A,(HL)
+            CP      00DH
+            JR      Z,$+7               ;0720
+;
+            CALL    OTAX2
+            JR      $-14                ;0710
+;
+            CALL    JPDX
+            DEC     C
+            RET
+;***************
+MSOF:       CALL    OTC00
+            DB      'SOF:'
+            DB      0
+            CALL    LHLDX
+            DB      0
+            JR      MAEND               ;075B
+;***************
+MEOF:       CALL    OTC00
+            DB      'EOF:'
+            DB      0
+            CALL    LHLDX
+            DB      2
+            JR      MAEND               ;075B
+;***************
+MEOR:       CALL    OTC00
+            DB      'EOR:'
+            DB      0
+            CALL    LHLDX
+            DB      4
+            JR      MAEND               ;075B
+;***************
+MSOI:       CALL    OTC00
+            DB      'SOI:'
+            DB      0
+            CALL    LHLDX
+            DB      6
+;
+MAEND:      CALL    OTHLX
+            CALL    OTC00
+            DB      '    '
+            DB      0
+            RET
+;***************
+MFINF:      CALL    MSOF
+            CALL    MEOF
+            CALL    MEOR
+            JP      UP40
+;***************
+OTCR:       CALL    OTC00
+            DW      0000DH
+            RET
+;***************
+MFIT:       CALL    MFINF
+            JP      MTAB
+;***************
+
+            PAGE
+INFO:       DB      '>INFO'
+            DB      00DH
+;
+            CALL    MFIT
+            JP      CREG
+;***************
+EXIT:       DB      '>EXIT'
+            DB      00DH
+;
+            LD      HL,1
+            CALL    LDXHL
+            DB      24
+            LD      HL,09999H
+            CALL    LDXHL
+            DB      26
+            CALL    CHOPT
+            CALL    OTC00
+            DW      00D0DH
+            DB      0
+            LD      A,(IX+40)           ;option
+            CP      'X'
+            JR      Z,$+18              ;07BF
+;
+            CP      'P'
+            JR      Z,$+11              ;07BC
+;
+            CP      'L'
+            JR      NZ,$-22             ;079F
+;
+            CALL    QN1N2
+            JR      $+05                ;07BF
+;
+            CALL    PN1N2
+            CALL    OTCR
+            CALL    MFIT
+            JP      RTSYS
+;***************
+TAB:        DB      '>TAB'
+            DB      00DH
+;
+            CALL    DEBLP
+            LD      A,(DE)
+            PUSH    AF
+            CALL    LDTAB
+            POP     AF
+            LD      (HL),A
+            CALL    MTAB
+            JP      CREG
+;***************
+SET:        DB      '>SET'
+            DB      00DH
+;
+            CALL    UP20
+            JR      $-14                ;07D7
+;***************
+TOP:        DB      '>TOP'
+            DB      00DH
+;
+            LD      HL,0
+            CALL    MAXLN
+            JP      CREG
+;***************
+LAST:       DB      '>LAST'
+            DB      00DH
+;
+            LD      HL,09999H
+            JR      $-15                ;07EF
+;***************
+HEAD:       DB      '>HEAD'
+            DB      00DH
+            LD      HL,0
+            CALL    LDXHL
+            DB      8
+            JP      EE.UP18
+;***************
+BOTM:       DB      '>BOTM'
+            DB      00DH
+            LD      HL,09999H
+            CALL    MAXLN
+            JR      $-15                ;080D
+;***************
+EE.LN1N2:   CALL    LHLDX
+            DB      26                  ;bufbeg
+            EX      DE,HL
+            JP      JP7
+;***************
+PRT:        DB      '>PRT'
+            DB      00DH
+            CALL    EE.LN1N2
+            CALL    PN1N2
+            CALL    C,MPERR
+            JP      CREG
+;***************
+LNP:        DB      '>LNP'
+            DB      00DH
+            CALL    EE.LN1N2
+            CALL    QN1N2
+            JR      $-17                ;0831
+;***************
+GO:         DB      '>GO'
+            DB      00DH
+            CALL    EE.LN1N2
+            CALL    LHLDX
+            DB      24
+            CALL    MAXLN
+            CALL    LHLDX
+            DB      8
+            CALL    LDXHL
+            DB      24
+            JR      $-27
+;***************
+DEL:        DB      '>DEL'
+            DB      00DH
+            CALL    EE.LN1N2
+            CALL    DN1N2
+            JR      $-37                ;0842
+;***************
+UP21:       CALL    EE.UP6
+            RET     C
+;
+            CALL    LHLDX
+            DB      36
+            EX      DE,HL
+            CALL    LHLDX
+            DB      6
+            SBC     HL,DE
+            JR      NC,$+17             ;0889
+            CALL    LHLDX
+            DB      38
+            PUSH    HL
+            SBC     HL,DE
+            LD      B,H
+            LD      C,L
+            POP     HL
+            EX      DE,HL
+            ADD     HL,BC
+            ADD     HL,BC
+            JR      $+06                ;088D
+;
+            CALL    LHLDX
+            DB      38
+            PUSH    DE
+            PUSH    HL
+            CALL    UP10
+            POP     HL
+            POP     DE
+            JR      C,$+4               ;0898
+;
+            XOR     A
+            RET
+;
+            OR      0FFH
+            RET
+;***************
+UP22:       CALL    ICLNR
+            CALL    EE.LN1N2
+            CALL    UP13
+            CALL    UP21
+            RET     Z
+;
+            JP      NC,UP23
+;
+            CALL    MPERR
+            INC     A
+            RET
+;***************
+COPY:       DB      '>COPY'
+            DB      00DH
+            CALL    UP22
+            CALL    DCLNR
+            JP      CREG
+;***************
+MOVE:       DB      '>MOVE'
+            DB      00DH
+            CALL    UP22
+            JR      NZ,$-15             ;08B9
+;
+            CALL    UP15
+            JR      $-20                ;08B9
+;***************
+UP23:       CALL    LHLDX
+            DB      2
+            EX      DE,HL
+            CALL    LHLDX
+            DB      4
+            SBC     HL,DE
+            EX      DE,HL
+            CALL    MFR
+            INC     A
+            RET
+;***************
+UP24:       CALL    LHLDX
+            DB      0
+            EX      DE,HL
+            INC     DE
+            LD      BC,0
+            CALL    LDTAB
+            SBC     HL,DE
+            JP      Z,MFILE
+;
+            LD      HL,0
+            PUSH    HL
+            PUSH    BC
+            POP     HL
+            CALL    ICPHL
+            PUSH    HL
+            POP     BC
+            POP     HL
+            LD      A,(DE)
+            CP      (IX+31)
+            JR      Z,$+24              ;..19
+;
+            PUSH    BC
+            CALL    ICPHL
+            LD      A,(DE)
+            INC     DE
+            POP     BC
+            CP      00DH
+            JR      NZ,$-15             ;..FD
+            PUSH    HL
+            CALL    LDTAB
+            SBC     HL,DE
+            POP     HL
+            JR      NZ,$-36             ;..F1
+;
+            AND     A
+            RET
+;
+            EX      DE,HL
+            PUSH    HL
+            PUSH    DE
+            PUSH    BC
+            JP      UP39
+;***************
+UP25:       CALL    LHLDX
+            DB      2
+            LD      C,A
+            LD      B,0
+            ADD     HL,BC
+            DEC     HL
+            EX      DE,HL
+            CALL    LHLDX
+            DB      4
+            SBC     HL,DE
+            POP     BC
+            POP     HL
+            POP     DE
+            JR      NC,$+26             ;094D
+;
+            CALL    OTC00
+            DB      'STOP LINE:'
+            DB      0
+            LD      H,B
+            LD      L,C
+            CALL    MAEND
+            CALL    UP23
+            XOR     A
+            RET
+;
+            PUSH    BC
+            PUSH    HL
+            PUSH    AF
+            LD      H,D
+            LD      L,E
+            INC     HL
+            PUSH    DE
+            CALL    UP15
+            POP     DE
+            POP     AF
+            LD      L,A
+            LD      H,0
+            ADD     HL,DE
+            PUSH    AF
+            PUSH    DE
+            PUSH    HL
+            EX      DE,HL
+            CALL    LDXHL
+            DB      6
+            POP     HL
+            CALL    UP10
+            POP     DE
+            POP     BC
+            POP     HL
+            LD      A,' '
+            LD      (DE),A
+            INC     DE
+            PUSH    BC
+            CALL    ICPHL
+            POP     BC
+            DJNZ    $-9                 ;096C
+            POP     BC
+            INC     A
+            JR      $-109               ;090C
+;***************
+FILL:       DB      '>FILL'
+            DB      00DH
+            CALL    UP24
+            JP      NZ,CREG
+;
+            CALL    OTC00
+            DB      00DH
+            DB      'ENTRY: '
+            DB      0
+            JP      START+3
+;***************
+UP26:       INC     A
+            DAA
+            LD      DE,0
+            PUSH    AF
+            LD      A,(HL)
+            CP      (IX+31)
+            JR      Z,$+15              ;09AF
+;
+            POP     AF
+            DEC     A
+            DAA
+            RET     Z
+;
+            PUSH    AF
+            EX      DE,HL
+            CALL    ICPHL
+            EX      DE,HL
+            POP     AF
+            JR      $+16                ;09BD
+;
+            PUSH    HL
+            CALL    UP8
+            LD      B,H
+            POP     HL
+            EX      DE,HL
+            CALL    APHLB
+            EX      DE,HL
+            POP     AF
+            SUB     B
+            DAA
+            INC     HL
+            LD      B,A
+            LD      A,(HL)
+            CP      00DH
+            LD      A,B
+            JR      NZ,$-40             ;099B
+;
+            AND     A
+            RET
+;***************
+UP27:       CALL    LDTAB
+            EX      DE,HL
+            INC     DE
+            LD      A,(DE)
+            CP      00DH
+            RET     Z
+;
+            CALL    LHLDX
+            DB      0
+            INC     HL
+            LD      A,(DE)
+            PUSH    DE
+            CALL    UP26
+            POP     DE
+            JR      NZ,$+50             ;0A0D
+;
+            DEC     HL
+            LD      A,(HL)
+            CP      020H
+            JR      NZ,$+38             ;0A07
+;
+            LD      A,(IX+31)
+            LD      (HL),A
+            PUSH    DE
+            LD      D,H
+            LD      E,L
+            DEC     DE
+            LD      A,(DE)
+            CP      ' '
+            JR      Z,$-4               ;09EA
+;
+            INC     DE
+            PUSH    HL
+            AND     A
+            SBC     HL,DE
+            PUSH    HL
+            EXX
+            POP     HL
+            EXX
+            POP     HL
+            PUSH    DE
+            CALL    NZ,UP15
+            POP     DE
+            POP     HL
+            EXX
+            PUSH    HL
+            EXX
+            POP     BC
+            SBC     HL,BC
+            EX      DE,HL
+            INC     HL
+            LD      A,(HL)
+            CP      00DH
+            JR      NZ,$-4              ;0A07
+;
+            PUSH    DE
+            EX      DE,HL
+            CALL    LDTAB
+            INC     DE
+            SBC     HL,DE
+            EX      DE,HL
+            POP     DE
+            JR      NZ,$-66             ;09D5
+;
+            JR      $-78                ;09CB
+;***************
+PACK:       DB      '>PACK'
+            DB      00DH
+            CALL    UP27
+            CALL    MTAB
+            JP      CREG
+;***************
+DFN:        DB      '>DFN'
+            DB      00DH
+            LD      (IX+31),0
+            CALL    LHLDX
+            DB      26
+            LD      A,':'
+            LD      BC,0001FH
+            CPIR
+            JR      Z,$+7               ;0A45
+;
+DFN1:       CALL    MIERR
+            JR      $-28                ;0A27
+;
+            XOR     A
+            CP      (IX+31)
+            JR      NZ,$+47             ;0A78
+;
+            LD      D,(HL)
+            INC     HL
+            INC     HL
+            LD      E,(HL)
+            PUSH    DE
+            CALL    EE.LN1N2
+            CALL    EE.UP6
+            POP     BC
+            JR      C,$+30              ;0A75
+;
+            CALL    LHLDX
+            DB      36
+            EX      DE,HL
+            CALL    LHLDX
+            DB      38
+            DEC     HL
+            SBC     HL,DE
+            PUSH    BC
+            LD      B,H
+            LD      C,L
+            EX      DE,HL
+            POP     DE
+            LD      A,D
+            CPIR
+            JR      NZ,$-42             ;0A43
+;
+            DEC     HL
+            LD      (HL),E
+            INC     BC
+            CP      E
+            JR      NZ,$-9              ;0A6A
+;
+            JP      PRT+11
+;
+            EX      DE,HL
+            CALL    CVHLX
+            INC     DE
+            PUSH    HL
+            CALL    CVHLX
+            POP     DE
+            LD      D,E
+            LD      E,L
+            JR      $-53                ;0A4F
+;***************
+ASC:        DB      '>ASC'
+            DB      00DH
+            LD      (IX+31),0FFH
+            JP      DFN+9
+;***************
+HELP:       DB      '>HELP'
+            DB      00DH
+            LD      HL,LHLDX+6C0H
+            CALL    UP28
+            CALL    LHLDX
+            DB      22
+            CALL    UP38
+            CALL    OTC00
+            DB      00DH
+            DB      0
+            JP      CREG
+;***************
+UP28:       LD      BC,00BFFH
+            LD      A,'>'
+            CPIR
+            RET     NZ
+;
+            PUSH    BC
+            PUSH    HL
+            NOP
+            LD      A,00DH
+            LD      BC,7
+            CPIR
+            POP     HL
+            POP     BC
+            JR      NZ,$-17             ;0AB0
+;
+            PUSH    BC
+            PUSH    HL
+            EX      DE,HL
+            LD      A,(DE)
+            CP      00DH
+            JR      NZ,$+4              ;0ACD
+;
+            LD      A,' '
+            CALL    JPDX
+            DEC     C
+            CP      ' '
+            INC     DE
+            JR      NZ,$-14             ;0AC6
+;
+            AND     A
+            JR      $-24                ;0ABF
+;***************
+UP29:       PUSH    HL
+            PUSH    BC
+            POP     HL
+            EX      DE,HL
+            LD      A,(DE)
+            CP      00DH
+            JR      Z,$+8               ;0AE8
+;
+            CP      (HL)
+            JR      Z,$+11              ;0AEE
+;
+            INC     DE
+            JR      $-9                 ;0ADD
+;
+            INC     DE
+            LD      B,D
+            LD      C,E
+            EX      DE,HL
+            POP     HL
+            RET
+;
+            LD      B,H
+            LD      C,L
+            POP     HL
+            PUSH    HL
+            SBC     HL,BC
+            PUSH    HL
+            LD      H,B
+            LD      L,C
+            POP     BC
+            LD      B,C
+            PUSH    HL
+            PUSH    DE
+            LD      A,(DE)
+            CP      (HL)
+            INC     HL
+            INC     DE
+            JR      NZ,$+10             ;0B09
+;
+            DJNZ    $-6                 ;0AFB
+            EX      DE,HL
+            POP     DE
+            POP     BC
+            POP     BC
+            SCF
+            RET
+;
+            POP     DE
+            POP     HL
+            JR      $-38                ;0AE5
+;***************
+UP30:       LD      (IX+41),0
+            PUSH    IX
+            POP     HL
+            LD      DE,00030H
+            ADD     HL,DE
+            LD      A,(HL)
+            INC     HL
+            CALL    LDXHL
+            DB      42
+            EX      DE,HL
+            CP      (HL)
+            INC     HL
+            JR      NZ,$-2              ;0B1F
+;
+            CALL    LDXHL
+            DB      44
+            EX      DE,HL
+            CP      (HL)
+            INC     HL
+            JR      NZ,$-2              ;0B28
+;
+            DEC     HL
+            CALL    LDXHL
+            DB      46
+            CALL    LHLDX
+            DB      42
+            EX      DE,HL
+            CALL    LHLDX
+            DB      44
+            DEC     HL
+            CALL    UP29
+            RET     NC
+;
+            EX      DE,HL
+            PUSH    DE
+            CALL    LDXHL
+            DB      6
+            POP     HL
+            PUSH    DE
+            CALL    UP15
+            CALL    LHLDX
+            DB      44
+            EX      DE,HL
+            CALL    LHLDX
+            DB      46
+            PUSH    HL
+            SBC     HL,DE
+            POP     HL
+            POP     BC
+            JR      Z,$+9               ;..61
+;
+            CALL    UP10
+            JR      C,$+14              ;..6B
+;
+            LD      B,D
+            LD      C,E
+            LD      A,(IX+41)
+            INC     A
+            DAA
+            LD      (IX+41),A
+            JR      $-56                ;..31
+;
+            CALL    LHLDX
+            DB      42
+            EX      DE,HL
+            CALL    LHLDX
+            DB      44
+            DEC     HL
+            CALL    UP10
+            SCF
+            RET
+;***************
+OTLDE:      DEC     DE                  ;Ausgabe der Zeile, auf die (DE) zeigt
+            LD      A,(DE)              ;(incl. Ende 0DH)
+            CP      00DH
+            JR      NZ,$-4              ;0B7A
+;
+            INC     DE
+            LD      A,(DE)
+            CALL    JPDX
+            DB      00DH
+            CP      00DH
+            JR      NZ,$-8              ;0B80
+;
+            INC     DE
+            RET
+;***************
+UP31:       CALL    OTC00
+            DB      ' ('
+            DB      0
+            LD      A,(IX+41)
+            CALL    OTAX2
+            CALL    OTC00
+            DB      ') '
+            DB      0
+            RET
+;***************
+UP32:       CALL    EE.UP6
+            JP      C,MPERR
+;
+            CALL    LHLDX
+            DB      36
+            LD      B,H
+            LD      C,L
+            CALL    LDTAB
+            SBC     HL,BC
+            RET     Z
+;
+            CALL    UP30
+            JR      NC,$+19             ;0BC7
+;
+            CALL    OTC00
+            DB      00DH
+            DB      0
+            CALL    UP31
+            CALL    LHLDX
+            DB      24
+            LD      B,H
+            LD      C,L
+            JP      UP25+21
+;
+            LD      A,(IX+40)
+            CP      'P'
+            JR      NZ,$+25             ;0BE5
+;
+            LD      A,(IX+41)
+            CP      0
+            JR      Z,$+18              ;0BE5
+;
+            CALL    LHLDX
+            DB      24
+            CALL    OTHLX
+            CALL    UP31
+            LD      D,B
+            LD      E,C
+            DEC     DE
+            CALL    OTLDE
+            PUSH    BC
+            CALL    LHLDX
+            DB      24
+            CALL    ICPHL
+            CALL    LDXHL
+            DB      24
+            CALL    LHLDX
+            DB      26
+            SBC     HL,DE
+            POP     BC
+            RET     C
+;
+            JR      $-78                ;0BAB
+;***************
+CHANG:      DB      '>CHANGE'
+            DB      00DH
+            CALL    LHLDX
+            DB      26
+            LD      A,','
+            LD      BC,8
+            CPIR
+            JR      NZ,$+13             ;0C1B
+;
+            LD      A,(HL)
+            LD      (IX+40),A
+            LD      A,':'
+            LD      BC,15
+            CPIR
+            JR      NZ,$+15             ;0C2A
+;
+            PUSH    HL
+            PUSH    IX
+            POP     HL
+            LD      DE,48
+            ADD     HL,DE
+            EX      DE,HL
+            POP     HL
+            CALL    UP33
+            JP      NZ,DFN1
+;
+            CALL    EE.LN1N2
+            CALL    UP32
+            JP      CREG
+;***************
+UP33:       CALL    UP37
+            DB      0
+            LD      (IX+29),0
+            PUSH    HL
+            CALL    LHLDX
+            DB      24
+            DEC     HL
+            LD      A,')'
+            CP      (HL)
+            JR      NZ,$+22             ;0C5D
+;
+            DEC     HL
+            DEC     HL
+            DEC     HL
+            DEC     HL
+            LD      A,(HL)
+            LD      (IX+28),A
+            INC     HL
+            INC     HL
+            EX      DE,HL
+            PUSH    HL
+            CALL    CVHLX
+            LD      (IX+29),L
+            EX      DE,HL
+            POP     DE
+            POP     HL
+            LD      B,0
+            LD      C,(HL)
+            LD      A,(HL)
+            CP      ' '
+            JR      C,$+20              ;0C78
+;
+            CP      07FH
+            JR      NC,$+16             ;0C78
+;
+            CP      C
+            JR      NZ,$+03             ;0C6E
+;
+            INC     B
+            CP      (IX+28)
+            JR      NZ,$+5              ;0C76
+;
+            LD      A,(IX+29)
+            LD      (DE),A
+            INC     DE
+            INC     HL
+            EX      DE,HL
+            PUSH    HL
+            CALL    LHLDX
+            DB      24
+            SBC     HL,DE
+            POP     HL
+            EX      DE,HL
+            JR      NC,$-34             ;0C61
+;
+            LD      A,003H
+            CP      B
+            RET
+;***************
+            DW      0
+            DW      0
+;***************
+EDIT:       DB      '>EDIT'
+            DB      00DH
+            CALL    LHLDX
+            DB      26
+            LD      A,','
+            LD      BC,6
+            CPIR
+            LD      A,'!'
+            JR      NZ,$+3              ;..A3
+;
+            LD      A,(HL)
+            LD      (IX+40),A
+            CALL    EE.LN1N2
+            CALL    EE.UP6
+            JP      C,PRT+11
+;
+            CALL    OTC00
+            DB      ' EDIT:  '
+            DB      0
+            CALL    LHLDX
+            DB      36
+            EX      DE,HL
+            CALL    OTLDE
+            CALL    OTC00
+            DB      'I'
+            DB      0
+            CALL    LHLDX
+            DB      24
+            CALL    OTHLX
+            CALL    OTC00
+            DB      '>'
+            DB      0
+            CALL    INLIN
+            JP      NZ,DFN1
+;
+            CALL    LHLDX
+            DB      36
+            DEC     HL
+            CALL    LDXHL
+            DB      6
+            CALL    LHLDX
+            DB      26
+            EX      DE,HL
+            INC     DE
+            JR      $+12                ;0CF5
+;
+            CALL    LHLDX
+            DB      6
+            LD      A,(HL)
+            CP      00DH
+            JP      Z,CREG
+;
+            LD      A,(DE)
+            INC     DE
+            CP      07EH
+            JR      NC,$-4              ;0CF5
+;
+            CP      ' '
+            JR      C,$-8               ;0CF5
+;
+            PUSH    DE
+            PUSH    AF
+            INC     HL
+            CALL    LDXHL
+            DB      6
+            POP     AF
+            POP     DE
+            JR      Z,$-29              ;0CEB
+;
+            LD      H,D
+            LD      L,E
+            LD      BC,04000H
+            INC     HL
+            LD      A,(HL)
+            CP      07EH
+            JR      NC,$-4              ;0D0F
+;
+            CP      ' '
+            JR      C,$-8               ;0D0F
+;
+            INC     C
+            CP      (IX+40)
+            JR      Z,$+6               ;0D23
+;
+            DJNZ    $-16                ;0D0F
+            JR      $-54                ;0CEB
+;
+            LD      B,0
+            DEC     DE
+            LD      A,(DE)
+            INC     DE
+            CP      'D'
+            CALL    Z,UP50
+            CP      'I'
+            CALL    Z,UP34
+            CP      'C'
+            CALL    Z,UP35
+            JR      $-72                ;0D37
+;***************
+UP50:       PUSH    HL
+            CALL    LHLDX
+            DB      6
+            LD      D,H
+            LD      E,L
+            LD      A,00DH
+            CP      (HL)
+            JR      Z,$+6               ;0D49
+;
+            INC     HL
+            DEC     C
+            JR      NZ,$-5              ;0D42
+;
+            XOR     A
+            CALL    UP15
+            POP     DE
+            RET
+;***************
+UP34:       PUSH    HL
+            PUSH    DE
+            PUSH    BC
+            LD      H,D
+            LD      L,E
+            ADD     HL,BC
+            CALL    UP10
+            POP     BC
+            JR      C,$+32              ;0D79
+;
+            CALL    LHLDX
+            DB      6
+            PUSH    HL
+            EX      DE,HL
+            ADD     HL,BC
+            CALL    LDXHL
+            DB      6
+            POP     DE
+            POP     HL
+            LD      A,(HL)
+            CP      07EH
+            JR      NC,$+9              ;0D74
+;
+            CP      ' '
+            JR      C,$+5               ;0D74
+;
+            LD      (DE),A
+            DEC     C
+            INC     DE
+            INC     HL
+            JR      NZ,$-13             ;0D68
+;
+            POP     DE
+            RET
+;
+            POP     DE
+            POP     DE
+            RET
+;***************
+UP35:       PUSH    HL
+            PUSH    DE
+            PUSH    BC
+            CALL    UP50
+            POP     BC
+            POP     DE
+            POP     HL
+            PUSH    BC
+            CALL    UP34
+            POP     BC
+            RET     C
+;
+            PUSH    DE
+            CALL    LHLDX
+            DB      6
+            SBC     HL,BC
+            CALL    LDXHL
+            DB      6
+            POP     DE
+            RET
+;***************
+CASE:       DB      '>CASE'
+            DB      00DH
+            CALL    LHLDX
+            DB      26
+            LD      A,','
+            CPIR
+            LD      A,(HL)
+            LD      (IX+40),A
+            CALL    EE.LN1N2
+            CALL    EE.UP6
+            JP      C,PRT+11
+;
+            CALL    LHLDX
+            DB      38
+            EX      DE,HL
+            CALL    LHLDX
+            DB      36
+            DEC     HL
+            INC     HL
+            AND     A
+            PUSH    HL
+            SBC     HL,DE
+            POP     HL
+            JP      Z,CREG
+;
+            LD      A,(IX+40)
+            CP      'U'
+            LD      A,(HL)
+            JR      Z,$+15              ;0DDB
+;
+            CP      '['
+            JR      NC,$-19             ;0DBD
+;
+            CP      'A'
+            JR      C,$-23              ;0DBD
+;
+            ADD     A,020H
+            LD      (HL),A
+            JR      $-28                ;0DBD
+;
+            CP      'a'
+            JR      C,$-32              ;0DBD
+;
+            CP      '{'
+            JR      NC,$-36             ;0DBD
+;
+            SUB     020H
+            JR      $-13                ;0DD8
+;***************
+NPR:        DB      '>NPR'
+            DB      00DH
+            CALL    EE.LN1N2
+            CALL    PN1N2
+            JP      C,PRT+11
+;
+            CALL    EE.UP6
+            LD      E,0
+            CALL    LHLDX
+            DB      36
+            LD      A,(HL)
+            CP      (IX+31)
+            JR      Z,$+30              ;0E20
+;
+            CP      00DH
+            JR      Z,$+51              ;0E39
+;
+            LD      A,E
+            AND     00FH
+            OR      030H
+            CP      030H
+            JR      NZ,$+4              ;0E13
+;
+            LD      A,' '
+            PUSH    HL
+            CALL    JPDX
+            DB      12
+            POP     HL
+            LD      A,E
+            INC     A
+            DAA
+            LD      E,A
+            INC     HL
+            JR      $-32                ;0DFE
+;
+            PUSH    HL
+            CALL    UP8
+            POP     HL
+            JR      Z,$-8               ;0E1D
+;
+            LD      B,A
+            PUSH    BC
+            LD      A,E
+            INC     A
+            DAA
+            DJNZ    $-02                ;0E2A
+            LD      E,A
+            POP     BC
+            CALL    OTC00
+            DB      '.'
+            DB      0
+            DJNZ    $-05                ;0E30
+            JR      $-18                ;0E25
+;
+            CALL    JPDX
+            DB      13
+            JP      CREG
+;***************
+RTP:        DB      '>RTP'
+            DB      00DH
+            CALL    EE.LN1N2
+            CALL    EE.UP6
+            JP      C,RTP+11
+;
+            CALL    OTC00
+            DB      'I'
+            DB      0
+            CALL    LHLDX
+            DB      24
+            CALL    OTHLX
+            CALL    OTC00
+            DB      '>>'
+            DB      0
+            CALL    LHLDX
+            DB      36
+            EX      DE,HL
+            CALL    OTLDE
+            CALL    DN1N2
+            JP      CREG+17
+;***************
+UP36:       PUSH    IX
+            POP     HL
+            LD      DE,48
+            ADD     HL,DE
+            EX      DE,HL
+            CALL    LHLDX
+            DB      26
+            LD      A,':'
+            CPI
+            JR      NZ,$-2              ;0E7C
+;
+            PUSH    DE
+            CALL    UP33
+            POP     HL
+            RET     NZ
+;
+            LD      A,(HL)
+            PUSH    HL
+            INC     HL
+            CALL    LDXHL
+            DB      42
+            EX      DE,HL
+            INC     HL
+            CP      (HL)
+            JR      NZ,$-2              ;0E8E
+;
+            CALL    LDXHL
+            DB      44
+            INC     DE
+            CALL    CVHLX
+            LD      (IX+46),L
+            POP     DE
+            INC     DE
+            CALL    CVHLX
+            LD      (IX+47),L
+            XOR     A
+            RET
+;***************
+            DB      '>I$'
+            DB      00DH
+            CALL    UP36
+            JP      NZ,DFN1
+;
+            CALL    EE.LN1N2
+            CALL    EE.UP6
+            JP      C,RTP+11
+;
+UP52:       CALL    LHLDX
+            DB      36
+            EX      DE,HL
+            CALL    LHLDX
+            DB      38
+            SBC     HL,DE
+            JR      Z,$+46              ;0EF3
+;
+            EX      DE,HL
+            LD      A,(IX+46)
+            CALL    UP26
+            CALL    LDXHL
+            DB      6
+            CALL    LHLDX
+            DB      42
+            EX      DE,HL
+            CALL    LHLDX
+            DB      44
+            PUSH    HL
+            PUSH    DE
+            SBC     HL,DE
+            EX      DE,HL
+            CALL    LHLDX
+            DB      38
+            ADD     HL,DE
+            CALL    LDXHL
+            DB      38
+            POP     DE
+            POP     HL
+            CALL    UP10
+            JR      NC,$+8              ;0EF6
+;
+            CALL    UP44
+            JP      CREG
+;
+            EX      DE,HL
+            LD      A,(HL)
+            INC     HL
+            CP      00DH
+            JR      NZ,$-4              ;0EF7
+;
+            JR      $-63                ;0EFE
+;***************
+            DB      '>D$'
+            DB      00DH
+            CALL    UP36
+            JP      NZ,DFN1
+;
+            CALL    EE.LN1N2
+            CALL    EE.UP6
+            JP      C,RTP+11
+;
+            LD      HL,CREG             ; ???
+            PUSH    HL
+UP51:       CALL    LHLDX
+            DB      36
+            EX      DE,HL
+            XOR     A
+            CALL    LHLDX
+            DB      38
+            SBC     HL,DE
+            RET     C
+;
+            EX      DE,HL
+            LD      A,(IX+46)
+            CALL    UP26
+            JR      Z,$+5               ;0F2F
+;
+            INC     HL
+            JR      $-19                ;0F1A
+;
+            LD      D,H
+            LD      E,L
+            LD      A,(IX+47)
+            EX      AF,AF'              ;'
+            LD      A,(HL)
+            CP      00DH
+            JR      Z,$+8               ;0F40
+;
+            INC     HL
+            EX      AF,AF'              ;'
+            DEC     A
+            DAA
+            JR      NZ,$-10             ;0F34
+;
+            PUSH    HL
+            PUSH    DE
+            SBC     HL,DE
+            EX      DE,HL
+            CALL    LHLDX
+            DB      38
+            SBC     HL,DE
+            CALL    LDXHL
+            DB      38
+            POP     DE
+            POP     HL
+            PUSH    DE
+            CALL    UP15
+            POP     HL
+            LD      A,(HL)
+            INC     HL
+            CP      00DH
+            JR      NZ,$-4              ;0F56
+;
+            JR      $-47                ;0F2D
+;***************
+            DB      '>C$'
+            DB      00DH
+            CALL    UP36
+            JP      NZ,DFN1
+;
+            CALL    EE.LN1N2
+            CALL    EE.UP6
+            JP      C,RTP+11
+;
+            CALL    LHLDX
+            DB      42
+            EX      DE,HL
+            CALL    LHLDX
+            DB      48
+            SBC     HL,DE
+            LD      A,L
+            CALL    CVABP
+            LD      (IX+47),A
+            CALL    UP51
+            JP      UP52
+;***************
+FIND:       DB      '>FIND'
+            DB      00DH
+            CALL    LHLDX
+            DB      24
+            PUSH    HL
+            DEC     HL
+            LD      A,(HL)
+            DEC     HL
+            CP      (HL)
+            JR      NZ,$-2              ;0F96
+;
+            EX      DE,HL
+            CALL    LHLDX
+            DB      26
+            SBC     HL,DE
+            POP     HL
+            JP      NC,DFN1
+;
+            PUSH    HL
+            INC     HL
+            SBC     HL,DE
+            LD      B,H
+            LD      C,L
+            EX      DE,HL
+            POP     DE
+            DEC     DE
+            LDIR
+            EX      DE,HL
+            CALL    LDXHL
+            DB      24
+            LD      (IX+40),'P'
+            CALL    LHLDX
+            DB      26
+            INC     HL
+            INC     HL
+            JP      CHANG+25
+;***************
+FORMT:      DB      '>FORMAT'
+            DB      00DH
+            CALL    UP36
+            JP      NZ,DFN1
+;
+            CALL    EE.LN1N2
+            CALL    EE.UP6
+            JP      C,RTP+11
+;
+            CALL    LHLDX
+            DB      36
+            LD      D,H
+            LD      E,L
+            LD      A,' '
+            CPI
+            JR      Z,$-2               ;0FE1
+;
+            DEC     HL
+            XOR     A
+            PUSH    HL
+            SBC     HL,DE
+            LD      B,H
+            LD      C,L
+            JR      Z,$+19              ;0FFF
+;
+            PUSH    DE
+            CALL    LHLDX
+            DB      38
+            SBC     HL,BC
+            CALL    LDXHL
+            DB      38
+            POP     DE
+            POP     HL
+            PUSH    DE
+            CALL    UP15
+            POP     DE
+            DEC     DE
+            CALL    UP42
+            DW      0
+            CALL    LHLDX
+            DB      38
+            DEC     HL
+            DEC     HL
+            SBC     HL,DE
+            JR      C,$+8               ;1016
+;
+            EX      DE,HL
+            LD      (HL),' '
+            INC     HL
+            JR      $-55                ;0FDD
+;
+            CALL    LHLDX
+            DB      36
+UP55:       CALL    LDXHL
+            DB      6
+            LD      H,D
+            LD      L,E
+            LD      A,(IX+47)
+            DEC     A
+            JP      M,UP53
+;
+            DAA
+            INC     HL
+            JR      NZ,$-6              ;1023
+;
+            PUSH    HL
+            SBC     HL,DE
+            LD      B,L
+            POP     HL
+            PUSH    BC
+            PUSH    DE
+            CALL    UP10
+            POP     DE
+            POP     BC
+            JP      C,UP52+54
+;
+            DEC     HL
+            LD      (HL),' '
+            DJNZ    $-3                 ;103A
+UP53:       LD      A,(IX+46)
+            CALL    UP41
+            JR      NZ,$+23             ;105C
+;
+            LD      A,' '
+            CP      (HL)
+            JR      Z,$+26              ;1064
+;
+            DEC     HL
+            LD      A,(HL)
+            CP      00DH
+            JR      NZ,$+15             ;105F
+;
+            INC     HL
+            LD      A,(HL)
+            CP      ' '
+            JR      Z,$+9               ;105F
+;
+            CP      00DH
+            JR      NZ,$-8              ;1052
+;
+            JP      UP45
+;
+            LD      A,' '
+            CP      (HL)
+            JR      NZ,$-22             ;104C
+;
+            DEC     HL
+            CP      (HL)
+            JR      Z,$-2               ;1064
+;
+            CALL    UP46                ;13 36 0D  inc hl. ld (hl),0dh
+            LD      D,H
+            LD      E,L
+            INC     DE
+            INC     HL
+            CP      (HL)
+            JR      Z,$-2               ;106E
+;
+            XOR     A
+            PUSH    HL
+            SBC     HL,DE
+            POP     HL
+            JR      Z,$-93              ;101A
+;
+            PUSH    DE
+            CALL    UP15
+            XOR     A
+            JR      $-8                 ;1076
+;***************
+UP37:       LD      (IX+28),0
+            PUSH    HL
+            PUSH    DE
+            EX      DE,HL
+            CALL    LHLDX
+            DB      24
+            SBC     HL,DE
+            LD      DE,207
+            SBC     HL,DE
+            POP     DE
+            POP     HL
+            RET     C
+;
+            POP     AF
+            XOR     A
+            INC     A
+            RET
+;***************
+CFNDC:      LD      A,H
+            OR      L
+            JP      NZ,CFIND
+;
+            INC     A
+            RET
+;***************
+UP38:       LD      A,L
+            OR      H
+            JP      NZ,UP28
+;
+            RET
+;***************
+UP39:       CALL    UP8
+            JP      NZ,UP25
+;
+            POP     BC
+            POP     HL
+            POP     DE
+            PUSH    BC
+            PUSH    DE
+            PUSH    HL
+            LD      H,D
+            LD      L,E
+            INC     HL
+            CALL    UP15
+            POP     HL
+            POP     DE
+            POP     BC
+            LD      A,(DE)
+            JP      UP24+42
+;***************
+USER:       DB      '>USER'
+            DB      00DH
+            CALL    EE.LN1N2
+            CALL    LHLDX
+            DB      24
+            CALL    JPHL
+            JP      CREG
+;***************
+UP40:       CALL    MSOI
+            JP      MAXLN
+;***************
+UP41:       INC     A
+            DAA
+            CALL    CVAPB
+            LD      B,A
+            DEC     B
+            RET     Z
+;
+            INC     HL
+            LD      A,(HL)
+            CP      00DH
+            JR      NZ,$+4              ;10E8
+;
+            AND     A
+            RET
+;
+            CP      (IX+31)
+            JR      NZ,$-13             ;10DE
+;
+            CALL    UP47                ;13 36 0D   inc hl. ld (hl),0dh
+            INC     HL
+            POP     DE
+            JP      UP55
+;***************
+UP42:       INC     DE
+            LD      A,(DE)
+            CP      00DH
+            JR      NZ,$-4              ;10F5
+;
+            RET
+;***************
+UP43:       CALL    LHLDX
+            DB      6
+            EX      DE,HL
+            LD      HL,0
+            CALL    ICPHL
+            DEC     DE
+            LD      A,(DE)
+            CP      00DH
+            JR      NZ,$-4              ;1107
+;
+            PUSH    HL
+            CALL    LHLDX
+            DB      0
+            SBC     HL,DE
+            POP     HL
+            JR      NZ,$-17             ;1104
+;
+            LD      B,H
+            LD      C,L
+            RET
+;***************
+UP44:       CALL    UP43
+            JP      UP25+21
+;***************
+UP45:       CALL    OTC00
+            DB      'LAST LINE:'
+            DB      0
+            CALL    UP43
+            CALL    MAEND
+            CALL    OTCR
+            JP      CREG
+;***************
+SPACE:      DB      '>SPACE'
+            DB      00DH
+            CALL    UP36
+            JP      NZ,DFN1
+;
+            CALL    EE.LN1N2
+            CALL    EE.UP6
+            JP      C,RTP+11
+;
+            CALL    LHLDX
+            DB      36
+            EX      DE,HL
+            CALL    LHLDX
+            DB      38
+            DEC     HL
+            SBC     HL,DE
+            JP      C,CREG
+;
+            EX      DE,HL
+            PUSH    HL
+            LD      A,(IX+46)
+            CALL    UP26
+            JR      Z,$+8               ;116F
+;
+            CALL    CVAPB
+            LD      C,A
+            JR      $+13                ;117A
+;
+            LD      C,0
+            LD      A,' '
+            CP      (HL)
+            JR      NZ,$+6              ;117A
+;
+            DEC     HL
+            INC     C
+            JR      $-5                 ;1173
+;
+            POP     HL
+            LD      A,C
+            AND     A
+            JR      Z,$+104             ;11E5
+;
+            PUSH    BC
+            PUSH    HL
+            LD      A,(IX+47)
+            CALL    UP26
+            POP     DE
+            POP     BC
+            JR      NZ,$+92             ;11E5
+;
+            EX      DE,HL
+            PUSH    BC
+            PUSH    DE
+            LD      A,(IX+46)
+            CALL    UP26
+            POP     DE
+            POP     BC
+            PUSH    DE
+            LD      B,0
+            EX      DE,HL
+            JR      $+16                ;11AA
+;
+            INC     HL
+            PUSH    HL
+            SBC     HL,DE
+            POP     HL
+            JR      NC,$+16             ;11B1
+;
+            LD      A,(HL)
+            CP      ' '
+            JR      NZ,$-10              ;119C
+;
+            INC     B
+            INC     HL
+            LD      A,(HL)
+            CP      ' '
+            JR      Z,$-4               ;11A9
+;
+            JR      $-18                ;119D
+;
+            POP     HL
+            LD      A,B
+            AND     A
+            JR      Z,$+49              ;11E5
+;
+            LD      A,' '
+            CP      (HL)
+            INC     HL
+            JR      Z,$-2               ;11B8
+;
+            CP      (HL)
+            INC     HL
+            JR      NZ,$-2              ;11BC
+;
+            DEC     HL
+            PUSH    HL
+            SBC     HL,DE
+            POP     HL
+            JR      C,$+11              ;11D0
+;
+            DEC     DE
+            LD      A,(DE)
+            CP      00DH
+            JR      NZ,$-4              ;11C7
+;
+            EX      DE,HL
+            JR      $+23                ;11E5
+;
+            XOR     A
+            PUSH    DE
+            CALL    LDXHL
+            DB      6
+            LD      H,D
+            LD      L,E
+            INC     HL
+            PUSH    BC
+            CALL    UP10
+            POP     BC
+            POP     DE
+            JP      C,UP52+54
+;
+            DEC     C
+            JR      NZ,$-45             ;11B6
+;
+            LD      A,00DH
+            CP      (HL)
+            INC     HL
+            JR      NZ,$-2              ;11E7
+;
+            JP      SPACE+26
+
+            PAGE
+;***************
+            DB      '>A'
+            DB      00DH
+            JP      LAST+6
+;***************
+            DB      '>H'
+            DB      00DH
+            JP      HEAD+6
+;***************
+            DB      '>B'
+            DB      00DH
+            JP      BOTM+6
+;***************
+            DB      '>P'
+            DB      00DH
+            JP      PRT+5
+;***************
+            DB      '>L'
+            DB      00DH
+            JP      LNP+5
+;***************
+            DB      '>D'
+            DB      00DH
+            JP      DEL+5
+;***************
+            DB      '>F'
+            DB      00DH
+            JP      FIND+6
+;***************
+            DB      '>C'
+            DB      00DH
+            JP      CHANG+8
+;***************
+            DB      '>E'
+            DB      00DH
+            JP      EDIT+6
+;***************
+            DB      '>R'
+            DB      00DH
+            JP      RTP+5
+;***************
+            DB      '>N'
+            DB      00DH
+            JP      NPR+5
+
+            PAGE
+;***************
+UP46:       LD      A,00DH
+            CP      (HL)
+            LD      A,' '
+            JR      Z,$+6               ;123B
+;
+            INC     HL
+            LD      (HL),00DH
+            RET
+;
+            INC     HL
+            CP      (HL)
+            JR      Z,$-2               ;123B
+;
+            INC     SP
+            INC     SP
+            JP      UP53+19
+;***************
+UP47:       INC     HL
+            LD      A,00DH
+            CP      (HL)
+            JR      Z,$+4               ;124C
+;
+            LD      (HL),A
+            RET
+;
+            INC     SP
+            INC     SP
+            AND     A
+            RET
+;
+
+;           END
+

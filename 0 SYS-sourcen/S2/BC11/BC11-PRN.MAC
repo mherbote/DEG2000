@@ -5568,7 +5568,7 @@
   22C2    B7                                OR      A
   22C3    C8                                RET     Z
   22C4    3A 016A                           LD      A,(BC.D031)
-  22C7    FE                                DB      0FEH
+  22C7    FE                                DB      0FEH                ;CP   02FH
   22C8    2F                    BC.J081:    CPL
   22C9    17                                RLA
   22CA    9F                    BC.J082:    SBC     A,A
@@ -7619,7 +7619,8 @@
   3041    CD 0321                           CALL    BC.MEMCK
   3044    60                                LD      H,B
   3045    6F                                LD      L,A
-  3046    18 14                             JR      $+22
+  3046    18 14                             JR      $+22                ;305C
+                                ;            
   3048    21 01B1                           LD      HL,BC.D063
   304B    CD 0948                           CALL    BC.C032
   304E    CD 23DE                           CALL    BC.C141
@@ -7630,34 +7631,39 @@
   3059    EB                                EX      DE,HL
   305A    2B                                DEC     HL
   305B    2B                                DEC     HL
+                                ;305C            
   305C    22 0104                           LD      (BC.D006),HL
   305F    22 0148                           LD      (BC.D012),HL
   3062    E5                                PUSH    HL
   3063    11 0300                           LD      DE,00300H
   3066    B7                                OR      A
-  3067    ED 52                             SBC     HL,DE
-  3069    E1                                POP     HL
 	MACRO-80 3.44	09-Dec-81	PAGE	1-95
 
 
+  3067    ED 52                             SBC     HL,DE
+  3069    E1                                POP     HL
+                                ;306A            
   306A    DA 044D                           JP      C,BC.J002
-  306D    11 FF9C                           LD      DE,0FF9CH
+  306D    11 FF9C                           LD      DE,0FF9CH           ;???
   3070    19                                ADD     HL,DE
   3071    11 0300                           LD      DE,00300H
   3074    7C                                LD      A,H
   3075    92                                SUB     D
-  3076    20 02                             JR      NZ,$+04
+  3076    20 02                             JR      NZ,$+04             ;307A
   3078    7D                                LD      A,L
   3079    93                                SUB     E
+                                ;307A            
   307A    11 2FB7                           LD      DE,BC.D131
-  307D    30 03                             JR      NC,$+05
+  307D    30 03                             JR      NC,$+05             ;3082
   307F    11 0300                           LD      DE,00300H
+                                ;3082            
   3082    7C                                LD      A,H
   3083    92                                SUB     D
-  3084    20 02                             JR      NZ,$+04
+  3084    20 02                             JR      NZ,$+04             ;3088
   3086    7D                                LD      A,L
   3087    93                                SUB     E
-  3088    38 E0                             JR      C,$-30
+                                ;3088            
+  3088    38 E0                             JR      C,$-30              ;306A
   308A    F9                                LD      SP,HL
   308B    22 015A                           LD      (BC.D022),HL
   308E    EB                                EX      DE,HL

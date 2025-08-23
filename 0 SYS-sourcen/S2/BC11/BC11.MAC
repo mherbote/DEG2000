@@ -4932,7 +4932,7 @@ BC.C125:    LD      A,(BC.D032)
             OR      A
             RET     Z
             LD      A,(BC.D031)
-            DB      0FEH
+            DB      0FEH                ;CP   02FH
 BC.J081:    CPL
             RLA
 BC.J082:    SBC     A,A
@@ -6808,7 +6808,8 @@ BC.RECOV1:  LD      HL,BC.RECOV
             CALL    BC.MEMCK
             LD      H,B
             LD      L,A
-            JR      $+22
+            JR      $+22                ;305C
+;            
             LD      HL,BC.D063
             CALL    BC.C032
             CALL    BC.C141
@@ -6819,6 +6820,7 @@ BC.RECOV1:  LD      HL,BC.RECOV
             EX      DE,HL
             DEC     HL
             DEC     HL
+;305C            
             LD      (BC.D006),HL
             LD      (BC.D012),HL
             PUSH    HL
@@ -6826,24 +6828,28 @@ BC.RECOV1:  LD      HL,BC.RECOV
             OR      A
             SBC     HL,DE
             POP     HL
+;306A            
             JP      C,BC.J002
-            LD      DE,0FF9CH
+            LD      DE,0FF9CH           ;???
             ADD     HL,DE
             LD      DE,00300H
             LD      A,H
             SUB     D
-            JR      NZ,$+04
+            JR      NZ,$+04             ;307A
             LD      A,L
             SUB     E
+;307A            
             LD      DE,BC.D131
-            JR      NC,$+05
+            JR      NC,$+05             ;3082
             LD      DE,00300H
+;3082            
             LD      A,H
             SUB     D
-            JR      NZ,$+04
+            JR      NZ,$+04             ;3088
             LD      A,L
             SUB     E
-            JR      C,$-30
+;3088            
+            JR      C,$-30              ;306A
             LD      SP,HL
             LD      (BC.D022),HL
             EX      DE,HL

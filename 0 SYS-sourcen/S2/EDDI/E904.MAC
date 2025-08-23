@@ -1,0 +1,1164 @@
+;           PN      E904
+;****************************************************************
+;*                  Anschlussroutinen fuer  E D D I unter  CP/M *
+;*  Version         ------------------------------------ -------*
+;*                  Programmierer: M. Herbote  K EAW  ZFT (WFT) *
+;*  V 4 . 1         --------------------------------------------*
+;*                  Stand        : 14.Januar 1985               *
+;****************************************************************
+            ORG     00100H
+            JP      E9.START
+;
+            ORG     00606H
+            DB      '`'                 ;INIT- TAB-Zeichen
+;
+            ORG     00609H
+            DB      10                  ;INIT- TAB-Position
+;
+            ORG     006AAH
+            DB      '4.1'               ;Systemkennzeichen
+;
+            ORG     0071EH
+            CP      '!'
+            JR      C,$-18
+;
+            ORG     00F1AH
+            DB      13
+;
+            ORG     01353H              ;TPA + EDDI-Kernlaenge
+E9.START:   LD      SP,SBED
+            LD      IX,WORK
+            LD      A,01AH
+            CALL    OUT
+            JP      EE.START
+;
+;
+;
+WORK        EQU     $
+SOF:        DW      EDEND
+EOF:        DW      EDEND
+EOR:        DW      09FFFH
+SOI:        DW      0
+LP:         DW      0
+JLIN:       JP      LIN
+JOUT:       JP      OUT
+JSYS:       JP      0
+JHEAD:      XOR     A
+            RET
+;
+            NOP
+CMD2:       DW      S9.USER
+PUEND:      DW      0
+PUBEG:      DW      0
+            DS      8,0
+SON1:       DW      0
+EON1:       DW      0
+OPT:        DB      'F'
+;
+;
+            ORG     WORK+100H
+CPOS:       DW      0
+Z1:         DB      0
+SPP:        DB      0
+AFCB:       DW      0                   ;aktuelle  FCB-Adresse
+AZEI:       DW      0                   ;Anzahl einzulesender Saetze
+CTRLP:      DB      0
+CTRLS:      DB      0
+;
+            DB      00DH                ;Pseudobildschirmbereich fuer EDDI
+BWS:        DS      2048
+;
+            DS      00100H              ;STACK - Bereich fuer EDDI
+SBED        EQU     $
+;
+;
+CR          EQU     00DH
+BDOS        EQU     5
+;
+            PAGE
+;****************************************************************
+;*                  F i l e   C o n t r o l   B l o e c k e     *
+;****************************************************************
+FCBE1:      DS      36,0                ;primaere Eingabedatei
+
+RM          EQU     $-FCBE1
+ME1:        DB      0                   ;Dateimerker
+
+RLNP        EQU     $-FCBE1
+LNPE1:      DW      0                   ;Linepointer
+
+RLP         EQU     $-FCBE1
+LPE1:       DW      0                   ;Lesepointer
+
+RSP1        EQU     $-FCBE1
+SP1E1:      DW      0                   ;Schreibpointer 1
+
+RSP2        EQU     $-FCBE1
+SP2E1:      DW      0                   ;Schreibpointer 2
+
+RDMA        EQU     $-FCBE1
+DMAE1:      DS      128,0               ;DMA - Bereich
+LFCB        EQU     $-FCBE1
+
+
+FCBE2:      DS      36,0                ;sekundaere Eingabedatei
+ME2:        DB      0
+LNPE2:      DW      0
+LPE2:       DW      0
+SP1E2:      DW      0
+SP2E2:      DW      0
+DMAE2:      DS      128,0
+
+
+FCBA:       DS      36,0                ;Ausgabedatei
+MA:         DB      0
+LNPA:       DW      0
+LPA:        DW      0
+SP1A:       DW      0
+SP2A:       DW      0
+DMAA:       DS      128,0
+
+            PAGE
+;****************************************************************
+;*                  Sprungverteiler fuer Routine  LIN           *
+;****************************************************************
+FKT3:       DB      0DH                 ;fuer  LIDT1
+            DW      ZEND1
+
+            DB      9
+            DW      TAB1
+
+            DB      10
+            DW      ICNU1
+
+            DB      1AH
+            DW      EOT
+
+FKT1:       DB      8
+            DW      ICNL
+
+            DB      4
+            DW      ICNR
+
+            DB      18H
+            DW      ICNU
+
+            DB      5
+            DW      ICNO
+
+            DB      12
+            DW      IHOME
+
+            DB      1AH
+            DW      ICNZ
+
+            DB      0AH
+            DW      ICNU
+
+            DB      9
+            DW      ICNL
+
+            DB      0DH
+            DW      IZED
+
+            DB      10H
+            DW      CTRP
+
+            DB      13H
+            DW      CTRS
+;****************************************************************
+;*                  Sprungverteiler fuer Routine  OUT           *
+;****************************************************************
+FKT2:       DB      8
+            DW      CNL
+
+            DB      12
+            DW      CNR
+
+            DB      10
+            DW      CNU1
+
+            DB      11
+            DW      CNO
+
+            DB      18H
+            DW      CNU
+
+            DB      9
+            DW      E9.TAB
+
+            DB      0DH
+            DW      ZEND
+
+            DB      1AH
+            DW      CLEAR
+
+            DB      1EH
+            DW      HOME
+
+            DB      1FH
+            DW      CNZ
+
+            PAGE
+;****************************************************************
+;*                  Zeichenausgaberoutine  OUT                  *
+;****************************************************************
+OUT:        PUSH    BC
+            PUSH    DE
+            PUSH    HL
+            PUSH    AF
+            CALL    TAC
+            JP      NC,OASC
+            LD      HL,FKT2
+            LD      B,10
+            CALL    E9.CASE
+
+OUTE:       POP     AF
+            POP     HL
+            POP     DE
+            POP     BC
+            RET
+
+
+CLEAR:      CALL    OUTBS
+            LD      HL,BWS              ;Pseudo BWS loeschen
+            LD      DE,BWS+1
+            LD      BC,2000
+            LD      (HL),' '
+            LDIR
+HOME1:      LD      A,1
+            LD      (Z1),A
+            LD      (SPP),A
+            LD      HL,BWS
+            LD      (CPOS),HL
+            RET
+
+HOME:       CALL    OTESC
+            JR      HOME1
+
+
+CNR:        CALL    OTESC
+CNR1:       LD      HL,(CPOS)
+            INC     HL
+            LD      (CPOS),HL
+            LD      A,(SPP)
+            INC     A
+            LD      (SPP),A
+            CP      81
+            RET     NZ
+            LD      A,1
+            LD      (SPP),A
+            LD      A,(Z1)
+            INC     A
+            LD      (Z1),A
+            CP      25
+            RET     NZ
+            LD      A,24
+            LD      (Z1),A
+            LD      HL,BWS+80
+            LD      DE,BWS
+            LD      BC,1920
+            LDIR
+            LD      HL,BWS+1840
+            LD      (CPOS),HL
+            RET
+
+
+CNL:        LD      HL,(CPOS)
+            DEC     HL
+            LD      (CPOS),HL
+            LD      A,(SPP)
+            DEC     A
+            LD      (SPP),A
+            RET     NZ
+            LD      A,80
+            LD      (SPP),A
+            LD      A,(Z1)
+            DEC     A
+            LD      (Z1),A
+            RET     NZ
+            JR      HOME1
+
+
+CNU:        LD      A,10
+            CALL    OUTBS
+CNU1:       LD      B,80
+CNU2:       PUSH    BC
+            CALL    CNR1
+            POP     BC
+            DJNZ    CNU2
+            RET
+
+
+CNO:        LD      A,(Z1)
+            DEC     A
+            RET     Z
+            LD      A,0BH
+            CALL    OTESC
+            LD      B,80
+CNO1:       PUSH    BC
+            CALL    CNL
+            POP     BC
+            DJNZ    CNO1
+            RET
+
+
+CNZ:        CALL    OTESC
+CNZ1:       CALL    CNR1
+CNZ2:       LD      A,(SPP)
+            DEC     A
+            RET     Z
+            JR      CNZ1
+
+
+E9.TAB:     LD      A,' '
+            CALL    OTASC
+            LD      A,(SPP)
+            AND     7
+            JR      NZ,E9.TAB
+            RET
+
+
+ZEND:       LD      A,1EH               ;Zeilenende auf BWS       ausgeben
+            CALL    OUTBS
+            LD      HL,(CPOS)           ;Zeilenende auf PseudoBWS ausgeben
+            LD      (HL),0DH
+            CALL    CNR1
+            LD      A,10H               ;loeschen BWS(Cursorpos)  bis Ende
+            CALL    OTESC
+            LD      HL,(CPOS)           ;loeschen PseudoBWS(CPOS) bis Ende
+            PUSH    HL
+            PUSH    HL
+            PUSH    HL
+            POP     DE
+            INC     DE
+            LD      HL,BWS+1930
+            POP     BC
+            OR      A
+            SBC     HL,BC
+            PUSH    HL
+            POP     BC
+            POP     HL
+            LD      (HL),' '
+            LDIR
+            LD      A,1FH
+            JR      CNZ
+
+            PAGE
+;****************************************************************
+;*                  Unterprogramme fuer Routine  OUT            *
+;****************************************************************
+OUTBS:      PUSH    AF
+            LD      E,A                 ;auszugebendes Zeichen
+            LD      C,2                 ;Fkt. 2 :  Console Output
+            CALL    BDOS
+            POP     AF
+            RET
+
+OTESC:      PUSH    AF
+            LD      A,1BH               ;ESC
+            CALL    OUTBS
+            POP     AF
+            JP      OUTBS
+
+OTASC:      CALL    OUTBS
+OASC1:      LD      HL,(CPOS)
+            LD      (HL),A
+            JP      CNR1
+
+OASC:       CALL    OTASC
+            JP      OUTE
+
+            PAGE
+;****************************************************************
+;*                  Zeileneingaberoutine  LIN                   *
+;****************************************************************
+LIN:        PUSH    BC
+            PUSH    HL
+            PUSH    AF
+LIN1:       LD      C,1                 ;Fkt. 1 :  Console Input
+            CALL    BDOS
+            LD      HL,FKT1
+            LD      B,11
+            CALL    E9.CASE
+            CALL    TAC
+            CALL    NC,OASC1
+            JR      LIN1
+
+
+ICNL:       JP      OUT
+
+ICNR:       LD      A,12
+            JR      ICNL
+
+ICNU:       JR      ICNL
+
+ICNO:       LD      A,11
+            JR      ICNL
+
+IHOME:      LD      A,1EH
+            JR      ICNL
+
+ICNZ:       LD      A,1FH
+            JR      ICNL
+
+CTRP:       LD      HL,0B800H           ;...  ???
+            LD      DE,0030DH           ;BDOS-Marke:   BD.D270
+            ADD     HL,DE
+            LD      A,1
+            SUB     (HL)
+            LD      (HL),A
+            RET
+
+CTRS:       LD      C,1                 ;Console Input
+            CALL    BDOS
+            CP      13H                 ;CTRL_S
+            JR      NZ,CTRS
+            RET
+
+ZEND2:      PUSH    AF                  ;ausgegebenes 0AH rueckgaengig machen
+            LD      A,(SPP)
+            LD      B,A
+            DEC     B
+            LD      A,12
+            JR      Z,IZED2
+IZED1:      PUSH    BC
+            CALL    OTESC
+            POP     BC
+            DJNZ    IZED1
+IZED2:      POP     AF
+ZEND4:      CALL    OUT
+            LD      HL,(CPOS)
+            LD      BC,81
+            CPDR
+            INC     HL
+            EX      DE,HL
+            RET
+
+IZED:       CALL    ZEND2
+ZEND3:      POP     BC                  ;RET-Adresse von UP CASE
+            POP     AF
+            POP     HL
+            POP     BC
+            LD      IX,WORK
+            RET
+
+            PAGE
+;****************************************************************
+;*                  weitere Unterprogramme                      *
+;****************************************************************
+E9.CASE:    CP      (HL)                ;Sprungcode
+            INC     HL
+            LD      E,(HL)              ;Sprungadresse
+            INC     HL
+            LD      D,(HL)
+            INC     HL
+            JR      Z,JDE
+            DJNZ    E9.CASE
+            RET
+
+JDE:        PUSH    DE                  ;Sprung nach  (DE)
+            RET
+
+
+TAC:        CP      ' '                 ;Test auf ASCII
+            RET     C                   ;  negativ  -->  C
+            CP      7FH
+            CCF
+            RET
+
+
+CMDRT:      LD      IX,WORK             ;naechste Kommandoanforderung
+            JP      EE.CREG
+;****************************************************************
+;*                  zweiter Kommandobereich                     *
+;****************************************************************
+S9.USER     EQU     $
+
+            DB      '>OEIN'
+            DB      CR
+            JP      OEIN
+
+            DB      '>OE2'
+            DB      CR
+            JP      OE2
+
+            DB      '>OAUS'
+            DB      CR
+            JP      OAUS
+
+            DB      '>REIN'
+            DB      CR
+            JP      REIN
+
+            DB      '>RE2'
+            DB      CR
+            JP      RE2
+
+            DB      '>WAUS'
+            DB      CR
+            JP      WAUS
+
+            DB      '>CAUS'
+            DB      CR
+            JP      CAUS
+
+
+            PAGE
+;****************************************************************
+;*                  O P E N       -  Kommando                   *
+;****************************************************************
+OAUS:       LD      HL,FCBA
+            CALL    OE1                 ;FCB aufbauen
+            PUSH    DE
+            LD      C,15                ;Fkt. 15 :  Open File
+            CALL    BDOS
+            POP     DE
+            CP      -1                  ;Datei vorhanden ?
+            JR      NZ,OAF1             ;JA
+            PUSH    DE
+            LD      C,22                ;Fkt. 22 :  Make File
+            CALL    BDOS
+            POP     DE
+            CP      -1                  ;Fkt.22 ausgefuehrt ?
+            JR      Z,OAF2              ;NEIN
+            CALL    SDMA
+            CALL    OA1
+            LD      HL,1                ;Linepointer setzen
+            CALL    EE.LDXHL
+            DB      RLNP
+            JP      CMDRT
+
+SDMA:       PUSH    DE
+            LD      C,26                ;Fkt. 26 :  Set DMA Address
+            LD      HL,RDMA
+            ADD     HL,DE
+            EX      DE,HL
+            CALL    BDOS
+            POP     DE
+            RET
+
+OA1:        PUSH    DE
+            POP     IX
+            LD      HL,RDMA
+            ADD     HL,DE
+            CALL    EE.LDXHL            ;Lesepointer    setzen
+            DB      RLP
+            EX      DE,HL
+            CALL    EE.LDXHL            ;Schreibpointer setzen
+            DB      RSP1
+            SET     0,(IX+RM)           ;OPEN - Bit setzen
+            SET     1,(IX+RM)
+            RES     2,(IX+RM)
+            SET     3,(IX+RM)
+            SET     4,(IX+RM)
+            PUSH    IX                  ;DMA - Bereich auf 1AH loeschen
+            POP     DE
+            LD      HL,RDMA
+            ADD     HL,DE
+            PUSH    HL
+            POP     DE
+            INC     DE
+            LD      BC,127
+            LD      (HL),1AH
+            LDIR
+            RET
+
+OAF1:       CALL    EE.OTC00
+            DB      'Datei ist bereits vorhanden'
+            DW      CR
+            JP      CMDRT
+
+OAF2:       CALL    EE.OTC00
+            DB      'kein freier Verzeichnisplatz'
+            DW      CR
+            JP      CMDRT
+
+OEIN:       LD      HL,FCBE1
+            CALL    OE1
+            JP      OE101
+
+OE2:        LD      HL,FCBE2
+            CALL    OE1
+            JP      OE101
+
+OE1:        PUSH    HL
+            PUSH    HL                  ;FCB loeschen auf  00H
+            POP     DE
+            INC     DE
+            LD      BC,LFCB-1
+            LD      (HL),0
+            LDIR
+            CALL    EE.LHLDX            ;HL := BUFBEG
+            DB      26
+OE3:        LD      A,(HL)
+            CP      ' '
+            INC     HL
+            JR      NZ,OE3
+            LD      A,(HL)              ;evtl. Laufwerksangabe
+            INC     HL
+            LD      B,A
+            LD      A,(HL)
+            CP      ':'                 ;war Laufwerksangabe ?
+            JR      NZ,OE4
+            POP     IX                  ;FCB-Adresse
+            LD      A,B
+            CP      'Q'                 ;Laufwerksangabe A bis P ?
+            JR      NC,OFEH1
+            CP      'A'
+            JR      C,OFEH1
+            SUB     '@'
+            LD      (IX+0),A            ;Laufwerk in FCB eintragen
+            INC     HL
+            JR      OE5
+
+OFEH1:      CALL    EE.OTC00
+            DB      'fehlerhafte Laufwerksangabe'
+            DW      CR
+            JP      CMDRT
+
+OE4:        POP     IX
+            DEC     HL
+OE5:        PUSH    IX
+            LD      B,11                ;Dateiname und Dateityp auf ' '
+OE6:        INC     IX
+            LD      (IX+0),' '
+            DJNZ    OE6
+            LD      B,10
+OE7:        DEC     IX
+            DJNZ    OE7
+            LD      B,9                 ;Dateiname in FCB eintragen
+OE71:       LD      A,(HL)
+            CP      '.'
+            JR      Z,OE8
+            CP      CR
+            JR      Z,OE10
+            LD      (IX+0),A
+            INC     HL
+            INC     IX
+            DJNZ    OE71
+
+OFEH2:      POP     IX
+            CALL    EE.OTC00
+            DB      'fehlerhafter Dateiname'
+            DW      CR
+            JP      CMDRT
+
+OE8:        INC     HL
+            JR      OE82
+OE81:       INC     IX
+OE82:       DJNZ    OE81
+            LD      B,3                 ;Dateityp  in FCB eintragen
+OE9:        LD      A,(HL)
+            CP      CR
+            JR      Z,OE10
+            LD      (IX+0),A
+            INC     HL
+            INC     IX
+            DJNZ    OE9
+OE10:       POP     DE
+            RET
+
+OE101:      PUSH    DE
+            LD      C,15                ;Fkt. 15 :  Open File
+            CALL    BDOS
+            POP     DE
+            CP      -1                  ;Datei vorhanden ?
+            JR      NZ,OE11             ;JA
+            CALL    EE.OTC00
+            DB      'Datei ist nicht vorhanden'
+            DW      CR
+            JP      CMDRT
+
+OE11:       CALL    OE111
+            LD      HL,1                ;Linepointer setzen
+            CALL    EE.LDXHL
+            DB      RLNP
+            JP      CMDRT
+
+OE119:      PUSH    DE
+            CALL    EE.LHLDX            ;Random Number := +1
+            DB      33
+            INC     HL
+            CALL    EE.LDXHL
+            DB      33
+            POP     DE
+OE111:      CALL    SDMA
+            PUSH    DE
+            LD      C,33                ;Fkt. 33 :  Read Random
+            CALL    BDOS
+            POP     DE
+            OR      A                   ;Fehler aufgetreten ?
+            JR      Z,OE13              ;NEIN
+            ADD     A,30H
+            LD      (OE12),A
+            CALL    EE.OTC00
+            DB      'READ ERROR '
+OE12:       DB      ' '
+            DW      CR
+            RET
+
+OE13:       PUSH    DE                  ;Lesepointer setzen
+            POP     IX
+            LD      HL,RDMA
+OE113:      ADD     HL,DE
+            CALL    EE.LDXHL
+            DB      RLP
+            EX      DE,HL
+            SET     0,(IX+RM)           ;OPEN - Bit setzen
+            SET     1,(IX+RM)           ;Merker Lesen vorwaerts   setzen
+            RES     2,(IX+RM)           ;Merker Lesen rueckwaerts loeschen
+            SET     3,(IX+RM)           ;Merker STX               setzen
+            RES     4,(IX+RM)           ;Merker ETX               loeschen
+            RET
+
+OE112:      PUSH    DE
+            CALL    EE.LHLDX            ;Random Number := -1
+            DB      33
+            DEC     HL
+            CALL    EE.LDXHL
+            DB      33
+            POP     DE
+            CALL    OE111
+            LD      DE,127              ;Lesepointer auf Pufferende setzen
+            JR      OE113
+
+            PAGE
+;****************************************************************
+;*                  R E A D       - Kommando                    *
+;****************************************************************
+REIN:       LD      IY,FCBE1
+            LD      HL,LIDT1
+            JR      RE1
+
+RE2:        LD      IY,FCBE2
+            LD      HL,LIDT3
+
+RE1:        BIT     0,(IY+RM)           ;OPEN durchgefuehrt ?
+            JP      Z,RE3               ;NEIN
+            PUSH    HL
+            PUSH    IY
+            CALL    EE.LN1N2            ;N2 (Startposition) uebernehmen
+            CALL    EE.LHLDX
+            DB      1AH
+            POP     IY
+            LD      A,H                 ;N2 = 0 ?
+            OR      L
+            JR      Z,RE4               ;JA
+            CALL    HLBIN
+            LD      E,(IY+RLNP)         ;aktuelle Zeilen-Position
+            LD      D,(IY+RLNP+1)
+            OR      A                   ;N2 > = < aktuelle Position ?
+            SBC     HL,DE
+            JR      Z,RE4               ;=
+            JR      NC,RE5              ;>
+            PUSH    IY
+            CALL    EE.LHLDX            ;HL := N2
+            DB      1AH
+            CALL    HLBIN
+            POP     IY
+            EX      DE,HL               ;<
+            OR      A
+            SBC     HL,DE
+            PUSH    HL
+            POP     BC
+            PUSH    IX
+            PUSH    IY
+            POP     IX
+RE6:        PUSH    BC                  ;Eingabedatei zurueckpositionieren
+            CALL    LESR
+            CP      0DH
+            JR      NZ,RE6+1
+            CALL    EE.LHLDX            ;Linepointer := Linepointer -1
+            DB      RLNP
+            DEC     HL
+            CALL    EE.LDXHL
+            DB      RLNP
+            EX      DE,HL
+            POP     BC
+            DEC     HL                  ;Linepointer = 2 ?
+            DEC     HL
+            LD      A,H
+            OR      L
+            JR      Z,RE8               ;JA
+            DEC     BC
+            LD      A,B
+            OR      C
+            JR      NZ,RE6
+            POP     IX
+RE4:        POP     HL
+            LD      (JLIN+1),HL
+            CALL    EE.LHLDX            ;N1 (Zeilenanzahl)  uebernehmen
+            DB      18H
+            CALL    HLBIN
+            LD      (AZEI),HL
+            JP      EE.UP18
+
+RE5:        PUSH    HL
+            POP     BC
+            PUSH    IX
+            PUSH    IY
+            POP     IX
+RE7:        PUSH    BC                  ;Eingabedatei vorpositionieren
+            CALL    LESV
+            CP      1AH                 ;EOF erreicht ?
+            JR      Z,RE9
+            CP      0DH
+            JR      NZ,RE7+1
+            CALL    EE.LHLDX            ;Linepointer := Linepointer +1
+            DB      RLNP
+            INC     HL
+            CALL    EE.LDXHL
+            DB      RLNP
+            POP     BC
+            DEC     BC
+            LD      A,B
+            OR      C
+            JR      NZ,RE7
+            POP     IX
+            JR      RE4
+
+RE8:        SET     3,(IX+RM)           ;STX - Behandlung
+            POP     IX
+            JR      RE4
+
+RE9:        SET     4,(IX+RM)           ;ETX - Behandlung
+            POP     BC
+            POP     IX
+            JR      RE4
+
+RE3:        CALL    EE.OTC00
+            DB      'kein OPEN ausgefuehrt'
+            DW      CR
+            JP      CMDRT
+
+HLBIN:      PUSH    BC
+            PUSH    DE
+            PUSH    HL
+            POP     DE
+            LD      HL,0
+            LD      A,D
+            CALL    HLB2
+            LD      A,D
+            CALL    HLB1
+            CALL    HLB3
+            LD      A,E
+            CALL    HLB1
+            CALL    HLB2
+            LD      A,E
+            CALL    HLB1
+            CALL    HLB3
+            POP     DE
+            POP     BC
+            RET
+
+HLB1:       ADD     HL,HL
+            PUSH    HL
+            POP     BC
+            ADD     HL,HL
+            ADD     HL,HL
+            ADD     HL,BC
+            RET
+
+HLB2:       RRCA
+            RRCA
+            RRCA
+            RRCA
+HLB3:       AND     00FH
+            LD      B,0
+            LD      C,A
+            ADD     HL,BC
+            RET
+;****************************************************************
+;*                  Zeileneingaberoutine  LIDT1                 *
+;****************************************************************
+LIDT3:      LD      IX,FCBE2
+            JR      LIDT4
+LIDT1:      LD      IX,FCBE1
+LIDT4:      PUSH    BC
+            PUSH    HL
+            PUSH    AF
+LIDT2:      CALL    LESV
+            LD      HL,FKT3
+            LD      B,9
+            CALL    E9.CASE
+            CALL    TAC
+            CALL    NC,OTASC
+            JR      LIDT2
+
+
+TAB1:       PUSH    IX
+            LD      IX,WORK
+            CALL    EE.LHLDX            ;HL := EOF
+            DB      2
+            POP     IX
+            DEC     HL
+            LD      A,0DH
+            LD      BC,81
+            CPDR
+            INC     HL
+            INC     HL
+            LD      A,(HL)
+            RET
+
+
+ICNU1:      POP     DE                  ;Zeichen  0AH  loeschen
+            JR      LIDT2
+
+
+EOT:        LD      A,0DH               ;Ende des Textes erreicht
+            SET     4,(IX+RM)           ;Merker ETX setzen
+            LD      HL,1
+            LD      (AZEI),HL
+
+ZEND1:      CALL    ZEND4               ;Zeilenende
+            CALL    EE.LHLDX            ;Linepointer der Datei erhoehen
+            DB      RLNP
+            INC     HL
+            PUSH    DE
+            CALL    EE.LDXHL
+            DB      RLNP
+            POP     DE
+            LD      HL,(AZEI)           ;AZEI := AZEI -1 (noch einzul. Zeilen)
+            DEC     HL
+            LD      (AZEI),HL
+            LD      A,H                 ;AZEI = 0 ?
+            OR      L
+            JP      NZ,ZEND3            ;NEIN
+            LD      HL,ZENDE
+            LD      (JLIN+1),HL
+            JP      ZEND3
+
+ZENDE:      PUSH    HL                  ;I-Modus fuer DateiEingabe beenden
+            LD      A,0DH
+            CALL    ZEND4
+            LD      HL,LIN
+            LD      (JLIN+1),HL
+            POP     HL
+            RET
+
+            PAGE
+;****************************************************************
+;*                  W R I T E     - Kommando                    *
+;****************************************************************
+WAUS:       LD      IY,FCBA
+            BIT     0,(IY+RM)           ;OPEN durchgefuehrt ?
+            JP      Z,RE3               ;NEIN
+            PUSH    IY
+            PUSH    IY
+            CALL    TAB1
+            LD      (FKT5),A
+            CALL    EE.LN1N2
+            CALL    EE.LHLDX            ;(Zeilenanzahl) uebernehmen
+            DB      18H                 ;N1
+            CALL    HLBIN
+            PUSH    HL
+            CALL    EE.LHLDX            ;N2
+            DB      1AH
+            CALL    HLBIN
+            OR      A
+            POP     DE
+            SBC     HL,DE               ;N2 - N1
+            INC     HL                  ;N2 - N1 + 1
+            LD      (AZEI),HL
+            CALL    EE.UP6
+            JP      C,WAF1              ;N1 bzw. N2 unerlaubt
+            CALL    EE.LHLDX            ;HL := SOn1
+            DB      24H
+            POP     IX
+            POP     DE
+WAUS1:      LD      A,(HL)
+            INC     HL
+            PUSH    HL
+            LD      HL,FKT4
+            LD      B,2
+            CALL    E9.CASE
+            CALL    TAC
+            CALL    NC,SCHR
+            POP     HL
+            JR      WAUS1
+
+
+WAF1:       POP     IY
+            POP     IY
+            CALL    EE.OTC00
+            DB      'auszugebender Zeilenbereich nicht existent'
+            DW      CR
+            JP      CMDRT
+
+
+WAUST:      LD      A,9
+            CALL    SCHR
+            RET
+
+
+WAUSE:      CALL    SCHR
+            LD      A,0AH
+            CALL    SCHR
+            CALL    EE.LHLDX            ;Linepointer der Datei erhoehen
+            DB      RLNP
+            INC     HL
+            PUSH    DE
+            CALL    EE.LDXHL
+            DB      RLNP
+            POP     DE
+            LD      HL,(AZEI)           ;AZEI := AZEI -1
+            DEC     HL
+            LD      (AZEI),HL
+            LD      A,H                 ;AZEI = 0 ?
+            OR      L
+            LD      A,0
+            RET     NZ                  ;NEIN
+            POP     HL                  ;RET-Adresse UP CASE
+            POP     HL
+            JP      CMDRT
+
+
+FKT4:       DB      0DH
+            DW      WAUSE
+
+FKT5:       DB      '`'
+            DW      WAUST
+
+            PAGE
+;****************************************************************
+;*                  C L O S E     - Kommando                    *
+;****************************************************************
+CAUS:       LD      IY,FCBA
+            BIT     0,(IY+RM)
+            JP      Z,RE3
+            RES     0,(IY+RM)
+            PUSH    IY
+            PUSH    IY
+            PUSH    IY
+            POP     IX
+            POP     DE
+            CALL    AUS
+            POP     DE
+            LD      C,16                ;Fkt. 16 :  Close File
+            CALL    BDOS
+            CP      -1
+            JR      NZ,CAUS1
+            CALL    EE.OTC00
+            DB      'Fehler beim Dateiabschliessen'
+            DW      CR
+
+CAUS1:      JP      CMDRT
+
+            PAGE
+;****************************************************************
+;*                  Zeichenweise Eingabe von Datei              *
+;****************************************************************
+LESV:       BIT     4,(IX+RM)           ;zeichenweise Eingabe vorwaerts
+            LD      A,0DH
+            RET     NZ
+            PUSH    HL
+            PUSH    DE
+            PUSH    IX
+            CALL    EE.LHLDX
+            DB      RLP
+            LD      A,(HL)
+            RES     3,(IX+RM)           ;Merker STX loeschen
+            INC     HL
+            CALL    EE.LDXHL
+            DB      RLP
+            EX      DE,HL
+            LD      DE,RDMA+128
+            ADD     IX,DE
+            PUSH    IX
+            POP     DE
+            OR      A
+            SBC     HL,DE
+            POP     IX
+            PUSH    IX
+            POP     DE
+            PUSH    AF
+            CALL    Z,OE119
+            POP     AF
+            POP     DE
+            POP     HL
+            RET
+
+LESR:       BIT     3,(IX+RM)           ;zeichenweise Eingabe rueckwaerts
+            LD      A,0DH
+            RET     NZ
+            PUSH    HL
+            PUSH    DE
+            PUSH    IX
+            CALL    EE.LHLDX
+            DB      RLP
+            LD      A,(HL)
+            RES     4,(IX+RM)           ;Merker ETX loeschen
+            DEC     HL
+            CALL    EE.LDXHL
+            DB      RLP
+            EX      DE,HL
+            LD      DE,RDMA
+            ADD     IX,DE
+            PUSH    IX
+            POP     DE
+            OR      A
+            SBC     HL,DE
+            POP     IX
+            PUSH    IX
+            POP     DE
+            PUSH    AF
+            CALL    Z,OE112
+            POP     AF
+            RES     1,(IX+RM)           ;Merker Lesen vorwaerts   loeschen
+            SET     2,(IX+RM)           ;Merker Lesen rueckwaerts setzen
+            POP     DE
+            POP     HL
+            RET
+
+            PAGE
+;****************************************************************
+;*                  Zeichenweise Ausgabe auf Datei              *
+;****************************************************************
+SCHR:       PUSH    HL
+            PUSH    DE
+            PUSH    IX
+            CALL    EE.LHLDX
+            DB      RSP1
+            LD      (HL),A
+            RES     3,(IX+RM)
+            INC     HL
+            CALL    EE.LDXHL
+            DB      RSP1
+            EX      DE,HL
+            LD      DE,RDMA+128
+            ADD     IX,DE
+            PUSH    IX
+            POP     DE
+            OR      A
+            SBC     HL,DE
+            POP     IX
+            PUSH    IX
+            POP     DE
+            CALL    Z,AUS
+            POP     DE
+            POP     HL
+            RET
+
+AUS:        CALL    SDMA
+            PUSH    DE
+            LD      C,34                ;Fkt. 34 :  Write Random
+            CALL    BDOS
+            POP     DE
+            OR      A                   ;Fehler aufgetreten ?
+            JR      Z,AUS2              ;NEIN
+            ADD     A,030H
+            LD      (AUS1),A
+            CALL    EE.OTC00
+            DB      'WRITE ERROR '
+AUS1:       DB      ' '
+            DW      CR
+            RET
+
+AUS2:       CALL    OA1
+            RET
+
+EDEND       EQU     $                   ;Ende des Programmes  E D D I
+                                        ;(C) Marcus Herbote    K EAW / wfvm
+;           END
+

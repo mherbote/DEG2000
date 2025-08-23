@@ -8,13 +8,13 @@
 ;--------------------------/
             .PHASE  00100H
 
-            LD      IY,00200H
-            LD      (IY),020H
-            BIT     4,(IY)
-            BIT     5,(IY)
-            BIT     7,(IY)
-            HALT
+            LD      IX,055AAH
+            LD      A,020H
+            DB      0DDH,09CH           ; SBC IXH
+            DB      0DDH,09DH           ; SBC IXL
 
+
+            HALT
 ;--------------------------
             LD      HL,TEXT
             LD      DE,03000H+2*80+5

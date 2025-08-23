@@ -15,86 +15,86 @@
                                 ;--------------------------/
                                             .PHASE  00100H
                                 
-  0100    FD 21 0200                        LD      IY,00200H
-  0104    FD 36 00 20                       LD      (IY),020H
-  0108    FD CB 00 66                       BIT     4,(IY)
-  010C    FD CB 00 6E                       BIT     5,(IY)
-  0110    FD CB 00 7E                       BIT     7,(IY)
-  0114    76                                HALT
+  0100    DD 21 55AA                        LD      IX,055AAH
+  0104    3E 20                             LD      A,020H
+  0106    DD 9C                             DB      0DDH,09CH           ; SBC IXH
+  0108    DD 9D                             DB      0DDH,09DH           ; SBC IXL
                                 
+                                
+  010A    76                                HALT
                                 ;--------------------------
-  0115    21 0159                           LD      HL,TEXT
-  0118    11 30A5                           LD      DE,03000H+2*80+5
-  011B    01 0018                           LD      BC,TEXTE-TEXT
-  011E    ED B0                             LDIR
-  0120    21 0171                           LD      HL,F1
-  0123    01 08FC                           LD      BC,008FCH
-  0126    ED B3                             OTIR
+  010B    21 014F                           LD      HL,TEXT
+  010E    11 30A5                           LD      DE,03000H+2*80+5
+  0111    01 0018                           LD      BC,TEXTE-TEXT
+  0114    ED B0                             LDIR
+  0116    21 0167                           LD      HL,F1
+  0119    01 08FC                           LD      BC,008FCH
+  011C    ED B3                             OTIR
                                 
-  0128    21 3154                           LD      HL,03000H+4*80+20
-  012B    11 0050                           LD      DE,80
-  012E    3E 41                             LD      A,'A'
-  0130    77                                LD      (HL),A
-  0131    19                                ADD     HL,DE
-  0132    3E 42                             LD      A,'B'
-  0134    77                                LD      (HL),A
-  0135    19                                ADD     HL,DE
-  0136    3E 43                             LD      A,'C'
-  0138    77                                LD      (HL),A
-  0139    19                                ADD     HL,DE
-  013A    3E 44                             LD      A,'D'
-  013C    77                                LD      (HL),A
-  013D    21 0179                           LD      HL,F2
-  0140    01 08FC                           LD      BC,008FCH
-  0143    ED B3                             OTIR
+  011E    21 3154                           LD      HL,03000H+4*80+20
+  0121    11 0050                           LD      DE,80
+  0124    3E 41                             LD      A,'A'
+  0126    77                                LD      (HL),A
+  0127    19                                ADD     HL,DE
+  0128    3E 42                             LD      A,'B'
+  012A    77                                LD      (HL),A
+  012B    19                                ADD     HL,DE
+  012C    3E 43                             LD      A,'C'
+  012E    77                                LD      (HL),A
+  012F    19                                ADD     HL,DE
+  0130    3E 44                             LD      A,'D'
+  0132    77                                LD      (HL),A
+  0133    21 016F                           LD      HL,F2
+  0136    01 08FC                           LD      BC,008FCH
+  0139    ED B3                             OTIR
                                 
-  0145    21 0159                           LD      HL,TEXT
-  0148    11 30A5                           LD      DE,03000H+2*80+5
-  014B    01 0018                           LD      BC,TEXTE-TEXT
-  014E    ED B0                             LDIR
-  0150    21 0181                           LD      HL,F3
-  0153    01 08FC                           LD      BC,008FCH
-  0156    ED B3                             OTIR
+  013B    21 014F                           LD      HL,TEXT
+  013E    11 30A5                           LD      DE,03000H+2*80+5
+  0141    01 0018                           LD      BC,TEXTE-TEXT
+  0144    ED B0                             LDIR
+  0146    21 0177                           LD      HL,F3
+  0149    01 08FC                           LD      BC,008FCH
+  014C    ED B3                             OTIR
                                 
-  0158    76                                HALT
+  014E    76                                HALT
                                 
-  0159    44 61 73 20           TEXT:       DB      'Das ist ein Testtext !!!'
-  015D    69 73 74 20           
-  0161    65 69 6E 20           
-  0165    54 65 73 74           
-  0169    74 65 78 74           
-  016D    20 21 21 21           
-  0171                          TEXTE       EQU     $
+  014F    44 61 73 20           TEXT:       DB      'Das ist ein Testtext !!!'
+  0153    69 73 74 20           
+  0157    65 69 6E 20           
+  015B    54 65 73 74           
+  015F    74 65 78 74           
+  0163    20 21 21 21           
+  0167                          TEXTE       EQU     $
                                 
                                 
-  0171    F2                    F1:         DB      0F2H
-  0172    05                                DB      5
-  0173    1D                                DB      5+(TEXTE-TEXT)
-  0174    02                                DB      2
-  0175    03                                DB      3                   ; Yellow
-  0176    02                                DB      2                   ; Blue
-  0177    04                                DB      4                   ; Red
-  0178    FF                                DB      0FFH
+  0167    F2                    F1:         DB      0F2H
+  0168    05                                DB      5
+  0169    1D                                DB      5+(TEXTE-TEXT)
+  016A    02                                DB      2
+  016B    03                                DB      3                   ; Yellow
+  016C    02                                DB      2                   ; Blue
+  016D    04                                DB      4                   ; Red
+  016E    FF                                DB      0FFH
                                 
-  0179    F3                    F2:         DB      0F3H
-  017A    14                                DB      20
-  017B    04                                DB      4
-  017C    07                                DB      7
-  017D    01                                DB      1                   ; Black
-  017E    0B                                DB      11                  ; White
-  017F    04                                DB      4                   ; Red
-  0180    FF                                DB      0FFH
+  016F    F3                    F2:         DB      0F3H
+  0170    14                                DB      20
+  0171    04                                DB      4
+  0172    07                                DB      7
+  0173    01                                DB      1                   ; Black
+  0174    0B                                DB      11                  ; White
+  0175    04                                DB      4                   ; Red
+  0176    FF                                DB      0FFH
                                 
-  0181    F1                    F3:         DB      0F1H
-  0182    1D                                DB      5+(TEXTE-TEXT)
-  0183    02                                DB      2
+  0177    F1                    F3:         DB      0F1H
+  0178    1D                                DB      5+(TEXTE-TEXT)
+  0179    02                                DB      2
 'Test von Port FCH'	MACRO-80 3.44	09-Dec-81	PAGE	1-2
 
 
-  0184    02                                DB      2                   ; Blue
-  0185    03                                DB      3                   ; Yellow
-  0186    04                                DB      4                   ; Red
-  0187    FF                                DB      0FFH
+  017A    02                                DB      2                   ; Blue
+  017B    03                                DB      3                   ; Yellow
+  017C    04                                DB      4                   ; Red
+  017D    FF                                DB      0FFH
                                 
                                             END
 'Test von Port FCH'	MACRO-80 3.44	09-Dec-81	PAGE	S
@@ -103,8 +103,8 @@
 Macros:
 
 Symbols:
-0171 	F1              0179 	F2              0181 	F3              
-0159 	TEXT            0171 	TEXTE           
+0167 	F1              016F 	F2              0177 	F3              
+014F 	TEXT            0167 	TEXTE           
 
 
 

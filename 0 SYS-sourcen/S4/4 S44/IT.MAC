@@ -1,7 +1,7 @@
 ; interrupt fuer DEG2000-BIOS
 ; ---------------------------
 ;
-	defs	0b8h
+            defs    0b8h
 ;io:	defw	0,0		; interruptvektoren system ctc
 ;	defw	kmbrob-260h+0b11h
 ;iocia:	defw	icich		; zeicheninterrupt von tastatur

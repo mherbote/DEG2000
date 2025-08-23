@@ -6631,6 +6631,7 @@
   E413    21 E45F        C                  LD      HL,S9.FT1
   E416    11 E41C        C                  LD      DE,S9.BASC1
   E419    CD C4F4        C                  CALL    S1.FEHR
+                         C      ;            
   E41C    21 C0B0        C      S9.BASC1:   LD      HL,S1.RES           ;RESET-Adresse eintragen
   E41F    22 3011        C                  LD      (BC.RECOV1+1),HL
   E422    21 E631        C                  LD      HL,S9.ANFPG         ;Anfangsprogramm laden
@@ -6656,6 +6657,7 @@
   E450    21 E485        C                  LD      HL,S9.FT2
   E453    11 E459        C                  LD      DE,S9.BASC2
   E456    CD C4F4        C                  CALL    S1.FEHR
+                         C      ;            
   E459    CD E4AB        C      S9.BASC2:   CALL    S9.BSC
   E45C    C3 0303        C                  JP      BC.RECOV
                          C      
