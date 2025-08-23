@@ -20,320 +20,320 @@
 ;  1b '0'    RRMOD setzt normalen   Rollmodus
 ;
 co.ch::
-	call	setp0
-	call	rescur
-	push	bc		; zeichen in c muss erhalten bleiben
-	ld	a,c
-	ld	hl,qesc
-	bit	qesc0,(hl)	; lauft steuerfolge?
-	jr	nz,co.c2	; -> ja
-	cp	esc		; beginnt steuerfolge?
-	jp	nz,co.c10		; -> nein
-	set	qesc0,(hl)	; es beginnt steuerfolge
+			call    setp0
+			call    rescur
+			push    bc                  ; zeichen in c muss erhalten bleiben
+			ld      a,c
+			ld      hl,qesc
+			bit     qesc0,(hl)          ; lauft steuerfolge?
+			jr      nz,co.c2            ; -> ja
+			cp      esc                 ; beginnt steuerfolge?
+			jp      nz,co.c10           ; -> nein
+			set     qesc0,(hl)          ; es beginnt steuerfolge
 co.c1:
-	res	qesc1,(hl)	;                              "set       /BCU"
-	jp	co.c16		;                              "   co.c3+3/BCU"
+			res     qesc1,(hl)          ;                              "set       /BCU"
+			jp      co.c16              ;                              "   co.c3+3/BCU"
 ;
 co.c2:
-	bit	qesc1,(hl)	; ist steuerzeichen schon eingetroffen?
+			bit     qesc1,(hl)          ; ist steuerzeichen schon eingetroffen?
 co.c3:
-	jp	nz,co.c4	; -> ja, es folgt r oder c     "jp        /BCU"
-	cp	'='		; nein, es folgt steuerzeichen "res 2,(hl)/BCU"
-	jp	z,co.c9		; -> 1b '=' rc                 "jp co.c16 /BCU"
-	call	evtrol		; evtl. verzoegertes rollen ausfuehren
-	res	qesc0,(hl)	; bearbeitung der steuerfolge beendet
-	cp	'T'
-	jp	z,eol		; -> EOL
-	cp	'E'
-	jp	z,insl		; -> INS LINE
-	cp	'R'
-	jp	z,dell		; -> DEL LINE
-	cp	':'
-	jp	z,eos		; -> EOS
-	cp	1fh		; nl
-	jp	z,co.nl
-	cp	1		; cr-ersatz
-	jp	z,co.cr
-	cp	2		; lf-ersatz
-	jp	z,co.lf
-	cp	1eh		; home
-	jp	z,co.hom
-	cp	10h		; eos
-	jp	z,co.c13
-	cp	0bh		; up
-	jp	z,co.up
-	cp	0ch		; right
-	jp	z,co.rg
-	cp	'1'		; spezieller Rollmodus an
-	jp	z,sroll
-	cp	'0'		; normaler   Rollmodus an
-	jp	z,nroll
-	jp	co.c12		; -> nicht auswertbares steuerzeichen
+			jp      nz,co.c4            ; -> ja, es folgt r oder c     "jp        /BCU"
+			cp      '='                 ; nein, es folgt steuerzeichen "res 2,(hl)/BCU"
+			jp      z,co.c9             ; -> 1b '=' rc                 "jp co.c16 /BCU"
+			call    evtrol              ; evtl. verzoegertes rollen ausfuehren
+			res     qesc0,(hl)          ; bearbeitung der steuerfolge beendet
+			cp      'T'
+			jp      z,eol               ; -> EOL
+			cp      'E'
+			jp      z,insl              ; -> INS LINE
+			cp      'R'
+			jp      z,dell              ; -> DEL LINE
+			cp      ':'
+			jp      z,eos               ; -> EOS
+			cp      1fh                 ; nl
+			jp      z,co.nl
+			cp      1                   ; cr-ersatz
+			jp      z,co.cr
+			cp      2                   ; lf-ersatz
+			jp      z,co.lf
+			cp      1eh                 ; home
+			jp      z,co.hom
+			cp      10h                 ; eos
+			jp      z,co.c13
+			cp      0bh                 ; up
+			jp      z,co.up
+			cp      0ch                 ; right
+			jp      z,co.rg
+			cp      '1'                 ; spezieller Rollmodus an
+			jp      z,sroll
+			cp      '0'                 ; normaler   Rollmodus an
+			jp      z,nroll
+			jp      co.c12              ; -> nicht auswertbares steuerzeichen
 ;
 co.c4:
-	bit	qesc2,(hl)	; 1b '=' r c
-	set	qesc2,(hl)
-	jr	nz,co.c6	; -> es ist c eingetroffen
+			bit     qesc2,(hl)          ; 1b '=' r c
+			set     qesc2,(hl)
+			jr      nz,co.c6            ; -> es ist c eingetroffen
 co.c5:
-	sub	20h		;                              "nop       /BCU"
-	jr	c,co.c7		; -> zeile war <= 1fh
-	ld	(zeil),a
-	jr	co.c8
+			sub     20h                 ;                              "nop       /BCU"
+			jr      c,co.c7             ; -> zeile war <= 1fh
+			ld      (zeil),a
+			jr      co.c8
 co.c6:
-	sub	20h		;                              "nop       /BCU"
-	jr	c,co.c7		; -> spalte war <= 1fh
-	ld	(spalt),a
+			sub     20h                 ;                              "nop       /BCU"
+			jr      c,co.c7             ; -> spalte war <= 1fh
+			ld      (spalt),a
 co.c7:
-	res	qesc0,(hl)	; bearbeitung ist beendet
+			res     qesc0,(hl)          ; bearbeitung ist beendet
 co.c8:
-	call	bsadr
-	jp	co.c15
+			call    bsadr
+			jp      co.c15
 ;
 co.c9:
-	set	qesc1,(hl)
-	res	qesc2,(hl)	; es wird r erwartet
-	jp	co.c15
+			set     qesc1,(hl)
+			res     qesc2,(hl)          ; es wird r erwartet
+			jp      co.c15
 ;
 ;
 co.c10:
-	call	evtrol		; evtl. verzoegertes rollen ausfuehren
-	cp	7		; bell
-	jp	z,co.bel
-	cp	8		; backspace
-	jp	z,co.bs
-	cp	lf		; lf
-	jp	z,co.lf
-	cp	cr		; cr
-	jp	z,co.cr
-	cp	tab
-	jr	z,co.tb
+			call	evtrol              ; evtl. verzoegertes rollen ausfuehren
+			cp      7                   ; bell
+			jp      z,co.bel
+			cp      8                   ; backspace
+			jp      z,co.bs
+			cp      lf                  ; lf
+			jp      z,co.lf
+			cp      cr                  ; cr
+			jp      z,co.cr
+			cp      tab
+			jr      z,co.tb
 co.c11:
-	cp	1ah		; clear                        "   0ch    /BCU"
-	jp	z,co.cle
+			cp      1ah                 ; clear                        "   0ch    /BCU"
+			jp      z,co.cle
 co.c12:
-	ld	hl,(bsaddr)
-	ld	(hl),a		; zeichen auf bildschirm schreiben
-	call	incad		; schreiben in letzte pos. rollt nicht!!
-	jp	co.c16
+			ld      hl,(bsaddr)
+			ld      (hl),a              ; zeichen auf bildschirm schreiben
+			call    incad               ; schreiben in letzte pos. rollt nicht!!
+			jp      co.c16
 ;
 co.c13:
-	ld	hl,(bsaddr)	; eos ab cursorposition
+			ld      hl,(bsaddr)         ; eos ab cursorposition
 co.c14:
-	ld	(hl),20h
-	inc	hl
-	ld	a,h
-	cp	high (bsanf+maxz*maxs)
-	jr	nz,co.c14
-	ld	a,l
-	cp	low (bsanf+maxz*maxs)
-	jr	nz,co.c14
+			ld      (hl),20h
+			inc     hl
+			ld      a,h
+			cp      high (bsanf+maxz*maxs)
+			jr      nz,co.c14
+			ld      a,l
+			cp      low (bsanf+maxz*maxs)
+			jr      nz,co.c14
 co.c15:
-	xor	a
-	ld	(qroll),a
+			xor     a
+			ld      (qroll),a
 co.c16:
-	pop	bc
-	call	setcur
-	call	resp0
-	ret
+			pop     bc
+			call    setcur
+			call    resp0
+			ret
 ;
 ;
 ;
-	page
+			page
 co.lf:
-	ld	hl,zeil		; lf
-	inc	(hl)
+			ld      hl,zeil             ; lf
+			inc     (hl)
 colf1:
-	call	bsadr		; evtl. rollen ausfuehren
-	call	evtrol
-	jp	co.c16
+			call    bsadr               ; evtl. rollen ausfuehren
+			call    evtrol
+			jp      co.c16
 ;
 ;
 co.cr:
-	xor	a		; cr
-	ld	(spalt),a
-	jr	colf1
+			xor     a                   ; cr
+			ld      (spalt),a
+			jr      colf1
 ;
 ;
 co.nl:
-	ld	hl,zeil		; nl
-	inc	(hl)
-	jr	co.cr
+			ld      hl,zeil             ; nl
+			inc     (hl)
+			jr      co.cr
 ;
 ;
 co.bel:
-	call	ci.bell
-	jp	co.c16
+			call    ci.bell
+			jp      co.c16
 ;
 ;
 co.hom:
-	xor	a		; home
-	ld	(zeil),a
-	ld	(spalt),a
-	jr	colf1
+			xor     a                   ; home
+			ld      (zeil),a
+			ld      (spalt),a
+			jr      colf1
 ;
 ;
 co.tb:
-	ld	hl,(bsaddr)	; tab
-	ld	(hl),20h
-	call	incad
-	ld	a,(spalt)
-	and	7
-	jp	z,co.c16
-	call	evtrol		; evtl. verzoegertes rollen ausfuehren
-	jr	co.tb
+			ld      hl,(bsaddr)         ; tab
+			ld      (hl),20h
+			call    incad
+			ld      a,(spalt)
+			and     7
+			jp      z,co.c16
+			call    evtrol              ; evtl. verzoegertes rollen ausfuehren
+			jr      co.tb
 ;
 ;
 co.bs:
-	ld	a,(spalt)	; backspace
-	or	a
-	jr	z,cobs2
-	dec	a
-	ld	(spalt),a
+			ld      a,(spalt)           ; backspace
+			or      a
+			jr      z,cobs2
+			dec     a
+			ld      (spalt),a
 cobs1:
-	ld	hl,(bsaddr)
-	dec	hl
-	ld	(bsaddr),hl
-	jp	co.c15
+			ld      hl,(bsaddr)
+			dec     hl
+			ld      (bsaddr),hl
+			jp      co.c15
 ;
 cobs2:
-	ld	a,(zeil)
-	or	a
-	jp	z,co.c15	; -> bs nicht ausfuehrbar, da homeposition
-	dec	a
-	ld	(zeil),a
-	ld	a,maxs-1
-	ld	(spalt),a
-	jr	cobs1
+			ld      a,(zeil)
+			or      a
+			jp      z,co.c15            ; -> bs nicht ausfuehrbar, da homeposition
+			dec     a
+			ld      (zeil),a
+			ld      a,maxs-1
+			ld      (spalt),a
+			jr      cobs1
 ;
 ;
 co.cle:
-	xor	a		; clear
-	ld	(zeil),a
-	ld	(spalt),a
-	call	bsadr
-	jp	co.c13
+			xor     a                   ; clear
+			ld      (zeil),a
+			ld      (spalt),a
+			call    bsadr
+			jp      co.c13
 ;
 ;
 co.up:
-	ld	hl,zeil		; up
-	ld	a,(hl)
-	or	a
-	jr	nz,coup1	; -> cursor stand nicht in 1. zeile
-	ld	(hl),maxz
+			ld      hl,zeil             ; up
+			ld      a,(hl)
+			or      a
+			jr      nz,coup1            ; -> cursor stand nicht in 1. zeile
+			ld      (hl),maxz
 coup1:
-	dec	(hl)
-	jp	colf1
+			dec     (hl)
+			jp      colf1
 ;
 ;
 co.rg:
-	ld	a,(spalt)	; right zyklisch in zeile
-	inc	a
-	cp	maxs
-	jr	nz,corg1
-	xor	a
+			ld      a,(spalt)           ; right zyklisch in zeile
+			inc     a
+			cp      maxs
+			jr      nz,corg1
+			xor     a
 corg1:
-	ld	(spalt),a
-	jp	colf1
+			ld      (spalt),a
+			jp      colf1
 ;
 ;
 eol:
-	ld	hl,spalt	; EOL
-	ld	a,maxs
-	sub	(hl)
-	ld	b,a
-	ld	hl,(bsaddr)
+			ld      hl,spalt            ; EOL
+			ld      a,maxs
+			sub     (hl)
+			ld      b,a
+			ld      hl,(bsaddr)
 eol1:
-	ld	(hl),20h
-	inc	hl
-	djnz	eol1
-	jp	co.c15
+			ld      (hl),20h
+			inc     hl
+			djnz    eol1
+			jp      co.c15
 ;
 ;
 insl:
-	xor	a		; INS LINE
-	ld	(spalt),a
-	call	bsadr
-	ld	hl,zeil
-	ld	a,maxz
-	sub	(hl)
-	dec	a
-	jr	z,eol		; -> kursor stand in letzter zeile; diese loeschen
-	ld	b,a
-	ld	hl,0
-	ld	de,maxs
+			xor     a                   ; INS LINE
+			ld      (spalt),a
+			call    bsadr
+			ld      hl,zeil
+			ld      a,maxz
+			sub     (hl)
+			dec     a
+			jr      z,eol               ; -> kursor stand in letzter zeile; diese loeschen
+			ld      b,a
+			ld      hl,0
+			ld      de,maxs
 insl1:
-	add	hl,de		; anzahl der zeilen bestimmen, die nach
-	djnz	insl1		; unten gerollt werden muessen
-	ld	b,h
-	ld	c,l
-	ld	hl,bsanf+maxz*maxs-1-maxs
-	ld	de,bsanf+maxz*maxs-1
-	lddr
-	jr	eol		; -> zeile loeschen, in der cursor steht
+			add     hl,de               ; anzahl der zeilen bestimmen, die nach
+			djnz    insl1               ; unten gerollt werden muessen
+			ld      b,h
+			ld      c,l
+			ld      hl,bsanf+maxz*maxs-1-maxs
+			ld      de,bsanf+maxz*maxs-1
+			lddr
+			jr      eol                 ; -> zeile loeschen, in der cursor steht
 ;
 ;
 dell:
-	xor	a		; DEL LINE
-	ld	(spalt),a
-	call	bsadr
-	ld	hl,zeil
-	ld	a,maxz
-	sub	(hl)
-	dec	a
-	jr	z,dell2		; -> kursor stand in letzter zeile
-	ld	b,a
-	ld	hl,0
-	ld	de,maxs
+			xor     a                   ; DEL LINE
+			ld      (spalt),a
+			call    bsadr
+			ld      hl,zeil
+			ld      a,maxz
+			sub     (hl)
+			dec     a
+			jr      z,dell2             ; -> kursor stand in letzter zeile
+			ld      b,a
+			ld      hl,0
+			ld      de,maxs
 dell1:
-	add	hl,de		; anzahl der zeilen bestimmen, die nach
-	djnz	dell1		; oben gerollt werden muessen
-	ld	b,h
-	ld	c,l
-	ld	hl,(bsaddr)
-	ex	de,hl
-	add	hl,de
-	ldir
-dell2:
-	ld	hl,bsanf+maxz*maxs-maxs ; letzte zeile loeschen
-	ld	de,bsanf+maxz*maxs-maxs+1
-	ld	bc,maxs-1
+			add     hl,de               ; anzahl der zeilen bestimmen, die nach
+			djnz    dell1               ; oben gerollt werden muessen
+			ld      b,h
+			ld      c,l
+			ld      hl,(bsaddr)
+			ex      de,hl
+			add     hl,de
+			ldir
+dell2:                                  ; letzte zeile loeschen
+			ld      hl,bsanf+maxz*maxs-maxs
+			ld      de,bsanf+maxz*maxs-maxs+1
+			ld      bc,maxs-1
 dell3:
-	ld	(hl),20h
-	ldir
-	jp	co.c15
+			ld      (hl),20h
+			ldir
+			jp      co.c15
 ;
 ;
 eos:
-	ld	hl,bsanf	; eos, cursor bleibt unveraendert
-	ld	de,bsanf+1
-	ld	bc,maxz*maxs-1
-	jr	dell3
+			ld      hl,bsanf            ; eos, cursor bleibt unveraendert
+			ld      de,bsanf+1
+			ld      bc,maxz*maxs-1
+			jr      dell3
 ;
 ;
 sroll:
-	ld	a,1		; spezieller rollmodus an
+			ld      a,1                 ; spezieller rollmodus an
 sroll1:
-	ld	(qrmode),a
-	jp	co.c16
+			ld      (qrmode),a
+			jp      co.c16
 ;
 nroll:
-	xor	a		; normaler   rollmodus an
-	jr	sroll1
+			xor     a                   ; normaler   rollmodus an
+			jr      sroll1
 ;
 ;
 ;
-	page
+			page
 incad:
-	ld	hl,spalt
-	inc	(hl)
-	ld	a,(hl)
-	cp	maxs
-	jr	nz,bsadr
-	xor	a
-	ld	(hl),a
-	ld	hl,zeil
-	inc	(hl)
-	jr	bsadr
+			ld      hl,spalt
+			inc     (hl)
+			ld      a,(hl)
+			cp      maxs
+			jr      nz,bsadr
+			xor     a
+			ld      (hl),a
+			ld      hl,zeil
+			inc     (hl)
+			jr      bsadr
 
 ; die position zeil/spalt durch evtl. rollen in den bildschirmbereich
 ; bringen und physische adresse der position berechnen; dabei rollen
@@ -341,175 +341,175 @@ incad:
 ; der naechsten ausgabe oder setcur gerollt werden kann
 ;
 bsadr:
-	push	af
-	push	bc
-	push	de
-	ld	a,(zeil)
+			push    af
+			push    bc
+			push    de
+			ld      a,(zeil)
 bsad1:
-	cp	maxz
-	jr	c,bsad4
-	jr	z,bsad3		; -> es koennte letzte position gewesen sein
+			cp      maxz
+			jr      c,bsad4
+			jr      z,bsad3             ; -> es koennte letzte position gewesen sein
 bsad2:
-	call	bsrol
-	jr	bsad1
+			call    bsrol
+			jr      bsad1
 bsad3:
-	ld	a,(spalt)	; ist spalte = 0?
-	or	a
-	ld	a,maxz
-	jr	nz,bsad2	; -> nein, rollen
-	dec	a
-	ld	hl,qroll	; rollmerker setzen
-	ld	(hl),1
+			ld      a,(spalt)           ; ist spalte = 0?
+			or      a
+			ld      a,maxz
+			jr      nz,bsad2            ; -> nein, rollen
+			dec     a
+			ld      hl,qroll            ; rollmerker setzen
+			ld      (hl),1
 bsad4:
-	ld	b,a		; physische adresse berechnen
-	ld	hl,0
-	ld	de,maxs
-	or	a
-	jr	z,bsad6
+			ld      b,a                 ; physische adresse berechnen
+			ld      hl,0
+			ld      de,maxs
+			or      a
+			jr      z,bsad6
 bsad5:
-	add	hl,de
-	djnz	bsad5
+			add     hl,de
+			djnz    bsad5
 bsad6:
-	ld	a,(spalt)
-	ld	c,a
-	ld	b,0
-	add	hl,bc
-	ld	bc,bsanf
-	add	hl,bc
-	pop	de
-	pop	bc
-	pop	af
-	ld	(bsaddr),hl
-	ret
+			ld      a,(spalt)
+			ld      c,a
+			ld      b,0
+			add     hl,bc
+			ld      bc,bsanf
+			add     hl,bc
+			pop     de
+			pop     bc
+			pop     af
+			ld      (bsaddr),hl
+			ret
 ;
 ;
 bsrol:
-	ld	de,bsanf	; bild hochschieben
-	ld	hl,bsanf+maxs
-	ld	bc,maxs*(maxz-1)
-	ldir
-	ld	h,d
-	ld	l,e
-	inc	de		; letzte zeile loeschen
-	ld	bc,maxs-1
-	ld	(hl),20h
-	ldir
-	ld	hl,zeil
-	dec	(hl)
-	ld	a,(hl)
-	ret
+			ld      de,bsanf            ; bild hochschieben
+			ld      hl,bsanf+maxs
+			ld      bc,maxs*(maxz-1)
+			ldir
+			ld      h,d
+			ld      l,e
+			inc     de                  ; letzte zeile loeschen
+			ld      bc,maxs-1
+			ld      (hl),20h
+			ldir
+			ld      hl,zeil
+			dec     (hl)
+			ld      a,(hl)
+			ret
 ;
 ;
 evtrol:
-	push	hl
-	ld	hl,qroll
-	bit	0,(hl)
-	res	0,(hl)
-	pop	hl
-	ret	z
-	push	af
-	push	bc
-	push	de
-	push	hl
-	call	bsrol
-	pop	hl
-	pop	de
-	pop	bc
-	pop	af
-	ret
+			push    hl
+			ld      hl,qroll
+			bit     0,(hl)
+			res     0,(hl)
+			pop     hl
+			ret     z
+			push    af
+			push    bc
+			push    de
+			push    hl
+			call    bsrol
+			pop     hl
+			pop     de
+			pop     bc
+			pop     af
+			ret
 ;
 ;
 setcur:
-	push	hl
-	ld	hl,qrmode
-	bit	0,(hl)
-	call	z,evtrol	; evtl. verzoegertes rollen ausfuehren
-	ld	hl,(bsaddr)
-	; set	7,(hl)
-	push	bc
-	ld	(setcur2),hl
-	ld	hl,setcur1
-	ld	bc,0740H
-	otir
-	pop	bc
-	pop	hl
-	ret
+			push    hl
+			ld      hl,qrmode
+			bit     0,(hl)
+			call    z,evtrol            ; evtl. verzoegertes rollen ausfuehren
+			ld      hl,(bsaddr)
+;           set     7,(hl)
+			push    bc
+			ld      (setcur2),hl
+			ld      hl,setcur1
+			ld      bc,0740H
+			otir
+			pop     bc
+			pop     hl
+			ret
 ;
 setcur1:
-	DB	0F0H
-	DB	004H	;Cursor Ein mit HL
-	DW	bsanf
+			DB      0F0H
+			DB      004H                ;Cursor Ein mit HL
+			DW      bsanf
 setcur2:
-	DW	0
-	DB	0FFH
+			DW      0
+			DB      0FFH
 ;
 ;
 rescur:
-	push	hl
-	push	bc
-	;ld	hl,(bsaddr)
-	; res	7,(hl)
-	ld	hl,rescur1
-	ld	bc,0340H
-	pop	bc
-	pop	hl
-	ret
+			push    hl
+			push    bc
+;			ld      hl,(bsaddr)
+;			res     7,(hl)
+			ld      hl,rescur1
+			ld      bc,0340H
+			pop     bc
+			pop     hl
+			ret
 ;
 rescur1:
-	DB	0F0H
-	DB	002H	;Cursor Aus
-	DB	0FFH
+			DB      0F0H
+			DB      002H                ;Cursor Aus
+			DB      0FFH
 ;
 ;
-	page
+			page
 co.scp:	
-	ret
+			ret
 ;
 ;
 ;
 co.bcu:
-	ld	a,0ceh		;set 1,(hl)
-	ld	(co.c1+1),a
-	ld	hl,co.c3+3
-	ld	(co.c1+3),hl
-	ld	a,0c3h		;jp
-	ld	(co.c3),a
-	ld	hl,096cbh	;res 2,(hl)
-	ld	(co.c3+3),hl
-	ld	a,0c3h		;jp
-	ld	(co.c3+5),a
-	ld	hl,co.c16
-	ld	(co.c3+6),hl
-	ld	hl,0
-	ld	(co.c5),hl
-	ld	(co.c6),hl
-	ld	a,00ch
-	ld	(co.c11+1),a
-	ld	(bootms),a
-	ret
+			ld      a,0ceh              ;set 1,(hl)
+			ld      (co.c1+1),a
+			ld      hl,co.c3+3
+			ld      (co.c1+3),hl
+			ld      a,0c3h              ;jp
+			ld      (co.c3),a
+			ld      hl,096cbh           ;res 2,(hl)
+			ld      (co.c3+3),hl
+			ld      a,0c3h              ;jp
+			ld      (co.c3+5),a
+			ld      hl,co.c16
+			ld      (co.c3+6),hl
+			ld      hl,0
+			ld      (co.c5),hl
+			ld      (co.c6),hl
+			ld      a,00ch
+			ld      (co.c11+1),a
+			ld      (bootms),a
+			ret
 ;
 ;
 ;
 co.deg:
-	ld	a,08eh		;res 1,(hl)
-	ld	(co.c1+1),a
-	ld	hl,co.c16
-	ld	(co.c1+3),hl
-	ld	a,0c2h		;jp nz,
-	ld	(co.c3),a
-	ld	hl,03dfeh	;cp '='
-	ld	(co.c3+3),hl
-	ld	a,0cah		;jp z,
-	ld	(co.c3+5),a
-	ld	hl,co.c9
-	ld	(co.c3+6),hl
-	ld	hl,020d6h	;sub 20h
-	ld	(co.c5),hl
-	ld	(co.c6),hl
-	ld	a,01ah
-	ld	(co.c11+1),a
-	ld	(bootms),a
-	ret
+			ld      a,08eh              ;res 1,(hl)
+			ld      (co.c1+1),a
+			ld      hl,co.c16
+			ld      (co.c1+3),hl
+			ld      a,0c2h              ;jp nz,
+			ld      (co.c3),a
+			ld      hl,03dfeh           ;cp '='
+			ld      (co.c3+3),hl
+			ld      a,0cah              ;jp z,
+			ld      (co.c3+5),a
+			ld      hl,co.c9
+			ld      (co.c3+6),hl
+			ld      hl,020d6h           ;sub 20h
+			ld      (co.c5),hl
+			ld      (co.c6),hl
+			ld      a,01ah
+			ld      (co.c11+1),a
+			ld      (bootms),a
+			ret
 ;
 ;
 

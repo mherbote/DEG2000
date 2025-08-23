@@ -1,126 +1,126 @@
-wrdir	equ	1		; write to directory
-wrual	equ	2		; write to unallocated
+wrdir       equ     1                   ; write to directory
+wrual       equ     2                   ; write to unallocated
 ;********************************
 ;
 ;   eintritt deblocking
 ;      ix zeigt auf parametertab.
 ;
 ;********************************
-deblck:	ld	a,1
-	ld	(readop),a	; read operation
-	ld	a,wrual
-	ld	(wrtype),a	; treat as unalloc
-	jr	alloc
+deblck:     ld      a,1
+			ld      (readop),a          ; read operation
+			ld      a,wrual
+			ld      (wrtype),a          ; treat as unalloc
+			jr      alloc
 ;********************************
 ;
 ;   eintritt blocking
 ;      ix zeigt auf parametertab.
 ;
 ;********************************
-block:	xor	a
-	ld	(readop),a	; write operation
-	ld	a,c
-	ld	(wrtype),a	; writetype
-	cp	wrual
-	jr	nz,chkuna
-;;;;	ld	a,(sec)		; write to unallocated
-;;;;	dec	a
-;;;;	ld	c,a
-	ld	a,(ix+blklog)
-;;;;	push	af
-;;;;	dec	a
-;;;;	and	c
-;;;;	ld	c,a
-;;;;	pop	af
-;;;;	sub	c
-	ld	(ix+unacnt),a
-	ld	a,(trk)
-	ld	(ix+unatrk),a
-	ld	a,(trk+1)
-	ld	(ix+unatrk+1),a
-	ld	a,(sec)
-	ld	(ix+unasec),a
-chkuna:	ld	a,(ix+unacnt)	; any unallocated remain?
-	or	a
-	jr	z,alloc		; -> no
-	dec	(ix+unacnt)	; unallocated records remain
-	ld	a,(trk)
-	cp	(ix+unatrk)
-	jr	nz,alloc	; -> not the same track
-	ld	a,(trk+1)
-	cp	(ix+unatrk+1)
-	jr	nz,alloc	; -> not the same track
-	ld	a,(sec)
-	cp	(ix+unasec)
-	jr	nz,alloc	; -> not the same sector
-	inc	(ix+unasec)	; match, incr. for future
-	cp	(ix+cpmspt)	; in SYS4 sind sek. von 1 bis cpmspt nummeriert
-	jr	c,noovf
-	ld	(ix+unasec),1	; track overflow
-	inc	(ix+unatrk)
-	jr	nz,noovf
-	inc	(ix+unatrk+1)
-noovf:	xor	a		; match found, mark as unnecessary read
-	ld	(rsflag),a
-	jr	rwoper
+block:      xor     a
+			ld      (readop),a          ; write operation
+			ld      a,c
+			ld      (wrtype),a          ; writetype
+			cp      wrual
+			jr      nz,chkuna
+;;;;	    ld      a,(sec)             ; write to unallocated
+;;;;        dec     a
+;;;;        ld      c,a
+			ld      a,(ix+blklog)
+;;;;        push    af
+;;;;        dec     a
+;;;;        and     c
+;;;;        ld      c,a
+;;;;        pop     af
+;;;;        sub     c
+			ld      (ix+unacnt),a
+			ld      a,(trk)
+			ld      (ix+unatrk),a
+			ld      a,(trk+1)
+			ld      (ix+unatrk+1),a
+			ld      a,(sec)
+			ld      (ix+unasec),a
+chkuna:     ld      a,(ix+unacnt)       ; any unallocated remain?
+			or      a
+			jr      z,alloc             ; -> no
+			dec     (ix+unacnt)         ; unallocated records remain
+			ld      a,(trk)
+			cp      (ix+unatrk)
+			jr      nz,alloc            ; -> not the same track
+			ld      a,(trk+1)
+			cp      (ix+unatrk+1)
+			jr      nz,alloc            ; -> not the same track
+			ld      a,(sec)
+			cp      (ix+unasec)
+			jr      nz,alloc            ; -> not the same sector
+			inc     (ix+unasec)         ; match, incr. for future
+			cp      (ix+cpmspt)         ; in SYS4 sind sek. von 1 bis cpmspt nummeriert
+			jr      c,noovf
+			ld      (ix+unasec),1       ; track overflow
+			inc     (ix+unatrk)
+			jr      nz,noovf
+			inc     (ix+unatrk+1)
+noovf:      xor     a                   ; match found, mark as unnecessary read
+			ld      (rsflag),a
+			jr      rwoper
 ;
-alloc:	ld	(ix+unacnt),0
-	ld	a,1
-	ld	(rsflag),a	; mark as must preread
-rwoper:	xor	a
-	ld	(erflag),a	; no errors (yet)
-	ld	a,(ix+secshf)
-	ld	b,a
-	ld	a,(sec)
-	dec	a
-rwop01:	srl	a
-	djnz	rwop01
-	ld	(sechst),a
-	ld	a,(ix+hstact)	; host buffer active?
-	ld	(ix+hstact),1
-	or	a
-	jr	z,filhst	; -> no
-	ld	a,(trk)		; propper sector in buffer?
-	cp	(ix+hsttrk)
-	jr	nz,nomatch
-	ld	a,(trk+1)
-	cp	(ix+hsttrk+1)
-	jr	nz,nomatch
-	ld	a,(sechst)
-	cp	(ix+hstsec)
-	jr	z,match
-nomatch:ld	a,(ix+hstwrt)	; host written?
-	or	a
-	call	nz,writehst	; yes, write host buffer
-filhst:	ld	a,(sechst)
-	ld	(ix+hstsec),a
-	ld	a,(trk)
-	ld	(ix+hsttrk),a
-	ld	a,(trk+1)
-	ld	(ix+hsttrk+1),a
-	ld	(ix+hstwrt),0	; no pending write
-	ld	a,(rsflag)
-	or	a
-	call	nz,readhst	; read host buffer
-match:	ld	a,(sec)
-	dec	a
-	and	(ix+secmsk)
-	ld	l,a
-	ld	h,0
-	rept	7
-	add	hl,hl
-	endm
-	ld	e,(ix+hstbuf)
-	ld	d,(ix+hstbuf+1)
-	add	hl,de
-	ld	de,dmma
-	ld	bc,128
-	ld	a,(readop)	; which way?
-	or	a
-	jr	nz,wmove	; -> read
-	ld	(ix+hstwrt),1	; host buffer written
-	ex	de,hl
-wmove:	ldir
+alloc:      ld      (ix+unacnt),0
+			ld      a,1
+			ld      (rsflag),a          ; mark as must preread
+rwoper:     xor     a
+			ld      (erflag),a          ; no errors (yet)
+			ld      a,(ix+secshf)
+			ld      b,a
+			ld      a,(sec)
+			dec     a
+rwop01:     srl     a
+			djnz	rwop01
+			ld      (sechst),a
+			ld      a,(ix+hstact)       ; host buffer active?
+			ld      (ix+hstact),1
+			or      a
+			jr      z,filhst            ; -> no
+			ld      a,(trk)             ; propper sector in buffer?
+			cp      (ix+hsttrk)
+			jr      nz,nomatch
+			ld      a,(trk+1)
+			cp      (ix+hsttrk+1)
+			jr      nz,nomatch
+			ld      a,(sechst)
+			cp      (ix+hstsec)
+			jr      z,match
+nomatch:    ld      a,(ix+hstwrt)       ; host written?
+			or      a
+			call    nz,writehst         ; yes, write host buffer
+filhst:     ld      a,(sechst)
+			ld      (ix+hstsec),a
+			ld      a,(trk)
+			ld      (ix+hsttrk),a
+			ld      a,(trk+1)
+			ld      (ix+hsttrk+1),a
+			ld      (ix+hstwrt),0       ; no pending write
+			ld      a,(rsflag)
+			or      a
+			call    nz,readhst          ; read host buffer
+match:      ld      a,(sec)
+			dec     a
+			and     (ix+secmsk)
+			ld      l,a
+			ld      h,0
+			rept    7
+			add     hl,hl
+			endm
+			ld      e,(ix+hstbuf)
+			ld      d,(ix+hstbuf+1)
+			add     hl,de
+			ld      de,dmma
+			ld      bc,128
+			ld      a,(readop)          ; which way?
+			or      a
+			jr      nz,wmove            ; -> read
+			ld      (ix+hstwrt),1       ; host buffer written
+			ex      de,hl
+wmove:      ldir
 		;ld a,(hl) uebertragen nach hostbuffer auf cpu-karte
 		;ld	(de),a
 		;inc	hl
@@ -135,37 +135,37 @@ wmove:	ldir
 		;inc	hl
 		;inc	de
 		;djnz	rmove
-retmov:	ld	a,(wrtype)	; write type to directory?
-	cp	wrdir
-	ld	a,(erflag)
-	ret	nz		; -> no
-	or	a		; errors?
-	ret	nz		; -> yes
-	call	writehst
-	ld	(ix+hstwrt),0
-	ld	a,(erflag)
-	ret
+retmov:     ld      a,(wrtype)          ; write type to directory?
+			cp      wrdir
+			ld      a,(erflag)
+			ret     nz                  ; -> no
+			or      a                   ; errors?
+			ret     nz                  ; -> yes
+			call    writehst
+			ld      (ix+hstwrt),0
+			ld      a,(erflag)
+			ret
 
 ;	up's fuer host read/write
 ;	-------------------------
 ;
 writehst:
-	ld	a,erranz	; erranz fehlversuche
-	ld	(rderr),a
-	ld	l,(ix+hwr)
-	ld	h,(ix+hwr+1)
-	jr	rdh01
+			ld      a,erranz            ; erranz fehlversuche
+			ld      (rderr),a
+			ld      l,(ix+hwr)
+			ld      h,(ix+hwr+1)
+			jr      rdh01
 ;
 readhst:
-	ld	a,erranz	; erranz fehlversuche
-	ld	(rderr),a
-	ld	l,(ix+hrd)
-	ld	h,(ix+hrd+1)
-rdh01:	call	callhl
-	ld	a,0
-	jr	z,rdh02
-	inc	a
-rdh02:	ld	(erflag),a
-	ret
+			ld      a,erranz            ; erranz fehlversuche
+			ld      (rderr),a
+			ld      l,(ix+hrd)
+			ld      h,(ix+hrd+1)
+rdh01:      call    callhl
+			ld      a,0
+			jr      z,rdh02
+			inc     a
+rdh02:      ld      (erflag),a
+			ret
 ;
 
