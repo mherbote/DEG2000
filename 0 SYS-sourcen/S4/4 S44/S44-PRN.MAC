@@ -1,8 +1,16 @@
-'D  E  G  2  0  0  0   Version 4.4'	MACRO-80 3.44	09-Dec-81	PAGE	1
+''	MACRO-80 3.44	09-Dec-81	PAGE	1
 
 
-                                	title	'D  E  G  2  0  0  0   Version 4.4'
-                                	page
+                                ;--------------------------\            ; Vorspann fuer BIN-Datei
+  0000*   F0                                DB      0F0H                ; Startbyte ---> weitere BIN-Datei
+  0001*   53 33                             DB      'S3'                ;                Name der BIN-Datei
+  0003*                                     DS      26,0
+  001D*   00                                DB      000H                ; HS-Bereich : 0
+  001E*   0020                              DW      00020H              ; Ladeadresse: 0020H
+                                ;--------------------------/
+                                
+                                            title   'D  E  G  2  0  0  0   Version 4.4'
+                                            page    86
 'D  E  G  2  0  0  0   Version 4.4'	MACRO-80 3.44	09-Dec-81	PAGE	1-1
 
 
@@ -53,7 +61,7 @@
                                 ;
                                 ;----------------------------------------------------------------------
                                 ;
-                                            page	86
+                                            page
 'D  E  G  2  0  0  0   Version 4.4'	MACRO-80 3.44	09-Dec-81	PAGE	1-2
 
 
@@ -216,23 +224,23 @@
                          C                  ld      bc,0000FH           ; LD	BC,MEM3-B1
                          C                  jp      08000H              ; JP	08000H
                          C      ;                                       ;MEM1:
-                         C                  defb	0F0H
-                         C                  defb	001H                ; einen Bereich umschalten
-                         C                  defb	008H                ; HS Bereich 
-                         C                  defb	001H                ; Standardbereich
-                         C                  defb	0FFH
+                         C                  defb    0F0H
+                         C                  defb    001H                ; einen Bereich umschalten
+                         C                  defb    008H                ; HS Bereich 
+                         C                  defb    001H                ; Standardbereich
+                         C                  defb    0FFH
                          C      ;                                       ;COPS:	.phase 08000H
                          C      ;                                       ;B1 EQU $
-                         C                  ld	hl,0800BH               ; LD	HL,MEM2
-                         C                  ld	bc,004C0H               ; LD	BC,004C0H
+                         C                  ld      hl,0800BH           ; LD	HL,MEM2
+                         C                  ld      bc,004C0H           ; LD	BC,004C0H
                          C                  otir                        ; OTIR
-                         C                  jp	0000H                   ; Sprung zur Version 1.2
+                         C                  jp      0000H               ; Sprung zur Version 1.2
                          C      ;                                       ;B2 EQU $
                          C      ;                                       ;MEM2:
-                         C                  defb	0F0H
-                         C                  defb	003H                ; Bereichsumschaltung
-                         C                  defb	4                   ; Sys_12
-                         C                  defb	0FFH
+                         C                  defb    0F0H
+                         C                  defb    003H                ; Bereichsumschaltung
+                         C                  defb    4                   ; Sys_12
+                         C                  defb    0FFH
                          C                  endm
                          C      endif
                          C      ;
@@ -294,40 +302,41 @@
   0089                   C      eq.scp      equ     089h                ; monitor SCP
   008A                   C      eq.bcu      equ     08ah                ; monitor BCU
   008B                   C      eq.deg      equ     08bh                ; monitor DEG-SYS4
-                                            page
+                         C      
+                         C                  page
 'D  E  G  2  0  0  0   Version 4.4'	MACRO-80 3.44	09-Dec-81	PAGE	1-6
 
 
-                                
-                                ;	generierungsangaben
-                                ;	===================
-                                ;
-  000D                          cr          equ     00dh
-  000A                          lf          equ     00ah
-  000C                          ff          equ     00ch
-  0009                          tab         equ     009h
-  001B                          esc         equ     01bh
-                                ;
-  0040                          zeil        equ     orig+40h            ; adresse der zeilennummer
-  0041                          spalt       equ     orig+41h            ; adresse der spaltennummer
-                                
-                                ;	parameter fuer blockung (stehen in den e/a-tabellen)
-                                ;	====================================================
-                                ;
-                                ;blklog     equ     8                   ; anzahl der recorde in einem logischen block
-                                ;cpmspt     equ     16                  ; sector per track
-                                ;blksiz     equ     2                   ; anzahl der recorde in einem hostblock
-                                ;                                       ;   (potenz von 2!!!)
-                                ;secshf     equ     1                   ; 2**secshf = blksiz
-                                ;secmsk     equ     1                   ; schneidet secshf bits hinten heraus
-                                ;
-  0004                          erranz      equ     4                   ; anzahl der fehlerwiederholungen
-                                ;
-  0043                          lwa         equ     orig+43h            ; laufwerksnummer laufwerk A
-                                ;
-  0044                          datum       equ     orig+44h            ; aktuelles Datum tag/monat/jahr
-                                ;
-  DE00                          CCP         equ     0DE00h
+                         C      
+                         C      ;	generierungsangaben
+                         C      ;	===================
+                         C      ;
+  000D                   C      cr          equ     00dh
+  000A                   C      lf          equ     00ah
+  000C                   C      ff          equ     00ch
+  0009                   C      tab         equ     009h
+  001B                   C      esc         equ     01bh
+                         C      ;
+  0040                   C      zeil        equ     orig+40h            ; adresse der zeilennummer
+  0041                   C      spalt       equ     orig+41h            ; adresse der spaltennummer
+                         C      
+                         C      ;	parameter fuer blockung (stehen in den e/a-tabellen)
+                         C      ;	====================================================
+                         C      ;
+                         C      ;blklog     equ     8                   ; anzahl der recorde in einem logischen block
+                         C      ;cpmspt     equ     16                  ; sector per track
+                         C      ;blksiz     equ     2                   ; anzahl der recorde in einem hostblock
+                         C      ;                                       ;   (potenz von 2!!!)
+                         C      ;secshf     equ     1                   ; 2**secshf = blksiz
+                         C      ;secmsk     equ     1                   ; schneidet secshf bits hinten heraus
+                         C      ;
+  0004                   C      erranz      equ     4                   ; anzahl der fehlerwiederholungen
+                         C      ;
+  0043                   C      lwa         equ     orig+43h            ; laufwerksnummer laufwerk A
+                         C      ;
+  0044                   C      datum       equ     orig+44h            ; aktuelles Datum tag/monat/jahr
+                         C      ;
+  DE00                   C      CCP         equ     0DE00h
                                 
                                             title	'Start: 0000H nach LOAD'
                                             page
@@ -338,60 +347,67 @@
                                 ; ===  Start: 0000H nach LOAD =====================================================================
                                 ;
                                 ; /---  Start: Verschieben der verschiedenen Bereiche --------------------------------------------\
+                                            .phase  00020h
                                 ;  wird von SYS 1.2 mit dem Befehl "S4  " angesprungen
-  0000*                         start:	
-                                ;	hl 	;abios -Adresse in SYS1.2 fuer 'S4  ' eintragen
-  0000*   11 F400                           ld      de,abios
-  0003*   73                                ld      (hl),e
-  0004*   23                                inc     hl
-  0005*   72                                ld      (hl),d
+  0020                          start:
+  0020    21 0000                           ld      hl,00000h           ; ersten 20h bytes loeschen
+  0023    11 0001                           ld      de,00001h            
+  0026    01 001F                           ld      bc,31
+  0029    36 00                             ld      (hl),0
+  002B    ED B0                             ldir
                                 
-  0006*   01 04C0                           ld      bc,004C0h           ;HS-bereich auf "System" unschalten
-  0009*   21 0066*                          ld      hl,start1
-  000C*   ED B3                             otir
+  002D    11 F400                           ld      de,abios            ; abios -Adresse in SYS1.2 eintragen
+  0030    73                                ld      (hl),e              ; hl  von 'S4  ' 
+  0031    23                                inc     hl
+  0032    72                                ld      (hl),d
+                                
+  0033    01 04C0                           ld      bc,004C0h           ;HS-bereich auf "System" unschalten
+  0036    21 0093                           ld      hl,start1
+  0039    ED B3                             otir
                                 	
-  000E*   21 7F00                           ld      hl,sbios-01700h     ; SYS4- Speicherbereich loeschen
-  0011*   11 7F01                           ld      de,sbios-01700h+1
-  0014*   01 80FF                           ld      bc,01700h+sbiosl-1
-  0017*   36 00                             ld      (hl),0
-  0019*   ED B0                             ldir
+  003B    21 7F00                           ld      hl,sbios-01700h     ; SYS4- Speicherbereich loeschen
+  003E    11 7F01                           ld      de,sbios-01700h+1
+  0041    01 80FF                           ld      bc,01700h+sbiosl-1
+  0044    36 00                             ld      (hl),0
+  0046    ED B0                             ldir
                                 
-  001B*   21 1E00                           ld      hl,1E00h            ;CCP und BDOS nach oben kopieren
-  001E*   11 DE00                           ld      de,CCP
-  0021*   01 1600                           ld      bc,0800H+0E00H
-  0024*   ED B0                             ldir
-  0026*   21 1E00                           ld      hl,1E00h            ;CCP und BDOS unten loeschen
-  0029*   36 00                             ld      (hl),00h
-  002B*   11 1E01                           ld      de,1E01h
-  002E*   01 15FF                           ld      bc,0800H+0E00H-1
-  0031*   ED B0                             ldir
+  0048    21 1E00                           ld      hl,1E00h            ;CCP und BDOS nach oben kopieren
+  004B    11 DE00                           ld      de,CCP
+  004E    01 1600                           ld      bc,0800H+0E00H
+  0051    ED B0                             ldir
+  0053    21 1E00                           ld      hl,1E00h            ;CCP und BDOS unten loeschen
+  0056    36 00                             ld      (hl),00h
+  0058    11 1E01                           ld      de,1E01h
+  005B    01 15FF                           ld      bc,0800H+0E00H-1
+  005E    ED B0                             ldir
                                 
-  0033*   21 006A*                          ld      hl,sbios1           ; BIOS - Teil laden
-  0036*   11 9600                           ld      de,sbios
-  0039*   01 185B                           ld      bc,abios2-sbios1
-  003C*   ED B0                             ldir
-  003E*   21 006A*                          ld      hl,sbios1           ; BIOS - Teil loeschen
-  0041*   36 00                             ld      (hl),00h
-  0043*   11 006B*                          ld      de,sbios1+1
-  0046*   01 185A                           ld      bc,abios2-sbios1-1
-  0049*   ED B0                             ldir
+  0060    21 0097'                          ld      hl,sbios1           ; BIOS - Teil laden
+  0063    11 9600                           ld      de,sbios
+  0066    01 185B                           ld      bc,abios2-sbios1
+  0069    ED B0                             ldir
+  006B    21 0097'                          ld      hl,sbios1           ; BIOS - Teil loeschen
+  006E    36 00                             ld      (hl),00h
+  0070    11 0098'                          ld      de,sbios1+1
+  0073    01 185A                           ld      bc,abios2-sbios1-1
+  0076    ED B0                             ldir
                                 
-  004B*   21 18C5*                          ld      hl,gosys2           ; Sprung zur Version 1.2
-  004E*   11 8000                           ld      de,gosys0
-  0051*   01 0013                           ld      bc,gosys3-gosys2
-  0054*   ED B0                             ldir
-  0056*   21 18C5*                          ld      hl,gosys2           ; Sprung zur Version 1.2 loeschen
-  0059*   36 00                             ld      (hl),00h
-  005B*   11 18C6*                          ld      de,gosys2+1
-  005E*   01 0012                           ld      bc,gosys3-gosys2-1
-  0061*   ED B0                             ldir
-  0063*   C3 973B                           jp      boot00
+  0078    21 18F2'                          ld      hl,gosys2           ; Sprung zur Version 1.2
+  007B    11 8000                           ld      de,gosys0
+  007E    01 0013                           ld      bc,gosys3-gosys2
+  0081    ED B0                             ldir
+  0083    21 18F2'                          ld      hl,gosys2           ; Sprung zur Version 1.2 loeschen
+  0086    36 00                             ld      (hl),00h
+  0088    11 18F3'                          ld      de,gosys2+1
+  008B    01 0012                           ld      bc,gosys3-gosys2-1
+  008E    ED B0                             ldir
+  0090    C3 973B                           jp      boot00
                                 
-  0066*                         start1:	
-  0066*   F0                                DB      0F0H                ;Startbyte
-  0067*   03                                DB      003H                ;wahl
-  0068*   07                                DB      007H                ;RDIR
-  0069*   FF                                DB      0FFH                ;Endbyte
+  0093                          start1:	
+  0093    F0                                DB      0F0H                ;Startbyte
+  0094    03                                DB      003H                ;wahl
+  0095    07                                DB      007H                ;RDIR
+  0096    FF                                DB      0FFH                ;Endbyte
+                                            .dephase
                                 ; \---  Ende : Verschieben der verschiedenen Bereiche --------------------------------------------/
                                 
                                             title   's  B I O S'
@@ -402,7 +418,7 @@
                                 
                                 ; /---  Start: sBIOS -----------------------------------------------------------------------------\
                                 ;	org	start+100h-3
-  006A*                         sbios1::
+  0097*                         sbios1::
                                             .phase  sbios               ; 9600H
                                 
                                 ;	stackrettung
@@ -821,17 +837,18 @@
                                 ;	=========
                                 ;
   973B                          boot00::
-  973B    21 0000'                          ld      hl,start            ; unterste Bytes loeschen
+  973B    21 0020                           ld      hl,start            ; unterste Bytes loeschen
   973E    36 00                             ld      (hl),00h
-  9740    11 0001'                          ld      de,start+1
-  9743    01 0069                           ld      bc,sbios1-start-1
+  9740    11 0021                           ld      de,start+1
+  9743    01 0076'                          ld      bc,sbios1-start-1
   9746    ED B0                             ldir
-                                
-  9748    21 A91A                           ld      hl,biosxx+(op12-op11);aBIOS - Teil laden	===> F400h
+                                                                        ;aBIOS - Teil laden	===> F400h
+  9748    21 A91A                           ld      hl,biosxx+(op12-op11)
   974B    11 F400                           ld      de,abios
   974E    01 0541                           ld      bc,abios2-abios1
   9751    ED B0                             ldir
-  9753    21 A91A                           ld      hl,biosxx+(op12-op11);aBIOS - Teil loeschen
+                                                                        ;aBIOS - Teil loeschen
+  9753    21 A91A                           ld      hl,biosxx+(op12-op11)
   9756    36 00                             ld      (hl),00h
   9758    11 A91B                           ld      de,biosxx+(op12-op11)+1
   975B    01 0540                           ld      bc,abios2-abios1-1
@@ -849,42 +866,42 @@
   9774    36 00                             ld      (hl),0              ; default dev.
   9776    CD 96D3                           call    resp0
                                 
-  9779    CD 9870                           call    dirdel              ; Laufwerk A initialisieren
+                                            ; call    dirdel              ; Laufwerk A initialisieren
                                 
-  977C    AF                                xor     a                   ; bildschirm initialisieren
-  977D    32 F930                           ld      (qrmode),a
-  9780    32 F931                           ld      (qroll),a
-  9783    32 F932                           ld      (qesc),a
-  9786    21 3000                           ld      hl,bsanf
-  9789    22 F92E                           ld      (bsaddr),hl
-  978C    21 99CC                           ld      hl,bootms
-  978F    06 63                             ld      b,bootme-bootms
-  9791    C5                    boot03:     push    bc
-  9792    7E                                ld      a,(hl)
-  9793    23                                inc     hl
-  9794    4F                                ld      c,a
-  9795    E5                                push    hl
-  9796    CD 9FDC                           call    co.ch
-  9799    E1                                pop     hl
-  979A    C1                                pop     bc
-  979B    10 F4                             djnz    boot03
+  9779    AF                                xor     a                   ; bildschirm initialisieren
+  977A    32 F930                           ld      (qrmode),a
+  977D    32 F931                           ld      (qroll),a
+  9780    32 F932                           ld      (qesc),a
+  9783    21 3000                           ld      hl,bsanf
+  9786    22 F92E                           ld      (bsaddr),hl
+  9789    21 99CC                           ld      hl,bootms
+  978C    06 63                             ld      b,bootme-bootms
+  978E    C5                    boot03:     push    bc
+  978F    7E                                ld      a,(hl)
+  9790    23                                inc     hl
+  9791    4F                                ld      c,a
+  9792    E5                                push    hl
+  9793    CD 9FDC                           call    co.ch
+  9796    E1                                pop     hl
+  9797    C1                                pop     bc
+  9798    10 F4                             djnz    boot03
                                                                         ; geraetezustand initialisieren
                                                                         ; =============================
-  979D    21 F7F8                           ld      hl,dpha             ; geraete a bis p entladen
-  97A0    06 20                             ld      b,32
-  97A2    36 00                 boot05:     ld      (hl),0
-  97A4    23                                inc     hl
-  97A5    10 FB                             djnz    boot05
-  97A7    21 F788                           ld      hl,dphad            ; a ist tpa-disk
-  97AA    22 F7F8                           ld      (dpha),hl
-  97AD    21 F768                           ld      hl,ixtab1
-  97B0    11 F748                           ld      de,ixtab
-  97B3    01 0020                           ld      bc,32
-  97B6    ED B0                             ldir
-  97B8    AF                                xor     a                   ; a ist a
-  97B9    CD 96C1                           call    setp0
-  97BC    32 0043                           ld      (lwa),a
-  97BF    CD 96D3                           call    resp0
+  979A    21 F7F8                           ld      hl,dpha             ; geraete a bis p entladen
+  979D    06 20                             ld      b,32
+  979F    36 00                 boot05:     ld      (hl),0
+  97A1    23                                inc     hl
+  97A2    10 FB                             djnz    boot05
+  97A4    21 F788                           ld      hl,dphad            ; a ist tpa-disk
+  97A7    22 F7F8                           ld      (dpha),hl
+  97AA    21 F768                           ld      hl,ixtab1
+  97AD    11 F748                           ld      de,ixtab
+  97B0    01 0020                           ld      bc,32
+  97B3    ED B0                             ldir
+  97B5    AF                                xor     a                   ; a ist a
+  97B6    CD 96C1                           call    setp0
+  97B9    32 0043                           ld      (lwa),a
+  97BC    CD 96D3                           call    resp0
                                                                         ; kassetten initialisieren
                                 ;           call    skmb                ; ========================
                                 ;           ld      ix,eatab1           ; physische KMBG-Routinen
@@ -896,25 +913,25 @@
                                 ;if         anzakb gt 2
                                 ;           ld      ix,eatab5
                                 ;           call    kmbini
-                                ;endif
 's  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-15
 
 
+                                ;endif
                                 ;           call    rkmb
-  97C2    3E 10                             ld      a,10h               ; status nicht bereit setzen
-  97C4    32 F64B                           ld      (eatab1),a
-  97C7    32 F676                           ld      (eatab2),a
+  97BF    3E 10                             ld      a,10h               ; status nicht bereit setzen
+  97C1    32 F64B                           ld      (eatab1),a
+  97C4    32 F676                           ld      (eatab2),a
                                  if anzakb gt 1
-  97CA    32 F6A1                           ld      (eatab3),a
-  97CD    32 F6CC                           ld      (eatab4),a
+  97C7    32 F6A1                           ld      (eatab3),a
+  97CA    32 F6CC                           ld      (eatab4),a
                                  endif
                                  if anzakb gt 2
-  97D0    32 F6F7                           ld      (eatab5),a
-  97D3    32 F722                           ld      (eatab6),a
+  97CD    32 F6F7                           ld      (eatab5),a
+  97D0    32 F722                           ld      (eatab6),a
                                  endif
                                                                         ; gereate kaltinitialisierung
                                                                         ; ===========================
-  97D6    CD 9F75                           call    ci.kalt             ; Tastatur
+  97D3    CD 9F75                           call    ci.kalt             ; Tastatur
                                 
                                  if         mindk or stadk
                                             call    fl.kalt             ; Floppy initialisieren
@@ -923,23 +940,25 @@
                                             call    md.kalt             ; simulierten disk initialisieren
                                  endif
                                 
-  97D9    AF                                xor     a
-  97DA    32 F938                           ld      (sverz),a
-  97DD    32 F939                           ld      (sschr),a
-  97E0    32 F668                           ld      (eatab1+gelade),a
-  97E3    32 F693                           ld      (eatab2+gelade),a
+  97D6    AF                                xor     a
+  97D7    32 F938                           ld      (sverz),a
+  97DA    32 F939                           ld      (sschr),a
+  97DD    32 F668                           ld      (eatab1+gelade),a
+  97E0    32 F693                           ld      (eatab2+gelade),a
                                  if         anzakb gt 1
-  97E6    32 F6BE                           ld      (eatab3+gelade),a
-  97E9    32 F6E9                           ld      (eatab4+gelade),a
+  97E3    32 F6BE                           ld      (eatab3+gelade),a
+  97E6    32 F6E9                           ld      (eatab4+gelade),a
                                  endif
                                  if         anzakb gt 2
-  97EC    32 F714                           ld      (eatab5+gelade),a
-  97EF    32 F73F                           ld      (eatab6+gelade),a
+  97E9    32 F714                           ld      (eatab5+gelade),a
+  97EC    32 F73F                           ld      (eatab6+gelade),a
                                  endif
-  97F2    21 DE00                           ld      hl,abios-1600h      ; CCP und BDOS -Kopie erstellen
-  97F5    11 8000                           ld      de,08000h
-  97F8    01 1600                           ld      bc,01600h
-  97FB    ED B0                             ldir
+  97EF    21 DE00                           ld      hl,abios-1600h      ; CCP und BDOS -Kopie erstellen
+  97F2    11 8000                           ld      de,08000h
+  97F5    01 1600                           ld      bc,01600h
+  97F8    ED B0                             ldir
+                                ;            
+  97FA    CD 9870                           call    dirdel              ; Laufwerk A initialisieren
                                 ;
                                 ;
                                 ;
@@ -958,7 +977,7 @@
   9807    E5                                push    hl
   9808    ED 73 FCC1                        ld      (s1ret),sp
   980C    01 0080                           ld      bc,80h
-  980F    CD F58C                           call	setdma
+  980F    CD F58C                           call    setdma
                                                                         ; geraete warminitialisierung
   9812    CD 9F75                           call    ci.warm             ; ===========================
                                  if         mindk or stadk
@@ -1052,7 +1071,7 @@
   9897    D1                                pop     de
   9898    D5                                push    de
   9899    21 98EC                           ld      hl,dirgo            ;Verzeichniseintrag fuer 'GO.COM'
-  989C    01 000C                           ld      bc,12
+  989C    01 000C                           ld      bc,dirgoe-dirgo
   989F    ED B0                             ldir
   98A1    E1                                pop     hl
                                 
@@ -1111,9 +1130,11 @@
   98E8    CD 96AE                           call    resla
   98EB    C9                                ret
                                 ;
-  98EC    00 47 4F 20           dirgo:      defb    0,'GO      ',0c3h,'OM'
+  98EC    00 47 4F 20           dirgo:      defb    0,'GO      COM'     ;,0c3h,'OM'
   98F0    20 20 20 20           
-  98F4    20 C3 4F 4D           
+  98F4    20 43 4F 4D           
+                                ;dirgo:      defb    0,'S1      ',0c3h,'OM',0,0,0,1,2
+  98F8                          dirgoe      equ     $
                                 ;
                                 if s1eq 
   98F8    00 53 31 20           dirs1:      defb    0,'S1      ',0c3h,'OM',0,0,0,1,2
@@ -1129,28 +1150,28 @@
   9914    11 8000         +                 ld      de,08000H           ; LD	DE,08000H
   9917    01 000F         +                 ld      bc,0000FH           ; LD	BC,MEM3-B1
   991A    C3 8000         +                 jp      08000H              ; JP	08000H
-  991D    F0              +                 defb	0F0H
-  991E    01              +                 defb	001H                ; einen Bereich umschalten
-  991F    08              +                 defb	008H                ; HS Bereich 
-  9920    01              +                 defb	001H                ; Standardbereich
-  9921    FF              +                 defb	0FFH
-  9922    21 800B         +                 ld	hl,0800BH               ; LD	HL,MEM2
-  9925    01 04C0         +                 ld	bc,004C0H               ; LD	BC,004C0H
+  991D    F0              +                 defb    0F0H
+  991E    01              +                 defb    001H                ; einen Bereich umschalten
+  991F    08              +                 defb    008H                ; HS Bereich 
+  9920    01              +                 defb    001H                ; Standardbereich
+  9921    FF              +                 defb    0FFH
+  9922    21 800B         +                 ld      hl,0800BH           ; LD	HL,MEM2
+  9925    01 04C0         +                 ld      bc,004C0H           ; LD	BC,004C0H
   9928    ED B3           +                 otir                        ; OTIR
-  992A    C3 0000         +                 jp	0000H                   ; Sprung zur Version 1.2
-  992D    F0              +                 defb	0F0H
-  992E    03              +                 defb	003H                ; Bereichsumschaltung
-  992F    04              +                 defb	4                   ; Sys_12
-  9930    FF              +                 defb	0FFH
+  992A    C3 0000         +                 jp      0000H               ; Sprung zur Version 1.2
+  992D    F0              +                 defb    0F0H
+  992E    03              +                 defb    003H                ; Bereichsumschaltung
+  992F    04              +                 defb    4                   ; Sys_12
+  9930    FF              +                 defb    0FFH
   9931                          dirs12:
                                 endif
                                 ;
                                 if pipeq
-  9931    00 50 49 50           dirgo1:     defb    0,'PIP     SUB',0,0,0,2,10
+  9931    00 50 49 50           dirgo1:     defb    0,'PIP     SUB',0,0,0,2,3
   9935    20 20 20 20           
   9939    20 53 55 42           
   993D    00 00 00 02           
-  9941    0A                    
+  9941    03                    
   9942                          dirg11:     dirg
   9942    24 31 3A 70     +                 defb    '$1:pip p:=$1:xsub.com',cr,lf
   9946    69 70 20 70     +     
@@ -1181,11 +1202,11 @@
   99A6    2E 63 6F 6D     +     
   99AA    0D 0A           +     
   99AC    67 6F 20 6F     +                 defb    'go o:=$1:l80.com',cr,lf
-  99B0    3A 3D 24 31     +     
-  99B4    3A 6C 38 30     +     
 's  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-19
 
 
+  99B0    3A 3D 24 31     +     
+  99B4    3A 6C 38 30     +     
   99B8    2E 63 6F 6D     +     
   99BC    0D 0A           +     
   99BE    65 72 61 20     +                 defb    'era pip.sub',cr,lf
@@ -2117,171 +2138,174 @@
                          C      ;	tastaturbedienung ueber DEG2000 Version 1.2  ---  EPROM 6C
                          C      ;	==========================================================
                          C      ;
-  4003                   C      tta1	equ	ttinit+3
-  4006                   C      tta2	equ	ttinit+6
-  400C                   C      ttfe	equ	ttinit+12
-  4015                   C      ttbel	equ	ttinit+15h
+  4003                   C      tta1        equ     ttinit+3
+  4006                   C      tta2        equ     ttinit+6
+  400C                   C      ttfe        equ     ttinit+12
+  4015                   C      ttbel       equ     ttinit+15h
                          C      ;
-  9F34    FF             C      umerk:	defb	0ffh
+  9F34    FF             C      umerk:      defb    0ffh
                          C      ;
                          C      ;
-                         C      ta	macro	up
-                         C      	ld	a,ptast
-                         C      	call	up
-                         C      	endm
+                         C      ta          macro   up
+                         C      			ld      a,ptast
+                         C      			call    up
+                         C      			endm
                          C      ;
                          C      ;
   9F35                   C      tinit::
-                         C      	ta	ttinit
-  9F35    3E A0          C+     	ld	a,ptast
-  9F37    CD 4000        C+     	call	ttinit
-  9F3A    C9             C      	ret
+                         C      			ta      ttinit
+  9F35    3E A0          C+     			ld      a,ptast
+  9F37    CD 4000        C+     			call    ttinit
+  9F3A    C9             C      			ret
                          C      ;
                          C      ;
   9F3B                   C      ta1::
-                         C      	ta	tta1
-  9F3B    3E A0          C+     	ld	a,ptast
-  9F3D    CD 4003        C+     	call	tta1
-  9F40    32 9F34        C      	ld	(umerk),a
-  9F43    C9             C      	ret
+                         C      			ta      tta1
+  9F3B    3E A0          C+     			ld      a,ptast
+  9F3D    CD 4003        C+     			call    tta1
+  9F40    32 9F34        C      			ld      (umerk),a
+  9F43    C9             C      			ret
                          C      ;
                          C      ;
   9F44                   C      ta2::
-                         C      	ta	tta2
-  9F44    3E A0          C+     	ld	a,ptast
-  9F46    CD 4006        C+     	call	tta2
-  9F49    C5             C      	push	bc
-  9F4A    47             C      	ld	b,a
-                         C       if not talt
-  9F4B    3A 9F34        C      	ld	a,(umerk)
-  9F4E    CB 57          C      	bit	2,a
-  9F50    20 14          C      	jr	nz,ta21
-                         C       endif
-  9F52    78             C      	ld	a,b
-                         C       if talt
-                         C      	cp	0eeh		; Test auf CTRL- ^ (1EH)
-                         C      	jr	z,ta23
-                         C      	cp	0f0h		; Test auf CTRL- Zeichen
-                         C      	jr	nc,ta21
-                         C      	cp	0d0h
-                         C      	jr	c,ta21
-                         C      	sub	0d0h
-                         C       else
-  9F53    FE 5E          C      	cp	05eh		; Test auf CTRL- ^ (1EH)
-  9F55    28 0C          C      	jr	z,ta23
-  9F57    FE 60          C      	cp	060h		; Test auf CTRL- Zeichen
-  9F59    30 0B          C      	jr	nc,ta21
-  9F5B    FE 40          C      	cp	40h
-  9F5D    38 07          C      	jr	c,ta21
-  9F5F    D6 40          C      	sub	40h
-                         C       endif
-  9F61    18 02          C      	jr	ta22
+                         C      			ta      tta2
+  9F44    3E A0          C+     			ld      a,ptast
+  9F46    CD 4006        C+     			call    tta2
+  9F49    C5             C      			push    bc
+  9F4A    47             C      			ld      b,a
+                         C      if          not talt
+  9F4B    3A 9F34        C      			ld      a,(umerk)
+  9F4E    CB 57          C      			bit     2,a
+  9F50    20 14          C      			jr      nz,ta21
+                         C      endif
+                         C      
+  9F52    78             C      			ld      a,b
+                         C      
+                         C      if          talt
+                         C      			cp      0eeh                ; Test auf CTRL- ^ (1EH)
+                         C      			jr      z,ta23
+                         C      			cp      0f0h                ; Test auf CTRL- Zeichen
+                         C      			jr      nc,ta21
+                         C      			cp      0d0h
+                         C      			jr      c,ta21
+                         C      			sub     0d0h
+                         C      else
+  9F53    FE 5E          C      			cp      05eh                ; Test auf CTRL- ^ (1EH)
+  9F55    28 0C          C      			jr      z,ta23
+  9F57    FE 60          C      			cp      060h                ; Test auf CTRL- Zeichen
+  9F59    30 0B          C      			jr      nc,ta21
+  9F5B    FE 40          C      			cp      40h
+  9F5D    38 07          C      			jr      c,ta21
+  9F5F    D6 40          C      			sub     40h
+                         C      endif
+                         C      
+  9F61    18 02          C      			jr      ta22
                          C      ;
   9F63                   C      ta23:
-  9F63    3E EE          C      	ld	a,0eeh
+  9F63    3E EE          C      			ld      a,0eeh
   9F65                   C      ta22:
-  9F65    47             C      	ld	b,a
+  9F65    47             C      			ld      b,a
   9F66                   C      ta21:
-  9F66    78             C      	ld	a,b
-  9F67    C1             C      	pop	bc
-  9F68    C9             C      	ret
+  9F66    78             C      			ld      a,b
+  9F67    C1             C      			pop     bc
+  9F68    C9             C      			ret
                          C      ;
                          C      ;
   9F69                   C      tfe::
-                         C      	ta	ttfe
-  9F69    3E A0          C+     	ld	a,ptast
-  9F6B    CD 400C        C+     	call	ttfe
-  9F6E    C9             C      	ret
-                         C      ;
-                         C      ;
+                         C      			ta      ttfe
+  9F69    3E A0          C+     			ld      a,ptast
+  9F6B    CD 400C        C+     			call    ttfe
 's  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-34
 
 
+  9F6E    C9             C      			ret
+                         C      ;
+                         C      ;
   9F6F                   C      tbel::
-                         C      	ta	ttbel
-  9F6F    3E A0          C+     	ld	a,ptast
-  9F71    CD 4015        C+     	call	ttbel
-  9F74    C9             C      	ret
+                         C      			ta      ttbel
+  9F6F    3E A0          C+     			ld      a,ptast
+  9F71    CD 4015        C+     			call    ttbel
+  9F74    C9             C      			ret
                          C      ;
                          C      ;
   9F75                   C      ci.kalt::
   9F75                   C      ci.warm::
-  9F75    CD 9F35        C      	call	tinit
-  9F78    C9             C      	ret
+  9F75    CD 9F35        C      			call    tinit
+  9F78    C9             C      			ret
                          C      ;
                          C      ;
   9F79                   C      ci.sta::
-  9F79    C5             C      	push	bc
-  9F7A    CD 9F3B        C      	call	ta1		; taste       gedrueckt --> z=1
-  9F7D    C1             C      	pop	bc
-  9F7E    C9             C      	ret			; taste nicht gedrueckt --> z=0
+  9F79    C5             C      			push    bc
+  9F7A    CD 9F3B        C      			call    ta1                 ; taste       gedrueckt --> z=1
+  9F7D    C1             C      			pop     bc
+  9F7E    C9             C      			ret                         ; taste nicht gedrueckt --> z=0
                          C      ;
                          C      ;
   9F7F                   C      ci.ch::
-  9F7F    CD 9F44        C      	call	ta2
-  9F82    21 9FBA        C      	ld	hl,degtab
-  9F85    01 0011        C      	ld	bc,degend-degtab
-  9F88    ED B1          C      	cpir
-  9F8A    20 07          C      	jr	nz,ci1
-  9F8C    01 0010        C      	ld	bc,cpmtab-degtab-1
-  9F8F    09             C      	add	hl,bc
-  9F90    7E             C      	ld	a,(hl)
-  9F91    18 1F          C      	jr	ci5
+  9F7F    CD 9F44        C      			call    ta2
+  9F82    21 9FBA        C      			ld      hl,degtab
+  9F85    01 0011        C      			ld      bc,degend-degtab
+  9F88    ED B1          C      			cpir
+  9F8A    20 07          C      			jr      nz,ci1
+  9F8C    01 0010        C      			ld      bc,cpmtab-degtab-1
+  9F8F    09             C      			add     hl,bc
+  9F90    7E             C      			ld      a,(hl)
+  9F91    18 1F          C      			jr      ci5
   9F93                   C      ci1:
-  9F93    F5             C      	push	af
-  9F94    3A 9F34        C      	ld	a,(umerk)
-  9F97    CB 57          C      	bit	2,a
-  9F99    C1             C      	pop	bc
-  9F9A    78             C      	ld	a,b
-  9F9B    28 15          C      	jr	z,ci5
+  9F93    F5             C      			push    af
+  9F94    3A 9F34        C      			ld      a,(umerk)
+  9F97    CB 57          C      			bit     2,a
+  9F99    C1             C      			pop     bc
+  9F9A    78             C      			ld      a,b
+  9F9B    28 15          C      			jr      z,ci5
   9F9D                   C      ci2:
-  9F9D    FE 41          C      	cp	41h		; gross- / kleinumwandlung
-  9F9F    38 04          C      	jr	c,ci3
-  9FA1    FE 5B          C      	cp	5bh
-  9FA3    38 08          C      	jr	c,ci4
+  9F9D    FE 41          C      			cp      41h                 ; gross- / kleinumwandlung
+  9F9F    38 04          C      			jr      c,ci3
+  9FA1    FE 5B          C      			cp      5bh
+  9FA3    38 08          C      			jr      c,ci4
   9FA5                   C      ci3:
-  9FA5    FE 61          C      	cp	61h
-  9FA7    38 09          C      	jr	c,ci5
-  9FA9    FE 7B          C      	cp	7bh
-  9FAB    30 05          C      	jr	nc,ci5
+  9FA5    FE 61          C      			cp      61h
+  9FA7    38 09          C      			jr      c,ci5
+  9FA9    FE 7B          C      			cp      7bh
+  9FAB    30 05          C      			jr      nc,ci5
   9FAD                   C      ci4:
-  9FAD    47             C      	ld	b,a
-  9FAE    3A F933        C      	ld	a,(umsch)	; maske fuer umwandlung
-  9FB1    A8             C      	xor	b
+  9FAD    47             C      			ld      b,a
+  9FAE    3A F933        C      			ld      a,(umsch)           ; maske fuer umwandlung
+  9FB1    A8             C      			xor     b
   9FB2                   C      ci5:
-  9FB2    47             C      	ld	b,a
-  9FB3    C9             C      	ret
+  9FB2    47             C      			ld      b,a
+  9FB3    C9             C      			ret
                          C      ;
                          C      ;
   9FB4                   C      ci.bell::
-  9FB4    06 40          C      	ld	b,40h
-  9FB6    CD 9F6F        C      	call	tbel
-  9FB9    C9             C      	ret
+  9FB4    06 40          C      			ld      b,40h
+  9FB6    CD 9F6F        C      			call    tbel
+  9FB9    C9             C      			ret
                          C      ;	umschluesseltabelle
                          C      ;	===================
                          C      ;
   9FBA                   C      degtab:
-  9FBA    1E F0 F1 CF    C      	defb	01eh,0f0h,0f1h,0cfh,0f2h,0f3h
+  9FBA    1E F0 F1 CF    C      			defb    01eh,0f0h,0f1h,0cfh,0f2h,0f3h
   9FBE    F2 F3          C      
-  9FC0    F4 F5 F6 F7    C      	defb	0f4h,0f5h,0f6h,0f7h,0f8h,0f9h
+  9FC0    F4 F5 F6 F7    C      			defb    0f4h,0f5h,0f6h,0f7h,0f8h,0f9h
   9FC4    F8 F9          C      
-  9FC6    EE FA FB B0    C      	defb	0eeh,0fah,0fbh,0b0h,0cch
+  9FC6    EE FA FB B0    C      			defb    0eeh,0fah,0fbh,0b0h,0cch
   9FCA    CC             C      
   9FCB                   C      degend:
   9FCB                   C      cpmtab:
-  9FCB    0D 16 7F 13    C      	defb	00dh,016h,07fh,013h,00eh,019h
+  9FCB    0D 16 7F 13    C      			defb    00dh,016h,07fh,013h,00eh,019h
   9FCF    0E 19          C      
-  9FD1    17 05 12 08    C      	defb	017h,005h,012h,008h,00ch,004h
+  9FD1    17 05 12 08    C      			defb    017h,005h,012h,008h,00ch,004h
   9FD5    0C 04          C      
-  9FD7    1E 1A 18 03    C      	defb	01eh,01ah,018h,003h,012h
+  9FD7    1E 1A 18 03    C      			defb    01eh,01ah,018h,003h,012h
   9FDB    12             C      
                          C      ;
-                         C      ;
-                                ;	
-                                
 's  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-35
 
 
+                         C      ;
+                                ;	
+                                
                                 
                          C                  include CO.MAC
                          C      ;	direkte cursorbedienung bei monitor  DEG
@@ -2306,337 +2330,337 @@
                          C      ;  1b '0'    RRMOD setzt normalen   Rollmodus
                          C      ;
   9FDC                   C      co.ch::
-  9FDC    CD 96C1        C      	call	setp0
-  9FDF    CD A264        C      	call	rescur
-  9FE2    C5             C      	push	bc		; zeichen in c muss erhalten bleiben
-  9FE3    79             C      	ld	a,c
-  9FE4    21 F932        C      	ld	hl,qesc
-  9FE7    CB 46          C      	bit	qesc0,(hl)	; lauft steuerfolge?
-  9FE9    20 0C          C      	jr	nz,co.c2	; -> ja
-  9FEB    FE 1B          C      	cp	esc		; beginnt steuerfolge?
-  9FED    C2 A06F        C      	jp	nz,co.c10		; -> nein
-  9FF0    CB C6          C      	set	qesc0,(hl)	; es beginnt steuerfolge
+  9FDC    CD 96C1        C      			call    setp0
+  9FDF    CD A264        C      			call    rescur
+  9FE2    C5             C      			push    bc                  ; zeichen in c muss erhalten bleiben
+  9FE3    79             C      			ld      a,c
+  9FE4    21 F932        C      			ld      hl,qesc
+  9FE7    CB 46          C      			bit     qesc0,(hl)          ; lauft steuerfolge?
+  9FE9    20 0C          C      			jr      nz,co.c2            ; -> ja
+  9FEB    FE 1B          C      			cp      esc                 ; beginnt steuerfolge?
+  9FED    C2 A06F        C      			jp      nz,co.c10           ; -> nein
+  9FF0    CB C6          C      			set     qesc0,(hl)          ; es beginnt steuerfolge
   9FF2                   C      co.c1:
-  9FF2    CB 8E          C      	res	qesc1,(hl)	;                              "set       /BCU"
-  9FF4    C3 A0AD        C      	jp	co.c16		;                              "   co.c3+3/BCU"
+  9FF2    CB 8E          C      			res     qesc1,(hl)          ;                              "set       /BCU"
+  9FF4    C3 A0AD        C      			jp      co.c16              ;                              "   co.c3+3/BCU"
                          C      ;
   9FF7                   C      co.c2:
-  9FF7    CB 4E          C      	bit	qesc1,(hl)	; ist steuerzeichen schon eingetroffen?
+  9FF7    CB 4E          C      			bit     qesc1,(hl)          ; ist steuerzeichen schon eingetroffen?
   9FF9                   C      co.c3:
-  9FF9    C2 A04A        C      	jp	nz,co.c4	; -> ja, es folgt r oder c     "jp        /BCU"
-  9FFC    FE 3D          C      	cp	'='		; nein, es folgt steuerzeichen "res 2,(hl)/BCU"
-  9FFE    CA A068        C      	jp	z,co.c9		; -> 1b '=' rc                 "jp co.c16 /BCU"
-  A001    CD A22C        C      	call	evtrol		; evtl. verzoegertes rollen ausfuehren
-  A004    CB 86          C      	res	qesc0,(hl)	; bearbeitung der steuerfolge beendet
-  A006    FE 54          C      	cp	'T'
-  A008    CA A141        C      	jp	z,eol		; -> EOL
-  A00B    FE 45          C      	cp	'E'
-  A00D    CA A153        C      	jp	z,insl		; -> INS LINE
-  A010    FE 52          C      	cp	'R'
-  A012    CA A179        C      	jp	z,dell		; -> DEL LINE
-  A015    FE 3A          C      	cp	':'
-  A017    CA A1AC        C      	jp	z,eos		; -> EOS
-  A01A    FE 1F          C      	cp	1fh		; nl
-  A01C    CA A0C8        C      	jp	z,co.nl
-  A01F    FE 01          C      	cp	1		; cr-ersatz
-  A021    CA A0C2        C      	jp	z,co.cr
-  A024    FE 02          C      	cp	2		; lf-ersatz
-  A026    CA A0B5        C      	jp	z,co.lf
-  A029    FE 1E          C      	cp	1eh		; home
-  A02B    CA A0D4        C      	jp	z,co.hom
-  A02E    FE 10          C      	cp	10h		; eos
-  A030    CA A099        C      	jp	z,co.c13
-  A033    FE 0B          C      	cp	0bh		; up
-  A035    CA A125        C      	jp	z,co.up
-  A038    FE 0C          C      	cp	0ch		; right
-  A03A    CA A132        C      	jp	z,co.rg
-  A03D    FE 31          C      	cp	'1'		; spezieller Rollmodus an
-  A03F    CA A1B7        C      	jp	z,sroll
-  A042    FE 30          C      	cp	'0'		; normaler   Rollmodus an
-  A044    CA A1BF        C      	jp	z,nroll
-  A047    C3 A08F        C      	jp	co.c12		; -> nicht auswertbares steuerzeichen
+  9FF9    C2 A04A        C      			jp      nz,co.c4            ; -> ja, es folgt r oder c     "jp        /BCU"
+  9FFC    FE 3D          C      			cp      '='                 ; nein, es folgt steuerzeichen "res 2,(hl)/BCU"
+  9FFE    CA A068        C      			jp      z,co.c9             ; -> 1b '=' rc                 "jp co.c16 /BCU"
+  A001    CD A22C        C      			call    evtrol              ; evtl. verzoegertes rollen ausfuehren
+  A004    CB 86          C      			res     qesc0,(hl)          ; bearbeitung der steuerfolge beendet
+  A006    FE 54          C      			cp      'T'
+  A008    CA A141        C      			jp      z,eol               ; -> EOL
+  A00B    FE 45          C      			cp      'E'
+  A00D    CA A153        C      			jp      z,insl              ; -> INS LINE
+  A010    FE 52          C      			cp      'R'
+  A012    CA A179        C      			jp      z,dell              ; -> DEL LINE
+  A015    FE 3A          C      			cp      ':'
+  A017    CA A1AC        C      			jp      z,eos               ; -> EOS
+  A01A    FE 1F          C      			cp      1fh                 ; nl
+  A01C    CA A0C8        C      			jp      z,co.nl
+  A01F    FE 01          C      			cp      1                   ; cr-ersatz
+  A021    CA A0C2        C      			jp      z,co.cr
+  A024    FE 02          C      			cp      2                   ; lf-ersatz
+  A026    CA A0B5        C      			jp      z,co.lf
+  A029    FE 1E          C      			cp      1eh                 ; home
+  A02B    CA A0D4        C      			jp      z,co.hom
+  A02E    FE 10          C      			cp      10h                 ; eos
+  A030    CA A099        C      			jp      z,co.c13
+  A033    FE 0B          C      			cp      0bh                 ; up
+  A035    CA A125        C      			jp      z,co.up
+  A038    FE 0C          C      			cp      0ch                 ; right
+  A03A    CA A132        C      			jp      z,co.rg
+  A03D    FE 31          C      			cp      '1'                 ; spezieller Rollmodus an
+  A03F    CA A1B7        C      			jp      z,sroll
+  A042    FE 30          C      			cp      '0'                 ; normaler   Rollmodus an
+  A044    CA A1BF        C      			jp      z,nroll
+  A047    C3 A08F        C      			jp      co.c12              ; -> nicht auswertbares steuerzeichen
                          C      ;
   A04A                   C      co.c4:
-  A04A    CB 56          C      	bit	qesc2,(hl)	; 1b '=' r c
-  A04C    CB D6          C      	set	qesc2,(hl)
-  A04E    20 09          C      	jr	nz,co.c6	; -> es ist c eingetroffen
+  A04A    CB 56          C      			bit     qesc2,(hl)          ; 1b '=' r c
+  A04C    CB D6          C      			set     qesc2,(hl)
+  A04E    20 09          C      			jr      nz,co.c6            ; -> es ist c eingetroffen
   A050                   C      co.c5:
-  A050    D6 20          C      	sub	20h		;                              "nop       /BCU"
-  A052    38 0C          C      	jr	c,co.c7		; -> zeile war <= 1fh
-  A054    32 0040        C      	ld	(zeil),a
 's  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-36
 
 
-  A057    18 09          C      	jr	co.c8
+  A050    D6 20          C      			sub     20h                 ;                              "nop       /BCU"
+  A052    38 0C          C      			jr      c,co.c7             ; -> zeile war <= 1fh
+  A054    32 0040        C      			ld      (zeil),a
+  A057    18 09          C      			jr      co.c8
   A059                   C      co.c6:
-  A059    D6 20          C      	sub	20h		;                              "nop       /BCU"
-  A05B    38 03          C      	jr	c,co.c7		; -> spalte war <= 1fh
-  A05D    32 0041        C      	ld	(spalt),a
+  A059    D6 20          C      			sub     20h                 ;                              "nop       /BCU"
+  A05B    38 03          C      			jr      c,co.c7             ; -> spalte war <= 1fh
+  A05D    32 0041        C      			ld      (spalt),a
   A060                   C      co.c7:
-  A060    CB 86          C      	res	qesc0,(hl)	; bearbeitung ist beendet
+  A060    CB 86          C      			res     qesc0,(hl)          ; bearbeitung ist beendet
   A062                   C      co.c8:
-  A062    CD A1D3        C      	call	bsadr
-  A065    C3 A0A9        C      	jp	co.c15
+  A062    CD A1D3        C      			call    bsadr
+  A065    C3 A0A9        C      			jp      co.c15
                          C      ;
   A068                   C      co.c9:
-  A068    CB CE          C      	set	qesc1,(hl)
-  A06A    CB 96          C      	res	qesc2,(hl)	; es wird r erwartet
-  A06C    C3 A0A9        C      	jp	co.c15
+  A068    CB CE          C      			set     qesc1,(hl)
+  A06A    CB 96          C      			res     qesc2,(hl)          ; es wird r erwartet
+  A06C    C3 A0A9        C      			jp      co.c15
                          C      ;
                          C      ;
   A06F                   C      co.c10:
-  A06F    CD A22C        C      	call	evtrol		; evtl. verzoegertes rollen ausfuehren
-  A072    FE 07          C      	cp	7		; bell
-  A074    CA A0CE        C      	jp	z,co.bel
-  A077    FE 08          C      	cp	8		; backspace
-  A079    CA A0F2        C      	jp	z,co.bs
-  A07C    FE 0A          C      	cp	lf		; lf
-  A07E    CA A0B5        C      	jp	z,co.lf
-  A081    FE 0D          C      	cp	cr		; cr
-  A083    CA A0C2        C      	jp	z,co.cr
-  A086    FE 09          C      	cp	tab
-  A088    28 53          C      	jr	z,co.tb
+  A06F    CD A22C        C      			call	evtrol              ; evtl. verzoegertes rollen ausfuehren
+  A072    FE 07          C      			cp      7                   ; bell
+  A074    CA A0CE        C      			jp      z,co.bel
+  A077    FE 08          C      			cp      8                   ; backspace
+  A079    CA A0F2        C      			jp      z,co.bs
+  A07C    FE 0A          C      			cp      lf                  ; lf
+  A07E    CA A0B5        C      			jp      z,co.lf
+  A081    FE 0D          C      			cp      cr                  ; cr
+  A083    CA A0C2        C      			jp      z,co.cr
+  A086    FE 09          C      			cp      tab
+  A088    28 53          C      			jr      z,co.tb
   A08A                   C      co.c11:
-  A08A    FE 1A          C      	cp	1ah		; clear                        "   0ch    /BCU"
-  A08C    CA A118        C      	jp	z,co.cle
+  A08A    FE 1A          C      			cp      1ah                 ; clear                        "   0ch    /BCU"
+  A08C    CA A118        C      			jp      z,co.cle
   A08F                   C      co.c12:
-  A08F    2A F92E        C      	ld	hl,(bsaddr)
-  A092    77             C      	ld	(hl),a		; zeichen auf bildschirm schreiben
-  A093    CD A1C2        C      	call	incad		; schreiben in letzte pos. rollt nicht!!
-  A096    C3 A0AD        C      	jp	co.c16
+  A08F    2A F92E        C      			ld      hl,(bsaddr)
+  A092    77             C      			ld      (hl),a              ; zeichen auf bildschirm schreiben
+  A093    CD A1C2        C      			call    incad               ; schreiben in letzte pos. rollt nicht!!
+  A096    C3 A0AD        C      			jp      co.c16
                          C      ;
   A099                   C      co.c13:
-  A099    2A F92E        C      	ld	hl,(bsaddr)	; eos ab cursorposition
+  A099    2A F92E        C      			ld      hl,(bsaddr)         ; eos ab cursorposition
   A09C                   C      co.c14:
-  A09C    36 20          C      	ld	(hl),20h
-  A09E    23             C      	inc	hl
-  A09F    7C             C      	ld	a,h
-  A0A0    FE 37          C      	cp	high (bsanf+maxz*maxs)
-  A0A2    20 F8          C      	jr	nz,co.c14
-  A0A4    7D             C      	ld	a,l
-  A0A5    FE 80          C      	cp	low (bsanf+maxz*maxs)
-  A0A7    20 F3          C      	jr	nz,co.c14
+  A09C    36 20          C      			ld      (hl),20h
+  A09E    23             C      			inc     hl
+  A09F    7C             C      			ld      a,h
+  A0A0    FE 37          C      			cp      high (bsanf+maxz*maxs)
+  A0A2    20 F8          C      			jr      nz,co.c14
+  A0A4    7D             C      			ld      a,l
+  A0A5    FE 80          C      			cp      low (bsanf+maxz*maxs)
+  A0A7    20 F3          C      			jr      nz,co.c14
   A0A9                   C      co.c15:
-  A0A9    AF             C      	xor	a
-  A0AA    32 F931        C      	ld	(qroll),a
+  A0A9    AF             C      			xor     a
+  A0AA    32 F931        C      			ld      (qroll),a
   A0AD                   C      co.c16:
-  A0AD    C1             C      	pop	bc
-  A0AE    CD A242        C      	call	setcur
-  A0B1    CD 96D3        C      	call	resp0
-  A0B4    C9             C      	ret
+  A0AD    C1             C      			pop     bc
+  A0AE    CD A242        C      			call    setcur
+  A0B1    CD 96D3        C      			call    resp0
+  A0B4    C9             C      			ret
                          C      ;
                          C      ;
                          C      ;
-                         C      	page
+                         C      			page
 's  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-37
 
 
                          C      
   A0B5                   C      co.lf:
-  A0B5    21 0040        C      	ld	hl,zeil		; lf
-  A0B8    34             C      	inc	(hl)
+  A0B5    21 0040        C      			ld      hl,zeil             ; lf
+  A0B8    34             C      			inc     (hl)
   A0B9                   C      colf1:
-  A0B9    CD A1D3        C      	call	bsadr		; evtl. rollen ausfuehren
-  A0BC    CD A22C        C      	call	evtrol
-  A0BF    C3 A0AD        C      	jp	co.c16
+  A0B9    CD A1D3        C      			call    bsadr               ; evtl. rollen ausfuehren
+  A0BC    CD A22C        C      			call    evtrol
+  A0BF    C3 A0AD        C      			jp      co.c16
                          C      ;
                          C      ;
   A0C2                   C      co.cr:
-  A0C2    AF             C      	xor	a		; cr
-  A0C3    32 0041        C      	ld	(spalt),a
-  A0C6    18 F1          C      	jr	colf1
+  A0C2    AF             C      			xor     a                   ; cr
+  A0C3    32 0041        C      			ld      (spalt),a
+  A0C6    18 F1          C      			jr      colf1
                          C      ;
                          C      ;
   A0C8                   C      co.nl:
-  A0C8    21 0040        C      	ld	hl,zeil		; nl
-  A0CB    34             C      	inc	(hl)
-  A0CC    18 F4          C      	jr	co.cr
+  A0C8    21 0040        C      			ld      hl,zeil             ; nl
+  A0CB    34             C      			inc     (hl)
+  A0CC    18 F4          C      			jr      co.cr
                          C      ;
                          C      ;
   A0CE                   C      co.bel:
-  A0CE    CD 9FB4        C      	call	ci.bell
-  A0D1    C3 A0AD        C      	jp	co.c16
+  A0CE    CD 9FB4        C      			call    ci.bell
+  A0D1    C3 A0AD        C      			jp      co.c16
                          C      ;
                          C      ;
   A0D4                   C      co.hom:
-  A0D4    AF             C      	xor	a		; home
-  A0D5    32 0040        C      	ld	(zeil),a
-  A0D8    32 0041        C      	ld	(spalt),a
-  A0DB    18 DC          C      	jr	colf1
+  A0D4    AF             C      			xor     a                   ; home
+  A0D5    32 0040        C      			ld      (zeil),a
+  A0D8    32 0041        C      			ld      (spalt),a
+  A0DB    18 DC          C      			jr      colf1
                          C      ;
                          C      ;
   A0DD                   C      co.tb:
-  A0DD    2A F92E        C      	ld	hl,(bsaddr)	; tab
-  A0E0    36 20          C      	ld	(hl),20h
-  A0E2    CD A1C2        C      	call	incad
-  A0E5    3A 0041        C      	ld	a,(spalt)
-  A0E8    E6 07          C      	and	7
-  A0EA    CA A0AD        C      	jp	z,co.c16
-  A0ED    CD A22C        C      	call	evtrol		; evtl. verzoegertes rollen ausfuehren
-  A0F0    18 EB          C      	jr	co.tb
+  A0DD    2A F92E        C      			ld      hl,(bsaddr)         ; tab
+  A0E0    36 20          C      			ld      (hl),20h
+  A0E2    CD A1C2        C      			call    incad
+  A0E5    3A 0041        C      			ld      a,(spalt)
+  A0E8    E6 07          C      			and     7
+  A0EA    CA A0AD        C      			jp      z,co.c16
+  A0ED    CD A22C        C      			call    evtrol              ; evtl. verzoegertes rollen ausfuehren
+  A0F0    18 EB          C      			jr      co.tb
                          C      ;
                          C      ;
   A0F2                   C      co.bs:
-  A0F2    3A 0041        C      	ld	a,(spalt)	; backspace
-  A0F5    B7             C      	or	a
-  A0F6    28 0E          C      	jr	z,cobs2
-  A0F8    3D             C      	dec	a
-  A0F9    32 0041        C      	ld	(spalt),a
+  A0F2    3A 0041        C      			ld      a,(spalt)           ; backspace
+  A0F5    B7             C      			or      a
+  A0F6    28 0E          C      			jr      z,cobs2
+  A0F8    3D             C      			dec     a
+  A0F9    32 0041        C      			ld      (spalt),a
   A0FC                   C      cobs1:
-  A0FC    2A F92E        C      	ld	hl,(bsaddr)
-  A0FF    2B             C      	dec	hl
-  A100    22 F92E        C      	ld	(bsaddr),hl
-  A103    C3 A0A9        C      	jp	co.c15
+  A0FC    2A F92E        C      			ld      hl,(bsaddr)
+  A0FF    2B             C      			dec     hl
+  A100    22 F92E        C      			ld      (bsaddr),hl
+  A103    C3 A0A9        C      			jp      co.c15
                          C      ;
   A106                   C      cobs2:
-  A106    3A 0040        C      	ld	a,(zeil)
-  A109    B7             C      	or	a
-  A10A    CA A0A9        C      	jp	z,co.c15	; -> bs nicht ausfuehrbar, da homeposition
-  A10D    3D             C      	dec	a
-  A10E    32 0040        C      	ld	(zeil),a
-  A111    3E 4F          C      	ld	a,maxs-1
-  A113    32 0041        C      	ld	(spalt),a
-  A116    18 E4          C      	jr	cobs1
+  A106    3A 0040        C      			ld      a,(zeil)
+  A109    B7             C      			or      a
+  A10A    CA A0A9        C      			jp      z,co.c15            ; -> bs nicht ausfuehrbar, da homeposition
+  A10D    3D             C      			dec     a
+  A10E    32 0040        C      			ld      (zeil),a
+  A111    3E 4F          C      			ld      a,maxs-1
+  A113    32 0041        C      			ld      (spalt),a
+  A116    18 E4          C      			jr      cobs1
                          C      ;
                          C      ;
   A118                   C      co.cle:
-  A118    AF             C      	xor	a		; clear
-  A119    32 0040        C      	ld	(zeil),a
-  A11C    32 0041        C      	ld	(spalt),a
-  A11F    CD A1D3        C      	call	bsadr
-  A122    C3 A099        C      	jp	co.c13
+  A118    AF             C      			xor     a                   ; clear
+  A119    32 0040        C      			ld      (zeil),a
+  A11C    32 0041        C      			ld      (spalt),a
+  A11F    CD A1D3        C      			call    bsadr
+  A122    C3 A099        C      			jp      co.c13
                          C      ;
                          C      ;
   A125                   C      co.up:
-  A125    21 0040        C      	ld	hl,zeil		; up
-  A128    7E             C      	ld	a,(hl)
-  A129    B7             C      	or	a
-  A12A    20 02          C      	jr	nz,coup1	; -> cursor stand nicht in 1. zeile
+  A125    21 0040        C      			ld      hl,zeil             ; up
+  A128    7E             C      			ld      a,(hl)
+  A129    B7             C      			or      a
+  A12A    20 02          C      			jr      nz,coup1            ; -> cursor stand nicht in 1. zeile
 's  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-38
 
 
-  A12C    36 18          C      	ld	(hl),maxz
+  A12C    36 18          C      			ld      (hl),maxz
   A12E                   C      coup1:
-  A12E    35             C      	dec	(hl)
-  A12F    C3 A0B9        C      	jp	colf1
+  A12E    35             C      			dec     (hl)
+  A12F    C3 A0B9        C      			jp      colf1
                          C      ;
                          C      ;
   A132                   C      co.rg:
-  A132    3A 0041        C      	ld	a,(spalt)	; right zyklisch in zeile
-  A135    3C             C      	inc	a
-  A136    FE 50          C      	cp	maxs
-  A138    20 01          C      	jr	nz,corg1
-  A13A    AF             C      	xor	a
+  A132    3A 0041        C      			ld      a,(spalt)           ; right zyklisch in zeile
+  A135    3C             C      			inc     a
+  A136    FE 50          C      			cp      maxs
+  A138    20 01          C      			jr      nz,corg1
+  A13A    AF             C      			xor     a
   A13B                   C      corg1:
-  A13B    32 0041        C      	ld	(spalt),a
-  A13E    C3 A0B9        C      	jp	colf1
+  A13B    32 0041        C      			ld      (spalt),a
+  A13E    C3 A0B9        C      			jp      colf1
                          C      ;
                          C      ;
   A141                   C      eol:
-  A141    21 0041        C      	ld	hl,spalt	; EOL
-  A144    3E 50          C      	ld	a,maxs
-  A146    96             C      	sub	(hl)
-  A147    47             C      	ld	b,a
-  A148    2A F92E        C      	ld	hl,(bsaddr)
+  A141    21 0041        C      			ld      hl,spalt            ; EOL
+  A144    3E 50          C      			ld      a,maxs
+  A146    96             C      			sub     (hl)
+  A147    47             C      			ld      b,a
+  A148    2A F92E        C      			ld      hl,(bsaddr)
   A14B                   C      eol1:
-  A14B    36 20          C      	ld	(hl),20h
-  A14D    23             C      	inc	hl
-  A14E    10 FB          C      	djnz	eol1
-  A150    C3 A0A9        C      	jp	co.c15
+  A14B    36 20          C      			ld      (hl),20h
+  A14D    23             C      			inc     hl
+  A14E    10 FB          C      			djnz    eol1
+  A150    C3 A0A9        C      			jp      co.c15
                          C      ;
                          C      ;
   A153                   C      insl:
-  A153    AF             C      	xor	a		; INS LINE
-  A154    32 0041        C      	ld	(spalt),a
-  A157    CD A1D3        C      	call	bsadr
-  A15A    21 0040        C      	ld	hl,zeil
-  A15D    3E 18          C      	ld	a,maxz
-  A15F    96             C      	sub	(hl)
-  A160    3D             C      	dec	a
-  A161    28 DE          C      	jr	z,eol		; -> kursor stand in letzter zeile; diese loeschen
-  A163    47             C      	ld	b,a
-  A164    21 0000        C      	ld	hl,0
-  A167    11 0050        C      	ld	de,maxs
+  A153    AF             C      			xor     a                   ; INS LINE
+  A154    32 0041        C      			ld      (spalt),a
+  A157    CD A1D3        C      			call    bsadr
+  A15A    21 0040        C      			ld      hl,zeil
+  A15D    3E 18          C      			ld      a,maxz
+  A15F    96             C      			sub     (hl)
+  A160    3D             C      			dec     a
+  A161    28 DE          C      			jr      z,eol               ; -> kursor stand in letzter zeile; diese loeschen
+  A163    47             C      			ld      b,a
+  A164    21 0000        C      			ld      hl,0
+  A167    11 0050        C      			ld      de,maxs
   A16A                   C      insl1:
-  A16A    19             C      	add	hl,de		; anzahl der zeilen bestimmen, die nach
-  A16B    10 FD          C      	djnz	insl1		; unten gerollt werden muessen
-  A16D    44             C      	ld	b,h
-  A16E    4D             C      	ld	c,l
-  A16F    21 372F        C      	ld	hl,bsanf+maxz*maxs-1-maxs
-  A172    11 377F        C      	ld	de,bsanf+maxz*maxs-1
-  A175    ED B8          C      	lddr
-  A177    18 C8          C      	jr	eol		; -> zeile loeschen, in der cursor steht
+  A16A    19             C      			add     hl,de               ; anzahl der zeilen bestimmen, die nach
+  A16B    10 FD          C      			djnz    insl1               ; unten gerollt werden muessen
+  A16D    44             C      			ld      b,h
+  A16E    4D             C      			ld      c,l
+  A16F    21 372F        C      			ld      hl,bsanf+maxz*maxs-1-maxs
+  A172    11 377F        C      			ld      de,bsanf+maxz*maxs-1
+  A175    ED B8          C      			lddr
+  A177    18 C8          C      			jr      eol                 ; -> zeile loeschen, in der cursor steht
                          C      ;
                          C      ;
   A179                   C      dell:
-  A179    AF             C      	xor	a		; DEL LINE
-  A17A    32 0041        C      	ld	(spalt),a
-  A17D    CD A1D3        C      	call	bsadr
-  A180    21 0040        C      	ld	hl,zeil
-  A183    3E 18          C      	ld	a,maxz
-  A185    96             C      	sub	(hl)
-  A186    3D             C      	dec	a
-  A187    28 13          C      	jr	z,dell2		; -> kursor stand in letzter zeile
-  A189    47             C      	ld	b,a
-  A18A    21 0000        C      	ld	hl,0
-  A18D    11 0050        C      	ld	de,maxs
+  A179    AF             C      			xor     a                   ; DEL LINE
+  A17A    32 0041        C      			ld      (spalt),a
+  A17D    CD A1D3        C      			call    bsadr
+  A180    21 0040        C      			ld      hl,zeil
+  A183    3E 18          C      			ld      a,maxz
+  A185    96             C      			sub     (hl)
+  A186    3D             C      			dec     a
+  A187    28 13          C      			jr      z,dell2             ; -> kursor stand in letzter zeile
+  A189    47             C      			ld      b,a
+  A18A    21 0000        C      			ld      hl,0
+  A18D    11 0050        C      			ld      de,maxs
   A190                   C      dell1:
-  A190    19             C      	add	hl,de		; anzahl der zeilen bestimmen, die nach
-  A191    10 FD          C      	djnz	dell1		; oben gerollt werden muessen
-  A193    44             C      	ld	b,h
-  A194    4D             C      	ld	c,l
-  A195    2A F92E        C      	ld	hl,(bsaddr)
-  A198    EB             C      	ex	de,hl
-  A199    19             C      	add	hl,de
-  A19A    ED B0          C      	ldir
-  A19C                   C      dell2:
-  A19C    21 3730        C      	ld	hl,bsanf+maxz*maxs-maxs ; letzte zeile loeschen
-  A19F    11 3731        C      	ld	de,bsanf+maxz*maxs-maxs+1
-  A1A2    01 004F        C      	ld	bc,maxs-1
+  A190    19             C      			add     hl,de               ; anzahl der zeilen bestimmen, die nach
+  A191    10 FD          C      			djnz    dell1               ; oben gerollt werden muessen
+  A193    44             C      			ld      b,h
+  A194    4D             C      			ld      c,l
+  A195    2A F92E        C      			ld      hl,(bsaddr)
+  A198    EB             C      			ex      de,hl
+  A199    19             C      			add     hl,de
+  A19A    ED B0          C      			ldir
+  A19C                   C      dell2:                                  ; letzte zeile loeschen
+  A19C    21 3730        C      			ld      hl,bsanf+maxz*maxs-maxs
+  A19F    11 3731        C      			ld      de,bsanf+maxz*maxs-maxs+1
+  A1A2    01 004F        C      			ld      bc,maxs-1
   A1A5                   C      dell3:
-  A1A5    36 20          C      	ld	(hl),20h
-  A1A7    ED B0          C      	ldir
-  A1A9    C3 A0A9        C      	jp	co.c15
+  A1A5    36 20          C      			ld      (hl),20h
+  A1A7    ED B0          C      			ldir
+  A1A9    C3 A0A9        C      			jp      co.c15
 's  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-39
 
 
                          C      ;
                          C      ;
   A1AC                   C      eos:
-  A1AC    21 3000        C      	ld	hl,bsanf	; eos, cursor bleibt unveraendert
-  A1AF    11 3001        C      	ld	de,bsanf+1
-  A1B2    01 077F        C      	ld	bc,maxz*maxs-1
-  A1B5    18 EE          C      	jr	dell3
+  A1AC    21 3000        C      			ld      hl,bsanf            ; eos, cursor bleibt unveraendert
+  A1AF    11 3001        C      			ld      de,bsanf+1
+  A1B2    01 077F        C      			ld      bc,maxz*maxs-1
+  A1B5    18 EE          C      			jr      dell3
                          C      ;
                          C      ;
   A1B7                   C      sroll:
-  A1B7    3E 01          C      	ld	a,1		; spezieller rollmodus an
+  A1B7    3E 01          C      			ld      a,1                 ; spezieller rollmodus an
   A1B9                   C      sroll1:
-  A1B9    32 F930        C      	ld	(qrmode),a
-  A1BC    C3 A0AD        C      	jp	co.c16
+  A1B9    32 F930        C      			ld      (qrmode),a
+  A1BC    C3 A0AD        C      			jp      co.c16
                          C      ;
   A1BF                   C      nroll:
-  A1BF    AF             C      	xor	a		; normaler   rollmodus an
-  A1C0    18 F7          C      	jr	sroll1
+  A1BF    AF             C      			xor     a                   ; normaler   rollmodus an
+  A1C0    18 F7          C      			jr      sroll1
                          C      ;
                          C      ;
                          C      ;
-                         C      	page
+                         C      			page
 's  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-40
 
 
                          C      
   A1C2                   C      incad:
-  A1C2    21 0041        C      	ld	hl,spalt
-  A1C5    34             C      	inc	(hl)
-  A1C6    7E             C      	ld	a,(hl)
-  A1C7    FE 50          C      	cp	maxs
-  A1C9    20 08          C      	jr	nz,bsadr
-  A1CB    AF             C      	xor	a
-  A1CC    77             C      	ld	(hl),a
-  A1CD    21 0040        C      	ld	hl,zeil
-  A1D0    34             C      	inc	(hl)
-  A1D1    18 00          C      	jr	bsadr
+  A1C2    21 0041        C      			ld      hl,spalt
+  A1C5    34             C      			inc     (hl)
+  A1C6    7E             C      			ld      a,(hl)
+  A1C7    FE 50          C      			cp      maxs
+  A1C9    20 08          C      			jr      nz,bsadr
+  A1CB    AF             C      			xor     a
+  A1CC    77             C      			ld      (hl),a
+  A1CD    21 0040        C      			ld      hl,zeil
+  A1D0    34             C      			inc     (hl)
+  A1D1    18 00          C      			jr      bsadr
                          C      
                          C      ; die position zeil/spalt durch evtl. rollen in den bildschirmbereich
                          C      ; bringen und physische adresse der position berechnen; dabei rollen
@@ -2644,182 +2668,182 @@
                          C      ; der naechsten ausgabe oder setcur gerollt werden kann
                          C      ;
   A1D3                   C      bsadr:
-  A1D3    F5             C      	push	af
-  A1D4    C5             C      	push	bc
-  A1D5    D5             C      	push	de
-  A1D6    3A 0040        C      	ld	a,(zeil)
+  A1D3    F5             C      			push    af
+  A1D4    C5             C      			push    bc
+  A1D5    D5             C      			push    de
+  A1D6    3A 0040        C      			ld      a,(zeil)
   A1D9                   C      bsad1:
-  A1D9    FE 18          C      	cp	maxz
-  A1DB    38 15          C      	jr	c,bsad4
-  A1DD    28 05          C      	jr	z,bsad3		; -> es koennte letzte position gewesen sein
+  A1D9    FE 18          C      			cp      maxz
+  A1DB    38 15          C      			jr      c,bsad4
+  A1DD    28 05          C      			jr      z,bsad3             ; -> es koennte letzte position gewesen sein
   A1DF                   C      bsad2:
-  A1DF    CD A211        C      	call	bsrol
-  A1E2    18 F5          C      	jr	bsad1
+  A1DF    CD A211        C      			call    bsrol
+  A1E2    18 F5          C      			jr      bsad1
   A1E4                   C      bsad3:
-  A1E4    3A 0041        C      	ld	a,(spalt)	; ist spalte = 0?
-  A1E7    B7             C      	or	a
-  A1E8    3E 18          C      	ld	a,maxz
-  A1EA    20 F3          C      	jr	nz,bsad2	; -> nein, rollen
-  A1EC    3D             C      	dec	a
-  A1ED    21 F931        C      	ld	hl,qroll	; rollmerker setzen
-  A1F0    36 01          C      	ld	(hl),1
+  A1E4    3A 0041        C      			ld      a,(spalt)           ; ist spalte = 0?
+  A1E7    B7             C      			or      a
+  A1E8    3E 18          C      			ld      a,maxz
+  A1EA    20 F3          C      			jr      nz,bsad2            ; -> nein, rollen
+  A1EC    3D             C      			dec     a
+  A1ED    21 F931        C      			ld      hl,qroll            ; rollmerker setzen
+  A1F0    36 01          C      			ld      (hl),1
   A1F2                   C      bsad4:
-  A1F2    47             C      	ld	b,a		; physische adresse berechnen
-  A1F3    21 0000        C      	ld	hl,0
-  A1F6    11 0050        C      	ld	de,maxs
-  A1F9    B7             C      	or	a
-  A1FA    28 03          C      	jr	z,bsad6
+  A1F2    47             C      			ld      b,a                 ; physische adresse berechnen
+  A1F3    21 0000        C      			ld      hl,0
+  A1F6    11 0050        C      			ld      de,maxs
+  A1F9    B7             C      			or      a
+  A1FA    28 03          C      			jr      z,bsad6
   A1FC                   C      bsad5:
-  A1FC    19             C      	add	hl,de
-  A1FD    10 FD          C      	djnz	bsad5
+  A1FC    19             C      			add     hl,de
+  A1FD    10 FD          C      			djnz    bsad5
   A1FF                   C      bsad6:
-  A1FF    3A 0041        C      	ld	a,(spalt)
-  A202    4F             C      	ld	c,a
-  A203    06 00          C      	ld	b,0
-  A205    09             C      	add	hl,bc
-  A206    01 3000        C      	ld	bc,bsanf
-  A209    09             C      	add	hl,bc
-  A20A    D1             C      	pop	de
-  A20B    C1             C      	pop	bc
-  A20C    F1             C      	pop	af
-  A20D    22 F92E        C      	ld	(bsaddr),hl
-  A210    C9             C      	ret
+  A1FF    3A 0041        C      			ld      a,(spalt)
+  A202    4F             C      			ld      c,a
+  A203    06 00          C      			ld      b,0
+  A205    09             C      			add     hl,bc
+  A206    01 3000        C      			ld      bc,bsanf
+  A209    09             C      			add     hl,bc
+  A20A    D1             C      			pop     de
+  A20B    C1             C      			pop     bc
+  A20C    F1             C      			pop     af
+  A20D    22 F92E        C      			ld      (bsaddr),hl
+  A210    C9             C      			ret
                          C      ;
                          C      ;
   A211                   C      bsrol:
-  A211    11 3000        C      	ld	de,bsanf	; bild hochschieben
-  A214    21 3050        C      	ld	hl,bsanf+maxs
-  A217    01 0730        C      	ld	bc,maxs*(maxz-1)
-  A21A    ED B0          C      	ldir
-  A21C    62             C      	ld	h,d
-  A21D    6B             C      	ld	l,e
-  A21E    13             C      	inc	de		; letzte zeile loeschen
-  A21F    01 004F        C      	ld	bc,maxs-1
-  A222    36 20          C      	ld	(hl),20h
-  A224    ED B0          C      	ldir
-  A226    21 0040        C      	ld	hl,zeil
-  A229    35             C      	dec	(hl)
-  A22A    7E             C      	ld	a,(hl)
-  A22B    C9             C      	ret
+  A211    11 3000        C      			ld      de,bsanf            ; bild hochschieben
+  A214    21 3050        C      			ld      hl,bsanf+maxs
+  A217    01 0730        C      			ld      bc,maxs*(maxz-1)
+  A21A    ED B0          C      			ldir
+  A21C    62             C      			ld      h,d
+  A21D    6B             C      			ld      l,e
+  A21E    13             C      			inc     de                  ; letzte zeile loeschen
+  A21F    01 004F        C      			ld      bc,maxs-1
+  A222    36 20          C      			ld      (hl),20h
+  A224    ED B0          C      			ldir
+  A226    21 0040        C      			ld      hl,zeil
+  A229    35             C      			dec     (hl)
+  A22A    7E             C      			ld      a,(hl)
+  A22B    C9             C      			ret
                          C      ;
                          C      ;
   A22C                   C      evtrol:
-  A22C    E5             C      	push	hl
-  A22D    21 F931        C      	ld	hl,qroll
+  A22C    E5             C      			push    hl
+  A22D    21 F931        C      			ld      hl,qroll
 's  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-41
 
 
-  A230    CB 46          C      	bit	0,(hl)
-  A232    CB 86          C      	res	0,(hl)
-  A234    E1             C      	pop	hl
-  A235    C8             C      	ret	z
-  A236    F5             C      	push	af
-  A237    C5             C      	push	bc
-  A238    D5             C      	push	de
-  A239    E5             C      	push	hl
-  A23A    CD A211        C      	call	bsrol
-  A23D    E1             C      	pop	hl
-  A23E    D1             C      	pop	de
-  A23F    C1             C      	pop	bc
-  A240    F1             C      	pop	af
-  A241    C9             C      	ret
+  A230    CB 46          C      			bit     0,(hl)
+  A232    CB 86          C      			res     0,(hl)
+  A234    E1             C      			pop     hl
+  A235    C8             C      			ret     z
+  A236    F5             C      			push    af
+  A237    C5             C      			push    bc
+  A238    D5             C      			push    de
+  A239    E5             C      			push    hl
+  A23A    CD A211        C      			call    bsrol
+  A23D    E1             C      			pop     hl
+  A23E    D1             C      			pop     de
+  A23F    C1             C      			pop     bc
+  A240    F1             C      			pop     af
+  A241    C9             C      			ret
                          C      ;
                          C      ;
   A242                   C      setcur:
-  A242    E5             C      	push	hl
-  A243    21 F930        C      	ld	hl,qrmode
-  A246    CB 46          C      	bit	0,(hl)
-  A248    CC A22C        C      	call	z,evtrol	; evtl. verzoegertes rollen ausfuehren
-  A24B    2A F92E        C      	ld	hl,(bsaddr)
-                         C      	; set	7,(hl)
-  A24E    C5             C      	push	bc
-  A24F    22 A261        C      	ld	(setcur2),hl
-  A252    21 A25D        C      	ld	hl,setcur1
-  A255    01 0740        C      	ld	bc,0740H
-  A258    ED B3          C      	otir
-  A25A    C1             C      	pop	bc
-  A25B    E1             C      	pop	hl
-  A25C    C9             C      	ret
+  A242    E5             C      			push    hl
+  A243    21 F930        C      			ld      hl,qrmode
+  A246    CB 46          C      			bit     0,(hl)
+  A248    CC A22C        C      			call    z,evtrol            ; evtl. verzoegertes rollen ausfuehren
+  A24B    2A F92E        C      			ld      hl,(bsaddr)
+                         C      ;           set     7,(hl)
+  A24E    C5             C      			push    bc
+  A24F    22 A261        C      			ld      (setcur2),hl
+  A252    21 A25D        C      			ld      hl,setcur1
+  A255    01 0740        C      			ld      bc,0740H
+  A258    ED B3          C      			otir
+  A25A    C1             C      			pop     bc
+  A25B    E1             C      			pop     hl
+  A25C    C9             C      			ret
                          C      ;
   A25D                   C      setcur1:
-  A25D    F0             C      	DB	0F0H
-  A25E    04             C      	DB	004H	;Cursor Ein mit HL
-  A25F    3000           C      	DW	bsanf
+  A25D    F0             C      			DB      0F0H
+  A25E    04             C      			DB      004H                ;Cursor Ein mit HL
+  A25F    3000           C      			DW      bsanf
   A261                   C      setcur2:
-  A261    0000           C      	DW	0
-  A263    FF             C      	DB	0FFH
+  A261    0000           C      			DW      0
+  A263    FF             C      			DB      0FFH
                          C      ;
                          C      ;
   A264                   C      rescur:
-  A264    E5             C      	push	hl
-  A265    C5             C      	push	bc
-                         C      	;ld	hl,(bsaddr)
-                         C      	; res	7,(hl)
-  A266    21 A26F        C      	ld	hl,rescur1
-  A269    01 0340        C      	ld	bc,0340H
-  A26C    C1             C      	pop	bc
-  A26D    E1             C      	pop	hl
-  A26E    C9             C      	ret
+  A264    E5             C      			push    hl
+  A265    C5             C      			push    bc
+                         C      ;			ld      hl,(bsaddr)
+                         C      ;			res     7,(hl)
+  A266    21 A26F        C      			ld      hl,rescur1
+  A269    01 0340        C      			ld      bc,0340H
+  A26C    C1             C      			pop     bc
+  A26D    E1             C      			pop     hl
+  A26E    C9             C      			ret
                          C      ;
   A26F                   C      rescur1:
-  A26F    F0             C      	DB	0F0H
-  A270    02             C      	DB	002H	;Cursor Aus
-  A271    FF             C      	DB	0FFH
+  A26F    F0             C      			DB      0F0H
+  A270    02             C      			DB      002H                ;Cursor Aus
+  A271    FF             C      			DB      0FFH
                          C      ;
                          C      ;
-                         C      	page
+                         C      			page
 's  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-42
 
 
                          C      
   A272                   C      co.scp:	
-  A272    C9             C      	ret
+  A272    C9             C      			ret
                          C      ;
                          C      ;
                          C      ;
   A273                   C      co.bcu:
-  A273    3E CE          C      	ld	a,0ceh		;set 1,(hl)
-  A275    32 9FF3        C      	ld	(co.c1+1),a
-  A278    21 9FFC        C      	ld	hl,co.c3+3
-  A27B    22 9FF5        C      	ld	(co.c1+3),hl
-  A27E    3E C3          C      	ld	a,0c3h		;jp
-  A280    32 9FF9        C      	ld	(co.c3),a
-  A283    21 96CB        C      	ld	hl,096cbh	;res 2,(hl)
-  A286    22 9FFC        C      	ld	(co.c3+3),hl
-  A289    3E C3          C      	ld	a,0c3h		;jp
-  A28B    32 9FFE        C      	ld	(co.c3+5),a
-  A28E    21 A0AD        C      	ld	hl,co.c16
-  A291    22 9FFF        C      	ld	(co.c3+6),hl
-  A294    21 0000        C      	ld	hl,0
-  A297    22 A050        C      	ld	(co.c5),hl
-  A29A    22 A059        C      	ld	(co.c6),hl
-  A29D    3E 0C          C      	ld	a,00ch
-  A29F    32 A08B        C      	ld	(co.c11+1),a
-  A2A2    32 99CC        C      	ld	(bootms),a
-  A2A5    C9             C      	ret
+  A273    3E CE          C      			ld      a,0ceh              ;set 1,(hl)
+  A275    32 9FF3        C      			ld      (co.c1+1),a
+  A278    21 9FFC        C      			ld      hl,co.c3+3
+  A27B    22 9FF5        C      			ld      (co.c1+3),hl
+  A27E    3E C3          C      			ld      a,0c3h              ;jp
+  A280    32 9FF9        C      			ld      (co.c3),a
+  A283    21 96CB        C      			ld      hl,096cbh           ;res 2,(hl)
+  A286    22 9FFC        C      			ld      (co.c3+3),hl
+  A289    3E C3          C      			ld      a,0c3h              ;jp
+  A28B    32 9FFE        C      			ld      (co.c3+5),a
+  A28E    21 A0AD        C      			ld      hl,co.c16
+  A291    22 9FFF        C      			ld      (co.c3+6),hl
+  A294    21 0000        C      			ld      hl,0
+  A297    22 A050        C      			ld      (co.c5),hl
+  A29A    22 A059        C      			ld      (co.c6),hl
+  A29D    3E 0C          C      			ld      a,00ch
+  A29F    32 A08B        C      			ld      (co.c11+1),a
+  A2A2    32 99CC        C      			ld      (bootms),a
+  A2A5    C9             C      			ret
                          C      ;
                          C      ;
                          C      ;
   A2A6                   C      co.deg:
-  A2A6    3E 8E          C      	ld	a,08eh		;res 1,(hl)
-  A2A8    32 9FF3        C      	ld	(co.c1+1),a
-  A2AB    21 A0AD        C      	ld	hl,co.c16
-  A2AE    22 9FF5        C      	ld	(co.c1+3),hl
-  A2B1    3E C2          C      	ld	a,0c2h		;jp nz,
-  A2B3    32 9FF9        C      	ld	(co.c3),a
-  A2B6    21 3DFE        C      	ld	hl,03dfeh	;cp '='
-  A2B9    22 9FFC        C      	ld	(co.c3+3),hl
-  A2BC    3E CA          C      	ld	a,0cah		;jp z,
-  A2BE    32 9FFE        C      	ld	(co.c3+5),a
-  A2C1    21 A068        C      	ld	hl,co.c9
-  A2C4    22 9FFF        C      	ld	(co.c3+6),hl
-  A2C7    21 20D6        C      	ld	hl,020d6h	;sub 20h
-  A2CA    22 A050        C      	ld	(co.c5),hl
-  A2CD    22 A059        C      	ld	(co.c6),hl
-  A2D0    3E 1A          C      	ld	a,01ah
-  A2D2    32 A08B        C      	ld	(co.c11+1),a
-  A2D5    32 99CC        C      	ld	(bootms),a
-  A2D8    C9             C      	ret
+  A2A6    3E 8E          C      			ld      a,08eh              ;res 1,(hl)
+  A2A8    32 9FF3        C      			ld      (co.c1+1),a
+  A2AB    21 A0AD        C      			ld      hl,co.c16
+  A2AE    22 9FF5        C      			ld      (co.c1+3),hl
+  A2B1    3E C2          C      			ld      a,0c2h              ;jp nz,
+  A2B3    32 9FF9        C      			ld      (co.c3),a
+  A2B6    21 3DFE        C      			ld      hl,03dfeh           ;cp '='
+  A2B9    22 9FFC        C      			ld      (co.c3+3),hl
+  A2BC    3E CA          C      			ld      a,0cah              ;jp z,
+  A2BE    32 9FFE        C      			ld      (co.c3+5),a
+  A2C1    21 A068        C      			ld      hl,co.c9
+  A2C4    22 9FFF        C      			ld      (co.c3+6),hl
+  A2C7    21 20D6        C      			ld      hl,020d6h           ;sub 20h
+  A2CA    22 A050        C      			ld      (co.c5),hl
+  A2CD    22 A059        C      			ld      (co.c6),hl
+  A2D0    3E 1A          C      			ld      a,01ah
+  A2D2    32 A08B        C      			ld      (co.c11+1),a
+  A2D5    32 99CC        C      			ld      (bootms),a
+  A2D8    C9             C      			ret
                          C      ;
                          C      ;
                                 
@@ -3147,62 +3171,62 @@
                          C      ;	schreiben
                          C      ;	---------
                          C      ;
-  A453    DD 7E 1D       C      wrkmb::	ld	a,(ix+gelade)	; test, ob kassette noch geladen ist
-  A456    B7             C      	or	a
-  A457    28 2A          C      	jr	z,wrk02		; -> nein
-  A459    3A F923        C      	ld	a,(trk)
-  A45C    B7             C      	or	a
-  A45D    C2 A7D2        C      	jp	nz,block	; -> nicht nach dir im hs schreiben
-  A460    21 F9C1        C      	ld	hl,dmma
-  A463    11 0C00        C      	ld	de,gdma
-  A466    01 0080        C      	ld	bc,128
-  A469    ED B0          C      	ldir
-  A46B    CD A51D        C      	call	diradr
-  A46E    EB             C      	ex	de,hl		; in dpuf schreiben
-  A46F    21 0C00        C      	ld	hl,gdma
-  A472    DD 36 0F 01    C      	ld	(ix+eadzei),1	; es wurde in directory geschrieben
-  A476    01 0080        C      	ld	bc,128
-  A479    CD 965A        C      wrk01:	call	sdir		;ld	a,(hl)
-  A47C    ED B0          C      	ldir		;set12
+  A453    DD 7E 1D       C      wrkmb::     ld      a,(ix+gelade)       ; test, ob kassette noch geladen ist
+  A456    B7             C      			or      a
+  A457    28 2A          C      			jr      z,wrk02             ; -> nein
+  A459    3A F923        C      			ld      a,(trk)
+  A45C    B7             C      			or      a
+  A45D    C2 A7D2        C      			jp      nz,block            ; -> nicht nach dir im hs schreiben
+  A460    21 F9C1        C      			ld      hl,dmma
+  A463    11 0C00        C      			ld      de,gdma
+  A466    01 0080        C      			ld      bc,128
+  A469    ED B0          C      			ldir
+  A46B    CD A51D        C      			call    diradr
+  A46E    EB             C      			ex      de,hl               ; in dpuf schreiben
+  A46F    21 0C00        C      			ld      hl,gdma
+  A472    DD 36 0F 01    C      			ld      (ix+eadzei),1       ; es wurde in directory geschrieben
+  A476    01 0080        C      			ld      bc,128
+  A479    CD 965A        C      wrk01:      call    sdir                ;ld a,(hl)
+  A47C    ED B0          C      			ldir                        ;set12
 's  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-48
 
 
-  A47E    CD 967C        C      	call	rdir	;ld	(de),a
+  A47E    CD 967C        C      			call    rdir                ;ld (de),a
                          C      			;res12
                          C      			;inc 	hl
                          C      			;inc	de
                          C      			;djnz	wrk01
-  A481    AF             C      	xor	a
-  A482    C9             C      	ret
+  A481    AF             C      			xor     a
+  A482    C9             C      			ret
                          C      ;
-  A483    AF             C      wrk02:	xor	a
-  A484    3C             C      	inc	a
-  A485    C9             C      	ret
+  A483    AF             C      wrk02:      xor     a
+  A484    3C             C      			inc     a
+  A485    C9             C      			ret
                          C      ;
-  A486    CD A510        C      hwrkmb:	call	cposx
-  A489    20 F8          C      	jr	nz,wrk02	; -> fehler melden
-  A48B    DD 36 09 01    C      	ld	(ix+ealen),1
-  A48F    DD 36 0A 00    C      	ld	(ix+ealen+1),0
-  A493    DD 7E 12       C      	ld	a,(ix+hstbuf)
-  A496    DD 77 07       C      	ld	(ix+eaadr),a
-  A499    DD 7E 13       C      	ld	a,(ix+hstbuf+1)
-  A49C    DD 77 08       C      	ld	(ix+eaadr+1),a
-                         C       if kmbvers eq 13
-                         C      	ld	a,80h		; schreiben ohne fehlerwiederholung
+  A486    CD A510        C      hwrkmb:     call    cposx
+  A489    20 F8          C      			jr      nz,wrk02            ; -> fehler melden
+  A48B    DD 36 09 01    C      			ld      (ix+ealen),1
+  A48F    DD 36 0A 00    C      			ld      (ix+ealen+1),0
+  A493    DD 7E 12       C      			ld      a,(ix+hstbuf)
+  A496    DD 77 07       C      			ld      (ix+eaadr),a
+  A499    DD 7E 13       C      			ld      a,(ix+hstbuf+1)
+  A49C    DD 77 08       C      			ld      (ix+eaadr+1),a
+                         C       if         kmbvers eq 13
+                         C      			ld      a,80h               ; schreiben ohne fehlerwiederholung
                          C       else
-  A49F    3E 00          C      	ld	a,0		; schreiben mit fehlerwiederholung
+  A49F    3E 00          C      			ld      a,0                 ; schreiben mit fehlerwiederholung
                          C       endif
-  A4A1    CD A796        C      	call	kmb
-  A4A4    C8             C      	ret	z		; -> alles ok
-  A4A5    3A F92C        C      	ld	a,(rderr)	; weiterer versuch?
-  A4A8    3D             C      	dec	a
-  A4A9    32 F92C        C      	ld	(rderr),a
-  A4AC    20 D8          C      	jr	nz,hwrkmb
-  A4AE    18 D3          C      	jr	wrk02		; -> nein
+  A4A1    CD A796        C      			call    kmb
+  A4A4    C8             C      			ret     z                   ; -> alles ok
+  A4A5    3A F92C        C      			ld      a,(rderr)           ; weiterer versuch?
+  A4A8    3D             C      			dec     a
+  A4A9    32 F92C        C      			ld      (rderr),a
+  A4AC    20 D8          C      			jr      nz,hwrkmb
+  A4AE    18 D3          C      			jr      wrk02               ; -> nein
                          C      ;
                          C      ;
                          C      ;
-                         C      	page
+                         C      			page
 's  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-49
 
 
@@ -3210,55 +3234,56 @@
                          C      ;	lesen
                          C      ;	-----
                          C      ;
-  A4B0    DD 7E 1D       C      rdkmb::	ld	a,(ix+gelade)	; test, ob kassette noch geladen ist
-  A4B3    B7             C      	or	a
-  A4B4    28 CD          C      	jr	z,wrk02
-  A4B6    3A F923        C      	ld	a,(trk)
-  A4B9    B7             C      	or	a
-  A4BA    C2 A7C6        C      	jp	nz,deblck	; -> nicht aus hs lesen
-  A4BD    11 0C00        C      	ld	de,gdma		; aus dpuf lesen
-  A4C0    CD A51D        C      	call	diradr
-  A4C3    01 0080        C      	ld	bc,128
-  A4C6    CD 965A        C      rdk01:	call	sdir	;set12
-  A4C9    ED B0          C      	ldir		;ld	a,(hl)
-  A4CB    CD 967C        C      	call	rdir	;res12
-  A4CE    21 0C00        C      	ld	hl,gdma	;ld	(de),a
-  A4D1    11 F9C1        C      	ld	de,dmma	;inc	hl
-  A4D4    01 0080        C      	ld	bc,128	;inc	de
-  A4D7    ED B0          C      	ldir		;djnz	rdk01
-  A4D9    AF             C      	xor	a
-  A4DA    C9             C      	ret
+  A4B0    DD 7E 1D       C      rdkmb::     ld      a,(ix+gelade)       ; test, ob kassette noch geladen ist
+  A4B3    B7             C      			or      a
+  A4B4    28 CD          C      			jr      z,wrk02
+  A4B6    3A F923        C      			ld      a,(trk)
+  A4B9    B7             C      			or      a
+  A4BA    C2 A7C6        C      			jp      nz,deblck           ; -> nicht aus hs lesen
+  A4BD    11 0C00        C      			ld      de,gdma             ; aus dpuf lesen
+  A4C0    CD A51D        C      			call    diradr
+  A4C3    01 0080        C      			ld      bc,128
+  A4C6    CD 965A        C      rdk01:      call    sdir                ;set12
+  A4C9    ED B0          C      			ldir                        ;ld a,(hl)
+  A4CB    CD 967C        C      			call    rdir                ;res12
+  A4CE    21 0C00        C      			ld      hl,gdma             ;ld (de),a
+  A4D1    11 F9C1        C      			ld      de,dmma             ;inc hl
+  A4D4    01 0080        C      			ld      bc,128              ;inc de
+  A4D7    ED B0          C      			ldir                        ;djnz rdk01
+  A4D9    AF             C      			xor     a
+  A4DA    C9             C      			ret
                          C      ;
-  A4DB    CD A510        C      hrdkmb:	call	cposx
-  A4DE    20 0E          C      	jr	nz,rdk03	; -> fehler melden
-  A4E0    CD A624        C      	call	lesen
-  A4E3    28 0C          C      	jr	z,rdk04
-  A4E5    3A F92C        C      rdk02:	ld	a,(rderr)	; weitere versuch?
-  A4E8    3D             C      	dec	a
-  A4E9    32 F92C        C      	ld	(rderr),a
-  A4EC    20 ED          C      	jr	nz,hrdkmb	; -> ja
-  A4EE    AF             C      rdk03:	xor	a		; fehler melden
-  A4EF    3C             C      	inc	a
-  A4F0    C9             C      	ret
-  A4F1    DD 7E 09       C      rdk04:	ld	a,(ix+ealen)
-  A4F4    FE 01          C      	cp	1
-  A4F6    20 ED          C      	jr	nz,rdk02
-  A4F8    47             C      	ld	b,a
-  A4F9    DD 7E 0A       C      	ld	a,(ix+ealen+1)
-  A4FC    B7             C      	or	a
-  A4FD    20 E6          C      	jr	nz,rdk02
-  A4FF    4F             C      	ld	c,a
-  A500    DD 6E 07       C      	ld	l,(ix+eaadr)
-  A503    DD 66 08       C      	ld	h,(ix+eaadr+1)
-  A506    DD 5E 12       C      	ld	e,(ix+hstbuf)
-  A509    DD 56 13       C      	ld	d,(ix+hstbuf+1)
-  A50C    ED B0          C      	ldir
-  A50E    AF             C      	xor	a
-  A50F    C9             C      	ret
+  A4DB    CD A510        C      hrdkmb:     call    cposx
+  A4DE    20 0E          C      			jr      nz,rdk03            ; -> fehler melden
+  A4E0    CD A624        C      			call    lesen
+  A4E3    28 0C          C      			jr      z,rdk04
+  A4E5    3A F92C        C      rdk02:      ld      a,(rderr)           ; weitere versuch?
+  A4E8    3D             C      			dec     a
+  A4E9    32 F92C        C      			ld      (rderr),a
+  A4EC    20 ED          C      			jr      nz,hrdkmb           ; -> ja
+  A4EE    AF             C      rdk03:      xor     a                   ; fehler melden
+  A4EF    3C             C      			inc     a
+  A4F0    C9             C      			ret
+                         C      ;			
+  A4F1    DD 7E 09       C      rdk04:      ld      a,(ix+ealen)
+  A4F4    FE 01          C      			cp      1
+  A4F6    20 ED          C      			jr      nz,rdk02
+  A4F8    47             C      			ld      b,a
+  A4F9    DD 7E 0A       C      			ld      a,(ix+ealen+1)
+  A4FC    B7             C      			or      a
+  A4FD    20 E6          C      			jr      nz,rdk02
+  A4FF    4F             C      			ld      c,a
+  A500    DD 6E 07       C      			ld      l,(ix+eaadr)
+  A503    DD 66 08       C      			ld      h,(ix+eaadr+1)
+  A506    DD 5E 12       C      			ld      e,(ix+hstbuf)
+  A509    DD 56 13       C      			ld      d,(ix+hstbuf+1)
+  A50C    ED B0          C      			ldir
+  A50E    AF             C      			xor	a
+  A50F    C9             C      			ret
                          C      ;
                          C      ;
                          C      ;
-                         C      	page	
+                         C      			page
 's  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-50
 
 
@@ -3266,39 +3291,39 @@
                          C      ;	unterprogramme lesen/schreiben
                          C      ;	------------------------------
                          C      ;
-  A510    DD 6E 16       C      cposx:	ld	l,(ix+hstsec)
-  A513    DD 66 14       C      	ld	h,(ix+hsttrk)
-  A516    22 A7C0        C      	ld	(was),hl
-  A519    CD A671        C      	call	cpos
-  A51C    C9             C      	ret
+  A510    DD 6E 16       C      cposx:      ld      l,(ix+hstsec)
+  A513    DD 66 14       C      			ld      h,(ix+hsttrk)
+  A516    22 A7C0        C      			ld      (was),hl
+  A519    CD A671        C      			call    cpos
+  A51C    C9             C      			ret
                          C      ;
-  A51D    3A F923        C      diradr:	ld	a,(trk)		; in hl diradr bilden
-  A520    6F             C      	ld	l,a
-  A521    26 00          C      	ld	h,0
-                         C      	rept	4		; 16 * trk
-                         C      	add	hl,hl
-                         C      	endm
-  A523    29             C+     	add	hl,hl
-  A524    29             C+     	add	hl,hl
-  A525    29             C+     	add	hl,hl
-  A526    29             C+     	add	hl,hl
-  A527    ED 4B F925     C      	ld	bc,(sec)
-  A52B    0B             C      	dec	bc
-  A52C    09             C      	add	hl,bc		; 16 * trk + sec - 1
-                         C      	rept	7
-                         C      	add	hl,hl
-                         C      	endm
-  A52D    29             C+     	add	hl,hl
-  A52E    29             C+     	add	hl,hl
-  A52F    29             C+     	add	hl,hl
-  A530    29             C+     	add	hl,hl
-  A531    29             C+     	add	hl,hl
-  A532    29             C+     	add	hl,hl
-  A533    29             C+     	add	hl,hl
-  A534    DD 4E 0D       C      	ld	c,(ix+eadpuf)	; bc = dpuf
-  A537    DD 46 0E       C      	ld	b,(ix+eadpuf+1)
-  A53A    09             C      	add	hl,bc
-  A53B    C9             C      	ret
+  A51D    3A F923        C      diradr:     ld      a,(trk)             ; in hl diradr bilden
+  A520    6F             C      			ld      l,a
+  A521    26 00          C      			ld      h,0
+                         C      			rept    4                   ; 16 * trk
+                         C      			add     hl,hl
+                         C      			endm
+  A523    29             C+     			add     hl,hl
+  A524    29             C+     			add     hl,hl
+  A525    29             C+     			add     hl,hl
+  A526    29             C+     			add     hl,hl
+  A527    ED 4B F925     C      			ld      bc,(sec)
+  A52B    0B             C      			dec     bc
+  A52C    09             C      			add     hl,bc               ; 16 * trk + sec - 1
+                         C      			rept    7
+                         C      			add     hl,hl
+                         C      			endm
+  A52D    29             C+     			add     hl,hl
+  A52E    29             C+     			add     hl,hl
+  A52F    29             C+     			add     hl,hl
+  A530    29             C+     			add     hl,hl
+  A531    29             C+     			add     hl,hl
+  A532    29             C+     			add     hl,hl
+  A533    29             C+     			add     hl,hl
+  A534    DD 4E 0D       C      			ld      c,(ix+eadpuf)       ; bc = dpuf
+  A537    DD 46 0E       C      			ld      b,(ix+eadpuf+1)
+  A53A    09             C      			add     hl,bc
+  A53B    C9             C      			ret
                          C      ;
                          C      ;
                          C      ;
@@ -3312,98 +3337,98 @@
                          C      ;	kassette laden geblockt
                          C      ;	-----------------------
                          C      ;
-  A53C    3E 31          C      clad:	ld	a,31h		; reservieren ein
-  A53E    CD A796        C      	call	kmb
-  A541    DD CB 00 66    C      	bit	4,(ix+eastat)
-  A545    20 3C          C      	jr	nz,sp26
+  A53C    3E 31          C      clad:       ld      a,31h               ; reservieren ein
+  A53E    CD A796        C      			call    kmb
+  A541    DD CB 00 66    C      			bit     4,(ix+eastat)
+  A545    20 3C          C      			jr      nz,sp26
                          C      ;
-  A547    CD A610        C      	call	rucksp		; rueckspulen
-  A54A    CD A618        C      	call	endruc		; auf ende warten
+  A547    CD A610        C      			call    rucksp              ; rueckspulen
+  A54A    CD A618        C      			call    endruc              ; auf ende warten
                          C      ;
-  A54D    CD A65A        C      	call	filpar
-  A550    D5             C      sp21:	push	de		; dirpufferadresse
-  A551    CD A8E1        C      	call	readhst		; 8 mal 256 byte lesen
-  A554    D1             C      	pop	de
-  A555    20 29          C      	jr	nz,sp25		; -> fehler
-  A557    DD 6E 12       C      	ld	l,(ix+hstbuf)
-  A55A    DD 66 13       C      	ld	h,(ix+hstbuf+1)
-  A55D    01 0100        C      	ld	bc,256
-  A560    CD 965A        C      	call	sdir
-  A563    ED B0          C      	ldir			; von hostbuf auf cpu in dirbuf uebertr.
-  A565    CD 967C        C      	call	rdir
-  A568    DD 34 16       C      	inc	(ix+hstsec)
-  A56B    DD CB 16 5E    C      	bit	3,(ix+hstsec)	; 0/8 schon erreicht?
-  A56F    28 DF          C      	jr	z,sp21		; -> nein
+  A54D    CD A65A        C      			call    filpar
+  A550    D5             C      sp21:       push    de                  ; dirpufferadresse
+  A551    CD A8E1        C      			call    readhst             ; 8 mal 256 byte lesen
+  A554    D1             C      			pop     de
+  A555    20 29          C      			jr      nz,sp25             ; -> fehler
+  A557    DD 6E 12       C      			ld      l,(ix+hstbuf)
+  A55A    DD 66 13       C      			ld      h,(ix+hstbuf+1)
+  A55D    01 0100        C      			ld      bc,256
+  A560    CD 965A        C      			call    sdir
+  A563    ED B0          C      			ldir                        ; von hostbuf auf cpu in dirbuf uebertr.
+  A565    CD 967C        C      			call    rdir
+  A568    DD 34 16       C      			inc     (ix+hstsec)
+  A56B    DD CB 16 5E    C      			bit     3,(ix+hstsec)       ; 0/8 schon erreicht?
+  A56F    28 DF          C      			jr      z,sp21              ; -> nein
                          C      ;
-  A571    AF             C      	xor	a		; laden ok
-  A572    DD 77 0F       C      	ld	(ix+eadzei),a	; in directory wurde noch nicht geschrieben
-  A575    DD 77 17       C      	ld	(ix+hstact),a	; host buffer inactive
-  A578    DD 77 19       C      	ld	(ix+unacnt),a	; no unallocated recs
-  A57B    DD 36 1D 01    C      	ld	(ix+gelade),1	; kassette ist geladen
-  A57F    C9             C      	ret
+  A571    AF             C      			xor     a                   ; laden ok
+  A572    DD 77 0F       C      			ld      (ix+eadzei),a       ; in directory wurde noch nicht geschrieben
+  A575    DD 77 17       C      			ld      (ix+hstact),a       ; host buffer inactive
+  A578    DD 77 19       C      			ld      (ix+unacnt),a       ; no unallocated recs
+  A57B    DD 36 1D 01    C      			ld      (ix+gelade),1       ; kassette ist geladen
+  A57F    C9             C      			ret
                          C      ;
                          C      ;--------------------------------
                          C      ;
-  A580    CD A610        C      sp25:	call	rucksp		; fehler beim laden
-  A583    3E 41          C      sp26:	ld	a,41h		; reservieren aus
-  A585    CD A796        C      	call	kmb
-  A588    AF             C      	xor	a
-  A589    DD 77 1D       C      	ld	(ix+gelade),a	; kassette ist nicht geladen
-  A58C    3C             C      	inc	a
-  A58D    C9             C      	ret
+  A580    CD A610        C      sp25:       call    rucksp              ; fehler beim laden
+  A583    3E 41          C      sp26:       ld      a,41h               ; reservieren aus
+  A585    CD A796        C      			call    kmb
+  A588    AF             C      			xor     a
+  A589    DD 77 1D       C      			ld      (ix+gelade),a       ; kassette ist nicht geladen
+  A58C    3C             C      			inc     a
+  A58D    C9             C      			ret
                          C      
                          C      ;	kassette entladen geblockt
                          C      ;	--------------------------
                          C      ;
-  A58E    DD 7E 17       C      centl:	ld	a,(ix+hstact)	; ist puffer aktiv?
-  A591    B7             C      	or	a
-  A592    28 1B          C      	jr	z,sp301		; -> nein
-  A594    DD 7E 18       C      	ld	a,(ix+hstwrt)	; wurde in puffer geschrieben?
-  A597    B7             C      	or	a
-  A598    28 15          C      	jr	z,sp301
-  A59A    CD A8D4        C      	call	writehst	; ja, puffer entleeren
-  A59D    28 10          C      	jr	z,sp301
-  A59F    21 A5ED        C      	ld	hl,ceerro
-  A5A2    06 23          C      	ld	b,ceerre-ceerro
-  A5A4    C5             C      centle:	push	bc
-  A5A5    4E             C      	ld	c,(hl)
-  A5A6    23             C      	inc	hl
-  A5A7    E5             C      	push	hl
-  A5A8    CD 9FDC        C      	call	co.ch
-  A5AB    E1             C      	pop	hl
-  A5AC    C1             C      	pop	bc
-  A5AD    10 F5          C      	djnz	centle
-  A5AF    DD 7E 0F       C      sp301:	ld	a,(ix+eadzei)	; wurde directory veraendert?
-  A5B2    B7             C      	or	a
-  A5B3    28 2B          C      	jr	z,sp32		; -> nein
-  A5B5    CD A610        C      	call	rucksp		; rueckspulen
-  A5B8    CD A618        C      	call	endruc		; auf ende warten
-  A5BB    CD A65A        C      	call	filpar
-  A5BE    EB             C      	ex	de,hl		; dirpufferadresse
-  A5BF    DD 5E 12       C      sp31:	ld	e,(ix+hstbuf)	; aus dirpuffer in host buffer uebertragen
-  A5C2    DD 56 13       C      	ld	d,(ix+hstbuf+1)
-  A5C5    01 0100        C      	ld	bc,256
-  A5C8    CD 965A        C      	call	sdir
-  A5CB    ED B0          C      	ldir			; aus dirbuf in hostbuf auf cpu uebertragen
-  A5CD    CD 967C        C      	call	rdir
-  A5D0    E5             C      	push	hl
+  A58E    DD 7E 17       C      centl:      ld      a,(ix+hstact)       ; ist puffer aktiv?
+  A591    B7             C      			or      a
+  A592    28 1B          C      			jr      z,sp301             ; -> nein
+  A594    DD 7E 18       C      			ld      a,(ix+hstwrt)       ; wurde in puffer geschrieben?
+  A597    B7             C      			or      a
+  A598    28 15          C      			jr      z,sp301
+  A59A    CD A8D4        C      			call    writehst            ; ja, puffer entleeren
+  A59D    28 10          C      			jr      z,sp301
+  A59F    21 A5ED        C      			ld      hl,ceerro
+  A5A2    06 23          C      			ld      b,ceerre-ceerro
+  A5A4    C5             C      centle:     push    bc
+  A5A5    4E             C      			ld      c,(hl)
+  A5A6    23             C      			inc     hl
+  A5A7    E5             C      			push    hl
+  A5A8    CD 9FDC        C      			call    co.ch
+  A5AB    E1             C      			pop     hl
+  A5AC    C1             C      			pop     bc
+  A5AD    10 F5          C      			djnz    centle
+  A5AF    DD 7E 0F       C      sp301:      ld      a,(ix+eadzei)       ; wurde directory veraendert?
+  A5B2    B7             C      			or      a
+  A5B3    28 2B          C      			jr      z,sp32              ; -> nein
+  A5B5    CD A610        C      			call    rucksp              ; rueckspulen
+  A5B8    CD A618        C      			call    endruc              ; auf ende warten
+  A5BB    CD A65A        C      			call    filpar
+  A5BE    EB             C      			ex      de,hl               ; dirpufferadresse
+  A5BF    DD 5E 12       C      sp31:       ld      e,(ix+hstbuf)       ; aus dirpuffer in host buffer uebertragen
+  A5C2    DD 56 13       C      			ld      d,(ix+hstbuf+1)
+  A5C5    01 0100        C      			ld      bc,256
+  A5C8    CD 965A        C      			call    sdir
+  A5CB    ED B0          C      			ldir                        ; aus dirbuf in hostbuf auf cpu uebertragen
+  A5CD    CD 967C        C      			call    rdir
+  A5D0    E5             C      			push    hl
 's  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-52
 
 
-  A5D1    CD A8D4        C      	call	writehst
-  A5D4    E1             C      	pop	hl
-  A5D5    20 A9          C      	jr	nz,sp25		; -> fehler
-  A5D7    DD 34 16       C      	inc	(ix+hstsec)
-  A5DA    DD CB 16 5E    C      	bit	3,(ix+hstsec)	; 0/8 erreicht?
-  A5DE    28 DF          C      	jr	z,sp31		; -> nein
+  A5D1    CD A8D4        C      			call    writehst
+  A5D4    E1             C      			pop     hl
+  A5D5    20 A9          C      			jr      nz,sp25             ; -> fehler
+  A5D7    DD 34 16       C      			inc     (ix+hstsec)
+  A5DA    DD CB 16 5E    C      			bit     3,(ix+hstsec)       ; 0/8 erreicht?
+  A5DE    28 DF          C      			jr      z,sp31              ; -> nein
                          C      ;
-  A5E0    CD A610        C      sp32:	call	rucksp		; rueckspulen
-  A5E3    3E 41          C      	ld	a,41h		; reservieren aus
-  A5E5    CD A796        C      	call	kmb
-  A5E8    DD 36 1D 00    C      	ld	(ix+gelade),0	; kassette ist nicht geladen
-  A5EC    C9             C      	ret
+  A5E0    CD A610        C      sp32:       call    rucksp              ; rueckspulen
+  A5E3    3E 41          C      			ld      a,41h               ; reservieren aus
+  A5E5    CD A796        C      			call    kmb
+  A5E8    DD 36 1D 00    C      			ld      (ix+gelade),0       ; kassette ist nicht geladen
+  A5EC    C9             C      			ret
                          C      ;
-  A5ED    0A 46 65 68    C      ceerro:	defb	lf,'Fehler beim Entladen des Puffers',cr,lf
+  A5ED    0A 46 65 68    C      ceerro:     defb    lf,'Fehler beim Entladen des Puffers',cr,lf
   A5F1    6C 65 72 20    C      
   A5F5    62 65 69 6D    C      
   A5F9    20 45 6E 74    C      
@@ -3416,7 +3441,7 @@
                          C      ;
                          C      ;
                          C      ;
-                         C      	page	
+                         C      			page
 's  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-53
 
 
@@ -3424,257 +3449,258 @@
                          C      ;	up's
                          C      ;	----
                          C      ;
-  A610    3E 21          C      rucksp:	ld	a,21h
-  A612    CD A796        C      	call	kmb
-  A615    20 F9          C      	jr	nz,rucksp
-  A617    C9             C      	ret
-  A618    CD 964D        C      endruc:	call	skmb 
-  A61B    CD 4043        C      edruc:	call	kmbruc		; kmb-bereitroutine
-  A61E    38 FB          C      	jr	c,edruc		; -> nicht bereit
-  A620    CD 9653        C      	call	rkmb
-  A623    C9             C      	ret
+  A610    3E 21          C      rucksp:     ld      a,21h
+  A612    CD A796        C      			call    kmb
+  A615    20 F9          C      			jr      nz,rucksp
+  A617    C9             C      			ret
+  A618    CD 964D        C      endruc:     call    skmb 
+  A61B    CD 4043        C      edruc:      call    kmbruc              ; kmb-bereitroutine
+  A61E    38 FB          C      			jr      c,edruc             ; -> nicht bereit
+  A620    CD 9653        C      			call    rkmb
+  A623    C9             C      			ret
                          C      ;
-  A624    AF             C      lesen:	xor	a
-  A625    32 A7C5        C      	ld	(richtu),a
-                         C       if kmbvers eq 13
-                         C      	ld	a,82h		; lesen ohne fehlerwiederholung
-                         C       else
-  A628    3E 02          C      	ld	a,2
-                         C       endif
-  A62A    CD A796        C      	call	kmb
-  A62D    C9             C      	ret
-  A62E    DD 7E 09       C      konlen:	ld	a,(ix+ealen)
-  A631    B8             C      	cp	b
-  A632    C0             C      	ret	nz
-  A633    DD 7E 0A       C      	ld	a,(ix+ealen+1)
-  A636    B9             C      	cp	c
-  A637    C9             C      	ret
+  A624    AF             C      lesen:      xor     a
+  A625    32 A7C5        C      			ld      (richtu),a
+                         C      if          kmbvers eq 13
+                         C      			ld      a,82h               ; lesen ohne fehlerwiederholung
+                         C      else
+  A628    3E 02          C      			ld      a,2
+                         C      endif
+  A62A    CD A796        C      			call    kmb
+  A62D    C9             C      			ret
+  A62E    DD 7E 09       C      konlen:     ld      a,(ix+ealen)
+  A631    B8             C      			cp      b
+  A632    C0             C      			ret     nz
+  A633    DD 7E 0A       C      			ld      a,(ix+ealen+1)
+  A636    B9             C      			cp      c
+  A637    C9             C      			ret
                          C      ;
-  A638    C5             C      konsent:push	bc
-  A639    01 000C        C      	ld	bc,12
-  A63C    CD A62E        C      	call	konlen
-  A63F    C1             C      	pop	bc
-  A640    C0             C      	ret	nz
-  A641    E5             C      	push	hl
-  A642    DD 6E 07       C      	ld	l,(ix+eaadr)	; iy := (adr)
-  A645    DD 66 08       C      	ld	h,(ix+eaadr+1)
-  A648    22 A7C3        C      	ld	(arb),hl
-  A64B    FD 2A A7C3     C      	ld	iy,(arb)
-  A64F    E1             C      	pop	hl
-  A650    FD 7E 01       C      	ld	a,(iy+1)
-  A653    BA             C      	cp	d
-  A654    C0             C      	ret	nz
-  A655    FD 7E 02       C      	ld	a,(iy+2)
-  A658    BB             C      	cp	e
-  A659    C9             C      	ret
+  A638    C5             C      konsent:    push    bc
+  A639    01 000C        C      			ld      bc,12
+  A63C    CD A62E        C      			call    konlen
+  A63F    C1             C      			pop     bc
+  A640    C0             C      			ret     nz
+  A641    E5             C      			push    hl
+  A642    DD 6E 07       C      			ld      l,(ix+eaadr)        ; iy := (adr)
+  A645    DD 66 08       C      			ld      h,(ix+eaadr+1)
+  A648    22 A7C3        C      			ld      (arb),hl
+  A64B    FD 2A A7C3     C      			ld      iy,(arb)
+  A64F    E1             C      			pop     hl
+  A650    FD 7E 01       C      			ld      a,(iy+1)
+  A653    BA             C      			cp      d
+  A654    C0             C      			ret     nz
+  A655    FD 7E 02       C      			ld      a,(iy+2)
+  A658    BB             C      			cp      e
+  A659    C9             C      			ret
                          C      ;
-  A65A    DD 36 16 00    C      filpar:	ld	(ix+hstsec),0
-  A65E    DD 36 14 00    C      	ld	(ix+hsttrk),0
-  A662    DD 36 10 00    C      	ld	(ix+eawovo),0
-  A666    DD 36 11 00    C      	ld	(ix+eawovo+1),0
-  A66A    DD 5E 0D       C      	ld	e,(ix+eadpuf)
-  A66D    DD 56 0E       C      	ld	d,(ix+eadpuf+1)
-  A670    C9             C      	ret
+  A65A    DD 36 16 00    C      filpar:     ld      (ix+hstsec),0
+  A65E    DD 36 14 00    C      			ld      (ix+hsttrk),0
+  A662    DD 36 10 00    C      			ld      (ix+eawovo),0
+  A666    DD 36 11 00    C      			ld      (ix+eawovo+1),0
+  A66A    DD 5E 0D       C      			ld      e,(ix+eadpuf)
+  A66D    DD 56 0E       C      			ld      d,(ix+eadpuf+1)
+  A670    C9             C      			ret
                          C      
                          C      ;	kassette positionieren
                          C      ;	----------------------
                          C      ;
-  A671    3E 04          C      cpos:	ld	a,erranz	; nach erranz fehlversuchen abbruch
-  A673    32 A7C2        C      	ld	(errcou),a
-  A676    ED 4B A7C0     C      sp40:	ld	bc,(was)
-  A67A    DD 5E 10       C      	ld	e,(ix+eawovo)
-  A67D    DD 56 11       C      	ld	d,(ix+eawovo+1)
-  A680    7B             C      	ld	a,e		; steht mb vor bandmarke?
-  A681    FE 08          C      	cp	8
-  A683    38 06          C      	jr	c,sp41
-  A685    CD A624        C      	call	lesen		; ja
-  A688    14             C      	inc	d
-  A689    1E 00          C      	ld	e,0
-  A68B    78             C      sp41:	ld	a,b
-  A68C    BA             C      	cp	d
-  A68D    20 4F          C      	jr	nz,sp45
-  A68F    79             C      	ld	a,c
-  A690    BB             C      	cp	e
-  A691    20 1F          C      	jr	nz,sp43
-                         C      			; === was = wovor
-  A693    CD A624        C      	call	lesen
-  A696    20 0E          C      	jr	nz,sp42		; -> fehler: beim lesen
-  A698    CD A638        C      	call	konsent
-  A69B    20 09          C      	jr	nz,sp42		; -> fehler: mb stand an falscher stelle
+  A671    3E 04          C      cpos:       ld      a,erranz            ; nach erranz fehlversuchen abbruch
+  A673    32 A7C2        C      			ld      (errcou),a
+  A676    ED 4B A7C0     C      sp40:       ld      bc,(was)
+  A67A    DD 5E 10       C      			ld      e,(ix+eawovo)
+  A67D    DD 56 11       C      			ld      d,(ix+eawovo+1)
+  A680    7B             C      			ld      a,e                 ; steht mb vor bandmarke?
+  A681    FE 08          C      			cp      8
+  A683    38 06          C      			jr      c,sp41
+  A685    CD A624        C      			call    lesen               ; ja
+  A688    14             C      			inc     d
+  A689    1E 00          C      			ld      e,0
+  A68B    78             C      sp41:       ld      a,b
+  A68C    BA             C      			cp      d
+  A68D    20 4F          C      			jr      nz,sp45
+  A68F    79             C      			ld      a,c
+  A690    BB             C      			cp      e
+  A691    20 1F          C      			jr      nz,sp43
+                         C                                              ; === was = wovor
+  A693    CD A624        C      			call    lesen
+  A696    20 0E          C      			jr      nz,sp42             ; -> fehler: beim lesen
+  A698    CD A638        C      			call    konsent
+  A69B    20 09          C      			jr      nz,sp42             ; -> fehler: mb stand an falscher stelle
 's  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-54
 
 
-  A69D    1C             C      	inc	e
-  A69E    DD 73 10       C      	ld	(ix+eawovo),e
-  A6A1    DD 72 11       C      	ld	(ix+eawovo+1),d
-  A6A4    AF             C      	xor	a
-  A6A5    C9             C      	ret
+  A69D    1C             C      			inc     e
+  A69E    DD 73 10       C      			ld      (ix+eawovo),e
+  A6A1    DD 72 11       C      			ld      (ix+eawovo+1),d
+  A6A4    AF             C      			xor     a
+  A6A5    C9             C      			ret
                          C      ;
-  A6A6    CD A73B        C      sp42:	call	fehler		; fehlerbehandlung
-  A6A9    21 A7C2        C      	ld	hl,errcou	; nochmaliger versuch?
-  A6AC    35             C      	dec	(hl)
-  A6AD    20 C7          C      	jr	nz,sp40		; -> ja
-  A6AF    AF             C      	xor	a		; fehler zurueckmelden
-  A6B0    3C             C      	inc	a
-  A6B1    C9             C      	ret
+  A6A6    CD A73B        C      sp42:       call    fehler              ; fehlerbehandlung
+  A6A9    21 A7C2        C      			ld      hl,errcou           ; nochmaliger versuch?
+  A6AC    35             C      			dec     (hl)
+  A6AD    20 C7          C      			jr      nz,sp40             ; -> ja
+  A6AF    AF             C      			xor     a                   ; fehler zurueckmelden
+  A6B0    3C             C      			inc     a
+  A6B1    C9             C      			ret
                          C      ;
-  A6B2    79             C      sp43:	ld	a,c
-  A6B3    BB             C      	cp	e
-  A6B4    30 16          C      	jr	nc,sp44
-                         C      			; === was.blk = wovor.blk  and  was.rec < wovor.rec
-  A6B6    3E 01          C      	ld	a,1
-  A6B8    32 A7C5        C      	ld	(richtu),a
-  A6BB    3E 15          C      	ld	a,15h		; 2 bloecke ruecksetzen
-  A6BD    CD A796        C      	call	kmb
-  A6C0    20 E4          C      	jr	nz,sp42		; -> fehler: beim record ruecksetzen
-  A6C2    3E 15          C      	ld	a,15h
-  A6C4    CD A796        C      	call	kmb
-  A6C7    20 DD          C      	jr	nz,sp42		; -> fehler: beim record ruecksetzen
-  A6C9    1D             C      	dec	e		; wovor.rec := wovor.rec - 1
-  A6CA    18 BF          C      	jr	sp41
-                         C      			; === was.blk = wovor.blk  and  was.rec > wovor.rec
-  A6CC    CD A624        C      sp44:	call	lesen
-  A6CF    20 D5          C      	jr	nz,sp42		; -> fehler: beim lesen
-  A6D1    CD A638        C      	call	konsent
-  A6D4    20 D0          C      	jr	nz,sp42		; -> fehler: mb stand an falscher stelle
-  A6D6    CD A624        C      	call	lesen
-  A6D9    20 CB          C      	jr	nz,sp42		; -> fehler: beim lesen
-  A6DB    1C             C      	inc	e		; wovor.rec := wovor.rec + 1
-  A6DC    18 AD          C      	jr	sp41
+  A6B2    79             C      sp43:       ld      a,c
+  A6B3    BB             C      			cp      e
+  A6B4    30 16          C      			jr      nc,sp44
+                         C                                              ; === was.blk = wovor.blk  and  was.rec < wovor.rec
+  A6B6    3E 01          C      			ld      a,1
+  A6B8    32 A7C5        C      			ld      (richtu),a
+  A6BB    3E 15          C      			ld      a,15h               ; 2 bloecke ruecksetzen
+  A6BD    CD A796        C      			call    kmb
+  A6C0    20 E4          C      			jr      nz,sp42             ; -> fehler: beim record ruecksetzen
+  A6C2    3E 15          C      			ld      a,15h
+  A6C4    CD A796        C      			call    kmb
+  A6C7    20 DD          C      			jr      nz,sp42             ; -> fehler: beim record ruecksetzen
+  A6C9    1D             C      			dec     e                   ; wovor.rec := wovor.rec - 1
+  A6CA    18 BF          C      			jr      sp41
+                         C                                              ; === was.blk = wovor.blk  and  was.rec > wovor.rec
+  A6CC    CD A624        C      sp44:       call    lesen
+  A6CF    20 D5          C      			jr      nz,sp42             ; -> fehler: beim lesen
+  A6D1    CD A638        C      			call    konsent
+  A6D4    20 D0          C      			jr      nz,sp42             ; -> fehler: mb stand an falscher stelle
+  A6D6    CD A624        C      			call    lesen
+  A6D9    20 CB          C      			jr      nz,sp42             ; -> fehler: beim lesen
+  A6DB    1C             C      			inc     e                   ; wovor.rec := wovor.rec + 1
+  A6DC    18 AD          C      			jr      sp41
                          C      ;
-  A6DE    30 23          C      sp45:	jr	nc,sp46
-                         C      			; === was.blk < wovor.blk
-  A6E0    7A             C      	ld	a,d
-  A6E1    90             C      	sub	b
-  A6E2    F5             C      	push	af
-  A6E3    3A A7C2        C      	ld	a,(errcou)	; falls nur noch erranz/2 Versuche ausstehen
-  A6E6    FE 02          C      	cp	erranz/2	; um eine bandmarke mehr zuruecksetzen
-  A6E8    38 03          C      	jr	c,sp451
-  A6EA    F1             C      	pop	af
-  A6EB    3C             C      	inc	a
-  A6EC    F5             C      	push	af
-  A6ED    F1             C      sp451:	pop	af		; evtl. bei bedarf inc a
-  A6EE    3C             C      	inc	a
-  A6EF    DD 77 0A       C      	ld	(ix+eabm),a	; (anzbm) := wovor - was + 1
-  A6F2    3E 01          C      	ld	a,1
-  A6F4    32 A7C5        C      	ld	(richtu),a
-  A6F7    3E 75          C      	ld	a,75h		; um wovor-was+1 bm ruecksetzen
-  A6F9    CD A796        C      	call	kmb
-  A6FC    20 A8          C      	jr	nz,sp42		; -> fehler: beim bm-ruecksetzen
-  A6FE    50             C      	ld	d,b
-  A6FF    AF             C      	xor	a
-  A700    5F             C      	ld	e,a		; wovor := was.blk / 0
-  A701    18 88          C      	jr	sp41
+  A6DE    30 23          C      sp45:       jr      nc,sp46
+                         C                                              ; === was.blk < wovor.blk
+  A6E0    7A             C      			ld      a,d
+  A6E1    90             C      			sub     b
+  A6E2    F5             C      			push    af
+  A6E3    3A A7C2        C      			ld      a,(errcou)          ; falls nur noch erranz/2 Versuche ausstehen
+  A6E6    FE 02          C      			cp      erranz/2            ; um eine bandmarke mehr zuruecksetzen
+  A6E8    38 03          C      			jr      c,sp451
+  A6EA    F1             C      			pop     af
+  A6EB    3C             C      			inc     a
+  A6EC    F5             C      			push    af
+  A6ED    F1             C      sp451:      pop     af                  ; evtl. bei bedarf inc a
+  A6EE    3C             C      			inc     a
+  A6EF    DD 77 0A       C      			ld      (ix+eabm),a         ; (anzbm) := wovor - was + 1
+  A6F2    3E 01          C      			ld      a,1
+  A6F4    32 A7C5        C      			ld      (richtu),a
+  A6F7    3E 75          C      			ld      a,75h               ; um wovor-was+1 bm ruecksetzen
+  A6F9    CD A796        C      			call    kmb
+  A6FC    20 A8          C      			jr      nz,sp42             ; -> fehler: beim bm-ruecksetzen
+  A6FE    50             C      			ld      d,b
+  A6FF    AF             C      			xor     a
+  A700    5F             C      			ld      e,a                 ; wovor := was.blk / 0
+  A701    18 88          C      			jr      sp41
                          C      ;
-  A703    7A             C      sp46:	ld	a,d
-  A704    3C             C      	inc	a
-  A705    B8             C      	cp	b
-  A706    20 15          C      	jr	nz,sp48
-                         C      			; === was.blk = wovor.blk+1
-  A708    CD A624        C      sp47:	call	lesen
-  A70B    20 99          C      	jr	nz,sp42		; -> fehler: beim lesen
-  A70D    C5             C      	push	bc
-  A70E    01 0000        C      	ld	bc,0
-  A711    CD A62E        C      	call	konlen
-  A714    C1             C      	pop	bc
-  A715    20 F1          C      	jr	nz,sp47		; -> keine bandmarke, weitermachen
-  A717    14             C      	inc	d
-  A718    AF             C      	xor	a
-  A719    5F             C      	ld	e,a		; wovor := wovor.blk+1 / 0
-  A71A    C3 A68B        C      	jp	sp41
-                         C      			; === was.blk > wovor.blk+1
-  A71D    3A A7C2        C      sp48:	ld	a,(errcou)	; falls nur noch erranz/2 fehlversuche
-  A720    FE 02          C      	cp	erranz/2	; langsam vorpositionieren
-  A722    38 E4          C      	jr	c,sp47
+  A703    7A             C      sp46:       ld      a,d
+  A704    3C             C      			inc     a
+  A705    B8             C      			cp      b
+  A706    20 15          C      			jr      nz,sp48
+                         C                                              ; === was.blk = wovor.blk+1
+  A708    CD A624        C      sp47:       call    lesen
+  A70B    20 99          C      			jr      nz,sp42             ; -> fehler: beim lesen
+  A70D    C5             C      			push    bc
+  A70E    01 0000        C      			ld      bc,0
+  A711    CD A62E        C      			call    konlen
+  A714    C1             C      			pop     bc
+  A715    20 F1          C      			jr      nz,sp47             ; -> keine bandmarke, weitermachen
+  A717    14             C      			inc     d
+  A718    AF             C      			xor     a
+  A719    5F             C      			ld      e,a                 ; wovor := wovor.blk+1 / 0
+  A71A    C3 A68B        C      			jp      sp41
+                         C                                              ; === was.blk > wovor.blk+1
+  A71D    3A A7C2        C      sp48:       ld      a,(errcou)          ; falls nur noch erranz/2 fehlversuche
+  A720    FE 02          C      			cp      erranz/2            ; langsam vorpositionieren
+  A722    38 E4          C      			jr      c,sp47
 's  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-55
 
 
-  A724    78             C      	ld	a,b
-  A725    92             C      	sub	d
-  A726    DD 77 0A       C      	ld	(ix+eabm),a	; (anzbm) := was - wovor
-  A729    AF             C      	xor	a
-  A72A    32 A7C5        C      	ld	(richtu),a
-  A72D    3E 71          C      	ld	a,71h		; um was-wovor bm vorsetzen
-  A72F    CD A796        C      	call	kmb
-  A732    C2 A6A6        C      	jp	nz,sp42		; -> fehler: beim bm-vorsetzen
-  A735    50             C      	ld	d,b
-  A736    AF             C      	xor	a
-  A737    5F             C      	ld	e,a		; wovor := was.blk / 0
-  A738    C3 A68B        C      	jp	sp41
+  A724    78             C      			ld      a,b
+  A725    92             C      			sub     d
+  A726    DD 77 0A       C      			ld      (ix+eabm),a         ; (anzbm) := was - wovor
+  A729    AF             C      			xor     a
+  A72A    32 A7C5        C      			ld      (richtu),a
+  A72D    3E 71          C      			ld      a,71h               ; um was-wovor bm vorsetzen
+  A72F    CD A796        C      			call    kmb
+  A732    C2 A6A6        C      			jp      nz,sp42             ; -> fehler: beim bm-vorsetzen
+  A735    50             C      			ld      d,b
+  A736    AF             C      			xor     a
+  A737    5F             C      			ld      e,a                 ; wovor := was.blk / 0
+  A738    C3 A68B        C      			jp      sp41
                          C      ;
-  A73B    3E 16          C      fehler:	ld	a,16h		; fehlerbehandlung
-  A73D    DD BE 01       C      	cp	(ix+eafehl)	; ----------------
-  A740    20 21          C      	jr	nz,fehl01	; ende der aufzeichnungen auf dieser seite
-  A742    3A A7C5        C      	ld	a,(richtu)
-  A745    B7             C      	or	a
-  A746    28 12          C      	jr	z,fehl00
-  A748    CD A610        C      	call	rucksp		; am anfang zur sicherheit ruckspulen
-  A74B    CD A618        C      	call	endruc
-  A74E    3E 41          C      	ld	a,41h		; reservieren aus
-  A750    CD A796        C      	call	kmb
-  A753    3E 31          C      	ld	a,31h		; reservieren ein
-  A755    CD A796        C      	call	kmb
-  A758    18 09          C      	jr	fehl01
-  A75A    06 10          C      fehl00:	ld	b,10h		; um 16 saetze zuruecksetzen
-  A75C    3E 0F          C      fehl0a:	ld	a,15
-  A75E    CD A796        C      	call	kmb
-  A761    10 F9          C      	djnz	fehl0a
-  A763    CD A624        C      fehl01:	call	lesen
-  A766    20 D3          C      	jr	nz,fehler
-  A768    01 000C        C      	ld	bc,12
-  A76B    CD A62E        C      	call	konlen		;   solange lesen bis sent gefunden
-  A76E    20 CB          C      	jr	nz,fehler	;   dann vor sent setzen und wovor
-  A770    DD 6E 07       C      	ld	l,(ix+eaadr)	; iy := (adr)
-  A773    DD 66 08       C      	ld	h,(ix+eaadr+1)
-  A776    22 A7C3        C      	ld	(arb),hl
-  A779    FD 2A A7C3     C      	ld	iy,(arb)
-  A77D    FD 56 01       C      	ld	d,(iy+1)
-  A780    FD 5E 02       C      	ld	e,(iy+2)
-  A783    DD 73 10       C      	ld	(ix+eawovo),e
-  A786    DD 72 11       C      	ld	(ix+eawovo+1),d
-  A789    3E 01          C      	ld	a,1
-  A78B    32 A7C5        C      	ld	(richtu),a
-  A78E    3E 15          C      	ld	a,15h
-  A790    CD A796        C      	call	kmb		; einen record ruecksetzen
-  A793    20 A6          C      	jr	nz,fehler	; -> fehler: beim record ruecksetzen
-  A795    C9             C      	ret
+  A73B    3E 16          C      fehler:     ld      a,16h               ; fehlerbehandlung
+  A73D    DD BE 01       C      			cp      (ix+eafehl)         ; ----------------
+  A740    20 21          C      			jr      nz,fehl01           ; ende der aufzeichnungen auf dieser seite
+  A742    3A A7C5        C      			ld      a,(richtu)
+  A745    B7             C      			or      a
+  A746    28 12          C      			jr      z,fehl00
+  A748    CD A610        C      			call    rucksp              ; am anfang zur sicherheit ruckspulen
+  A74B    CD A618        C      			call    endruc
+  A74E    3E 41          C      			ld      a,41h               ; reservieren aus
+  A750    CD A796        C      			call    kmb
+  A753    3E 31          C      			ld      a,31h               ; reservieren ein
+  A755    CD A796        C      			call    kmb
+  A758    18 09          C      			jr      fehl01
+                         C      ;			
+  A75A    06 10          C      fehl00:     ld      b,10h               ; um 16 saetze zuruecksetzen
+  A75C    3E 0F          C      fehl0a:     ld      a,15
+  A75E    CD A796        C      			call    kmb
+  A761    10 F9          C      			djnz    fehl0a
+  A763    CD A624        C      fehl01:     call    lesen
+  A766    20 D3          C      			jr      nz,fehler
+  A768    01 000C        C      			ld      bc,12
+  A76B    CD A62E        C      			call    konlen              ;   solange lesen bis sent gefunden
+  A76E    20 CB          C      			jr      nz,fehler           ;   dann vor sent setzen und wovor
+  A770    DD 6E 07       C      			ld      l,(ix+eaadr)        ; iy := (adr)
+  A773    DD 66 08       C      			ld      h,(ix+eaadr+1)
+  A776    22 A7C3        C      			ld      (arb),hl
+  A779    FD 2A A7C3     C      			ld      iy,(arb)
+  A77D    FD 56 01       C      			ld      d,(iy+1)
+  A780    FD 5E 02       C      			ld      e,(iy+2)
+  A783    DD 73 10       C      			ld      (ix+eawovo),e
+  A786    DD 72 11       C      			ld      (ix+eawovo+1),d
+  A789    3E 01          C      			ld      a,1
+  A78B    32 A7C5        C      			ld      (richtu),a
+  A78E    3E 15          C      			ld      a,15h
+  A790    CD A796        C      			call    kmb                 ; einen record ruecksetzen
+  A793    20 A6          C      			jr      nz,fehler           ; -> fehler: beim record ruecksetzen
+  A795    C9             C      			ret
                          C      ;
-  A796    DD 77 04       C      kmb::	ld	(ix+eakom),a	; (kom) := a
-  A799    C5             C      	push	bc
-  A79A    D5             C      	push	de
-  A79B    E5             C      	push	hl
-  A79C    AF             C      	xor	a
-  A79D    32 A7BF        C      	ld	(kmwart),a
-  A7A0    CD 964D        C      	call	skmb
-  A7A3    CD 4040        C      	call	kmbrob
-  A7A6    3A A7BF        C      kmb01:	ld	a,(kmwart)
-  A7A9    B7             C      	or	a
-  A7AA    28 FA          C      	jr	z,kmb01
-  A7AC    CD 9653        C      	call	rkmb
+  A796    DD 77 04       C      kmb::       ld      (ix+eakom),a        ; (kom) := a
+  A799    C5             C      			push    bc
+  A79A    D5             C      			push    de
+  A79B    E5             C      			push    hl
+  A79C    AF             C      			xor     a
+  A79D    32 A7BF        C      			ld      (kmwart),a
+  A7A0    CD 964D        C      			call    skmb
+  A7A3    CD 4040        C      			call    kmbrob
+  A7A6    3A A7BF        C      kmb01:      ld      a,(kmwart)
+  A7A9    B7             C      			or      a
+  A7AA    28 FA          C      			jr      z,kmb01
+  A7AC    CD 9653        C      			call    rkmb
                          C      ;
-  A7AF    E1             C      kmb02:	pop	hl
-  A7B0    D1             C      	pop	de
-  A7B1    C1             C      	pop	bc
-  A7B2    DD CB 00 7E    C      	bit	7,(ix+eastat)
-  A7B6    C9             C      	ret
+  A7AF    E1             C      kmb02:      pop     hl
+  A7B0    D1             C      			pop     de
+  A7B1    C1             C      			pop     bc
+  A7B2    DD CB 00 7E    C      			bit     7,(ix+eastat)
+  A7B6    C9             C      			ret
                          C      ;
-  A7B7    F5             C      kmbep:	push	af
-  A7B8    3E 01          C      	ld	a,1
-  A7BA    32 A7BF        C      	ld	(kmwart),a
-  A7BD    F1             C      	pop	af
-  A7BE    C9             C      	ret
+  A7B7    F5             C      kmbep:      push    af
+  A7B8    3E 01          C      			ld      a,1
+  A7BA    32 A7BF        C      			ld      (kmwart),a
+  A7BD    F1             C      			pop     af
+  A7BE    C9             C      			ret
                          C      ;
                          C      ;
                          C      ;
-  A7BF    00             C      kmwart::defb	0		; 0 - kmb arbeitet noch; 1 - kmb fertig
-  A7C0    0000           C      was::	defw	0
-  A7C2    00             C      errcou::defb	0		; zaehler fuer fehlversuche
-  A7C3    0000           C      arb::	defw	0
-  A7C5    00             C      richtu::defb	0		; 0 - es wurde vorwaerts   gelesen
+  A7BF    00             C      kmwart::    defb    0                   ; 0 - kmb arbeitet noch; 1 - kmb fertig
+  A7C0    0000           C      was::       defw    0
+  A7C2    00             C      errcou::    defb    0                   ; zaehler fuer fehlversuche
+  A7C3    0000           C      arb::       defw    0
 's  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-56
 
 
-                         C      				; 1 - es wurde rueckwaerts gelesen
+  A7C5    00             C      richtu::    defb    0                   ; 0 - es wurde vorwaerts   gelesen
+                         C                                              ; 1 - es wurde rueckwaerts gelesen
                          C      ;
                          C      ;
                          C      ;
@@ -3695,139 +3721,139 @@
                                  endif
                                 
                          C      			include BK.MAC
-  0001                   C      wrdir	equ	1		; write to directory
-  0002                   C      wrual	equ	2		; write to unallocated
+  0001                   C      wrdir       equ     1                   ; write to directory
+  0002                   C      wrual       equ     2                   ; write to unallocated
                          C      ;********************************
                          C      ;
                          C      ;   eintritt deblocking
                          C      ;      ix zeigt auf parametertab.
                          C      ;
                          C      ;********************************
-  A7C6    3E 01          C      deblck:	ld	a,1
-  A7C8    32 F928        C      	ld	(readop),a	; read operation
-  A7CB    3E 02          C      	ld	a,wrual
-  A7CD    32 F92A        C      	ld	(wrtype),a	; treat as unalloc
-  A7D0    18 5F          C      	jr	alloc
+  A7C6    3E 01          C      deblck:     ld      a,1
+  A7C8    32 F928        C      			ld      (readop),a          ; read operation
+  A7CB    3E 02          C      			ld      a,wrual
+  A7CD    32 F92A        C      			ld      (wrtype),a          ; treat as unalloc
+  A7D0    18 5F          C      			jr      alloc
                          C      ;********************************
                          C      ;
                          C      ;   eintritt blocking
                          C      ;      ix zeigt auf parametertab.
                          C      ;
                          C      ;********************************
-  A7D2    AF             C      block:	xor	a
-  A7D3    32 F928        C      	ld	(readop),a	; write operation
-  A7D6    79             C      	ld	a,c
-  A7D7    32 F92A        C      	ld	(wrtype),a	; writetype
-  A7DA    FE 02          C      	cp	wrual
-  A7DC    20 18          C      	jr	nz,chkuna
-                         C      ;;;;	ld	a,(sec)		; write to unallocated
-                         C      ;;;;	dec	a
-                         C      ;;;;	ld	c,a
-  A7DE    DD 7E 22       C      	ld	a,(ix+blklog)
-                         C      ;;;;	push	af
-                         C      ;;;;	dec	a
-                         C      ;;;;	and	c
-                         C      ;;;;	ld	c,a
-                         C      ;;;;	pop	af
-                         C      ;;;;	sub	c
-  A7E1    DD 77 19       C      	ld	(ix+unacnt),a
-  A7E4    3A F923        C      	ld	a,(trk)
-  A7E7    DD 77 1A       C      	ld	(ix+unatrk),a
-  A7EA    3A F924        C      	ld	a,(trk+1)
-  A7ED    DD 77 1B       C      	ld	(ix+unatrk+1),a
-  A7F0    3A F925        C      	ld	a,(sec)
-  A7F3    DD 77 1C       C      	ld	(ix+unasec),a
-  A7F6    DD 7E 19       C      chkuna:	ld	a,(ix+unacnt)	; any unallocated remain?
-  A7F9    B7             C      	or	a
-  A7FA    28 35          C      	jr	z,alloc		; -> no
-  A7FC    DD 35 19       C      	dec	(ix+unacnt)	; unallocated records remain
-  A7FF    3A F923        C      	ld	a,(trk)
-  A802    DD BE 1A       C      	cp	(ix+unatrk)
-  A805    20 2A          C      	jr	nz,alloc	; -> not the same track
-  A807    3A F924        C      	ld	a,(trk+1)
-  A80A    DD BE 1B       C      	cp	(ix+unatrk+1)
-  A80D    20 22          C      	jr	nz,alloc	; -> not the same track
-  A80F    3A F925        C      	ld	a,(sec)
-  A812    DD BE 1C       C      	cp	(ix+unasec)
-  A815    20 1A          C      	jr	nz,alloc	; -> not the same sector
-  A817    DD 34 1C       C      	inc	(ix+unasec)	; match, incr. for future
-  A81A    DD BE 23       C      	cp	(ix+cpmspt)	; in SYS4 sind sek. von 1 bis cpmspt nummeriert
-  A81D    38 0C          C      	jr	c,noovf
-  A81F    DD 36 1C 01    C      	ld	(ix+unasec),1	; track overflow
-  A823    DD 34 1A       C      	inc	(ix+unatrk)
-  A826    20 03          C      	jr	nz,noovf
+  A7D2    AF             C      block:      xor     a
+  A7D3    32 F928        C      			ld      (readop),a          ; write operation
+  A7D6    79             C      			ld      a,c
+  A7D7    32 F92A        C      			ld      (wrtype),a          ; writetype
+  A7DA    FE 02          C      			cp      wrual
+  A7DC    20 18          C      			jr      nz,chkuna
+                         C      ;;;;	    ld      a,(sec)             ; write to unallocated
+                         C      ;;;;        dec     a
+                         C      ;;;;        ld      c,a
+  A7DE    DD 7E 22       C      			ld      a,(ix+blklog)
+                         C      ;;;;        push    af
+                         C      ;;;;        dec     a
+                         C      ;;;;        and     c
+                         C      ;;;;        ld      c,a
+                         C      ;;;;        pop     af
+                         C      ;;;;        sub     c
+  A7E1    DD 77 19       C      			ld      (ix+unacnt),a
+  A7E4    3A F923        C      			ld      a,(trk)
+  A7E7    DD 77 1A       C      			ld      (ix+unatrk),a
+  A7EA    3A F924        C      			ld      a,(trk+1)
+  A7ED    DD 77 1B       C      			ld      (ix+unatrk+1),a
+  A7F0    3A F925        C      			ld      a,(sec)
+  A7F3    DD 77 1C       C      			ld      (ix+unasec),a
+  A7F6    DD 7E 19       C      chkuna:     ld      a,(ix+unacnt)       ; any unallocated remain?
+  A7F9    B7             C      			or      a
+  A7FA    28 35          C      			jr      z,alloc             ; -> no
+  A7FC    DD 35 19       C      			dec     (ix+unacnt)         ; unallocated records remain
+  A7FF    3A F923        C      			ld      a,(trk)
+  A802    DD BE 1A       C      			cp      (ix+unatrk)
+  A805    20 2A          C      			jr      nz,alloc            ; -> not the same track
+  A807    3A F924        C      			ld      a,(trk+1)
+  A80A    DD BE 1B       C      			cp      (ix+unatrk+1)
+  A80D    20 22          C      			jr      nz,alloc            ; -> not the same track
+  A80F    3A F925        C      			ld      a,(sec)
+  A812    DD BE 1C       C      			cp      (ix+unasec)
+  A815    20 1A          C      			jr      nz,alloc            ; -> not the same sector
+  A817    DD 34 1C       C      			inc     (ix+unasec)         ; match, incr. for future
+  A81A    DD BE 23       C      			cp      (ix+cpmspt)         ; in SYS4 sind sek. von 1 bis cpmspt nummeriert
+  A81D    38 0C          C      			jr      c,noovf
+  A81F    DD 36 1C 01    C      			ld      (ix+unasec),1       ; track overflow
+  A823    DD 34 1A       C      			inc     (ix+unatrk)
 's  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-57
 
 
-  A828    DD 34 1B       C      	inc	(ix+unatrk+1)
-  A82B    AF             C      noovf:	xor	a		; match found, mark as unnecessary read
-  A82C    32 F929        C      	ld	(rsflag),a
-  A82F    18 09          C      	jr	rwoper
+  A826    20 03          C      			jr      nz,noovf
+  A828    DD 34 1B       C      			inc     (ix+unatrk+1)
+  A82B    AF             C      noovf:      xor     a                   ; match found, mark as unnecessary read
+  A82C    32 F929        C      			ld      (rsflag),a
+  A82F    18 09          C      			jr      rwoper
                          C      ;
-  A831    DD 36 19 00    C      alloc:	ld	(ix+unacnt),0
-  A835    3E 01          C      	ld	a,1
-  A837    32 F929        C      	ld	(rsflag),a	; mark as must preread
-  A83A    AF             C      rwoper:	xor	a
-  A83B    32 F92B        C      	ld	(erflag),a	; no errors (yet)
-  A83E    DD 7E 24       C      	ld	a,(ix+secshf)
-  A841    47             C      	ld	b,a
-  A842    3A F925        C      	ld	a,(sec)
-  A845    3D             C      	dec	a
-  A846    CB 3F          C      rwop01:	srl	a
-  A848    10 FC          C      	djnz	rwop01
-  A84A    32 F92D        C      	ld	(sechst),a
-  A84D    DD 7E 17       C      	ld	a,(ix+hstact)	; host buffer active?
-  A850    DD 36 17 01    C      	ld	(ix+hstact),1
-  A854    B7             C      	or	a
-  A855    28 1F          C      	jr	z,filhst	; -> no
-  A857    3A F923        C      	ld	a,(trk)		; propper sector in buffer?
-  A85A    DD BE 14       C      	cp	(ix+hsttrk)
-  A85D    20 10          C      	jr	nz,nomatch
-  A85F    3A F924        C      	ld	a,(trk+1)
-  A862    DD BE 15       C      	cp	(ix+hsttrk+1)
-  A865    20 08          C      	jr	nz,nomatch
-  A867    3A F92D        C      	ld	a,(sechst)
-  A86A    DD BE 16       C      	cp	(ix+hstsec)
-  A86D    28 24          C      	jr	z,match
-  A86F    DD 7E 18       C      nomatch:ld	a,(ix+hstwrt)	; host written?
-  A872    B7             C      	or	a
-  A873    C4 A8D4        C      	call	nz,writehst	; yes, write host buffer
-  A876    3A F92D        C      filhst:	ld	a,(sechst)
-  A879    DD 77 16       C      	ld	(ix+hstsec),a
-  A87C    3A F923        C      	ld	a,(trk)
-  A87F    DD 77 14       C      	ld	(ix+hsttrk),a
-  A882    3A F924        C      	ld	a,(trk+1)
-  A885    DD 77 15       C      	ld	(ix+hsttrk+1),a
-  A888    DD 36 18 00    C      	ld	(ix+hstwrt),0	; no pending write
-  A88C    3A F929        C      	ld	a,(rsflag)
-  A88F    B7             C      	or	a
-  A890    C4 A8E1        C      	call	nz,readhst	; read host buffer
-  A893    3A F925        C      match:	ld	a,(sec)
-  A896    3D             C      	dec	a
-  A897    DD A6 25       C      	and	(ix+secmsk)
-  A89A    6F             C      	ld	l,a
-  A89B    26 00          C      	ld	h,0
-                         C      	rept	7
-                         C      	add	hl,hl
-                         C      	endm
-  A89D    29             C+     	add	hl,hl
-  A89E    29             C+     	add	hl,hl
-  A89F    29             C+     	add	hl,hl
-  A8A0    29             C+     	add	hl,hl
-  A8A1    29             C+     	add	hl,hl
-  A8A2    29             C+     	add	hl,hl
-  A8A3    29             C+     	add	hl,hl
-  A8A4    DD 5E 12       C      	ld	e,(ix+hstbuf)
-  A8A7    DD 56 13       C      	ld	d,(ix+hstbuf+1)
-  A8AA    19             C      	add	hl,de
-  A8AB    11 F9C1        C      	ld	de,dmma
-  A8AE    01 0080        C      	ld	bc,128
-  A8B1    3A F928        C      	ld	a,(readop)	; which way?
-  A8B4    B7             C      	or	a
-  A8B5    20 05          C      	jr	nz,wmove	; -> read
-  A8B7    DD 36 18 01    C      	ld	(ix+hstwrt),1	; host buffer written
-  A8BB    EB             C      	ex	de,hl
-  A8BC    ED B0          C      wmove:	ldir
+  A831    DD 36 19 00    C      alloc:      ld      (ix+unacnt),0
+  A835    3E 01          C      			ld      a,1
+  A837    32 F929        C      			ld      (rsflag),a          ; mark as must preread
+  A83A    AF             C      rwoper:     xor     a
+  A83B    32 F92B        C      			ld      (erflag),a          ; no errors (yet)
+  A83E    DD 7E 24       C      			ld      a,(ix+secshf)
+  A841    47             C      			ld      b,a
+  A842    3A F925        C      			ld      a,(sec)
+  A845    3D             C      			dec     a
+  A846    CB 3F          C      rwop01:     srl     a
+  A848    10 FC          C      			djnz	rwop01
+  A84A    32 F92D        C      			ld      (sechst),a
+  A84D    DD 7E 17       C      			ld      a,(ix+hstact)       ; host buffer active?
+  A850    DD 36 17 01    C      			ld      (ix+hstact),1
+  A854    B7             C      			or      a
+  A855    28 1F          C      			jr      z,filhst            ; -> no
+  A857    3A F923        C      			ld      a,(trk)             ; propper sector in buffer?
+  A85A    DD BE 14       C      			cp      (ix+hsttrk)
+  A85D    20 10          C      			jr      nz,nomatch
+  A85F    3A F924        C      			ld      a,(trk+1)
+  A862    DD BE 15       C      			cp      (ix+hsttrk+1)
+  A865    20 08          C      			jr      nz,nomatch
+  A867    3A F92D        C      			ld      a,(sechst)
+  A86A    DD BE 16       C      			cp      (ix+hstsec)
+  A86D    28 24          C      			jr      z,match
+  A86F    DD 7E 18       C      nomatch:    ld      a,(ix+hstwrt)       ; host written?
+  A872    B7             C      			or      a
+  A873    C4 A8D4        C      			call    nz,writehst         ; yes, write host buffer
+  A876    3A F92D        C      filhst:     ld      a,(sechst)
+  A879    DD 77 16       C      			ld      (ix+hstsec),a
+  A87C    3A F923        C      			ld      a,(trk)
+  A87F    DD 77 14       C      			ld      (ix+hsttrk),a
+  A882    3A F924        C      			ld      a,(trk+1)
+  A885    DD 77 15       C      			ld      (ix+hsttrk+1),a
+  A888    DD 36 18 00    C      			ld      (ix+hstwrt),0       ; no pending write
+  A88C    3A F929        C      			ld      a,(rsflag)
+  A88F    B7             C      			or      a
+  A890    C4 A8E1        C      			call    nz,readhst          ; read host buffer
+  A893    3A F925        C      match:      ld      a,(sec)
+  A896    3D             C      			dec     a
+  A897    DD A6 25       C      			and     (ix+secmsk)
+  A89A    6F             C      			ld      l,a
+  A89B    26 00          C      			ld      h,0
+                         C      			rept    7
+                         C      			add     hl,hl
+                         C      			endm
+  A89D    29             C+     			add     hl,hl
+  A89E    29             C+     			add     hl,hl
+  A89F    29             C+     			add     hl,hl
+  A8A0    29             C+     			add     hl,hl
+  A8A1    29             C+     			add     hl,hl
+  A8A2    29             C+     			add     hl,hl
+  A8A3    29             C+     			add     hl,hl
+  A8A4    DD 5E 12       C      			ld      e,(ix+hstbuf)
+  A8A7    DD 56 13       C      			ld      d,(ix+hstbuf+1)
+  A8AA    19             C      			add     hl,de
+  A8AB    11 F9C1        C      			ld      de,dmma
+  A8AE    01 0080        C      			ld      bc,128
+  A8B1    3A F928        C      			ld      a,(readop)          ; which way?
+  A8B4    B7             C      			or      a
+  A8B5    20 05          C      			jr      nz,wmove            ; -> read
+  A8B7    DD 36 18 01    C      			ld      (ix+hstwrt),1       ; host buffer written
+  A8BB    EB             C      			ex      de,hl
+  A8BC    ED B0          C      wmove:      ldir
                          C      		;ld a,(hl) uebertragen nach hostbuffer auf cpu-karte
                          C      		;ld	(de),a
                          C      		;inc	hl
@@ -3840,43 +3866,43 @@
                          C      		;res12
                          C      		;ld	(de),a
                          C      		;inc	hl
-                         C      		;inc	de
 's  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-58
 
 
+                         C      		;inc	de
                          C      		;djnz	rmove
-  A8BE    3A F92A        C      retmov:	ld	a,(wrtype)	; write type to directory?
-  A8C1    FE 01          C      	cp	wrdir
-  A8C3    3A F92B        C      	ld	a,(erflag)
-  A8C6    C0             C      	ret	nz		; -> no
-  A8C7    B7             C      	or	a		; errors?
-  A8C8    C0             C      	ret	nz		; -> yes
-  A8C9    CD A8D4        C      	call	writehst
-  A8CC    DD 36 18 00    C      	ld	(ix+hstwrt),0
-  A8D0    3A F92B        C      	ld	a,(erflag)
-  A8D3    C9             C      	ret
+  A8BE    3A F92A        C      retmov:     ld      a,(wrtype)          ; write type to directory?
+  A8C1    FE 01          C      			cp      wrdir
+  A8C3    3A F92B        C      			ld      a,(erflag)
+  A8C6    C0             C      			ret     nz                  ; -> no
+  A8C7    B7             C      			or      a                   ; errors?
+  A8C8    C0             C      			ret     nz                  ; -> yes
+  A8C9    CD A8D4        C      			call    writehst
+  A8CC    DD 36 18 00    C      			ld      (ix+hstwrt),0
+  A8D0    3A F92B        C      			ld      a,(erflag)
+  A8D3    C9             C      			ret
                          C      
                          C      ;	up's fuer host read/write
                          C      ;	-------------------------
                          C      ;
   A8D4                   C      writehst:
-  A8D4    3E 04          C      	ld	a,erranz	; erranz fehlversuche
-  A8D6    32 F92C        C      	ld	(rderr),a
-  A8D9    DD 6E 20       C      	ld	l,(ix+hwr)
-  A8DC    DD 66 21       C      	ld	h,(ix+hwr+1)
-  A8DF    18 0B          C      	jr	rdh01
+  A8D4    3E 04          C      			ld      a,erranz            ; erranz fehlversuche
+  A8D6    32 F92C        C      			ld      (rderr),a
+  A8D9    DD 6E 20       C      			ld      l,(ix+hwr)
+  A8DC    DD 66 21       C      			ld      h,(ix+hwr+1)
+  A8DF    18 0B          C      			jr      rdh01
                          C      ;
   A8E1                   C      readhst:
-  A8E1    3E 04          C      	ld	a,erranz	; erranz fehlversuche
-  A8E3    32 F92C        C      	ld	(rderr),a
-  A8E6    DD 6E 1E       C      	ld	l,(ix+hrd)
-  A8E9    DD 66 1F       C      	ld	h,(ix+hrd+1)
-  A8EC    CD A3FE        C      rdh01:	call	callhl
-  A8EF    3E 00          C      	ld	a,0
-  A8F1    28 01          C      	jr	z,rdh02
-  A8F3    3C             C      	inc	a
-  A8F4    32 F92B        C      rdh02:	ld	(erflag),a
-  A8F7    C9             C      	ret
+  A8E1    3E 04          C      			ld      a,erranz            ; erranz fehlversuche
+  A8E3    32 F92C        C      			ld      (rderr),a
+  A8E6    DD 6E 1E       C      			ld      l,(ix+hrd)
+  A8E9    DD 66 1F       C      			ld      h,(ix+hrd+1)
+  A8EC    CD A3FE        C      rdh01:      call    callhl
+  A8EF    3E 00          C      			ld      a,0
+  A8F1    28 01          C      			jr      z,rdh02
+  A8F3    3C             C      			inc     a
+  A8F4    32 F92B        C      rdh02:      ld      (erflag),a
+  A8F7    C9             C      			ret
                          C      ;
                                 ;
                                 ;
@@ -3937,7 +3963,7 @@
                                 ;	jp	abios
   A91A                          biosxx::
                                 			.dephase
-  1384*                         sbios2::
+  13B1*                         sbios2::
                                 ; \---  Ende : sBIOS -----------------------------------------------------------------------------/
                                 			title   'opsmac'
                                 			page
@@ -3948,11 +3974,11 @@
                                 ; /---  Start: opsmac ----------------------------------------------------------------------------\
                                 ;
                                 ;
-  1384*                         op11::
+  13B1*                         op11::
                                 			.phase	00c00h
                                 			opsmac
                                 			.dephase
-  1384*                         op12::
+  13B1*                         op12::
                                 ;
                                 ;
                                 ;
@@ -3967,7 +3993,7 @@
                                 ;	B I O S   -   Sprungverteiler
                                 ;	=============================
                                 ;
-  1384*                         abios1::
+  13B1*                         abios1::
                                             .phase  abios               ;F400H
                                 ;
   F400    C3 F500                           jp      br00                ;boot
@@ -4142,25 +4168,25 @@
   F5D7    C9                                ret
                                 ;
   F5D8    60                    sectr1:     ld      h,b
-  F5D9    69                    			ld      l,c
-  F5DA    23                    			inc     hl
-  F5DB    C9                    			ret
+  F5D9    69                                ld      l,c
+  F5DA    23                                inc     hl
+  F5DB    C9                                ret
                                 ;
   F5DC    CD F5FE               ukmb::      call    um1
-  F5DF    C3 A8F8               			jp      kmbuse
+  F5DF    C3 A8F8                           jp      kmbuse
                                 ;
   F5E2    CD F5FE               uend::      call    um1
-  F5E5    C3 A8FE               			jp      enduse
+  F5E5    C3 A8FE                           jp      enduse
                                 ;
   F5E8    CD F5FE               ugetp::     call    um1
-  F5EB    C3 A904               			jp      getpuf
+  F5EB    C3 A904                           jp      getpuf
                                 ;
   F5EE    CD F621               getpf1:     call    um2
-  F5F1    21 FA41               			ld      hl,kmbpuf
-  F5F4    01 0100               			ld      bc,256
-  F5F7    ED B0                 			ldir
+  F5F1    21 FA41                           ld      hl,kmbpuf
+  F5F4    01 0100                           ld      bc,256
+  F5F7    ED B0                             ldir
   F5F9    ED 7B FCC1            getpf2:     ld      sp,(s1ret)
-  F5FD    C9                    			ret
+  F5FD    C9                                ret
                                 ;
                                 ;
                                 ;
@@ -4499,7 +4525,7 @@
 
 
                          C      
-  F748                   C      ixtab::     defs    32
+  F748                   C      ixtab::     defs    32,0
                          C      ;
   F768    F646           C      ixtab1::    defw    eataba              ; tabelle der ix-adresse
                          C      
@@ -4835,74 +4861,74 @@
                          C      ;
                          C      ;
                          C      ;
-  F836                   C      allm::      defs    7                   ; reicht fuer  56k
-  F83D                   C      chkm::      defs    0
+  F836                   C      allm::      defs    7,0                 ; reicht fuer  56k
+  F83D                   C      chkm::      defs    0,0
                          C      
                          C      
-  F83D                   C      allc1::     defs    22                  ; reicht fuer 176k
-  F853                   C      chkc1::     defs    16
+  F83D                   C      allc1::     defs    22,0                ; reicht fuer 176k
+  F853                   C      chkc1::     defs    16,0
                          C      
-  F863                   C      allc2::     defs    22                  ; reicht fuer 176k
-  F879                   C      chkc2::     defs    16
+  F863                   C      allc2::     defs    22,0                ; reicht fuer 176k
+  F879                   C      chkc2::     defs    16,0
                          C      
                          C      
                          C      if          anzakb gt 1
-  F889                   C      allc3::     defs    22                  ; reicht fuer 176k
-  F89F                   C      chkc3::     defs    16
+  F889                   C      allc3::     defs    22,0                ; reicht fuer 176k
+  F89F                   C      chkc3::     defs    16,0
                          C      
-  F8AF                   C      allc4::     defs    22                  ; reicht fuer 176k
-  F8C5                   C      chkc4::     defs    16
+  F8AF                   C      allc4::     defs    22,0                ; reicht fuer 176k
+  F8C5                   C      chkc4::     defs    16,0
                          C      endif
                          C      
                          C      
                          C      if          anzakb gt 2
-  F8D5                   C      allc5::     defs    22                  ; reicht fuer 176k
-  F8EB                   C      chkc5::     defs    16
+  F8D5                   C      allc5::     defs    22,0                ; reicht fuer 176k
+  F8EB                   C      chkc5::     defs    16,0
                          C      
-  F8FB                   C      allc6::     defs    22                  ; reicht fuer 176k
-  F911                   C      chkc6::     defs    16
+  F8FB                   C      allc6::     defs    22,0                ; reicht fuer 176k
+  F911                   C      chkc6::     defs    16,0
                          C      endif
                          C      
                          C      
                          C      if mindk
-                         C      allm1::     defs    22
-                         C      chkm1::     defs    16
+                         C      allm1::     defs    22,0
+                         C      chkm1::     defs    16,0
                          C      
-                         C      allm2::     defs    22
-                         C      chkm2::	    defs    16
+                         C      allm2::     defs    22,0
+                         C      chkm2::	    defs    16,0
                          C      
-                         C      allm3::     defs    22
-                         C      chkm3::     defs    16
+                         C      allm3::     defs    22,0
+                         C      chkm3::     defs    16,0
                          C      
-                         C      allm4::     defs    22
-                         C      chkm4::     defs    16
+                         C      allm4::     defs    22,0
+                         C      chkm4::     defs    16,0
                          C      endif
                          C      
                          C      
                          C      if          stadk
-                         C      alls1::     defs    22
-                         C      chks1::     defs    16
+                         C      alls1::     defs    22,0
+                         C      chks1::     defs    16,0
                          C      
-                         C      alls2::     defs    22
-                         C      chks2::     defs    16
+                         C      alls2::     defs    22,0
+                         C      chks2::     defs    16,0
                          C      endif
                          C      
                          C      
                          C      if          zst
-                         C      alln::      defs    129                 ; reicht fuer 1M
-                         C      chkn::      defs    32                  ; reicht fuer 128 dir_entries
+                         C      alln::      defs    129,0               ; reicht fuer 1M
+                         C      chkn::      defs    32,0                ; reicht fuer 128 dir_entries
                          C      endif
                          C      
                          C      
                          C      if          tramdk
-                         C      allo::      defs    32                  ; reicht fuer 256k
-                         C      chko::      defs    0
+                         C      allo::      defs    32,0                ; reicht fuer 256k
+                         C      chko::      defs    0,0
                          C      endif
                          C      
                          C      
                          C      if          opsdk
-                         C      allp::      defs    32                  ; reicht fuer 256k
-                         C      chkp::      defs    0
+                         C      allp::      defs    32,0                ; reicht fuer 256k
+                         C      chkp::      defs    0,0
                          C      endif
                          C      
                          C      
@@ -4966,7 +4992,7 @@
                                 ;
                                 ;
                                             .dephase
-  18C5*                         abios2::
+  18F2*                         abios2::
                                 ; \---  Ende : aBIOS -----------------------------------------------------------------------------/
                                             page
 'a  B I O S'	MACRO-80 3.44	09-Dec-81	PAGE	1-76
@@ -4976,7 +5002,7 @@
                                 ;
                                 ;
                                 ; /---  Ende : aBIOS -----------------------------------------------------------------------------\
-  18C5*                         gosys2::
+  18F2*                         gosys2::
                                             .phase  gosys0
                                             gosys1
   8000    C5              +                 push	bc
@@ -4992,7 +5018,7 @@
   8011    03              +                 DB      003H                ;GoSys1
   8012    FF              +                 DB      0FFH                ;Endbyte
                                             .dephase
-  18D8*                         gosys3::
+  1905*                         gosys3::
                                 ; \---  Ende : aBIOS -----------------------------------------------------------------------------/
                                 
                                 ; ===  Ende : 0000H nach LOAD =====================================================================
@@ -5009,14 +5035,14 @@ DIRG            GOSYS           GOSYS1          MBOOTM          OPSMAC
 S1COM           SYSTA           TA              UM              
 
 Symbols:
-F400 	ABIOS           1384I*	ABIOS1          18C5I*	ABIOS2          
+F400 	ABIOS           13B1I*	ABIOS1          18F2I*	ABIOS2          
 0C00 	ABIOSL          F83DI 	ALLC1           F863I 	ALLC2           
 F889I 	ALLC3           F8AFI 	ALLC4           F8D5I 	ALLC5           
 F8FBI 	ALLC6           F836I 	ALLM            A831 	ALLOC           
 0003 	ANZAKB          A7C3I 	ARB             0008 	ATR             
 A91AI 	BIOSXX          0022 	BLKLOG          A7D2 	BLOCK           
-9760I 	BOOT            973BI 	BOOT00          9791 	BOOT03          
-97A2 	BOOT05          9A2F 	BOOTME          99CC 	BOOTMS          
+9760I 	BOOT            973BI 	BOOT00          978E 	BOOT03          
+979F 	BOOT05          9A2F 	BOOTME          99CC 	BOOTMS          
 F500I 	BR00            F506I 	BR03            F50CI 	BR06            
 F512I 	BR09            F518I 	BR0C            F51EI 	BR0F            
 F524I 	BR12            F52AI 	BR15            F530I 	BR18            
@@ -5072,147 +5098,148 @@ D800 	DIR2            E000 	DIR3            E800 	DIR4
 F000 	DIR5            F800 	DIR6            A51D 	DIRADR          
 F941 	DIRBF           9870 	DIRDEL          9942 	DIRG11          
 99CC 	DIRG12          98EC 	DIRGO           9931 	DIRGO1          
-98F8 	DIRS1           9909 	DIRS11          9931 	DIRS12          
-F921I 	DMA             F9C1 	DMMA            4029 	DOUT            
-F827I 	DPBLKC          F818I 	DPBLKM          F7F8I 	DPHA            
-F788I 	DPHAD           F7FAI 	DPHB            F7FCI 	DPHC            
-F798I 	DPHC1           F7A8I 	DPHC2           F7B8I 	DPHC3           
-F7C8I 	DPHC4           F7D8I 	DPHC5           F7E8I 	DPHC6           
-F7FEI 	DPHD            F800I 	DPHE            F802I 	DPHF            
-F804I 	DPHG            F806I 	DPHH            F808I 	DPHI            
-F80AI 	DPHJ            F80CI 	DPHK            F80EI 	DPHL            
-F810I 	DPHM            F812I 	DPHN            F814I 	DPHO            
-F816I 	DPHP            0000 	DR54            0007 	EAADR           
-000A 	EABM            000D 	EADPUF          0F70 	EADR            
-000F 	EADZEI          0005 	EAEP            0001 	EAFEHL          
-0004 	EAKOM           0FA0 	EALBL           0F80 	EALBS           
+98F8 	DIRGOE          98F8 	DIRS1           9909 	DIRS11          
+9931 	DIRS12          F921I 	DMA             F9C1 	DMMA            
+4029 	DOUT            F827I 	DPBLKC          F818I 	DPBLKM          
+F7F8I 	DPHA            F788I 	DPHAD           F7FAI 	DPHB            
+F7FCI 	DPHC            F798I 	DPHC1           F7A8I 	DPHC2           
+F7B8I 	DPHC3           F7C8I 	DPHC4           F7D8I 	DPHC5           
+F7E8I 	DPHC6           F7FEI 	DPHD            F800I 	DPHE            
+F802I 	DPHF            F804I 	DPHG            F806I 	DPHH            
+F808I 	DPHI            F80AI 	DPHJ            F80CI 	DPHK            
+F80EI 	DPHL            F810I 	DPHM            F812I 	DPHN            
+F814I 	DPHO            F816I 	DPHP            0000 	DR54            
+0007 	EAADR           000A 	EABM            000D 	EADPUF          
+0F70 	EADR            000F 	EADZEI          0005 	EAEP            
+0001 	EAFEHL          0004 	EAKOM           0FA0 	EALBL           
 ''	MACRO-80 3.44	09-Dec-81	PAGE	S-1
 
 
-0009 	EALEN           0000 	EASTAT          F64BI 	EATAB1          
-F676I 	EATAB2          F6A1I 	EATAB3          F6CCI 	EATAB4          
-F6F7I 	EATAB5          F722I 	EATAB6          F646I 	EATABA          
-000C 	EAVERL          000B 	EAWIED          0010 	EAWOVO          
-A61B 	EDRUC           A618 	ENDRUC          A8FEI 	ENDUSE          
-A141 	EOL             A14B 	EOL1            A1AC 	EOS             
-008A 	EQ.BCU          00CE 	EQ.BSD          00FF 	EQ.CAP          
-008B 	EQ.DEG          0000 	EQ.GRA          00FE 	EQ.HEX          
-0088 	EQ.INI          0081 	EQ.LE1          0082 	EQ.LE2          
-008C 	EQ.LE3          008C 	EQ.LE4          008C 	EQ.LE5          
-008C 	EQ.LE6          00FD 	EQ.LR0          00FC 	EQ.LW           
-0089 	EQ.SCP          0087 	EQ.SIO          00CD 	EQ.SYS          
-F92BI 	ERFLAG          0004 	ERRANZ          A7C2I 	ERRCOU          
-001B 	ESC             A22C 	EVTROL          9C09 	EXCH            
-9C10 	EXCH1           9C1E 	EXCH2           0000 	FALSE           
-A75A 	FEHL00          A763 	FEHL01          A75C 	FEHL0A          
-A73B 	FEHLER          000C 	FF              A876 	FILHST          
-A65A 	FILPAR          0C00 	GDMA            001D 	GELADE          
-F5EE 	GETPF1          F5F9 	GETPF2          A904 	GETPUF          
-8000 	GOSYS0          18C5I*	GOSYS2          18D8I*	GOSYS3          
-F936I 	HLRET           F533I 	HOME            F557 	HOME1           
-001E 	HRD             A4DB 	HRDKMB          A431I 	HSADR           
-0017 	HSTACT          0012 	HSTBUF          0016 	HSTSEC          
-0014 	HSTTRK          0018 	HSTWRT          0020 	HWR             
-A486 	HWRKMB          A1C2 	INCAD           A153 	INSL            
-A16A 	INSL1           9A38 	IOBYT           9629 	IODIS1          
-962C 	IODIS2          9617I 	IODISP          0005 	ISBLK           
-0004 	IXRD            F748I 	IXTAB           F768I 	IXTAB1          
-0002 	IXWR            2800 	KASBU1          2900 	KASBU2          
-2A00 	KASBU3          2B00 	KASBU4          2C00 	KASBU5          
-2D00 	KASBU6          9C69 	KM.LE           9C7D 	KM.LE1          
-9C87 	KM.LE2          A796I 	KMB             A7A6 	KMB01           
-A7AF 	KMB02           A7B7 	KMBEP           4046 	KMBINI          
-FA41 	KMBPUF          4040 	KMBROB          4043 	KMBRUC          
-A8F8I 	KMBUSE          000C 	KMBVERS         A7BFI 	KMWART          
-A62E 	KONLEN          A638 	KONSENT         4030 	LBL             
-4033 	LBS             9638 	LDHLDP          A624 	LESEN           
-000A 	LF              9E9FI 	LIST            9EAF 	LIST0           
-9EB6 	LIST1           9EBD 	LIST2           9EC4 	LIST3           
-9E8CI 	LISTST          9EA3 	LISTX           A2EF 	LO.CH           
-A2D9I 	LO.RESET        9B25 	LR011           9B4F 	LR012           
-9B5C 	LR014           9B6B 	LR016           9B6C 	LR017           
-9B7E 	LRTXT           9E9B 	LSST0           9E9B 	LSST1           
-9E9B 	LSST2           9E9B 	LSST3           0043 	LWA             
-9A7E 	M001            9A81 	M002            9A88 	M003            
-9AB7 	M012            9ABB 	M013            9AC3 	M014            
-9AD2 	M015            9AD3 	M016            A40B 	M04             
-A416 	M041            9853 	M104            A893 	MATCH           
-0050 	MAXS            0018 	MAXZ            0000 	MINDK           
-9DBA 	MON1            9DF0 	MON2            9D84 	MON3            
-A86F 	NOMATCH         A82B 	NOOVF           A1BF 	NROLL           
-1384I*	OP11            1384I*	OP12            0000 	OPSDK           
-0000 	ORIG            9B78I 	P0              0004 	PDTA            
-0028 	PDTR            FFFF 	PIPEQ           0030 	PKMB            
-0038 	PKMB2           0058 	PKMB3           00A0 	PTAST           
-A38FI 	PU.CH           A3A2 	PU.CH1          A3B7 	PU.CH2          
-A3A1I 	PU1.CH          A3B6I 	PU2.CH          9F08I 	PUNCH           
-9F18 	PUNCH0          9F1F 	PUNCH1          9F26 	PUNCH2          
-9F2D 	PUNCH3          F932I 	QESC            0000 	QESC0           
-0001 	QESC1           0002 	QESC2           F930I 	QRMODE          
-F931I 	QROLL           F92CI 	RDERR           A8EC 	RDH01           
-A8F4 	RDH02           967CI 	RDIR            9695 	RDIR1           
-A4C6 	RDK01           A4E5 	RDK02           A4EE 	RDK03           
-A4F1 	RDK04           A4B0I 	RDKMB           A418I 	RDMEM           
-A422I 	RDMEM0          9EDA 	RDST0           9EDA 	RDST1           
-9EDA 	RDST2           9EDA 	RDST3           A3E3I 	READ            
-9EEE 	READ0           9EF4 	READ1           A3F9 	READ15          
-A3FB 	READ16          9EFC 	READ2           9F02 	READ3           
-9EE2 	READE1          9EDFI 	READER          A8E1 	READHST         
-F928I 	READOP          9ECE 	READS1          9ECBI 	READST          
-A264 	RESCUR          A26F 	RESCUR1         96AEI 	RESLA           
-96BB 	RESLA1          96D3I 	RESP0           96E0 	RESP1           
-9600I 	RETA            A8BE 	RETMOV          9608I 	RETU            
-9610I 	RETURN          A34BI 	RI.ATA          A36CI 	RI.ATB          
-A301I 	RI.CH           A321 	RI.CH1          A33D 	RI.CH2          
-A38D 	RI.CTCT         A384 	RI.SIOT         A313I 	RI1.CH          
-A32FI 	RI2.CH          A7C5I 	RICHTU          9653I 	RKMB            
-F929I 	RSFLAG          F586I 	RTN             A610 	RUCKSP          
-A846 	RWOP01          A83A 	RWOPER          98D9 	S1A             
-FFFF 	S1EQ            FC41 	S1NEU           FCC1 	S1RET           
-0C90 	S2NEU           0C90 	S2RET           FCC1 	S3NEU           
-FCC3 	S3RET           9600 	SBIOS           006AI*	SBIOS1          
+0F80 	EALBS           0009 	EALEN           0000 	EASTAT          
+F64BI 	EATAB1          F676I 	EATAB2          F6A1I 	EATAB3          
+F6CCI 	EATAB4          F6F7I 	EATAB5          F722I 	EATAB6          
+F646I 	EATABA          000C 	EAVERL          000B 	EAWIED          
+0010 	EAWOVO          A61B 	EDRUC           A618 	ENDRUC          
+A8FEI 	ENDUSE          A141 	EOL             A14B 	EOL1            
+A1AC 	EOS             008A 	EQ.BCU          00CE 	EQ.BSD          
+00FF 	EQ.CAP          008B 	EQ.DEG          0000 	EQ.GRA          
+00FE 	EQ.HEX          0088 	EQ.INI          0081 	EQ.LE1          
+0082 	EQ.LE2          008C 	EQ.LE3          008C 	EQ.LE4          
+008C 	EQ.LE5          008C 	EQ.LE6          00FD 	EQ.LR0          
+00FC 	EQ.LW           0089 	EQ.SCP          0087 	EQ.SIO          
+00CD 	EQ.SYS          F92BI 	ERFLAG          0004 	ERRANZ          
+A7C2I 	ERRCOU          001B 	ESC             A22C 	EVTROL          
+9C09 	EXCH            9C10 	EXCH1           9C1E 	EXCH2           
+0000 	FALSE           A75A 	FEHL00          A763 	FEHL01          
+A75C 	FEHL0A          A73B 	FEHLER          000C 	FF              
+A876 	FILHST          A65A 	FILPAR          0C00 	GDMA            
+001D 	GELADE          F5EE 	GETPF1          F5F9 	GETPF2          
+A904 	GETPUF          8000 	GOSYS0          18F2I*	GOSYS2          
+1905I*	GOSYS3          F936I 	HLRET           F533I 	HOME            
+F557 	HOME1           001E 	HRD             A4DB 	HRDKMB          
+A431I 	HSADR           0017 	HSTACT          0012 	HSTBUF          
+0016 	HSTSEC          0014 	HSTTRK          0018 	HSTWRT          
+0020 	HWR             A486 	HWRKMB          A1C2 	INCAD           
+A153 	INSL            A16A 	INSL1           9A38 	IOBYT           
+9629 	IODIS1          962C 	IODIS2          9617I 	IODISP          
+0005 	ISBLK           0004 	IXRD            F748I 	IXTAB           
+F768I 	IXTAB1          0002 	IXWR            2800 	KASBU1          
+2900 	KASBU2          2A00 	KASBU3          2B00 	KASBU4          
+2C00 	KASBU5          2D00 	KASBU6          9C69 	KM.LE           
+9C7D 	KM.LE1          9C87 	KM.LE2          A796I 	KMB             
+A7A6 	KMB01           A7AF 	KMB02           A7B7 	KMBEP           
+4046 	KMBINI          FA41 	KMBPUF          4040 	KMBROB          
+4043 	KMBRUC          A8F8I 	KMBUSE          000C 	KMBVERS         
+A7BFI 	KMWART          A62E 	KONLEN          A638 	KONSENT         
+4030 	LBL             4033 	LBS             9638 	LDHLDP          
+A624 	LESEN           000A 	LF              9E9FI 	LIST            
+9EAF 	LIST0           9EB6 	LIST1           9EBD 	LIST2           
+9EC4 	LIST3           9E8CI 	LISTST          9EA3 	LISTX           
+A2EF 	LO.CH           A2D9I 	LO.RESET        9B25 	LR011           
+9B4F 	LR012           9B5C 	LR014           9B6B 	LR016           
+9B6C 	LR017           9B7E 	LRTXT           9E9B 	LSST0           
+9E9B 	LSST1           9E9B 	LSST2           9E9B 	LSST3           
+0043 	LWA             9A7E 	M001            9A81 	M002            
+9A88 	M003            9AB7 	M012            9ABB 	M013            
+9AC3 	M014            9AD2 	M015            9AD3 	M016            
+A40B 	M04             A416 	M041            9853 	M104            
+A893 	MATCH           0050 	MAXS            0018 	MAXZ            
+0000 	MINDK           9DBA 	MON1            9DF0 	MON2            
+9D84 	MON3            A86F 	NOMATCH         A82B 	NOOVF           
+A1BF 	NROLL           13B1I*	OP11            13B1I*	OP12            
+0000 	OPSDK           0000 	ORIG            9B78I 	P0              
+0004 	PDTA            0028 	PDTR            FFFF 	PIPEQ           
+0030 	PKMB            0038 	PKMB2           0058 	PKMB3           
+00A0 	PTAST           A38FI 	PU.CH           A3A2 	PU.CH1          
+A3B7 	PU.CH2          A3A1I 	PU1.CH          A3B6I 	PU2.CH          
+9F08I 	PUNCH           9F18 	PUNCH0          9F1F 	PUNCH1          
+9F26 	PUNCH2          9F2D 	PUNCH3          F932I 	QESC            
+0000 	QESC0           0001 	QESC1           0002 	QESC2           
+F930I 	QRMODE          F931I 	QROLL           F92CI 	RDERR           
+A8EC 	RDH01           A8F4 	RDH02           967CI 	RDIR            
+9695 	RDIR1           A4C6 	RDK01           A4E5 	RDK02           
+A4EE 	RDK03           A4F1 	RDK04           A4B0I 	RDKMB           
+A418I 	RDMEM           A422I 	RDMEM0          9EDA 	RDST0           
+9EDA 	RDST1           9EDA 	RDST2           9EDA 	RDST3           
+A3E3I 	READ            9EEE 	READ0           9EF4 	READ1           
+A3F9 	READ15          A3FB 	READ16          9EFC 	READ2           
+9F02 	READ3           9EE2 	READE1          9EDFI 	READER          
+A8E1 	READHST         F928I 	READOP          9ECE 	READS1          
+9ECBI 	READST          A264 	RESCUR          A26F 	RESCUR1         
+96AEI 	RESLA           96BB 	RESLA1          96D3I 	RESP0           
+96E0 	RESP1           9600I 	RETA            A8BE 	RETMOV          
+9608I 	RETU            9610I 	RETURN          A34BI 	RI.ATA          
+A36CI 	RI.ATB          A301I 	RI.CH           A321 	RI.CH1          
+A33D 	RI.CH2          A38D 	RI.CTCT         A384 	RI.SIOT         
+A313I 	RI1.CH          A32FI 	RI2.CH          A7C5I 	RICHTU          
+9653I 	RKMB            F929I 	RSFLAG          F586I 	RTN             
+A610 	RUCKSP          A846 	RWOP01          A83A 	RWOPER          
+98D9 	S1A             FFFF 	S1EQ            FC41 	S1NEU           
+FCC1 	S1RET           0C90 	S2NEU           0C90 	S2RET           
+FCC1 	S3NEU           FCC3 	S3RET           9600 	SBIOS           
 ''	MACRO-80 3.44	09-Dec-81	PAGE	S-2
 
 
-1384I*	SBIOS2          6A00 	SBIOSL          00C0 	SBST            
-965AI 	SDIR            9676 	SDIR1           F925I 	SEC             
-F92DI 	SECHST          0025 	SECMSK          0024 	SECSHF          
-F5D8 	SECTR1          F5CEI 	SECTRN          F56FI 	SELDSK          
-9A2F 	SERIAL          A242 	SETCUR          A25D 	SETCUR1         
-A261 	SETCUR2         F58CI 	SETDMA          F55A 	SETIX           
-969BI 	SETLA           96A8 	SETLA1          96C1I 	SETP0           
-96CE 	SETP1           F587I 	SETSEC          F582I 	SETTRK          
-9D28 	SIOA            9D38 	SIOB            9D48 	SIOT1           
-F81DI 	SIZEM           964DI 	SKMB            A550 	SP21            
-A580 	SP25            A583 	SP26            A5AF 	SP301           
-A5BF 	SP31            A5E0 	SP32            A676 	SP40            
-A68B 	SP41            A6A6 	SP42            A6B2 	SP43            
-A6CC 	SP44            A6DE 	SP45            A6ED 	SP451           
-A703 	SP46            A708 	SP47            A71D 	SP48            
-0041 	SPALT           FBC1 	SPBER           A1B7 	SROLL           
-A1B9 	SROLL1          F939I 	SSCHR           0000 	STADK           
-0000*	START           0066*	START1          0000 	STR             
-F938I 	SVERZ           9A35 	SYSPA           F935I 	SYSTE           
-9F3BI 	TA1             9F44I 	TA2             9F66 	TA21            
-9F65 	TA22            9F63 	TA23            0009 	TAB             
-0000 	TALT            9F6FI 	TBEL            9F69I 	TFE             
-9F35I 	TINIT           9739I 	TRAM            0000 	TRAMDK          
-F923I 	TRK             FFFF 	TRUE            4003 	TTA1            
-4006 	TTA2            9738I 	TTANZ           4015 	TTBEL           
-400C 	TTFE            4000 	TTINIT          973AI 	TTRK            
-F5E2I 	UEND            F5E8I 	UGETP           F5DCI 	UKMB            
-F5FEI 	UM1             96E5 	UM11            970F 	UM12            
-F602 	UM1R1           F606 	UM1R2           F60D 	UM1R3           
-F61D 	UM1R4           F621I 	UM2             F635 	UM21            
-F639 	UM2E            9611I 	UM2EE           F63C 	UM2ER           
-9F34 	UMERK           F933I 	UMSCH           0019 	UNACNT          
-001C 	UNASEC          001A 	UNATRK          A7C0I 	WAS             
-97FDI 	WBOOT           A8BC 	WMOVE           A3DE 	WR15            
-A3E0 	WR16            0001 	WRDIR           A3CBI 	WRITE           
-A8D4 	WRITEHST        A479 	WRK01           A483 	WRK02           
-A453I 	WRKMB           A402I 	WRMEM           A3FFI 	WRMEM0          
-F92AI 	WRTYPE          0002 	WRUAL           0040 	ZEIL            
-9A8B 	ZGROS           9A89 	ZKLEIN          0000 	ZST             
+0097I*	SBIOS1          13B1I*	SBIOS2          6A00 	SBIOSL          
+00C0 	SBST            965AI 	SDIR            9676 	SDIR1           
+F925I 	SEC             F92DI 	SECHST          0025 	SECMSK          
+0024 	SECSHF          F5D8 	SECTR1          F5CEI 	SECTRN          
+F56FI 	SELDSK          9A2F 	SERIAL          A242 	SETCUR          
+A25D 	SETCUR1         A261 	SETCUR2         F58CI 	SETDMA          
+F55A 	SETIX           969BI 	SETLA           96A8 	SETLA1          
+96C1I 	SETP0           96CE 	SETP1           F587I 	SETSEC          
+F582I 	SETTRK          9D28 	SIOA            9D38 	SIOB            
+9D48 	SIOT1           F81DI 	SIZEM           964DI 	SKMB            
+A550 	SP21            A580 	SP25            A583 	SP26            
+A5AF 	SP301           A5BF 	SP31            A5E0 	SP32            
+A676 	SP40            A68B 	SP41            A6A6 	SP42            
+A6B2 	SP43            A6CC 	SP44            A6DE 	SP45            
+A6ED 	SP451           A703 	SP46            A708 	SP47            
+A71D 	SP48            0041 	SPALT           FBC1 	SPBER           
+A1B7 	SROLL           A1B9 	SROLL1          F939I 	SSCHR           
+0000 	STADK           0020 	START           0093 	START1          
+0000 	STR             F938I 	SVERZ           9A35 	SYSPA           
+F935I 	SYSTE           9F3BI 	TA1             9F44I 	TA2             
+9F66 	TA21            9F65 	TA22            9F63 	TA23            
+0009 	TAB             0000 	TALT            9F6FI 	TBEL            
+9F69I 	TFE             9F35I 	TINIT           9739I 	TRAM            
+0000 	TRAMDK          F923I 	TRK             FFFF 	TRUE            
+4003 	TTA1            4006 	TTA2            9738I 	TTANZ           
+4015 	TTBEL           400C 	TTFE            4000 	TTINIT          
+973AI 	TTRK            F5E2I 	UEND            F5E8I 	UGETP           
+F5DCI 	UKMB            F5FEI 	UM1             96E5 	UM11            
+970F 	UM12            F602 	UM1R1           F606 	UM1R2           
+F60D 	UM1R3           F61D 	UM1R4           F621I 	UM2             
+F635 	UM21            F639 	UM2E            9611I 	UM2EE           
+F63C 	UM2ER           9F34 	UMERK           F933I 	UMSCH           
+0019 	UNACNT          001C 	UNASEC          001A 	UNATRK          
+A7C0I 	WAS             97FDI 	WBOOT           A8BC 	WMOVE           
+A3DE 	WR15            A3E0 	WR16            0001 	WRDIR           
+A3CBI 	WRITE           A8D4 	WRITEHST        A479 	WRK01           
+A483 	WRK02           A453I 	WRKMB           A402I 	WRMEM           
+A3FFI 	WRMEM0          F92AI 	WRTYPE          0002 	WRUAL           
+0040 	ZEIL            9A8B 	ZGROS           9A89 	ZKLEIN          
+0000 	ZST             
 
 
 

@@ -643,11 +643,13 @@ Public Class Haupt
         Call SpeicherLoeschenClick(&HFF)
     End Sub ' SpeicherLoeschenFF_Click
     Private Sub SpeicherLoeschenClick(ByVal wert As Byte)
-        Dim i As Integer
+        Dim i, b As Integer
+        For b = 0 To Z80cpu.cSeg_HS
+            For i = 0 To &HFFFF
+                COMMON.vZ80cpu.Speicher_schreiben_Byte1(i, wert, b)
+            Next i
+        Next b
 
-        For i = 0 To &HFFFF
-            COMMON.vZ80cpu.Speicher_schreiben_Byte(i, wert)
-        Next
         Call AnzeigeHSrefresh()
     End Sub ' SpeicherLoeschenClick
     Private Sub AnzeigeHSrefresh()

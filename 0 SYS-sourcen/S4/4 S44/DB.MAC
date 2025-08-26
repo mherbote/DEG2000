@@ -91,74 +91,74 @@ endif
 ;
 ;
 ;
-allm::      defs    7                   ; reicht fuer  56k
-chkm::      defs    0
+allm::      defs    7,0                 ; reicht fuer  56k
+chkm::      defs    0,0
 
 
-allc1::     defs    22                  ; reicht fuer 176k
-chkc1::     defs    16
+allc1::     defs    22,0                ; reicht fuer 176k
+chkc1::     defs    16,0
 
-allc2::     defs    22                  ; reicht fuer 176k
-chkc2::     defs    16
+allc2::     defs    22,0                ; reicht fuer 176k
+chkc2::     defs    16,0
 
 
 if          anzakb gt 1
-allc3::     defs    22                  ; reicht fuer 176k
-chkc3::     defs    16
+allc3::     defs    22,0                ; reicht fuer 176k
+chkc3::     defs    16,0
 
-allc4::     defs    22                  ; reicht fuer 176k
-chkc4::     defs    16
+allc4::     defs    22,0                ; reicht fuer 176k
+chkc4::     defs    16,0
 endif
 
 
 if          anzakb gt 2
-allc5::     defs    22                  ; reicht fuer 176k
-chkc5::     defs    16
+allc5::     defs    22,0                ; reicht fuer 176k
+chkc5::     defs    16,0
 
-allc6::     defs    22                  ; reicht fuer 176k
-chkc6::     defs    16
+allc6::     defs    22,0                ; reicht fuer 176k
+chkc6::     defs    16,0
 endif
 
 
 if mindk
-allm1::     defs    22
-chkm1::     defs    16
+allm1::     defs    22,0
+chkm1::     defs    16,0
 
-allm2::     defs    22
-chkm2::	    defs    16
+allm2::     defs    22,0
+chkm2::	    defs    16,0
 
-allm3::     defs    22
-chkm3::     defs    16
+allm3::     defs    22,0
+chkm3::     defs    16,0
 
-allm4::     defs    22
-chkm4::     defs    16
+allm4::     defs    22,0
+chkm4::     defs    16,0
 endif
 
 
 if          stadk
-alls1::     defs    22
-chks1::     defs    16
+alls1::     defs    22,0
+chks1::     defs    16,0
 
-alls2::     defs    22
-chks2::     defs    16
+alls2::     defs    22,0
+chks2::     defs    16,0
 endif
 
 
 if          zst
-alln::      defs    129                 ; reicht fuer 1M
-chkn::      defs    32                  ; reicht fuer 128 dir_entries
+alln::      defs    129,0               ; reicht fuer 1M
+chkn::      defs    32,0                ; reicht fuer 128 dir_entries
 endif
 
 
 if          tramdk
-allo::      defs    32                  ; reicht fuer 256k
-chko::      defs    0
+allo::      defs    32,0                ; reicht fuer 256k
+chko::      defs    0,0
 endif
 
 
 if          opsdk
-allp::      defs    32                  ; reicht fuer 256k
-chkp::      defs    0
+allp::      defs    32,0                ; reicht fuer 256k
+chkp::      defs    0,0
 endif
 
 

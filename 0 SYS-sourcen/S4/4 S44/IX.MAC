@@ -249,7 +249,7 @@ eaops::
 endif
 ;
 	        page
-ixtab::     defs    32
+ixtab::     defs    32,0
 ;
 ixtab1::    defw    eataba              ; tabelle der ix-adresse
 

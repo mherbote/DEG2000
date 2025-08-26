@@ -8,9 +8,9 @@ Devin Gardner   -   2000.04.29
 
 -Check the end of the document for explanations of abbreviations used below.
 
--------------+----+---+------+------------+---------------------+----------------------
++-------------+----+---+------+------------+---------------------+----------------------+
 |Mnemonic     |Clck|Siz|SZHPNC|  OP-Code   |    Description      |        Notes         |
--------------+----+---+------+------------+---------------------+----------------------
++-------------+----+---+------+------------+---------------------+----------------------+
 |ADC A,r      | 4  | 1 |***V0*|88+rb       |Add with Carry       |A=A+s+CY              |
 |ADC A,N      | 7  | 2 |      |CE XX       |                     |                      |
 |ADC A,(HL)   | 7  | 1 |      |8E          |                     |                      |
@@ -375,7 +375,7 @@ Devin Gardner   -   2000.04.29
 |XOR (HL)     | 7  | 1 |      |AE          |                     |                      |
 |XOR (IX+N)   | 19 | 3 |      |DD AE XX    |                     |                      |
 |XOR (IY+N)   | 19 | 3 |      |FD AE XX    |                     |                      |
--------------+----+---+------+------------+---------------------+----------------------
++-------------+----+---+------+------------+---------------------+----------------------+
 
 Clck = The time it takes to execute the instruction in CPU cycles.
 Siz = How many bytes the instruction takes up in a program.
@@ -411,7 +411,7 @@ OP-Codes with the assembler instruction ".db "
 EX: SLL (HL)      ; instead of this, use the below
     .db $CB,$36
 
--------+-------+---------------------------------------------
++-------+-------+---------------------------------------------+
 | F     | -*01? |Flag unaffected/affected/reset/set/unknown   |
 | S     | S     |Sign flag (Bit 7)                            |
 | Z     |  Z    |Zero flag (Bit 6)                            |
@@ -466,7 +466,4 @@ EX: SLL (HL)      ; instead of this, use the below
 | { }           |Combination of operands                      |
 | #             |Also BC=BC-1,DE=DE-1                         |
 | ##            |Only lower 4 bits of accumulator A used      |
----------------+---------------------------------------------
-
-
-
++---------------+---------------------------------------------+

@@ -97,7 +97,7 @@
         Dim i, j As Integer
 
         For i = 0 To 15                                                         'Alle Speicher-Bereiche auf "1" einstellen
-            Seg_HS(i) = 1                                                    '     Grundstellung für DEG2000 Emulator Version 1.2
+            Seg_HS(i) = 1                                                       '     Grundstellung für DEG2000 Emulator Version 1.2
         Next i
 
         For j = 0 To cSeg_HS                                                    '64 kByte Speicher-Bereiche

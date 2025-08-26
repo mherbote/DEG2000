@@ -1,5 +1,13 @@
-	title	'D  E  G  2  0  0  0   Version 4.4'
-	page
+;--------------------------\            ; Vorspann fuer BIN-Datei
+            DB      0F0H                ; Startbyte ---> weitere BIN-Datei
+            DB      'S3'                ;                Name der BIN-Datei
+            DS      26,0
+            DB      000H                ; HS-Bereich : 0
+            DW      00020H              ; Ladeadresse: 0020H
+;--------------------------/
+
+            title   'D  E  G  2  0  0  0   Version 4.4'
+            page    86
 ;**********************************************************************
 ;  B e t r i e b s s y s t e m     D  E  G  2  0  0  0   Version 4.4
 ;                                  ---------------------------------
@@ -46,7 +54,7 @@
 ;
 ;----------------------------------------------------------------------
 ;
-            page	86
+            page
 ;	Laufwerksaufteilung   DEG2000 ---  S Y S 4
 ;	==============================================
 ;
@@ -80,47 +88,23 @@
 
             page
             include	EQ.MAC
-            page
-;	generierungsangaben
-;	===================
-;
-cr          equ     00dh
-lf          equ     00ah
-ff          equ     00ch
-tab         equ     009h
-esc         equ     01bh
-;
-zeil        equ     orig+40h            ; adresse der zeilennummer
-spalt       equ     orig+41h            ; adresse der spaltennummer
-
-;	parameter fuer blockung (stehen in den e/a-tabellen)
-;	====================================================
-;
-;blklog     equ     8                   ; anzahl der recorde in einem logischen block
-;cpmspt     equ     16                  ; sector per track
-;blksiz     equ     2                   ; anzahl der recorde in einem hostblock
-;                                       ;   (potenz von 2!!!)
-;secshf     equ     1                   ; 2**secshf = blksiz
-;secmsk     equ     1                   ; schneidet secshf bits hinten heraus
-;
-erranz      equ     4                   ; anzahl der fehlerwiederholungen
-;
-lwa         equ     orig+43h            ; laufwerksnummer laufwerk A
-;
-datum       equ     orig+44h            ; aktuelles Datum tag/monat/jahr
-;
-CCP         equ     0DE00h
 
             title	'Start: 0000H nach LOAD'
             page
 ; ===  Start: 0000H nach LOAD =====================================================================
 ;
 ; /---  Start: Verschieben der verschiedenen Bereiche --------------------------------------------\
+            .phase  00020h
 ;  wird von SYS 1.2 mit dem Befehl "S4  " angesprungen
-start:	
-;	hl 	;abios -Adresse in SYS1.2 fuer 'S4  ' eintragen
-            ld      de,abios
-            ld      (hl),e
+start:
+            ld      hl,00000h           ; ersten 20h bytes loeschen
+            ld      de,00001h            
+            ld      bc,31
+            ld      (hl),0
+            ldir
+
+            ld      de,abios            ; abios -Adresse in SYS1.2 eintragen
+            ld      (hl),e              ; hl  von 'S4  ' 
             inc     hl
             ld      (hl),d
 
@@ -170,6 +154,7 @@ start1:
             DB      003H                ;wahl
             DB      007H                ;RDIR
             DB      0FFH                ;Endbyte
+            .dephase
 ; \---  Ende : Verschieben der verschiedenen Bereiche --------------------------------------------/
 
             title   's  B I O S'
@@ -263,12 +248,13 @@ boot00::
             ld      de,start+1
             ld      bc,sbios1-start-1
             ldir
-
-            ld      hl,biosxx+(op12-op11);aBIOS - Teil laden	===> F400h
+                                        ;aBIOS - Teil laden	===> F400h
+            ld      hl,biosxx+(op12-op11)
             ld      de,abios
             ld      bc,abios2-abios1
             ldir
-            ld      hl,biosxx+(op12-op11);aBIOS - Teil loeschen
+                                        ;aBIOS - Teil loeschen
+            ld      hl,biosxx+(op12-op11)
             ld      (hl),00h
             ld      de,biosxx+(op12-op11)+1
             ld      bc,abios2-abios1-1
@@ -286,7 +272,7 @@ boot::
             ld      (hl),0              ; default dev.
             call    resp0
 
-            call    dirdel              ; Laufwerk A initialisieren
+            ; call    dirdel              ; Laufwerk A initialisieren
 
             xor     a                   ; bildschirm initialisieren
             ld      (qrmode),a
@@ -374,6 +360,8 @@ boot05:     ld      (hl),0
             ld      de,08000h
             ld      bc,01600h
             ldir
+;            
+            call    dirdel              ; Laufwerk A initialisieren
 ;
 ;
 ;
@@ -388,7 +376,7 @@ wboot::     di
             push    hl
             ld      (s1ret),sp
             ld      bc,80h
-            call	setdma
+            call    setdma
                                         ; geraete warminitialisierung
             call    ci.warm             ; ===========================
  if         mindk or stadk
@@ -478,7 +466,7 @@ dirdel:     ld      a,str               ; =============================
             pop     de
             push    de
             ld      hl,dirgo            ;Verzeichniseintrag fuer 'GO.COM'
-            ld      bc,12
+            ld      bc,dirgoe-dirgo
             ldir
             pop     hl
 
@@ -534,7 +522,9 @@ s1a:
             call    resla
             ret
 ;
-dirgo:      defb    0,'GO      ',0c3h,'OM'
+dirgo:      defb    0,'GO      COM'     ;,0c3h,'OM'
+;dirgo:      defb    0,'S1      ',0c3h,'OM',0,0,0,1,2
+dirgoe      equ     $
 ;
 if s1eq 
 dirs1:      defb    0,'S1      ',0c3h,'OM',0,0,0,1,2
@@ -543,7 +533,7 @@ dirs12:
 endif
 ;
 if pipeq
-dirgo1:     defb    0,'PIP     SUB',0,0,0,2,10
+dirgo1:     defb    0,'PIP     SUB',0,0,0,2,3
 dirg11:     dirg
 dirg12:
 endif
@@ -1691,25 +1681,25 @@ sectrn::    ld      a,d                 ; translate sector
             ret
 ;
 sectr1:     ld      h,b
-			ld      l,c
-			inc     hl
-			ret
+            ld      l,c
+            inc     hl
+            ret
 ;
 ukmb::      call    um1
-			jp      kmbuse
+            jp      kmbuse
 ;
 uend::      call    um1
-			jp      enduse
+            jp      enduse
 ;
 ugetp::     call    um1
-			jp      getpuf
+            jp      getpuf
 ;
 getpf1:     call    um2
-			ld      hl,kmbpuf
-			ld      bc,256
-			ldir
+            ld      hl,kmbpuf
+            ld      bc,256
+            ldir
 getpf2:     ld      sp,(s1ret)
-			ret
+            ret
 ;
 ;
 ;

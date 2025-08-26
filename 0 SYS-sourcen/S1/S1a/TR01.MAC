@@ -19,10 +19,10 @@ TR.TA31:    LD      A,TR.ATAST          ;Warten auf gedrueckte Taste
 TR.TA32:    PUSH    AF
             CALL    TR.TA1
             POP     BC
-			LD      A,B
+            LD      A,B
             JR      NZ,TR.TA32
-			CALL    TR.TA2
-			RET
+            CALL    TR.TA2
+            RET
 
 TR.TFE1:    LD      A,TR.ATAST          ;Warten auf Tastenende
 TR.TFE2:    PUSH    AF

@@ -1368,6 +1368,11 @@ Public Class Tastatur
                     Case Keys.ControlKey
                     Case Keys.LWin, Keys.RWin, Keys.Menu, Keys.Apps
                     Case Keys.PrintScreen, Keys.Scroll, Keys.Pause
+                        Select Case e.KeyCode
+                            Case Keys.Oemcomma
+                                Call Click2Buffer(keyNew)
+                            Case Else
+                        End Select
                     Case Keys.Oem3, Keys.Oem7, Keys.Oem1, Keys.Oem4, Keys.Oem5           'ö ä ü ß ^
 
                     Case Else

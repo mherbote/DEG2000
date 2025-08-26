@@ -116,23 +116,23 @@ s1com       macro
             ld      bc,0000FH           ; LD	BC,MEM3-B1
             jp      08000H              ; JP	08000H
 ;                                       ;MEM1:
-            defb	0F0H
-            defb	001H                ; einen Bereich umschalten
-            defb	008H                ; HS Bereich 
-            defb	001H                ; Standardbereich
-            defb	0FFH
+            defb    0F0H
+            defb    001H                ; einen Bereich umschalten
+            defb    008H                ; HS Bereich 
+            defb    001H                ; Standardbereich
+            defb    0FFH
 ;                                       ;COPS:	.phase 08000H
 ;                                       ;B1 EQU $
-            ld	hl,0800BH               ; LD	HL,MEM2
-            ld	bc,004C0H               ; LD	BC,004C0H
+            ld      hl,0800BH           ; LD	HL,MEM2
+            ld      bc,004C0H           ; LD	BC,004C0H
             otir                        ; OTIR
-            jp	0000H                   ; Sprung zur Version 1.2
+            jp      0000H               ; Sprung zur Version 1.2
 ;                                       ;B2 EQU $
 ;                                       ;MEM2:
-            defb	0F0H
-            defb	003H                ; Bereichsumschaltung
-            defb	4                   ; Sys_12
-            defb	0FFH
+            defb    0F0H
+            defb    003H                ; Bereichsumschaltung
+            defb    4                   ; Sys_12
+            defb    0FFH
             endm
 endif
 ;
@@ -191,4 +191,35 @@ eq.ini      equ     088h                ; initialisieren laufwerk O , P
 eq.scp      equ     089h                ; monitor SCP
 eq.bcu      equ     08ah                ; monitor BCU
 eq.deg      equ     08bh                ; monitor DEG-SYS4
+
+            page
+;	generierungsangaben
+;	===================
+;
+cr          equ     00dh
+lf          equ     00ah
+ff          equ     00ch
+tab         equ     009h
+esc         equ     01bh
+;
+zeil        equ     orig+40h            ; adresse der zeilennummer
+spalt       equ     orig+41h            ; adresse der spaltennummer
+
+;	parameter fuer blockung (stehen in den e/a-tabellen)
+;	====================================================
+;
+;blklog     equ     8                   ; anzahl der recorde in einem logischen block
+;cpmspt     equ     16                  ; sector per track
+;blksiz     equ     2                   ; anzahl der recorde in einem hostblock
+;                                       ;   (potenz von 2!!!)
+;secshf     equ     1                   ; 2**secshf = blksiz
+;secmsk     equ     1                   ; schneidet secshf bits hinten heraus
+;
+erranz      equ     4                   ; anzahl der fehlerwiederholungen
+;
+lwa         equ     orig+43h            ; laufwerksnummer laufwerk A
+;
+datum       equ     orig+44h            ; aktuelles Datum tag/monat/jahr
+;
+CCP         equ     0DE00h
 
