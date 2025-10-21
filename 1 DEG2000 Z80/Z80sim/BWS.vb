@@ -2,6 +2,8 @@
 
 Imports System.Drawing
 Imports System.IO
+Imports System.Text
+Imports System.Windows.Forms.AxHost
 
 Public Class BWS
 
@@ -151,6 +153,7 @@ Public Class BWS
     End Property
 
     Private testbildWahl As UInt16
+    Private _TestBild As Integer
 #End Region
 
 #Region "Dictionary's"
@@ -187,6 +190,7 @@ Public Class BWS
         BWSx = cBWSx                                    'Bildschirm
         BWSy = cBWSy
         testbildWahl = 1
+        _TestBild = 0
 
         Uhrzeit.Enabled = True
 
@@ -244,7 +248,8 @@ Public Class BWS
                 Next x
             Next y
 
-            Call CreateBWS(1)
+            Call CreateBWS(2)
+            Call TestBild(-2)
         Catch ex As Exception
 
         End Try
@@ -288,9 +293,11 @@ Public Class BWS
                         Case 1                                                                                          'Init mit Speicher
                             Code1 = COMMON.vZ80cpu.Speicher_lesen_Byte(COMMON.vZ80cpu.Seg_BWS * 1024 * 4 + (y) * BWSx + x)
                     End Select
-                    Zeichen1.SetZeichen(Zeichen1, Code1, Font1.zeichenTemplateNormal)
-                    PB.Image = Zeichen1.Image
-                    PB.Refresh()
+                    If Code <> 2 Then
+                        Zeichen1.SetZeichen(Zeichen1, Code1, Font1.zeichenTemplateNormal)
+                        PB.Image = Zeichen1.Image
+                        PB.Refresh()
+                    End If
                 Next x
             Next y
 
@@ -411,9 +418,17 @@ Public Class BWS
         Dim bColor As Color
 
         bColor = System.Drawing.Color.Blue         'DarkBlue
-        If bildwahl = -1 Then
-            bildwahl = testbildWahl
-        End If
+
+        Select Case bildwahl
+            Case -2
+                If COMMON.vZ80cpu.cpu_state <> COMMON.CONTIN_RUN Then
+                    bildwahl = _TestBild
+                End If
+            Case -1
+                bildwahl = testbildWahl
+            Case Else
+        End Select
+
         Select Case bildwahl
             Case 0                                                                                                                                  ' Copyright Anzeige
                 Call CopyRight()
@@ -445,20 +460,27 @@ Public Class BWS
                         'Debug.Print(Chr(_pZ) + " X=" + Format(_pX1) + " Y=" + Format(_pY1))
                     Next _pX1
                 Next _pY1
+                _TestBild = 0
             Case 1                                                                                                                                  ' Test Charset
                 Call InitCharset()
                 'Call Mem2BWS(System.Drawing.Color.Cornsilk, System.Drawing.Color.Black, System.Drawing.Color.Red)
                 Refresh()
                 testbildWahl = 2
+                _TestBild = 1
             Case 2                                                                                                                                  ' Test mit String "1234-6789+
                 Call InitTestString()
                 'Call Mem2BWS(System.Drawing.Color.Beige, System.Drawing.Color.Black, System.Drawing.Color.Red)
                 testbildWahl = 1
+                _TestBild = 2
                 Refresh()
+            Case 3                                                                                                                                  ' Zeichen Darstellung
+                Call InitCharset1()
+                _TestBild = 3
             Case 9                                                                                                                                  ' ClrScr
                 Call InitClrScr()
                 'Call Mem2BWS(System.Drawing.Color.Blue, System.Drawing.Color.Yellow, System.Drawing.Color.Red)
                 testbildWahl = 9
+                _TestBild = 9
         End Select
     End Sub ' TestBild
     Private Sub InitClrScr()
@@ -473,7 +495,6 @@ Public Class BWS
         p = 0
         _pZ = Asc(" ")
         Try
-
             For _pY1 = 0 To BWSy - 1
                 For _pX1 = 0 To BWSx - 1
                     COMMON.vZ80cpu.Speicher_schreiben_Byte(start + p, _pZ)
@@ -484,6 +505,160 @@ Public Class BWS
 
         End Try
         If AnzeigeHS.Visible Then AnzeigeHS.Repaint()
+    End Sub
+    Private Sub InitCharset1()
+        Dim test As String
+        Dim _pZ, _pX1, _pY1, i As Integer
+        Dim start, p, q, x As Integer
+
+        BackColorBWS = cBack
+        ForeColorBWS = cFore
+        CursorColorBWS = cCursor
+        ResetCursor()
+        start = COMMON.vZ80cpu.Seg_BWS * 1024 * 4
+        _pZ = Asc(" ")
+        Try
+            For _pY1 = 0 To BWSy - 1
+                For _pX1 = 0 To BWSx - 1
+                    COMMON.vZ80cpu.Speicher_schreiben_Byte(start + p, _pZ)
+                    p = p + 1
+                Next _pX1
+            Next _pY1
+            If AnzeigeHS.Visible Then AnzeigeHS.Repaint()
+            ' -------------------------------------------
+
+            BackColorBWS = System.Drawing.Color.Blue
+            ForeColorBWS = System.Drawing.Color.White
+            q = 0
+            test = COMMON.FontDateiname
+            Call InitCharset2(test, 6 + 80 * q) : q += 1
+
+            BackColorBWS = System.Drawing.Color.Yellow
+            ForeColorBWS = System.Drawing.Color.Blue
+            q = 3
+            test = "  0 1 2 3 4 5 6 7 8 9 A B C D E F 0 1 2 3 4 5 6 7 8 9 A B C D E F  "
+            Call InitCharset2(test, 6 + 80 * q) : q += 1
+
+            BackColorBWS = cBack
+            ForeColorBWS = cFore
+            test = "0 "
+            For p = 0 To 15
+                test += Chr(p) + " "
+            Next
+            Call InitCharset2(test, 6 + 80 * q) : q += 1
+
+            test = "1                                 "
+            For p = 16 To 31
+                test += Chr(p) + " "
+            Next
+            Call InitCharset2(test, 6 + 80 * q) : q += 1
+
+            test = "2 ! "" # $ % & ' ( ) * + , - . / "
+            test += "                                  A"
+            Call InitCharset2(test, 6 + 80 * q) : q += 1
+
+            test = "3                                 0 1 2 3 4 5 6 7 8 9 : ; < = > ? B"
+            Call InitCharset2(test, 6 + 80 * q) : q += 1
+
+            test = "4 @ A B C D E F G H I J K L M N O "
+            test += "                                C"
+            Call InitCharset2(test, 6 + 80 * q) : q += 1
+
+            test = "5                                 P Q R S T U V W X Y Z [ \ ] ^ _ D"
+            Call InitCharset2(test, 6 + 80 * q) : q += 1
+
+            test = "6 ` a b c d e f g h i j k l m n o "
+            test += "                                E"
+            Call InitCharset2(test, 6 + 80 * q) : q += 1
+
+            test = "7                                 p q r s t u v w x y z { | } ~ " + Chr(&H7F) + " F"
+            Call InitCharset2(test, 6 + 80 * q) : q += 1
+
+            For i = 8 To 8 Step 2
+                Select Case i
+                    Case 8
+                        test = "8 "
+                    Case 10
+                        test = "A "
+                    Case 12
+                        test = "C "
+                    Case 14
+                        test = "E "
+                End Select
+                For _pX1 = 0 To 15
+                    test += Chr(i * 16 + _pX1) + " "
+                Next _pX1
+                Call InitCharset2(test, 6 + 80 * q) : q += 1
+
+                Select Case i
+                    Case 8
+                        test = "9"
+                    Case 10
+                        test = "B"
+                    Case 12
+                        test = "D"
+                    Case 14
+                        test = "F"
+                End Select
+                test += "                                 "
+                For _pX1 = 0 To 15
+                    test += Chr((i + 1) * 16 + _pX1) + " "
+                Next _pX1
+                Call InitCharset2(test, 6 + 80 * q) : q += 1
+            Next i
+
+            BackColorBWS = System.Drawing.Color.Yellow
+            ForeColorBWS = System.Drawing.Color.Blue
+            test = "  0 1 2 3 4 5 6 7 8 9 A B C D E F 0 1 2 3 4 5 6 7 8 9 A B C D E F  "
+            Call InitCharset2(test, 6 + 80 * q) : q += 1
+            ' -------------------------------------------
+
+            BackColorBWS = cBack
+            ForeColorBWS = cFore
+            q += 3
+            x = 32
+
+            test = Chr(&H8F) + Chr(&H8C) + Chr(&H8C) + Chr(&H8C) + Chr(&H8C) + Chr(&H8C) + Chr(&H8C) + Chr(&H8C) + Chr(&H8C) + Chr(&H8C) + Chr(&H8C) + Chr(&H8C) + Chr(&H8C) + Chr(&H8C) + Chr(&H87)
+            Call InitCharset2(test, x + 80 * q) : q += 1
+
+            test = Chr(&H6) + Chr(&H82) + Chr(&H81) + Chr(&H81) + Chr(&H81) + Chr(&H81) + Chr(&H81) + Chr(&H5) + Chr(&H81) + Chr(&H81) + Chr(&H81) + Chr(&H81) + Chr(&H81) + Chr(&H83) + Chr(&H7)
+            Call InitCharset2(test, x + 80 * q) : q += 1
+
+            test = Chr(&H6) + Chr(&H80) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H80) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H80) + Chr(&H7)
+            Call InitCharset2(test, x + 80 * q) : q += 1
+
+            test = Chr(&H6) + Chr(&H80) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H80) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H80) + Chr(&H7)
+            Call InitCharset2(test, x + 80 * q) : q += 1
+
+            test = Chr(&H6) + Chr(&H2) + Chr(&H81) + Chr(&H81) + Chr(&H81) + Chr(&H81) + Chr(&H81) + Chr(&H80) + Chr(&H81) + Chr(&H81) + Chr(&H81) + Chr(&H81) + Chr(&H81) + Chr(&H1) + Chr(&H7)
+            Call InitCharset2(test, x + 80 * q) : q += 1
+
+            test = Chr(&H6) + Chr(&H80) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H80) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H80) + Chr(&H7)
+            Call InitCharset2(test, x + 80 * q) : q += 1
+
+            test = Chr(&H6) + Chr(&H80) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H80) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H20) + Chr(&H80) + Chr(&H7)
+            Call InitCharset2(test, x + 80 * q) : q += 1
+
+            test = Chr(&H6) + Chr(&H8A) + Chr(&H81) + Chr(&H81) + Chr(&H81) + Chr(&H81) + Chr(&H81) + Chr(&H4) + Chr(&H81) + Chr(&H81) + Chr(&H81) + Chr(&H81) + Chr(&H81) + Chr(&H8B) + Chr(&H7)
+            Call InitCharset2(test, x + 80 * q) : q += 1
+
+            test = Chr(&H8E) + Chr(&H8D) + Chr(&H8D) + Chr(&H8D) + Chr(&H8D) + Chr(&H8D) + Chr(&H8D) + Chr(&H8D) + Chr(&H8D) + Chr(&H8D) + Chr(&H8D) + Chr(&H8D) + Chr(&H8D) + Chr(&H8D) + Chr(&H84)
+            Call InitCharset2(test, x + 80 * q) : q += 1
+
+        Catch ex As Exception
+
+        End Try
+
+        If AnzeigeHS.Visible Then AnzeigeHS.Repaint()
+    End Sub
+    Private Sub InitCharset2(test As String, p As Integer)
+        Dim start As Integer
+
+        start = COMMON.vZ80cpu.Seg_BWS * 1024 * 4
+        For _pZ = 0 To Len(test) - 1
+            COMMON.vZ80cpu.Speicher_schreiben_Byte(start + p, Asc(Mid(test, _pZ + 1, 1)))
+            p = p + 1
+        Next _pZ
     End Sub
     Private Sub InitCharset()
         Dim _pZ, _pX1, _pY1 As Integer

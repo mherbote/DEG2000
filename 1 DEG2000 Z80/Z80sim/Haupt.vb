@@ -1250,6 +1250,9 @@ Public Class Haupt
     Private Sub Testbild2ToolStripMenuItem_Click(sender As System.Object, e As System.EventArgs) Handles Testbild2ToolStripMenuItem.Click
         Call BWS.TestBild(2)
     End Sub ' Testbild2ToolStripMenuItem_Click
+    Private Sub CharsetToolStripMenuItem_Click(sender As System.Object, e As System.EventArgs) Handles CharsetToolStripMenuItem.Click
+        Call BWS.TestBild(3)
+    End Sub ' CharsetToolStripMenuItem_Click
     Private Sub LeerToolStripMenuItem_Click(sender As System.Object, e As System.EventArgs) Handles LeerToolStripMenuItem.Click
         Call BWS.TestBild(9)
         'TODO
