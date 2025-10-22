@@ -64,6 +64,8 @@ text=auto
 *.EXE   binary
 *.bin   binary
 *.BIN   binary
+*.tap   binary
+*.TAP   binary
 *.CAS   binary
 *.FNT   binary
 *.TTF   binary
