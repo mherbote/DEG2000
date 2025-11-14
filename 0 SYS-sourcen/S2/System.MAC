@@ -135,7 +135,7 @@ S1.RES:     DI
             ADD     IX,DE
             LD      (IX+2),S0.AKB
             CALL    S0.KRZU
-;            CALL    0    ;???        KR.INIT
+;            CALL    0                  ;???        KR.INIT
             CALL    S0.BWSAB
             LD      HL,S0.PFFA
             PUSH    HL
@@ -3581,8 +3581,8 @@ K1.ARMB:    PUSH    IX
             LD      DE,K1.ADRK3
             CALL    K1.MONI
             CALL    K1.MVL
-            ; LD      (IX+5),LOW(K1.ARMB1)
-            ; LD      (IX+6),HIGH(K1.ARMB1)
+                                        ; LD      (IX+5),LOW(K1.ARMB1)
+                                        ; LD      (IX+6),HIGH(K1.ARMB1)
 K1.ARMBM:   PUSH    IX
             CALL    S0.KRZU             ;BAMOS-Routine zuschalten
             CALL    K1.IX2V1            ;???? ;IX-Bereich ===> V1
@@ -3694,8 +3694,8 @@ K1.LHLBC:   LD      H,(IX+8)
 ;****************************************************************
 K1.BM:      LD      A,(IX+10)
             CP      1
-            ; LD      A,(IX+9)
-            ; OR      (IX+10)
+                                        ; LD      A,(IX+9)
+                                        ; OR      (IX+10)
             RET
 ;****************************************************************
 ;*  K M B G      zweiter Leseversuch nach Fehler 17             *
@@ -3891,7 +3891,7 @@ K1.RW1:     CALL    K1.BERT
             JR      K1.RW1
 
 K1.BERT:    CALL    S0.KRZU
-;            CALL    0   ;??? KR.BERT
+;            CALL    0                  ;??? KR.BERT
             CALL    S2.STACK
             RET
 
@@ -5521,14 +5521,14 @@ S9.BSC:     LD      HL,S9.ATAB1         ;Anschl.rout.adr. in BASIC-Workspace ein
             LD      HL,0C320H           ;" C"
             LD      (BC.SVC2+3),HL
 
-            ; LD      HL,0009BH           ;GRF-Befehl aktivieren
-            ; LD      (BC.GRF1),HL
-            ; LD      HL,02047H           ;"G "
-            ; LD      (BC.GRF2),HL
-            ; LD      HL,05220H           ;" R"
-            ; LD      (BC.GRF2+2),HL
-            ; LD      HL,0C620H           ;" F"
-            ; LD      (BC.GRF2+4),HL
+                                        ; LD      HL,0009BH           ;GRF-Befehl aktivieren
+                                        ; LD      (BC.GRF1),HL
+                                        ; LD      HL,02047H           ;"G "
+                                        ; LD      (BC.GRF2),HL
+                                        ; LD      HL,05220H           ;" R"
+                                        ; LD      (BC.GRF2+2),HL
+                                        ; LD      HL,0C620H           ;" F"
+                                        ; LD      (BC.GRF2+4),HL
 
             LD      HL,S0.LRECL         ;Satzlaenge fuer Kassette eintr.
             LD      (K2.LRECL),HL
@@ -5617,10 +5617,11 @@ S9.HOME1:   LD      HL,0
 
             TITLE   'Anfangsprogramm'
             PAGE
-S9.ANFP:    DW      02FDEH              ;Adresse naechster Befehl
+S9.Bas2     EQU     02FB7H+(S9.ANFP1-S9.ANFP)
+S9.ANFP:    DW      S9.Bas2             ;Adresse naechster Befehl  ;02FDEH
             DW      1                   ;BASIC-Zeilennummer 1
             DB      99H                 ;CLEAR
-            DB      ' 500:'
+            DB      ' 360:'             ;DB      ' 500:' (500 ist OUT OF MEMORY!)
             DB      0D4H                ;SVC
             DB      '0,7,1,22,1,80:'
             DB      0D4H                ;SVC
@@ -5629,7 +5630,8 @@ S9.ANFP:    DW      02FDEH              ;Adresse naechster Befehl
             DB      '0,5,1,1'
             DB      0
 
-            DW      03048H              ;Adresse naechster Befehl
+S9.Bas3     EQU     S9.Bas2+(S9.ANFP2-S9.ANFP1)
+S9.ANFP1:   DW      S9.Bas3             ;Adresse naechster Befehl ;03048H
             DW      2                   ;BASIC-Zeilennummer 2
             DB      'SY$'
             DB      0ADH                ;=
@@ -5650,7 +5652,7 @@ S9.ANFP:    DW      02FDEH              ;Adresse naechster Befehl
             DB      '0,29,73'
             DB      0
 
-            DW      0                   ;Endekennzeichen BASIC-Programm
+S9.ANFP2:   DW      0                   ;Endekennzeichen BASIC-Programm
 
 
 S9.ANFG:    LD      HL,S9.ANFP
@@ -7106,7 +7108,7 @@ S9.COP9:    JP      0B403H
 ;GB2:   LD   A,(IY-2)
 ;      CMP  0
 ;      JRZ  RBAUP-#
-;      JMP  RBAUP              ;Adresse im ersten 100H-Bereich
+;      JMP  RBAUP                       ;Adresse im ersten 100H-Bereich
 
             TITLE   'Anfang und Ende von Assemblererw.'
             PAGE
@@ -8539,7 +8541,7 @@ S4.UUM4:    LD      HL,(S2.SMHL)
             OUT     (C),S4.SBST
             ENDIF
 
-            LD      A,10000000B      ;RAM 4000 (ROM C000) wegschalten
+            LD      A,10000000B         ;RAM 4000 (ROM C000) wegschalten
             OUT     (C),S4.SBST+1
 
             IF      S4.V2 AND 2

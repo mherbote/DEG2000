@@ -1,0 +1,24 @@
+	MACRO-80 3.44	09-Dec-81	PAGE	1
+
+
+                                ;--------------------------\            ; Vorspann fuer BIN-Datei
+  0000*   F0                                DB      0F0H                ; Startbyte ---> weitere BIN-Datei
+  0001*   53 33                             DB      'S3'                ;                Name der BIN-Datei
+  0003*                                     DS      26,0
+  001D*   00                                DB      000H                ; HS-Bereich : 0
+  001E*   0000                              DW      00000H              ; Ladeadresse: 0000H
+                                ;--------------------------/
+                                
+                                            end
+	MACRO-80 3.44	09-Dec-81	PAGE	S
+
+
+Macros:
+
+Symbols:
+
+
+
+No Fatal error(s)
+
+

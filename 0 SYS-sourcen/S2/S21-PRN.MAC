@@ -64,11 +64,11 @@
   AFFE    B000                              DW      0B000H              ; Ladeadresse: B000H
                                 ;--------------------------/
                                 
-                                        ;     INCLUDE KS01.MAC
-                                        ;     INCLUDE K209.MAC
-                                        ;     INCLUDE MS05.MAC
-                                        ;     INCLUDE TS06.MAC
-                                        ;     INCLUDE S213.MAC
+                                                                        ;     INCLUDE KS01.MAC
+                                                                        ;     INCLUDE K209.MAC
+                                                                        ;     INCLUDE MS05.MAC
+                                                                        ;     INCLUDE TS06.MAC
+                                                                        ;     INCLUDE S213.MAC
                          C                  INCLUDE Speicher.MAC
                          C      ;           PN      KS
                          C                  TITLE   'Arbeitsbereich zur Geraetebedienroutine KMBG'
@@ -431,16 +431,16 @@
                                             .DEPHASE
                                 
                                             .PHASE  0C000H
-                                        ;     INCLUDE S165.MAC
-                                        ;     INCLUDE S310.MAC
-                                        ;     INCLUDE MO26.MAC
-                                        ;     INCLUDE TA35.MAC   ;???   TA36
-                                        ;     INCLUDE K158.MAC
-                                        ;     INCLUDE LO28.MAC
-                                        ;     INCLUDE S975.MAC   ;???   S967
-                                        ;     INCLUDE S424.MAC   ;???   S425
-                                        ;     INCLUDE SM01.MAC
-                                        ;     INCLUDE S052.MAC   ;???   S053
+                                                                        ;     INCLUDE S165.MAC
+                                                                        ;     INCLUDE S310.MAC
+                                                                        ;     INCLUDE MO26.MAC
+                                                                        ;     INCLUDE TA35.MAC          ;???   TA36
+                                                                        ;     INCLUDE K158.MAC
+                                                                        ;     INCLUDE LO28.MAC
+                                                                        ;     INCLUDE S975.MAC          ;???   S967
+                                                                        ;     INCLUDE S424.MAC          ;???   S425
+                                                                        ;     INCLUDE SM01.MAC
+                                                                        ;     INCLUDE S052.MAC          ;???   S053
                          C                  INCLUDE System.MAC
                          C      ;           PN      S165
                          C                  TITLE   '*** Betriebssystem  DEG2000 ***'
@@ -594,7 +594,7 @@
   C0EA    DD 19          C                  ADD     IX,DE
   C0EC    DD 36 02 30    C                  LD      (IX+2),S0.AKB
   C0F0    CD F659        C                  CALL    S0.KRZU
-                         C      ;            CALL    0    ;???        KR.INIT
+                         C      ;            CALL    0                  ;???        KR.INIT
   C0F3    CD F63C        C                  CALL    S0.BWSAB
   C0F6    21 BBF0        C                  LD      HL,S0.PFFA
   C0F9    E5             C                  PUSH    HL
@@ -4515,8 +4515,8 @@
   D558    11 D502        C                  LD      DE,K1.ADRK3
   D55B    CD D64C        C                  CALL    K1.MONI
   D55E    CD D684        C                  CALL    K1.MVL
-                         C                  ; LD      (IX+5),LOW(K1.ARMB1)
-                         C                  ; LD      (IX+6),HIGH(K1.ARMB1)
+                         C                                              ; LD      (IX+5),LOW(K1.ARMB1)
+                         C                                              ; LD      (IX+6),HIGH(K1.ARMB1)
   D561    DD E5          C      K1.ARMBM:   PUSH    IX
   D563    CD F659        C                  CALL    S0.KRZU             ;BAMOS-Routine zuschalten
   D566    CD D579        C                  CALL    K1.IX2V1            ;???? ;IX-Bereich ===> V1
@@ -4635,8 +4635,8 @@
                          C      ;****************************************************************
   D60C    DD 7E 0A       C      K1.BM:      LD      A,(IX+10)
   D60F    FE 01          C                  CP      1
-                         C                  ; LD      A,(IX+9)
-                         C                  ; OR      (IX+10)
+                         C                                              ; LD      A,(IX+9)
+                         C                                              ; OR      (IX+10)
   D611    C9             C                  RET
                          C      ;****************************************************************
                          C      ;*  K M B G      zweiter Leseversuch nach Fehler 17             *
@@ -4843,7 +4843,7 @@
   D799    18 FA          C                  JR      K1.RW1
                          C      
   D79B    CD F659        C      K1.BERT:    CALL    S0.KRZU
-                         C      ;            CALL    0   ;??? KR.BERT
+                         C      ;            CALL    0                  ;??? KR.BERT
   D79E    CD B2D4        C                  CALL    S2.STACK
   D7A1    C9             C                  RET
                          C      
@@ -6704,14 +6704,14 @@
   E4D3    21 C320        C                  LD      HL,0C320H           ;" C"
   E4D6    22 2D9B        C                  LD      (BC.SVC2+3),HL
                          C      
-                         C                  ; LD      HL,0009BH           ;GRF-Befehl aktivieren
-                         C                  ; LD      (BC.GRF1),HL
-                         C                  ; LD      HL,02047H           ;"G "
-                         C                  ; LD      (BC.GRF2),HL
-                         C                  ; LD      HL,05220H           ;" R"
-                         C                  ; LD      (BC.GRF2+2),HL
-                         C                  ; LD      HL,0C620H           ;" F"
-                         C                  ; LD      (BC.GRF2+4),HL
+                         C                                              ; LD      HL,0009BH           ;GRF-Befehl aktivieren
+                         C                                              ; LD      (BC.GRF1),HL
+                         C                                              ; LD      HL,02047H           ;"G "
+                         C                                              ; LD      (BC.GRF2),HL
+                         C                                              ; LD      HL,05220H           ;" R"
+                         C                                              ; LD      (BC.GRF2+2),HL
+                         C                                              ; LD      HL,0C620H           ;" F"
+                         C                                              ; LD      (BC.GRF2+4),HL
                          C      
   E4D9    21 0100        C                  LD      HL,S0.LRECL         ;Satzlaenge fuer Kassette eintr.
   E4DC    22 B138        C                  LD      (K2.LRECL),HL
@@ -6808,10 +6808,11 @@
 
 
                          C      
-  E582    2FDE           C      S9.ANFP:    DW      02FDEH              ;Adresse naechster Befehl
+  2FDE                   C      S9.Bas2     EQU     02FB7H+(S9.ANFP1-S9.ANFP)
+  E582    2FDE           C      S9.ANFP:    DW      S9.Bas2             ;Adresse naechster Befehl  ;02FDEH
   E584    0001           C                  DW      1                   ;BASIC-Zeilennummer 1
   E586    99             C                  DB      99H                 ;CLEAR
-  E587    20 35 30 30    C                  DB      ' 500:'
+  E587    20 33 36 30    C                  DB      ' 360:'             ;DB      ' 500:' (500 ist OUT OF MEMORY!)
   E58B    3A             C      
   E58C    D4             C                  DB      0D4H                ;SVC
   E58D    30 2C 37 2C    C                  DB      '0,7,1,22,1,80:'
@@ -6825,7 +6826,8 @@
   E5A5    31 2C 31       C      
   E5A8    00             C                  DB      0
                          C      
-  E5A9    3048           C                  DW      03048H              ;Adresse naechster Befehl
+  3048                   C      S9.Bas3     EQU     S9.Bas2+(S9.ANFP2-S9.ANFP1)
+  E5A9    3048           C      S9.ANFP1:   DW      S9.Bas3             ;Adresse naechster Befehl ;03048H
   E5AB    0002           C                  DW      2                   ;BASIC-Zeilennummer 2
   E5AD    53 59 24       C                  DB      'SY$'
   E5B0    AD             C                  DB      0ADH                ;=
@@ -6865,7 +6867,7 @@
   E60F    2C 37 33       C      
   E612    00             C                  DB      0
                          C      
-  E613    0000           C                  DW      0                   ;Endekennzeichen BASIC-Programm
+  E613    0000           C      S9.ANFP2:   DW      0                   ;Endekennzeichen BASIC-Programm
                          C      
                          C      
   E615    21 E582        C      S9.ANFG:    LD      HL,S9.ANFP
@@ -8486,7 +8488,7 @@
                          C      ;GB2:   LD   A,(IY-2)
                          C      ;      CMP  0
                          C      ;      JRZ  RBAUP-#
-                         C      ;      JMP  RBAUP              ;Adresse im ersten 100H-Bereich
+                         C      ;      JMP  RBAUP                       ;Adresse im ersten 100H-Bereich
                          C      
                          C                  TITLE   'Anfang und Ende von Assemblererw.'
                          C                  PAGE
@@ -10000,7 +10002,7 @@
                          C                  OUT     (C),S4.SBST
                          C                  ENDIF
                          C      
-                         C                  LD      A,10000000B      ;RAM 4000 (ROM C000) wegschalten
+                         C                  LD      A,10000000B         ;RAM 4000 (ROM C000) wegschalten
                          C                  OUT     (C),S4.SBST+1
                          C      
                          C                  IF      S4.V2 AND 2
@@ -11205,153 +11207,154 @@ F0E9 	S9.AB1          F0F4 	S9.AB2          F0FF 	S9.AB3
 F0DD 	S9.ABAUP        F13A 	S9.ADRTB        F2B5 	S9.AL           
 F2E0 	S9.AL1          F2D0 	S9.AL2          F2CD 	S9.AL3          
 F272 	S9.ALLUP        F283 	S9.ALUP1        E615 	S9.ANFG         
-E582 	S9.ANFP         E631 	S9.ANFPG        F2B0 	S9.AP           
-F2B3 	S9.AP1          F3AA 	S9.APOS         F3AD 	S9.APOS1        
-E532 	S9.ATAB1        E553 	S9.ATAB2        F113 	S9.AUP          
-E3FF 	S9.BASC         E41C 	S9.BASC1        E459 	S9.BASC2        
-F2AB 	S9.BC1          E637 	S9.BCTB1        E64F 	S9.BCTB2        
-F2A6 	S9.BLD          F29C 	S9.BLD1         EBC3 	S9.BM1          
-EBC7 	S9.BM2          EBD9 	S9.BM3          EBE4 	S9.BM4          
-E4AB 	S9.BSC          E43F 	S9.BSCR         EB4C 	S9.CCIN         
-EB54 	S9.CCIN1        EB7D 	S9.CCIN2        E694 	S9.CIN          
-E6B4 	S9.CIN1         E6A9 	S9.CIN2         EFD6 	S9.CLO1         
-EFC2 	S9.CLO2         EFDC 	S9.CLO3         EFE6 	S9.CLO4         
-EFB0 	S9.CLOS1        EFAB 	S9.CLOSE        EFD4 	S9.CLR          
-E6E3 	S9.CON          E72F 	S9.CON01        E73F 	S9.CON09        
-E704 	S9.CON1         E70C 	S9.CON9         F3A1 	S9.CONO         
-E716 	S9.CONOC        F3A7 	S9.CONOO        F08C 	S9.COP1         
-F0D4 	S9.COP2         F0C4 	S9.COP3         F09E 	S9.COP5         
-F0AE 	S9.COP7         F0B1 	S9.COP8         F0DA 	S9.COP9         
-F07E 	S9.COPY         F3D5 	S9.CPOS         F267 	S9.CR           
-E742 	S9.CST1         E766 	S9.CST10        E76A 	S9.CST11        
-E746 	S9.CST2         E74A 	S9.CST3         E74E 	S9.CST4         
-E752 	S9.CST5         E756 	S9.CST6         E75A 	S9.CST7         
-E75E 	S9.CST8         E762 	S9.CST9         E6BF 	S9.CSTS1        
-E76C 	S9.CSTS2        E778 	S9.CSTS3        E6D7 	S9.CSTS4        
-E6DB 	S9.CSTS5        E6C8 	S9.CSTSX        E8A6 	S9.DEL          
-E896 	S9.EIN1         E89F 	S9.EIN2         EE76 	S9.ENDEV        
-EE86 	S9.ERS          EE93 	S9.ERS1         EE79 	S9.ERSTR        
-E7C3 	S9.FB1          E7F9 	S9.FBE          E80D 	S9.FBE0         
-E799 	S9.FBE1         E7DC 	S9.FBE12        E7EE 	S9.FBE13        
-E7D3 	S9.FBE2         E7EB 	S9.FBE3         E45F 	S9.FT1          
-E485 	S9.FT2          F1EF 	S9.HCP          F215 	S9.HCP1         
-F217 	S9.HCP11        F21A 	S9.HCP12        F21D 	S9.HCP13        
-F22D 	S9.HCP2         F243 	S9.HCP21        F249 	S9.HCP22        
-F25C 	S9.HCP3         F262 	S9.HCPE         E782 	S9.HOME         
-E57B 	S9.HOME1        F390 	S9.ICON         E884 	S9.INSM         
-F3F8 	S9.IOC          F3FE 	S9.IOC1         EC8E 	S9.IOSTX        
-ECF9 	S9.IOX          ECA6 	S9.IOX0         ECAE 	S9.IOX1         
-ECCC 	S9.IOX10        ECE1 	S9.IOX11        ECE9 	S9.IOX12        
-ECF1 	S9.IOX13        ECB6 	S9.IOX2         ECBE 	S9.IOX3         
-ECC3 	S9.IOX8         ECC6 	S9.IOX9         ECCA 	S9.IOX90        
-ECF6 	S9.IOXE         EBBE 	S9.LESV         EC6D 	S9.LISTX        
-EC80 	S9.LISTY        EEB5 	S9.LOAD         EE1B 	S9.MEMCK        
-F286 	S9.MEMO         F007 	S9.MIR          F014 	S9.MOR          
-F341 	S9.MR1          F32A 	S9.MRAC         F319 	S9.MRAO         
-F308 	S9.MRIO         F332 	S9.MRPAR        EB2B 	S9.NEG1         
-EB20 	S9.NEGQ         F3DF 	S9.NFENS        EE72 	S9.NISY         
-F3BA 	S9.NPOS         EE7D 	S9.NSTR         F395 	S9.OCON         
-EF19 	S9.OP1          EF80 	S9.OP13         EF83 	S9.OP14         
-EF24 	S9.OP2          EF8B 	S9.OP20         EF9A 	S9.OP21         
-EFA2 	S9.OP22         EF39 	S9.OP3          EF49 	S9.OP4          
-EF51 	S9.OP5          EF26 	S9.OP7          EF0A 	S9.OPEN         
-EF0F 	S9.OPEN1        EFA8 	S9.OPR          EE20 	S9.OUT          
-EE4B 	S9.OUTLG        E8F9 	S9.PF1          E9B6 	S9.PF10         
-E904 	S9.PF101        E919 	S9.PF102        E926 	S9.PF103        
-E943 	S9.PF104        E960 	S9.PF105        E975 	S9.PF106        
-E98A 	S9.PF107        E9A7 	S9.PF108        E9B4 	S9.PF109        
-E9C3 	S9.PF11         E9C1 	S9.PF110        E9CE 	S9.PF111        
+E582 	S9.ANFP         E5A9 	S9.ANFP1        E613 	S9.ANFP2        
+E631 	S9.ANFPG        F2B0 	S9.AP           F2B3 	S9.AP1          
+F3AA 	S9.APOS         F3AD 	S9.APOS1        E532 	S9.ATAB1        
+E553 	S9.ATAB2        F113 	S9.AUP          2FDE 	S9.BAS2         
+3048 	S9.BAS3         E3FF 	S9.BASC         E41C 	S9.BASC1        
+E459 	S9.BASC2        F2AB 	S9.BC1          E637 	S9.BCTB1        
+E64F 	S9.BCTB2        F2A6 	S9.BLD          F29C 	S9.BLD1         
+EBC3 	S9.BM1          EBC7 	S9.BM2          EBD9 	S9.BM3          
+EBE4 	S9.BM4          E4AB 	S9.BSC          E43F 	S9.BSCR         
+EB4C 	S9.CCIN         EB54 	S9.CCIN1        EB7D 	S9.CCIN2        
+E694 	S9.CIN          E6B4 	S9.CIN1         E6A9 	S9.CIN2         
+EFD6 	S9.CLO1         EFC2 	S9.CLO2         EFDC 	S9.CLO3         
+EFE6 	S9.CLO4         EFB0 	S9.CLOS1        EFAB 	S9.CLOSE        
+EFD4 	S9.CLR          E6E3 	S9.CON          E72F 	S9.CON01        
+E73F 	S9.CON09        E704 	S9.CON1         E70C 	S9.CON9         
+F3A1 	S9.CONO         E716 	S9.CONOC        F3A7 	S9.CONOO        
+F08C 	S9.COP1         F0D4 	S9.COP2         F0C4 	S9.COP3         
+F09E 	S9.COP5         F0AE 	S9.COP7         F0B1 	S9.COP8         
+F0DA 	S9.COP9         F07E 	S9.COPY         F3D5 	S9.CPOS         
+F267 	S9.CR           E742 	S9.CST1         E766 	S9.CST10        
+E76A 	S9.CST11        E746 	S9.CST2         E74A 	S9.CST3         
+E74E 	S9.CST4         E752 	S9.CST5         E756 	S9.CST6         
+E75A 	S9.CST7         E75E 	S9.CST8         E762 	S9.CST9         
+E6BF 	S9.CSTS1        E76C 	S9.CSTS2        E778 	S9.CSTS3        
+E6D7 	S9.CSTS4        E6DB 	S9.CSTS5        E6C8 	S9.CSTSX        
+E8A6 	S9.DEL          E896 	S9.EIN1         E89F 	S9.EIN2         
+EE76 	S9.ENDEV        EE86 	S9.ERS          EE93 	S9.ERS1         
+EE79 	S9.ERSTR        E7C3 	S9.FB1          E7F9 	S9.FBE          
+E80D 	S9.FBE0         E799 	S9.FBE1         E7DC 	S9.FBE12        
+E7EE 	S9.FBE13        E7D3 	S9.FBE2         E7EB 	S9.FBE3         
+E45F 	S9.FT1          E485 	S9.FT2          F1EF 	S9.HCP          
+F215 	S9.HCP1         F217 	S9.HCP11        F21A 	S9.HCP12        
+F21D 	S9.HCP13        F22D 	S9.HCP2         F243 	S9.HCP21        
+F249 	S9.HCP22        F25C 	S9.HCP3         F262 	S9.HCPE         
+E782 	S9.HOME         E57B 	S9.HOME1        F390 	S9.ICON         
+E884 	S9.INSM         F3F8 	S9.IOC          F3FE 	S9.IOC1         
+EC8E 	S9.IOSTX        ECF9 	S9.IOX          ECA6 	S9.IOX0         
+ECAE 	S9.IOX1         ECCC 	S9.IOX10        ECE1 	S9.IOX11        
+ECE9 	S9.IOX12        ECF1 	S9.IOX13        ECB6 	S9.IOX2         
+ECBE 	S9.IOX3         ECC3 	S9.IOX8         ECC6 	S9.IOX9         
+ECCA 	S9.IOX90        ECF6 	S9.IOXE         EBBE 	S9.LESV         
+EC6D 	S9.LISTX        EC80 	S9.LISTY        EEB5 	S9.LOAD         
+EE1B 	S9.MEMCK        F286 	S9.MEMO         F007 	S9.MIR          
+F014 	S9.MOR          F341 	S9.MR1          F32A 	S9.MRAC         
+F319 	S9.MRAO         F308 	S9.MRIO         F332 	S9.MRPAR        
+EB2B 	S9.NEG1         EB20 	S9.NEGQ         F3DF 	S9.NFENS        
+EE72 	S9.NISY         F3BA 	S9.NPOS         EE7D 	S9.NSTR         
+F395 	S9.OCON         EF19 	S9.OP1          EF80 	S9.OP13         
+EF83 	S9.OP14         EF24 	S9.OP2          EF8B 	S9.OP20         
+EF9A 	S9.OP21         EFA2 	S9.OP22         EF39 	S9.OP3          
+EF49 	S9.OP4          EF51 	S9.OP5          EF26 	S9.OP7          
+EF0A 	S9.OPEN         EF0F 	S9.OPEN1        EFA8 	S9.OPR          
+EE20 	S9.OUT          EE4B 	S9.OUTLG        E8F9 	S9.PF1          
+E9B6 	S9.PF10         E904 	S9.PF101        E919 	S9.PF102        
+E926 	S9.PF103        E943 	S9.PF104        E960 	S9.PF105        
+E975 	S9.PF106        E98A 	S9.PF107        E9A7 	S9.PF108        
 'Symbolliste SYS 2.13'	MACRO-80 3.44	09-Dec-81	PAGE	S-4
 
 
-E9DB 	S9.PF112        E9D0 	S9.PF12         E90E 	S9.PF2          
-E91B 	S9.PF3          E928 	S9.PF4          E945 	S9.PF5          
-E962 	S9.PF6          E977 	S9.PF7          E98C 	S9.PF8          
-E9A9 	S9.PF9          EAC6 	S9.POS1         EB0B 	S9.POS2         
-EB16 	S9.POS3         EAF8 	S9.POS4         EAFE 	S9.POS5         
-E840 	S9.POSQ1        EABD 	S9.POSQ2        E855 	S9.PQ2TL        
-F11C 	S9.RBAUP        F12D 	S9.RBP1         F136 	S9.RBP2         
-EFFD 	S9.RCL1         EFB4 	S9.RCL2         F002 	S9.RCL3         
-EFD1 	S9.RCL4         EFF8 	S9.RCL5         F035 	S9.RE9          
-F021 	S9.READ         F026 	S9.READ1        F037 	S9.READ2        
-F05E 	S9.RGLI         F06A 	S9.RGLI1        F06D 	S9.RGLI2        
-F06E 	S9.RGLO         F07A 	S9.RGLO1        F07D 	S9.RGLO2        
-EB80 	S9.RIV          EB8C 	S9.RIV1         EB92 	S9.RIV2         
-EB95 	S9.RIV4         EBAC 	S9.RIV5         EBB4 	S9.RIV6         
-EBB7 	S9.RIV9         EB89 	S9.RIVF         F2E2 	S9.RL           
-F303 	S9.RL1          EED6 	S9.ROP1         EF13 	S9.ROP2         
-EEDB 	S9.ROP3         EEE8 	S9.ROP4         EEF2 	S9.ROP7         
-EEFF 	S9.ROP8         F126 	S9.RUP          EE95 	S9.SAVE         
-F449 	S9.SC181        F469 	S9.SC182        F46B 	S9.SC183        
-F457 	S9.SC184        F4E3 	S9.SC191        F55A 	S9.SC271        
-F53E 	S9.SC272        F536 	S9.SC273        F55B 	S9.SC278        
-F555 	S9.SC279        F4EF 	S9.SC331        F4FF 	S9.SC333        
-F569 	S9.SC391        F56E 	S9.SC399        F4AA 	S9.SC441        
-F4AF 	S9.SC442        F4B2 	S9.SC443        F4B7 	S9.SC444        
-F4C1 	S9.SC449        F2B3 	S9.SC52E        E8C2 	S9.SCHL         
-E8DD 	S9.SCHR         F3F3 	S9.SFENS        F355 	S9.SPA          
-F34C 	S9.SPAUS        F35E 	S9.SPI          F37A 	S9.SPIN         
-F36C 	S9.SPO          F385 	S9.SPOUT        EC7B 	S9.STX2         
-EC7E 	S9.STX9         EE56 	S9.SUCHE        EE4B 	S9.SUSY         
-EE32 	S9.SVC          F40B 	S9.SVC13        F4C3 	S9.SVC14        
-F413 	S9.SVC17        F41B 	S9.SVC18        F4D4 	S9.SVC19        
-F501 	S9.SVC27        F4E5 	S9.SVC32        F4EB 	S9.SVC33        
-F55D 	S9.SVC39        F47E 	S9.SVC43        F495 	S9.SVC44        
-E510 	S9.TALOE        E683 	S9.TAS          F403 	S9.TAS0         
-F401 	S9.TAS01        E68C 	S9.TAS1         E68D 	S9.TAS2         
-E88F 	S9.TL1          E892 	S9.TL2          E9E7 	S9.TPF1         
-E9FF 	S9.TX1          EA33 	S9.TX2          EBF5 	S9.TXT1         
-EA6F 	S9.TXT10        EA73 	S9.TXT11        EA77 	S9.TXT12        
-EA7D 	S9.TXT13        EA85 	S9.TXT14        EA8B 	S9.TXT15        
-EA8F 	S9.TXT16        EA95 	S9.TXT17        EABD 	S9.TXT18        
-EC47 	S9.TXT2         EA43 	S9.TXT3         EA53 	S9.TXT4         
-EA58 	S9.TXT5         EA5D 	S9.TXT6         EA62 	S9.TXT7         
-EA65 	S9.TXT8         EA6B 	S9.TXT9         EE78 	S9.UEBGA        
-E9DD 	S9.UP1          ECFA 	S9.USER         ED46 	S9.USER2        
-ED97 	S9.USER3        ED0D 	S9.USR1         ED26 	S9.USR2         
-ED69 	S9.USR22        ED7C 	S9.USR23        ED93 	S9.USR24        
-ED8D 	S9.USR25        ED31 	S9.USR3         EDE3 	S9.USR32        
-EDF5 	S9.USR33        EDBF 	S9.USR36        EDC7 	S9.USR37        
-EDDB 	S9.USR39        ED44 	S9.USR4         ED8C 	S9.USR40        
-EDD2 	S9.USR41        EE01 	S9.USR7         EE0C 	S9.USR8         
-EE0E 	S9.USR9         F05C 	S9.WR9          F050 	S9.WRIT1        
-F04B 	S9.WRITE        EC1B 	S9.WRTV         EC2A 	S9.WRTV2        
-EC3E 	S9.WRTV5        EC3F 	S9.WRTV6        EC45 	S9.WRTV9        
-EC24 	S9.WRTVF        E899 	S9.ZS           E8DB 	S9.ZS1          
-F5AE 	SM.M1           F588 	SM.MRES         F59C 	SM.PRIO         
-D29A 	TA.ABF1         D2F8 	TA.ABF10        D312 	TA.ABF11        
-D318 	TA.ABF12        D31E 	TA.ABF13        D28B 	TA.ABF14        
-D285 	TA.ABF15        D289 	TA.ABF16        D2A9 	TA.ABF2         
-D334 	TA.ABF20        D2AC 	TA.ABF3         D2CE 	TA.ABF6         
-D2E6 	TA.ABF7         D2EC 	TA.ABF8         D2F2 	TA.ABF9         
-D23A 	TA.ABFR         D24A 	TA.ABFR1        D24D 	TA.ABFR2        
-D26A 	TA.ABFR3        D37A 	TA.ABFR9        D227 	TA.BBB          
-D212 	TA.E0IN         D369 	TA.EAW2         D36D 	TA.EAW3         
-D381 	TA.EAW4         D405 	TA.ET1          D3FF 	TA.ET2          
-D388 	TA.EW1          D3F2 	TA.FKT1         D3DD 	TA.FKT2         
-D3EA 	TA.FKT3         D3FA 	TA.HZE          D3BF 	TA.INSMD        
-D3C8 	TA.INSME        D3C9 	TA.INSML        D40B 	TA.LOE          
-D423 	TA.LOES         D2CD 	TA.MM           D1A0 	TA.PIOPR        
-D3B5 	TA.STEU1        D3A6 	TA.STEUT        D3D8 	TA.STZ          
-D140 	TA.TA1          D158 	TA.TA2          D19E 	TA.TA21         
-D181 	TA.TA22         D188 	TA.TA23         D193 	TA.TA24         
-D1B5 	TA.TA3          D1FD 	TA.TBEL         D1E8 	TA.TEM          
-D324 	TA.TFE          D1D3 	TA.TIM          D432 	TA.TRTAB        
-D1BE 	TA.TRTFE        D466 	TA.WART         D46C 	TA.WART0        
-D477 	TA.WART1        D4A4 	TA.WART2        D49E 	TA.WART3        
-D4A9 	TA.WART4        B249 	TS.BFOL1        B24B 	TS.BFOL2        
-B22D 	TS.EINA         B23E 	TS.EMERK        B241 	TS.KGMER        
-B248 	TS.MBF          B247 	TS.MIO          B231 	TS.NEWL         
-B23B 	TS.PTAST        B23D 	TS.PTK          B23F 	TS.SPMER        
-B24D 	TS.STACK        B19F 	TS.TAB1         B1FF 	TS.TAB2         
-B217 	TS.TAB3         B223 	TS.TAB4         B233 	TS.TAB5         
-B22F 	TS.TABU         B23C 	TS.TK           B240 	TS.UMERK        
-B245 	TS.ZEI21        B243 	TS.ZEIT1        B244 	TS.ZEIT2        
+E9B4 	S9.PF109        E9C3 	S9.PF11         E9C1 	S9.PF110        
+E9CE 	S9.PF111        E9DB 	S9.PF112        E9D0 	S9.PF12         
+E90E 	S9.PF2          E91B 	S9.PF3          E928 	S9.PF4          
+E945 	S9.PF5          E962 	S9.PF6          E977 	S9.PF7          
+E98C 	S9.PF8          E9A9 	S9.PF9          EAC6 	S9.POS1         
+EB0B 	S9.POS2         EB16 	S9.POS3         EAF8 	S9.POS4         
+EAFE 	S9.POS5         E840 	S9.POSQ1        EABD 	S9.POSQ2        
+E855 	S9.PQ2TL        F11C 	S9.RBAUP        F12D 	S9.RBP1         
+F136 	S9.RBP2         EFFD 	S9.RCL1         EFB4 	S9.RCL2         
+F002 	S9.RCL3         EFD1 	S9.RCL4         EFF8 	S9.RCL5         
+F035 	S9.RE9          F021 	S9.READ         F026 	S9.READ1        
+F037 	S9.READ2        F05E 	S9.RGLI         F06A 	S9.RGLI1        
+F06D 	S9.RGLI2        F06E 	S9.RGLO         F07A 	S9.RGLO1        
+F07D 	S9.RGLO2        EB80 	S9.RIV          EB8C 	S9.RIV1         
+EB92 	S9.RIV2         EB95 	S9.RIV4         EBAC 	S9.RIV5         
+EBB4 	S9.RIV6         EBB7 	S9.RIV9         EB89 	S9.RIVF         
+F2E2 	S9.RL           F303 	S9.RL1          EED6 	S9.ROP1         
+EF13 	S9.ROP2         EEDB 	S9.ROP3         EEE8 	S9.ROP4         
+EEF2 	S9.ROP7         EEFF 	S9.ROP8         F126 	S9.RUP          
+EE95 	S9.SAVE         F449 	S9.SC181        F469 	S9.SC182        
+F46B 	S9.SC183        F457 	S9.SC184        F4E3 	S9.SC191        
+F55A 	S9.SC271        F53E 	S9.SC272        F536 	S9.SC273        
+F55B 	S9.SC278        F555 	S9.SC279        F4EF 	S9.SC331        
+F4FF 	S9.SC333        F569 	S9.SC391        F56E 	S9.SC399        
+F4AA 	S9.SC441        F4AF 	S9.SC442        F4B2 	S9.SC443        
+F4B7 	S9.SC444        F4C1 	S9.SC449        F2B3 	S9.SC52E        
+E8C2 	S9.SCHL         E8DD 	S9.SCHR         F3F3 	S9.SFENS        
+F355 	S9.SPA          F34C 	S9.SPAUS        F35E 	S9.SPI          
+F37A 	S9.SPIN         F36C 	S9.SPO          F385 	S9.SPOUT        
+EC7B 	S9.STX2         EC7E 	S9.STX9         EE56 	S9.SUCHE        
+EE4B 	S9.SUSY         EE32 	S9.SVC          F40B 	S9.SVC13        
+F4C3 	S9.SVC14        F413 	S9.SVC17        F41B 	S9.SVC18        
+F4D4 	S9.SVC19        F501 	S9.SVC27        F4E5 	S9.SVC32        
+F4EB 	S9.SVC33        F55D 	S9.SVC39        F47E 	S9.SVC43        
+F495 	S9.SVC44        E510 	S9.TALOE        E683 	S9.TAS          
+F403 	S9.TAS0         F401 	S9.TAS01        E68C 	S9.TAS1         
+E68D 	S9.TAS2         E88F 	S9.TL1          E892 	S9.TL2          
+E9E7 	S9.TPF1         E9FF 	S9.TX1          EA33 	S9.TX2          
+EBF5 	S9.TXT1         EA6F 	S9.TXT10        EA73 	S9.TXT11        
+EA77 	S9.TXT12        EA7D 	S9.TXT13        EA85 	S9.TXT14        
+EA8B 	S9.TXT15        EA8F 	S9.TXT16        EA95 	S9.TXT17        
+EABD 	S9.TXT18        EC47 	S9.TXT2         EA43 	S9.TXT3         
+EA53 	S9.TXT4         EA58 	S9.TXT5         EA5D 	S9.TXT6         
+EA62 	S9.TXT7         EA65 	S9.TXT8         EA6B 	S9.TXT9         
+EE78 	S9.UEBGA        E9DD 	S9.UP1          ECFA 	S9.USER         
+ED46 	S9.USER2        ED97 	S9.USER3        ED0D 	S9.USR1         
+ED26 	S9.USR2         ED69 	S9.USR22        ED7C 	S9.USR23        
+ED93 	S9.USR24        ED8D 	S9.USR25        ED31 	S9.USR3         
+EDE3 	S9.USR32        EDF5 	S9.USR33        EDBF 	S9.USR36        
+EDC7 	S9.USR37        EDDB 	S9.USR39        ED44 	S9.USR4         
+ED8C 	S9.USR40        EDD2 	S9.USR41        EE01 	S9.USR7         
+EE0C 	S9.USR8         EE0E 	S9.USR9         F05C 	S9.WR9          
+F050 	S9.WRIT1        F04B 	S9.WRITE        EC1B 	S9.WRTV         
+EC2A 	S9.WRTV2        EC3E 	S9.WRTV5        EC3F 	S9.WRTV6        
+EC45 	S9.WRTV9        EC24 	S9.WRTVF        E899 	S9.ZS           
+E8DB 	S9.ZS1          F5AE 	SM.M1           F588 	SM.MRES         
+F59C 	SM.PRIO         D29A 	TA.ABF1         D2F8 	TA.ABF10        
+D312 	TA.ABF11        D318 	TA.ABF12        D31E 	TA.ABF13        
+D28B 	TA.ABF14        D285 	TA.ABF15        D289 	TA.ABF16        
+D2A9 	TA.ABF2         D334 	TA.ABF20        D2AC 	TA.ABF3         
+D2CE 	TA.ABF6         D2E6 	TA.ABF7         D2EC 	TA.ABF8         
+D2F2 	TA.ABF9         D23A 	TA.ABFR         D24A 	TA.ABFR1        
+D24D 	TA.ABFR2        D26A 	TA.ABFR3        D37A 	TA.ABFR9        
+D227 	TA.BBB          D212 	TA.E0IN         D369 	TA.EAW2         
+D36D 	TA.EAW3         D381 	TA.EAW4         D405 	TA.ET1          
+D3FF 	TA.ET2          D388 	TA.EW1          D3F2 	TA.FKT1         
+D3DD 	TA.FKT2         D3EA 	TA.FKT3         D3FA 	TA.HZE          
+D3BF 	TA.INSMD        D3C8 	TA.INSME        D3C9 	TA.INSML        
+D40B 	TA.LOE          D423 	TA.LOES         D2CD 	TA.MM           
+D1A0 	TA.PIOPR        D3B5 	TA.STEU1        D3A6 	TA.STEUT        
+D3D8 	TA.STZ          D140 	TA.TA1          D158 	TA.TA2          
+D19E 	TA.TA21         D181 	TA.TA22         D188 	TA.TA23         
+D193 	TA.TA24         D1B5 	TA.TA3          D1FD 	TA.TBEL         
+D1E8 	TA.TEM          D324 	TA.TFE          D1D3 	TA.TIM          
+D432 	TA.TRTAB        D1BE 	TA.TRTFE        D466 	TA.WART         
+D46C 	TA.WART0        D477 	TA.WART1        D4A4 	TA.WART2        
+D49E 	TA.WART3        D4A9 	TA.WART4        B249 	TS.BFOL1        
+B24B 	TS.BFOL2        B22D 	TS.EINA         B23E 	TS.EMERK        
+B241 	TS.KGMER        B248 	TS.MBF          B247 	TS.MIO          
+B231 	TS.NEWL         B23B 	TS.PTAST        B23D 	TS.PTK          
+B23F 	TS.SPMER        B24D 	TS.STACK        B19F 	TS.TAB1         
+B1FF 	TS.TAB2         B217 	TS.TAB3         B223 	TS.TAB4         
+B233 	TS.TAB5         B22F 	TS.TABU         B23C 	TS.TK           
 'Symbolliste SYS 2.13'	MACRO-80 3.44	09-Dec-81	PAGE	S-5
 
 
-B242 	TS.ZSMER        B246 	TS.ZSTC         2B03 	UB.KTAB         
-F65D 	XXXX            
+B240 	TS.UMERK        B245 	TS.ZEI21        B243 	TS.ZEIT1        
+B244 	TS.ZEIT2        B242 	TS.ZSMER        B246 	TS.ZSTC         
+2B03 	UB.KTAB         F65D 	XXXX            
 
 
 

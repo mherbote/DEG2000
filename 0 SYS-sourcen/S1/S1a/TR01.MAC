@@ -42,7 +42,7 @@ TR.TTA11:   LD      A,TR.ATAST
 TR.TTA12:   INC     A                   ;/UCS2
             LD      C,A
             IN      A,(C)
-            BIT     3,A		
+            BIT     3,A  
             RET
 ;****************************************************************
 ;*                  UP zum Einlesen des Tastaturcodes           *
@@ -53,7 +53,7 @@ TR.TTA22:   LD      C,A
             IN      A,(C)               ;/UCS1
             RET
 
-			PAGE
+                     PAGE
 ;****************************************************************
 ;*                  Ansteuerung der INS_MOD - Diode             *
 ;****************************************************************
@@ -86,7 +86,7 @@ TR.TTBL2:   LD      C,A                 ;( A )   Basisadresse Tastatur
 ;*                  Ausgaben an Tastatur fuer DEG2000-Emulator  *
 ;****************************************************************
 TR.PST:
-            IF SD.GENE AND 16   ;DEG2000 Emulator
+            IF      SD.GENE AND 16      ;DEG2000 Emulator
                                         ; Erwartet in B den Parameter:
                                         ;  8    ===> Programm        -Tastatur aktivieren
                                         ;  9    ===> Schreibmaschinen-Tastatur aktivieren
@@ -103,5 +103,5 @@ TR.PST:
                                         ;Stand: 07.Februar 85 - K EAW/wfvm..MSH
                                         ;Stand: 27.Juli  2025 - MSH (geaendert fuer DEG2000 Emulator)
 
-;	END
+;           END
 

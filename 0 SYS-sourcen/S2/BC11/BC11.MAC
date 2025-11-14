@@ -6,7 +6,7 @@
             DW      00000H              ; Ladeadresse: B000H
 ;--------------------------/
 
-;	PN	BC11
+;           PN      BC11
 ;****************************************************************
 ;*               B  A  S  I  C   -   I n t e r p r e t e r      *
 ;*               -----------------------------------------------*
@@ -6867,7 +6867,10 @@ BC.RECOV1:  LD      HL,BC.RECOV
             LD      HL,BC.D070
             LD      (BC.D054),HL
             CALL    BC.C011
-BC.ANF:     JP      START               ;BC.J012
+BC.ANF:
+;
+            JP      BC.J012
+            JP      START               ;BC.J012
 
             PAGE
 BC.D133:    DB      'DEG 2000  B  A  S  I  C   [K EAW  IfR/Fm]  '
@@ -6885,83 +6888,86 @@ BC.D135:    DB      ' Bytes frei            '
             DB      004H
             DS      00FH,0FFH
 ;
-START:      LD      HL,ST01
-            LD      DE,BC.D131
-            LD      BC,000C0H
-            LDIR
+START:
+                                        ; LD      HL,ST01
+                                        ; LD      DE,BC.D131
+                                        ; LD      BC,ST02-ST01        ;000C0H
+                                        ; LDIR
+            JP      BC.J012
             JP      ST02
 ;            
             DS      2,0FFH
 ;            
-ST01:       DB      4,030H,1,0
-            DB      'OPEN'
-            DB      '-'+080H
-            DB      '&EAB6:CLOSE'
-            DB      '-'+080H
-            DB      '&EBB9:EIN'
-            DB      '-'+080H
-            DB      '73:AUS'
-            DB      '-'+080H
-            DB      '79:LESEN'
-            DB      '-'+080H
-            DB      '&EC1F:SCHREIBEN'
-            DB      '-'+080H
-            DB      '&EC4D:BLD'
-            DB      '-'+080H
-            DB      '&80',0
-            DB      'j0',00AH,0,084H
-            DB      '"Quell-/Ladedatei (Q/L)";A$:'
-            DB      08AH
-            DB      'A$',0AEH,0ACH
-            DB      '"Q"',0AAH
-            DB      'A$',0AEH,0ACH
-            DB      '"L"',0A2H
-            DB      '10:',0C9H,084H
-            DB      '"Geraet,Label";G,L:',0D7H
-            DB      'OPEN,G,EIN,L:',08AH
-            DB      'A$',0ADH
-            DB      '"Q"',0A2H,0E1H,':',0C9H
-            DB      0DDH,041H,0,0,0,0
-            DS      00AH,0FFH
-;
-ST02:       LD      HL,0306BH
-            LD      (00150H),HL
-            INC     HL
-            LD      (0015EH),HL
-            LD      (00160H),HL
-            LD      (00162H),HL
-            LD      HL,GRANA
-            CALL    007BDH
-            CALL    00309H
-            LD      C,A
-            CP      'J'
-            JR      Z,ST04
-ST03:       LD      C,'N'
-            CALL    0030FH
-            JP      BC.J012
-;
-ST04:       LD      A,(0010DH)
-            CP      09CH
-            JR      NC,ST03
-            CALL    0030FH
-            LD      A,081H
-            OUT     (0C1H),A            ;!!! ???
-            LD      A,0B3H
-            OUT     (0C0H),A            ;!!! ???
-            LD      HL,07400H
-            LD      DE,09C00H
-            LD      BC,00400H
-            LDIR
-            LD      A,0B7H
-            OUT     (0C0H),A
-            LD      A,085H
-            OUT     (0C1H),A
-            JP      BC.J012
-;
-GRANA:      DB      00AH,'Grafik nachladen ?',0A0H
+; ST01:       DB      4,030H,1,0
+;             DB      'OPEN'
+;             DB      '-'+080H
+;             DB      '&EAB6:CLOSE'
+;             DB      '-'+080H
+;             DB      '&EBB9:EIN'
+;             DB      '-'+080H
+;             DB      '73:AUS'
+;             DB      '-'+080H
+;             DB      '79:LESEN'
+;             DB      '-'+080H
+;             DB      '&EC1F:SCHREIBEN'
+;             DB      '-'+080H
+;             DB      '&EC4D:BLD'
+;             DB      '-'+080H
+;             DB      '&80',0
+;             DB      'j0',00AH,0,084H
+;             DB      '"Quell-/Ladedatei (Q/L)";A$:'
+;             DB      08AH
+;             DB      'A$',0AEH,0ACH
+;             DB      '"Q"',0AAH
+;             DB      'A$',0AEH,0ACH
+;             DB      '"L"',0A2H
+;             DB      '10:',0C9H,084H
+;             DB      '"Geraet,Label"   ;G,L:',0D7H
+;             DB      'OPEN,G,EIN,L:',08AH
+;             DB      'A$',0ADH
+;             DB      '"Q"',0A2H,0E1H,':',0C9H
+;             DB      0DDH,041H,0,0,0,0
+;             DS      00AH,0FFH
+;                                       ;
+ST02:
+;             LD      HL,0306BH
+;             LD      (00150H),HL
+;             INC     HL
+;             LD      (0015EH),HL
+;             LD      (00160H),HL
+;             LD      (00162H),HL
+;             LD      HL,GRANA
+;             CALL    007BDH
+;             CALL    00309H
+;             LD      C,A
+;             CP      'J'
+;             JR      Z,ST04
+; ST03:       LD      C,'N'
+;             CALL    0030FH
+;             JP      BC.J012
+;                                       ;
+; ST04:       LD      A,(0010DH)
+;             CP      09CH
+;             JR      NC,ST03
+;             CALL    0030FH
+;             LD      A,081H
+;             OUT     (0C1H),A            ;!!! ???
+;             LD      A,0B3H
+;             OUT     (0C0H),A            ;!!! ???
+;             LD      HL,07400H
+;             LD      DE,09C00H
+;             LD      BC,00400H
+;             LDIR
+;             LD      A,0B7H
+;             OUT     (0C0H),A
+;             LD      A,085H
+;             OUT     (0C1H),A
+;             JP      BC.J012
+;                                       ;
+; GRANA:      DB      00AH,'Grafik nachladen ?',0A0H
             
 
-            DS      0BEH,0FFH
+;             DS      0BEH,0FFH
 
             .DEPHASE
 

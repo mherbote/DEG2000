@@ -1,0 +1,10 @@
+;--------------------------\            ; Vorspann fuer BIN-Datei
+            DB      0F0H                ; Startbyte ---> weitere BIN-Datei
+            DB      'S3'                ;                Name der BIN-Datei
+            DS      26,0
+            DB      000H                ; HS-Bereich : 0
+            DW      00000H              ; Ladeadresse: 0000H
+;--------------------------/
+
+            end
+

@@ -9,7 +9,7 @@
   001E*   0000                              DW      00000H              ; Ladeadresse: B000H
                                 ;--------------------------/
                                 
-                                ;	PN	BC11
+                                ;           PN      BC11
                                 ;****************************************************************
                                 ;*               B  A  S  I  C   -   I n t e r p r e t e r      *
                                 ;*               -----------------------------------------------*
@@ -107,42 +107,42 @@
                          C      ;
   0000                   C                  DS      010H,0FFH
   0010    33 33          C                  DB      '33'
-  0012    CD E9F2        C                  CALL    0E9F2H  ;???
+  0012    CD E9F2        C                  CALL    0E9F2H              ;???
   0015    3E BF          C                  LD      A,0BFH
   0017    D3 C0          C                  OUT     (0C0H),A
   0019    3E 87          C                  LD      A,087H
   001B    D3 C1          C                  OUT     (0C1H),A
-  001D    21 B220        C                  LD      HL,0B220H   ;???
-  0020    11 2FB7        C                  LD      DE,02FB7H   ;???
+  001D    21 B220        C                  LD      HL,0B220H           ;???
+  0020    11 2FB7        C                  LD      DE,02FB7H           ;???
   0023    01 00C0        C                  LD      BC,000C0H
   0026    ED B0          C                  LDIR
   0028    3E 85          C                  LD      A,085H
   002A    D3 C1          C                  OUT     (0C1H),A
   002C    3E B7          C                  LD      A,0B7H
   002E    D3 C0          C                  OUT     (0C0H),A
-  0030    21 306B        C                  LD      HL,0306BH   ;???
-  0033    22 0150        C                  LD      (00150H),HL ;???
+  0030    21 306B        C                  LD      HL,0306BH           ;???
+  0033    22 0150        C                  LD      (00150H),HL         ;???
   0036    23             C                  INC     HL
-  0037    22 015E        C                  LD      (0015EH),HL ;???
-  003A    22 0160        C                  LD      (00160H),HL ;???
-  003D    22 0162        C                  LD      (00162H),HL ;???
-  0040    CD EA0E        C                  CALL    0EA0EH  ;???
+  0037    22 015E        C                  LD      (0015EH),HL         ;???
+  003A    22 0160        C                  LD      (00160H),HL         ;???
+  003D    22 0162        C                  LD      (00162H),HL         ;???
+  0040    CD EA0E        C                  CALL    0EA0EH              ;???
   0043    C9             C                  RET
   0044                   C                  DS      02CH,0FFH
                          C      ;
   0070    33 33          C                  DB      '33'
-  0072    CD E9F2        C                  CALL    0E9F2H  ;???
-  0075    CD C131        C                  CALL    0C131H  ;???
-  0078    CD EA0E        C                  CALL    0EA0EH  ;???
+  0072    CD E9F2        C                  CALL    0E9F2H              ;???
+  0075    CD C131        C                  CALL    0C131H              ;???
+  0078    CD EA0E        C                  CALL    0EA0EH              ;???
   007B    C9             C                  RET
   007C                   C                  DS      4,0FFH
                          C      ;
   0080    33 33          C                  DB      '33'
-  0082    CD E9F2        C                  CALL    0E9F2H  ;???
-  0085    CD C96D        C                  CALL    0C96DH  ;???
+  0082    CD E9F2        C                  CALL    0E9F2H              ;???
+  0085    CD C96D        C                  CALL    0C96DH              ;???
   0088    21 0015        C                  LD      HL,00015H
-  008B    22 B213        C                  LD      (0B213H),HL ;???
-  008E    CD EA0E        C                  CALL    0EA0EH  ;???
+  008B    22 B213        C                  LD      (0B213H),HL         ;???
+  008E    CD EA0E        C                  CALL    0EA0EH              ;???
   0091    C9             C                  RET
   0092                   C                  DS      8,0
                          C      ;
@@ -152,15 +152,15 @@
   009F    00             C                  NOP
                          C      ;
   00A0                   C                  DS      2,0
-  00A2    CD C1C0        C                  CALL    0C1C0H  ;???
+  00A2    CD C1C0        C                  CALL    0C1C0H              ;???
   00A5    C9             C                  RET
                          C      ;
-  00A6    CD E9F2        C                  CALL    0E9F2H  ;???
-  00A9    CD 0327        C                  CALL    00327H  ;???
+  00A6    CD E9F2        C                  CALL    0E9F2H              ;???
+  00A9    CD 0327        C                  CALL    00327H              ;???
   00AC    D5             C                  PUSH    DE
-  00AD    CD 0092        C                  CALL    00092H  ;???
+  00AD    CD 0092        C                  CALL    00092H              ;???
   00B0    20 FB          C                  JR      NZ,$-3
-  00B2    CD 009F        C                  CALL    0009FH  ;???
+  00B2    CD 009F        C                  CALL    0009FH              ;???
   00B5    FE FC          C                  CP      0FCH
   00B7    30 08          C                  JR      NC,$+10
   00B9    FE 80          C                  CP      080H
@@ -174,10 +174,10 @@
   00C7    47             C                  LD      B,A
   00C8    04             C                  INC     B
   00C9    AF             C                  XOR     A
-  00CA    CD 032A        C                  CALL    0032AH  ;???
-  00CD    CD 0092        C                  CALL    00092H  ;???
+  00CA    CD 032A        C                  CALL    0032AH              ;???
+  00CD    CD 0092        C                  CALL    00092H              ;???
   00D0    28 FB          C                  JR      Z,$-3
-  00D2    CD EA0E        C                  CALL    0EA0EH  ;???
+  00D2    CD EA0E        C                  CALL    0EA0EH              ;???
   00D5    C9             C                  RET
   00D6                   C                  DS      4,0FFH            
                          C      ;
@@ -185,16 +185,16 @@
 
 
   00DA    33 33          C                  DB      '33'
-  00DC    CD E9F2        C                  CALL    0E9F2H  ;???
+  00DC    CD E9F2        C                  CALL    0E9F2H              ;???
   00DF    21 FF01        C                  LD      HL,0FF01H
-  00E2    22 0310        C                  LD      (00310H),HL ;???
+  00E2    22 0310        C                  LD      (00310H),HL         ;???
   00E5    21 00F0        C                  LD      HL,000F0H
-  00E8    22 030A        C                  LD      (0030AH),HL ;??? 
+  00E8    22 030A        C                  LD      (0030AH),HL         ;??? 
   00EB    00             C                  NOP
-  00EC    CD EA0E        C                  CALL    0EA0EH  ;???
+  00EC    CD EA0E        C                  CALL    0EA0EH              ;???
   00EF    C9             C                  RET
                          C      ;
-  00F0    CD E8ED        C                  CALL    0E8EDH  ;???
+  00F0    CD E8ED        C                  CALL    0E8EDH              ;???
   00F3    FE 0A          C                  CP      00AH
   00F5    28 06          C                  JR      Z,$+8
   00F7    FE 20          C                  CP      ' '
@@ -252,83 +252,83 @@
   013F    00             C                  NOP
   0140    03             C                  INC     BC
   0141    3E 0A          C                  LD      A,00AH
-  0143    CD 01F3        C                  CALL    001F3H  ;???
+  0143    CD 01F3        C                  CALL    001F3H              ;???
   0146    01 0002        C                  LD      BC,00002H
-  0149    11 0909        C                  LD      DE,00909H   ;???
-  014C    21 0107        C                  LD      HL,00107H   ;???
+  0149    11 0909        C                  LD      DE,00909H           ;???
+  014C    21 0107        C                  LD      HL,00107H           ;???
   014F    ED B0          C                  LDIR
   0151    16 1F          C                  LD      D,01FH
-  0153    CD 01FE        C                  CALL    001FEH  ;???
-  0156    01 0419        C                  LD      BC,00419H   ;???
-  0159    CD 0202        C                  CALL    00202H  ;???
+  0153    CD 01FE        C                  CALL    001FEH              ;???
+  0156    01 0419        C                  LD      BC,00419H           ;???
+  0159    CD 0202        C                  CALL    00202H              ;???
   015C    01 0010        C                  LD      BC,00010H
   015F    21 0900        C                  LD      HL,00900H
-  0162    CD 01F1        C                  CALL    001F1H  ;???
+  0162    CD 01F1        C                  CALL    001F1H              ;???
   0165    01 0007        C                  LD      BC,00007H
   0168    21 090F        C                  LD      HL,0090FH
-  016B    CD 01F1        C                  CALL    001F1H  ;???
+  016B    CD 01F1        C                  CALL    001F1H              ;???
   016E    DD 36 0B 00    C                  LD      (IX+11),0
-  0172    01 0600        C                  LD      BC,00600H   ;???
-  0175    CD 0202        C                  CALL    00202H  ;???
+  0172    01 0600        C                  LD      BC,00600H           ;???
+  0175    CD 0202        C                  CALL    00202H              ;???
   0178    01 0025        C                  LD      BC,25H
-  017B    21 0885        C                  LD      HL,00885H   ;???
-  017E    CD 01F1        C                  CALL    001F1H  ;???
+  017B    21 0885        C                  LD      HL,00885H           ;???
+  017E    CD 01F1        C                  CALL    001F1H              ;???
   0181    0E 03          C                  LD      C,3
-  0183    21 0895        C                  LD      HL,00895H   ;???
-  0186    CD 01F1        C                  CALL    001F1H  ;???
+  0183    21 0895        C                  LD      HL,00895H           ;???
+  0186    CD 01F1        C                  CALL    001F1H              ;???
   0189    16 53          C                  LD      D,53H
-  018B    CD 01FE        C                  CALL    001FEH  ;???
-  018E    21 0899        C                  LD      HL,00899H   ;???
+  018B    CD 01FE        C                  CALL    001FEH              ;???
+  018E    21 0899        C                  LD      HL,00899H           ;???
   0191    0E 4B          C                  LD      C,4BH
-  0193    CD 01F1        C                  CALL    001F1H  ;???
-  0196    FD 21 07A6     C                  LD      IY,007A6H   ;???
-  019A    CD 010C        C                  CALL    00010CH ;???
-  019D    CA 01D0        C                  JP      Z,001D0H    ;???
-  01A0    21 07AE        C                  LD      HL,007AEH   ;???
+  0193    CD 01F1        C                  CALL    001F1H              ;???
+  0196    FD 21 07A6     C                  LD      IY,007A6H           ;???
+  019A    CD 010C        C                  CALL    00010CH             ;???
+  019D    CA 01D0        C                  JP      Z,001D0H            ;???
+  01A0    21 07AE        C                  LD      HL,007AEH           ;???
   01A3    7E             C                  LD      A,(HL)
   01A4    FE 46          C                  CP      046H
-  01A6    CA 0208        C                  JP      Z,00208H    ;???
+  01A6    CA 0208        C                  JP      Z,00208H            ;???
   01A9    FE 41          C                  CP      041H
-  01AB    CA 03D3        C                  JP      Z,003D3H    ;???
+  01AB    CA 03D3        C                  JP      Z,003D3H            ;???
 	MACRO-80 3.44	09-Dec-81	PAGE	1-5
 
 
   01AE    FE 53          C                  CP      053H
-  01B0    CA 03C8        C                  JP      Z,003C8H    ;???
-  01B3    01 0500        C                  LD      BC,00500H   ;???
-  01B6    CD 0202        C                  CALL    00202H  ;???
-  01B9    C3 0165        C                  JP      00165H  ;???
+  01B0    CA 03C8        C                  JP      Z,003C8H            ;???
+  01B3    01 0500        C                  LD      BC,00500H           ;???
+  01B6    CD 0202        C                  CALL    00202H              ;???
+  01B9    C3 0165        C                  JP      00165H              ;???
                          C      ;
-  01BC    3A 0794        C                  LD      A,(00794H)  ;???
+  01BC    3A 0794        C                  LD      A,(00794H)          ;???
   01BF    5F             C                  LD      E,A
-  01C0    CD 01FA        C                  CALL    001FAH  ;???
+  01C0    CD 01FA        C                  CALL    001FAH              ;???
   01C3    31 0100        C                  LD      SP,00100H
   01C6    18 EB          C                  JR      $-19
                          C      ;
   01C8    DD 5E 00       C                  LD      E,(IX+0)
   01CB    3E 04          C                  LD      A,4
-  01CD    CD 0109        C                  CALL    00109H  ;???
+  01CD    CD 0109        C                  CALL    00109H              ;???
   01D0    1E 44          C                  LD      E,044H
-  01D2    CD 01FA        C                  CALL    001FAH  ;???
-  01D5    C3 010F        C                  JP      0010FH  ;???
+  01D2    CD 01FA        C                  CALL    001FAH              ;???
+  01D5    C3 010F        C                  JP      0010FH              ;???
                          C      ;
-  01D8    CD 01DD        C                  CALL    001DDH  ;???
+  01D8    CD 01DD        C                  CALL    001DDH              ;???
   01DB    18 EB          C                  JR      $-19
                          C      ;
   01DD    DD 5E 01       C                  LD      E,(IX+1)
-  01E0    CD 01FA        C                  CALL    001FAH  ;???
+  01E0    CD 01FA        C                  CALL    001FAH              ;???
   01E3    C9             C                  RET
                          C      ;
   01E4    3E 03          C                  LD      A,3
-  01E6    21 085A        C                  LD      HL,0085AH   ;???
-  01E9    CD 0109        C                  CALL    00109H  ;???
+  01E6    21 085A        C                  LD      HL,0085AH           ;???
+  01E9    CD 0109        C                  CALL    00109H              ;???
   01EC    B7             C                  OR      A
-  01ED    C2 0120        C                  JP      NZ,00120H   ;???
+  01ED    C2 0120        C                  JP      NZ,00120H           ;???
   01F0    C9             C                  RET
                          C      ;
   01F1    3E 0D          C                  LD      A,00DH
-  01F3    11 0044        C                  LD      DE,00044H   ;???
-  01F6    CD 0109        C                  CALL    00109H  ;???
+  01F3    11 0044        C                  LD      DE,00044H           ;???
+  01F6    CD 0109        C                  CALL    00109H              ;???
   01F9    C9             C                  RET
                          C      ;
   01FA    3E 05          C                  LD      A,5
@@ -341,28 +341,28 @@
   0204    1E 44          C                  LD      E,044H
   0206    18 EE          C                  JR      $-16
                          C      ;
-  0208    CD 04D5        C                  CALL    004D5H  ;???
+  0208    CD 04D5        C                  CALL    004D5H              ;???
   020B    DD 36 07 00    C                  LD      (IX+7),0
   020F    16 46          C                  LD      D,046H
-  0211    CD 01FE        C                  CALL    001FEH  ;???
+  0211    CD 01FE        C                  CALL    001FEH              ;???
   0214    0E 0D          C                  LD      C,00DH
-  0216    21 085C        C                  LD      HL,0085CH   ;???
-  0219    CD 01F1        C                  CALL    001F1H  ;???
-  021C    FD 21 07A6     C                  LD      IY,007A6H   ;???
-  0220    CD 010C        C                  CALL    0010CH  ;???
-  0223    3A 07AE        C                  LD      A,(007AEH)  ;???
-  0226    CA 01D0        C                  JP      Z,001D0H    ;???
+  0216    21 085C        C                  LD      HL,0085CH           ;???
+  0219    CD 01F1        C                  CALL    001F1H              ;???
+  021C    FD 21 07A6     C                  LD      IY,007A6H           ;???
+  0220    CD 010C        C                  CALL    0010CH              ;???
+  0223    3A 07AE        C                  LD      A,(007AEH)          ;???
+  0226    CA 01D0        C                  JP      Z,001D0H            ;???
   0229    FE 44          C                  CP      044H
   022B    28 DB          C                  JR      Z,$-35
   022D    FE 48          C                  CP      048H
   022F    28 D7          C                  JR      Z,$-39
-  0231    32 0795        C                  LD      (00795H),A  ;???
+  0231    32 0795        C                  LD      (00795H),A          ;???
   0234    01 000D        C                  LD      BC,0000DH
-  0237    21 0869        C                  LD      HL,00869H   ;???
-  023A    CD 01F1        C                  CALL    001F1H  ;???
-  023D    FD 21 07AA     C                  LD      IY,007AAH   ;???
-  0241    CD 010C        C                  CALL    0010CH  ;???
-  0244    CA 01C3        C                  JP      Z,001C3H    ;???
+  0237    21 0869        C                  LD      HL,00869H           ;???
+  023A    CD 01F1        C                  CALL    001F1H              ;???
+  023D    FD 21 07AA     C                  LD      IY,007AAH           ;???
+  0241    CD 010C        C                  CALL    0010CH              ;???
+  0244    CA 01C3        C                  JP      Z,001C3H            ;???
   0247    FD 5E 00       C                  LD      E,(IY+0)
   024A    FD 56 01       C                  LD      D,(IY+1)
   024D    FD 6E 02       C                  LD      L,(IY+2)
@@ -387,21 +387,21 @@
   0268    36 FF          C                  LD      (HL),0FFH
   026A    B7             C                  OR      A
   026B    ED 52          C                  SBC     HL,DE
-  026D    22 0798        C                  LD      (00798H),HL ;???
+  026D    22 0798        C                  LD      (00798H),HL         ;???
   0270    42             C                  LD      B,D
   0271    4B             C                  LD      C,E
-  0272    11 0928        C                  LD      DE,00928H   ;???
+  0272    11 0928        C                  LD      DE,00928H           ;???
   0275    FD 6E 00       C                  LD      L,(IY+0)
   0278    FD 66 01       C                  LD      H,(IY+1)
   027B    ED B0          C                  LDIR
-  027D    01 0B05        C                  LD      BC,00B05H   ;???
-  0280    CD 05B0        C                  CALL    005B0H  ;???
+  027D    01 0B05        C                  LD      BC,00B05H           ;???
+  0280    CD 05B0        C                  CALL    005B0H              ;???
   0283    30 02          C                  JR      NC,$+4
   0285    20 F6          C                  JR      NZ,$-8
   0287    B7             C                  OR      A
-  0288    CC 05E2        C                  CALL    Z,005E2H    ;???
-  028B    01 0C07        C                  LD      BC,00C07H   ;???
-  028E    CD 05ED        C                  CALL    005EDH  ;???
+  0288    CC 05E2        C                  CALL    Z,005E2H            ;???
+  028B    01 0C07        C                  LD      BC,00C07H           ;???
+  028E    CD 05ED        C                  CALL    005EDH              ;???
   0291    DD 7E 02       C                  LD      A,(IX+2)
   0294    FE 52          C                  CP      052H
   0296    28 02          C                  JR      Z,$+4
@@ -409,7 +409,7 @@
   029A    DD 36 08 06    C                  LD      (IX+8),6
   029E    28 04          C                  JR      Z,$+6
   02A0    DD 36 08 04    C                  LD      (IX+8),4
-  02A4    21 0928        C                  LD      HL,00928H   ;???
+  02A4    21 0928        C                  LD      HL,00928H           ;???
   02A7    E5             C                  PUSH    HL
   02A8    01 00FE        C                  LD      BC,000FEH
   02AB    7E             C                  LD      A,(HL)
@@ -423,7 +423,7 @@
   02B7    F5             C                  PUSH    AF
   02B8    E5             C                  PUSH    HL
   02B9    C5             C                  PUSH    BC
-  02BA    CD 03AD        C                  CALL    003ADH  ;???
+  02BA    CD 03AD        C                  CALL    003ADH              ;???
   02BD    C1             C                  POP     BC
   02BE    E1             C                  POP     HL
   02BF    DD 7E 08       C                  LD      A,(IX+8)
@@ -433,30 +433,30 @@
   02C6    03             C                  INC     BC
   02C7    3E 06          C                  LD      A,6
   02C9    DD BE 08       C                  CP      (IX+8)
-  02CC    11 07A0        C                  LD      DE,007A0H   ;???
+  02CC    11 07A0        C                  LD      DE,007A0H           ;???
   02CF    28 03          C                  JR      Z,$+5
-  02D1    11 07A2        C                  LD      DE,007A2H   ;???
+  02D1    11 07A2        C                  LD      DE,007A2H           ;???
   02D4    ED B0          C                  LDIR
   02D6    F1             C                  POP     AF
-  02D7    DA 039C        C                  JP      C,0039CH    ;???
+  02D7    DA 039C        C                  JP      C,0039CH            ;???
   02DA    23             C                  INC     HL
   02DB    E5             C                  PUSH    HL
-  02DC    CD 02ED        C                  CALL    002EDH  ;???
+  02DC    CD 02ED        C                  CALL    002EDH              ;???
   02DF    E1             C                  POP     HL
   02E0    F1             C                  POP     AF
   02E1    FE FF          C                  CP      0FFH
   02E3    20 C2          C                  JR      NZ,$-60
-  02E5    C3 01B3        C                  JP      001B3H  ;???
+  02E5    C3 01B3        C                  JP      001B3H              ;???
   02E8    DD 4E 08       C                  LD      C,(IX+8)
   02EB    18 DA          C                  JR      $-36
                          C      ;
-  02ED    CD 0510        C                  CALL    00510H  ;???
-  02F0    CD 0526        C                  CALL    00526H  ;???
-  02F3    3A 079F        C                  LD      A,(0079FH)  ;???
+  02ED    CD 0510        C                  CALL    00510H              ;???
+  02F0    CD 0526        C                  CALL    00526H              ;???
+  02F3    3A 079F        C                  LD      A,(0079FH)          ;???
   02F6    B7             C                  OR      A
   02F7    20 13          C                  JR      NZ,$+15H
-  02F9    01 0C2D        C                  LD      BC,00C2DH   ;???
-  02FC    CD 0202        C                  CALL    00202H  ;???
+  02F9    01 0C2D        C                  LD      BC,00C2DH           ;???
+  02FC    CD 0202        C                  CALL    00202H              ;???
   02FF    01             C                  DB      1
                          C      ;            
                                             PAGE
@@ -7564,7 +7564,7 @@
   2FBA    2A 2E10                           LD      HL,(BC.D122)
   2FBD    CD 24C9                           CALL    BC.C147
   2FC0    CD 0CEE                           CALL    BC.C048
-  2FC3    21 30B5                           LD      HL,BC.D133
+  2FC3    21 30B8                           LD      HL,BC.D133
   2FC6    CD 07BD                           CALL    BC.C027
   2FC9                          BC.D132     EQU     $
   2FC9    AF                    BC.J118:    XOR     A
@@ -7605,7 +7605,7 @@
   301F    22 0187                           LD      (BC.D036),HL
   3022    22 0189                           LD      (BC.D037),HL
   3025    22 018B                           LD      (BC.D038),HL
-  3028    21 30EF                           LD      HL,BC.D134
+  3028    21 30F2                           LD      HL,BC.D134
   302B    CD 07BD                           CALL    BC.C027
   302E    CD 06E2                           CALL    BC.C019
   3031    CD 0947                           CALL    BC.C031
@@ -7676,180 +7676,154 @@
   309C    09                                ADD     HL,BC
   309D    CD 0CEE                           CALL    BC.C048
   30A0    CD 24C9                           CALL    BC.C147
-  30A3    21 30FE                           LD      HL,BC.D135
+  30A3    21 3101                           LD      HL,BC.D135
   30A6    CD 07BD                           CALL    BC.C027
   30A9    21 07BD                           LD      HL,BC.D070
   30AC    22 01A5                           LD      (BC.D054),HL
   30AF    CD 05B4                           CALL    BC.C011
-  30B2    C3 3210               BC.ANF:     JP      START               ;BC.J012
+  30B2                          BC.ANF:
+                                ;
+  30B2    C3 04A0                           JP      BC.J012
+  30B5    C3 3213                           JP      START               ;BC.J012
                                 
                                             PAGE
 	MACRO-80 3.44	09-Dec-81	PAGE	1-96
 
 
                                 
-  30B5    44 45 47 20           BC.D133:    DB      'DEG 2000  B  A  S  I  C   [K EAW  IfR/Fm]  '
-  30B9    32 30 30 30           
-  30BD    20 20 42 20           
-  30C1    20 41 20 20           
-  30C5    53 20 20 49           
-  30C9    20 20 43 20           
-  30CD    20 20 5B 4B           
-  30D1    20 45 41 57           
-  30D5    20 20 49 66           
-  30D9    52 2F 46 6D           
-  30DD    5D 20 20              
-  30E0    53 74 61 6E                       DB      'Stand: 10.82  '
-  30E4    64 3A 20 31           
-  30E8    30 2E 38 32           
-  30EC    20 20                 
-  30EE    8A                                DB      0AH+80H
-  30EF    0A                    BC.D134:    DB      0AH
-  30F0    6D 61 78 2E                       DB      'max. Speicher'
-  30F4    20 53 70 65           
-  30F8    69 63 68 65           
-  30FC    72                    
-  30FD    A0                                DB      20H+80H
-  30FE    20 42 79 74           BC.D135:    DB      ' Bytes frei            '
-  3102    65 73 20 66           
-  3106    72 65 69 20           
-  310A    20 20 20 20           
-  310E    20 20 20 20           
-  3112    20 20 20              
-  3115    0A                                DB      0AH
-  3116    44 45 47 20                       DB      'DEG 2000  B A S I C         , Version 2.1'
-  311A    32 30 30 30           
-  311E    20 20 42 20           
-  3122    41 20 53 20           
-  3126    49 20 43 20           
-  312A    20 20 20 20           
-  312E    20 20 20 20           
-  3132    2C 20 56 65           
-  3136    72 73 69 6F           
-  313A    6E 20 32 2E           
-  313E    31                    
-  313F    20 20 20 20                       DB      '                 '
-  3143    20 20 20 20           
-  3147    20 20 20 20           
-  314B    20 20 20 20           
-  314F    20                    
-  3150    8A                                DB      0AH+80H
-  3151                                      DS      0AFH,0
-  3200    04                                DB      004H
-  3201                                      DS      00FH,0FFH
+  30B8    44 45 47 20           BC.D133:    DB      'DEG 2000  B  A  S  I  C   [K EAW  IfR/Fm]  '
+  30BC    32 30 30 30           
+  30C0    20 20 42 20           
+  30C4    20 41 20 20           
+  30C8    53 20 20 49           
+  30CC    20 20 43 20           
+  30D0    20 20 5B 4B           
+  30D4    20 45 41 57           
+  30D8    20 20 49 66           
+  30DC    52 2F 46 6D           
+  30E0    5D 20 20              
+  30E3    53 74 61 6E                       DB      'Stand: 10.82  '
+  30E7    64 3A 20 31           
+  30EB    30 2E 38 32           
+  30EF    20 20                 
+  30F1    8A                                DB      0AH+80H
+  30F2    0A                    BC.D134:    DB      0AH
+  30F3    6D 61 78 2E                       DB      'max. Speicher'
+  30F7    20 53 70 65           
+  30FB    69 63 68 65           
+  30FF    72                    
+  3100    A0                                DB      20H+80H
+  3101    20 42 79 74           BC.D135:    DB      ' Bytes frei            '
+  3105    65 73 20 66           
+  3109    72 65 69 20           
+  310D    20 20 20 20           
+  3111    20 20 20 20           
+  3115    20 20 20              
+  3118    0A                                DB      0AH
+  3119    44 45 47 20                       DB      'DEG 2000  B A S I C         , Version 2.1'
+  311D    32 30 30 30           
+  3121    20 20 42 20           
+  3125    41 20 53 20           
+  3129    49 20 43 20           
+  312D    20 20 20 20           
+  3131    20 20 20 20           
+  3135    2C 20 56 65           
+  3139    72 73 69 6F           
+  313D    6E 20 32 2E           
+  3141    31                    
+  3142    20 20 20 20                       DB      '                 '
+  3146    20 20 20 20           
+  314A    20 20 20 20           
+  314E    20 20 20 20           
+  3152    20                    
+  3153    8A                                DB      0AH+80H
+  3154                                      DS      0AFH,0
+  3203    04                                DB      004H
+  3204                                      DS      00FH,0FFH
                                 ;
-  3210    21 3220               START:      LD      HL,ST01
-  3213    11 2FB7                           LD      DE,BC.D131
-  3216    01 00C0                           LD      BC,000C0H
-  3219    ED B0                             LDIR
-  321B    C3 32E0                           JP      ST02
+  3213                          START:
+                                                                        ; LD      HL,ST01
+                                                                        ; LD      DE,BC.D131
+                                                                        ; LD      BC,ST02-ST01        ;000C0H
+                                                                        ; LDIR
+  3213    C3 04A0                           JP      BC.J012
+  3216    C3 321B                           JP      ST02
                                 ;            
-  321E                                      DS      2,0FFH
+  3219                                      DS      2,0FFH
                                 ;            
-  3220    04 30 01 00           ST01:       DB      4,030H,1,0
-  3224    4F 50 45 4E                       DB      'OPEN'
-  3228    AD                                DB      '-'+080H
-  3229    26 45 41 42                       DB      '&EAB6:CLOSE'
-  322D    36 3A 43 4C           
-  3231    4F 53 45              
-  3234    AD                                DB      '-'+080H
-  3235    26 45 42 42                       DB      '&EBB9:EIN'
-  3239    39 3A 45 49           
-  323D    4E                    
-  323E    AD                                DB      '-'+080H
-  323F    37 33 3A 41                       DB      '73:AUS'
-  3243    55 53                 
-  3245    AD                                DB      '-'+080H
-  3246    37 39 3A 4C                       DB      '79:LESEN'
-  324A    45 53 45 4E           
-  324E    AD                                DB      '-'+080H
-  324F    26 45 43 31                       DB      '&EC1F:SCHREIBEN'
-  3253    46 3A 53 43           
-  3257    48 52 45 49           
-  325B    42 45 4E              
-  325E    AD                                DB      '-'+080H
-  325F    26 45 43 34                       DB      '&EC4D:BLD'
+                                ; ST01:       DB      4,030H,1,0
+                                ;             DB      'OPEN'
+                                ;             DB      '-'+080H
+                                ;             DB      '&EAB6:CLOSE'
+                                ;             DB      '-'+080H
+                                ;             DB      '&EBB9:EIN'
+                                ;             DB      '-'+080H
+                                ;             DB      '73:AUS'
+                                ;             DB      '-'+080H
+                                ;             DB      '79:LESEN'
+                                ;             DB      '-'+080H
+                                ;             DB      '&EC1F:SCHREIBEN'
+                                ;             DB      '-'+080H
+                                ;             DB      '&EC4D:BLD'
+                                ;             DB      '-'+080H
+                                ;             DB      '&80',0
+                                ;             DB      'j0',00AH,0,084H
+                                ;             DB      '"Quell-/Ladedatei (Q/L)";A$:'
+                                ;             DB      08AH
+                                ;             DB      'A$',0AEH,0ACH
+                                ;             DB      '"Q"',0AAH
 	MACRO-80 3.44	09-Dec-81	PAGE	1-97
 
 
-  3263    44 3A 42 4C           
-  3267    44                    
-  3268    AD                                DB      '-'+080H
-  3269    26 38 30 00                       DB      '&80',0
-  326D    6A 30 0A 00                       DB      'j0',00AH,0,084H
-  3271    84                    
-  3272    22 51 75 65                       DB      '"Quell-/Ladedatei (Q/L)";A$:'
-  3276    6C 6C 2D 2F           
-  327A    4C 61 64 65           
-  327E    64 61 74 65           
-  3282    69 20 28 51           
-  3286    2F 4C 29 22           
-  328A    3B 41 24 3A           
-  328E    8A                                DB      08AH
-  328F    41 24 AE AC                       DB      'A$',0AEH,0ACH
-  3293    22 51 22 AA                       DB      '"Q"',0AAH
-  3297    41 24 AE AC                       DB      'A$',0AEH,0ACH
-  329B    22 4C 22 A2                       DB      '"L"',0A2H
-  329F    31 30 3A C9                       DB      '10:',0C9H,084H
-  32A3    84                    
-  32A4    22 47 65 72                       DB      '"Geraet,Label";G,L:',0D7H
-  32A8    61 65 74 2C           
-  32AC    4C 61 62 65           
-  32B0    6C 22 3B 47           
-  32B4    2C 4C 3A D7           
-  32B8    4F 50 45 4E                       DB      'OPEN,G,EIN,L:',08AH
-  32BC    2C 47 2C 45           
-  32C0    49 4E 2C 4C           
-  32C4    3A 8A                 
-  32C6    41 24 AD                          DB      'A$',0ADH
-  32C9    22 51 22 A2                       DB      '"Q"',0A2H,0E1H,':',0C9H
-  32CD    E1 3A C9              
-  32D0    DD 41 00 00                       DB      0DDH,041H,0,0,0,0
-  32D4    00 00                 
-  32D6                                      DS      00AH,0FFH
-                                ;
-  32E0    21 306B               ST02:       LD      HL,0306BH
-  32E3    22 0150                           LD      (00150H),HL
-  32E6    23                                INC     HL
-  32E7    22 015E                           LD      (0015EH),HL
-  32EA    22 0160                           LD      (00160H),HL
-  32ED    22 0162                           LD      (00162H),HL
-  32F0    21 332E                           LD      HL,GRANA
-  32F3    CD 07BD                           CALL    007BDH
-  32F6    CD 0309                           CALL    00309H
-  32F9    4F                                LD      C,A
-  32FA    FE 4A                             CP      'J'
-  32FC    28 08                             JR      Z,ST04
-  32FE    0E 4E                 ST03:       LD      C,'N'
-  3300    CD 030F                           CALL    0030FH
-  3303    C3 04A0                           JP      BC.J012
-                                ;
-  3306    3A 010D               ST04:       LD      A,(0010DH)
-  3309    FE 9C                             CP      09CH
-  330B    30 F1                             JR      NC,ST03
-  330D    CD 030F                           CALL    0030FH
-  3310    3E 81                             LD      A,081H
-  3312    D3 C1                             OUT     (0C1H),A            ;!!! ???
-  3314    3E B3                             LD      A,0B3H
-  3316    D3 C0                             OUT     (0C0H),A            ;!!! ???
-  3318    21 7400                           LD      HL,07400H
-  331B    11 9C00                           LD      DE,09C00H
-  331E    01 0400                           LD      BC,00400H
-  3321    ED B0                             LDIR
-  3323    3E B7                             LD      A,0B7H
-  3325    D3 C0                             OUT     (0C0H),A
-  3327    3E 85                             LD      A,085H
-  3329    D3 C1                             OUT     (0C1H),A
-  332B    C3 04A0                           JP      BC.J012
-                                ;
-  332E    0A 47 72 61           GRANA:      DB      00AH,'Grafik nachladen ?',0A0H
-  3332    66 69 6B 20           
-  3336    6E 61 63 68           
-  333A    6C 61 64 65           
-  333E    6E 20 3F A0           
+                                ;             DB      'A$',0AEH,0ACH
+                                ;             DB      '"L"',0A2H
+                                ;             DB      '10:',0C9H,084H
+                                ;             DB      '"Geraet,Label"   ;G,L:',0D7H
+                                ;             DB      'OPEN,G,EIN,L:',08AH
+                                ;             DB      'A$',0ADH
+                                ;             DB      '"Q"',0A2H,0E1H,':',0C9H
+                                ;             DB      0DDH,041H,0,0,0,0
+                                ;             DS      00AH,0FFH
+                                ;                                       ;
+  321B                          ST02:
+                                ;             LD      HL,0306BH
+                                ;             LD      (00150H),HL
+                                ;             INC     HL
+                                ;             LD      (0015EH),HL
+                                ;             LD      (00160H),HL
+                                ;             LD      (00162H),HL
+                                ;             LD      HL,GRANA
+                                ;             CALL    007BDH
+                                ;             CALL    00309H
+                                ;             LD      C,A
+                                ;             CP      'J'
+                                ;             JR      Z,ST04
+                                ; ST03:       LD      C,'N'
+                                ;             CALL    0030FH
+                                ;             JP      BC.J012
+                                ;                                       ;
+                                ; ST04:       LD      A,(0010DH)
+                                ;             CP      09CH
+                                ;             JR      NC,ST03
+                                ;             CALL    0030FH
+                                ;             LD      A,081H
+                                ;             OUT     (0C1H),A            ;!!! ???
+                                ;             LD      A,0B3H
+                                ;             OUT     (0C0H),A            ;!!! ???
+                                ;             LD      HL,07400H
+                                ;             LD      DE,09C00H
+                                ;             LD      BC,00400H
+                                ;             LDIR
+                                ;             LD      A,0B7H
+                                ;             OUT     (0C0H),A
+                                ;             LD      A,085H
+                                ;             OUT     (0C1H),A
+                                ;             JP      BC.J012
+                                ;                                       ;
+                                ; GRANA:      DB      00AH,'Grafik nachladen ?',0A0H
                                             
                                 
-  3342                                      DS      0BEH,0FFH
+                                ;             DS      0BEH,0FFH
                                 
                                             .DEPHASE
                                 
@@ -7969,8 +7943,8 @@ Symbols:
 2E12 	BC.D123         2E75 	BC.D124         2E89 	BC.D125         
 2F84 	BC.D126         2F93 	BC.D127         2F9B 	BC.D128         
 2FA3 	BC.D129         2FAF 	BC.D130         2FB7 	BC.D131         
-2FC9 	BC.D132         30B5 	BC.D133         30EF 	BC.D134         
-30FE 	BC.D135         0B0B 	BC.DATA         1236 	BC.DEF          
+2FC9 	BC.D132         30B8 	BC.D133         30F2 	BC.D134         
+3101 	BC.D135         0B0B 	BC.DATA         1236 	BC.DEF          
 1AA3 	BC.DELET        1065 	BC.DIM          1B9C 	BC.EDA          
 1BE6 	BC.EDD          1C59 	BC.EDDEL        1C65 	BC.EDE1         
 1C68 	BC.EDE2         1BB5 	BC.EDF          1C0E 	BC.EDH          
@@ -8046,9 +8020,8 @@ Symbols:
 032D 	BC.TB1          0361 	BC.TB2          0376 	BC.TB3          
 03B0 	BC.TB4          1ADB 	BC.TRACE        0324 	BC.TRAPX        
 0306 	BC.USR          172B 	BC.VAL          16E3 	BC.WAIT         
-1765 	BC.WIDTH        0312 	BC.WRTV         332E 	GRANA           
-3220 	ST01            32E0 	ST02            32FE 	ST03            
-3306 	ST04            3210 	START           
+1765 	BC.WIDTH        0312 	BC.WRTV         321B 	ST02            
+3213 	START           
 
 
 

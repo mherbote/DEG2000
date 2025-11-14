@@ -1,232 +1,232 @@
-	TITLE	'Systemvariablen'
-	PAGE
-;	PN	SM01.Variablen___Version_1.2
+            TITLE   'Systemvariablen'
+            PAGE
+;           PN      SM01.Variablen___Version_1.2
 ;****************************************************************
 ;*                  S y s t e m v a r i a b l e n               *
 ;*                  V e r s i o n   1 . 2                       *
 ;****************************************************************
-            ORG   0
-            DEFS  0C00H,0FFH     ;ZRE --- ROM ab 0000H
-            DEFS  0400H,000H     ;    --- RAM ab 0C00H
-            DEFS  1800H,0FFH     ;OFS --- ROM ab 1000H
-            DEFS  0800H,000H     ;    --- RAM ab 2800H
-            DEFS  1000H,SD.SPACE ;ABS --- RAM ab 3000H
-            DEFS  4000H,0FFH     ;PFS --- ROM ab 4000H
-;           DEFS  4000H,000H     ;OPS --- RAM ab 8000H
-;           DEFS  4000H,000H     ;OPS --- RAM ab C000H
-SM.ENDE     EQU   $
+            ORG     0
+            DEFS    0C00H,0FFH          ;ZRE --- ROM ab 0000H
+            DEFS    0400H,000H          ;    --- RAM ab 0C00H
+            DEFS    1800H,0FFH          ;OFS --- ROM ab 1000H
+            DEFS    0800H,000H          ;    --- RAM ab 2800H
+            DEFS    1000H,SD.SPACE      ;ABS --- RAM ab 3000H
+            DEFS    4000H,0FFH          ;PFS --- ROM ab 4000H
+;           DEFS    4000H,000H          ;OPS --- RAM ab 8000H
+;           DEFS    4000H,000H          ;OPS --- RAM ab C000H
+SM.ENDE     EQU     $
 ;****************************************************************
 
-SM.STACK    EQU   SD.RAM+100H-20H   ;STACK Anfang ;-20H hizugefuegt
+SM.STACK    EQU     SD.RAM+100H-20H     ;STACK Anfang ;-20H hizugefuegt
 
-            ORG   SM.STACK
-SM.FKTAB:   DEFS  0A0H,0         ;Tabelle Fkt. fuer Tastaturroutine
-SM.FET2     EQU   00
-SM.FET1     EQU   01
-SM.FNL      EQU   02
-SM.FDOWN    EQU   03
-SM.FPQ      EQU   04
-SM.FLEFT    EQU   05
-SM.FPOS1    EQU   06
-SM.FRIGHT   EQU   07
-SM.FLTAB    EQU   08
-SM.FUP      EQU   09
-SM.FRTAB    EQU   10
-SM.FINSMOD  EQU   11
-SM.FDEL     EQU   12
-SM.FINSLIN  EQU   13
-SM.FDELLIN  EQU   14
-SM.FTABS    EQU   15
-SM.FTABL    EQU   16
-SM.FCI      EQU   17
-SM.FM       EQU   18
-SM.FRESET   EQU   19
-SM.FESC     EQU   20
-SM.FCTRL    EQU   21
-SM.FCE      EQU   22
-SM.F00      EQU   23
-SM.F000     EQU   24
-SM.FNQ      EQU   25
-SM.FSYS     EQU   26
-SM.FEND     EQU   27
-SM.FABS     EQU   28
+            ORG     SM.STACK
+SM.FKTAB:   DEFS    0A0H,0              ;Tabelle Fkt. fuer Tastaturroutine
+SM.FET2     EQU     00
+SM.FET1     EQU     01
+SM.FNL      EQU     02
+SM.FDOWN    EQU     03
+SM.FPQ      EQU     04
+SM.FLEFT    EQU     05
+SM.FPOS1    EQU     06
+SM.FRIGHT   EQU     07
+SM.FLTAB    EQU     08
+SM.FUP      EQU     09
+SM.FRTAB    EQU     10
+SM.FINSMOD  EQU     11
+SM.FDEL     EQU     12
+SM.FINSLIN  EQU     13
+SM.FDELLIN  EQU     14
+SM.FTABS    EQU     15
+SM.FTABL    EQU     16
+SM.FCI      EQU     17
+SM.FM       EQU     18
+SM.FRESET   EQU     19
+SM.FESC     EQU     20
+SM.FCTRL    EQU     21
+SM.FCE      EQU     22
+SM.F00      EQU     23
+SM.F000     EQU     24
+SM.FNQ      EQU     25
+SM.FSYS     EQU     26
+SM.FEND     EQU     27
+SM.FABS     EQU     28
 
-SM.FE0      EQU   20
-SM.FE1      EQU   30
-SM.FE2      EQU   31
-SM.FE3      EQU   32
+SM.FE0      EQU     20
+SM.FE1      EQU     30
+SM.FE2      EQU     31
+SM.FE3      EQU     32
 
-SM.FP01     EQU   33
-SM.FP02     EQU   34
-SM.FP03     EQU   35
-SM.FP04     EQU   36
-SM.FP05     EQU   37
-SM.FP06     EQU   38
-SM.FP07     EQU   39
-SM.FP08     EQU   40
-SM.FP09     EQU   41
-SM.FP10     EQU   42
-SM.FP11     EQU   43
-SM.FP12     EQU   44
+SM.FP01     EQU     33
+SM.FP02     EQU     34
+SM.FP03     EQU     35
+SM.FP04     EQU     36
+SM.FP05     EQU     37
+SM.FP06     EQU     38
+SM.FP07     EQU     39
+SM.FP08     EQU     40
+SM.FP09     EQU     41
+SM.FP10     EQU     42
+SM.FP11     EQU     43
+SM.FP12     EQU     44
 
-SM.FP13     EQU   45
-SM.FP14     EQU   46
-SM.FP15     EQU   47
-SM.FP16     EQU   48
-SM.FP17     EQU   49
-SM.FP18     EQU   50
-SM.FP19     EQU   51
-SM.FP20     EQU   52
-SM.FP21     EQU   53
-SM.FP22     EQU   54
-SM.FP23     EQU   55
-SM.FP24     EQU   56
+SM.FP13     EQU     45
+SM.FP14     EQU     46
+SM.FP15     EQU     47
+SM.FP16     EQU     48
+SM.FP17     EQU     49
+SM.FP18     EQU     50
+SM.FP19     EQU     51
+SM.FP20     EQU     52
+SM.FP21     EQU     53
+SM.FP22     EQU     54
+SM.FP23     EQU     55
+SM.FP24     EQU     56
 
-SM.FP25     EQU   57
-SM.FP26     EQU   58
-SM.FP27     EQU   59
-SM.FP28     EQU   60
-SM.FP29     EQU   61
-SM.FP30     EQU   62
-SM.FP31     EQU   63
-SM.FP32     EQU   64
-SM.FP33     EQU   65
-SM.FP34     EQU   66
-SM.FP35     EQU   67
-SM.FP36     EQU   68
+SM.FP25     EQU     57
+SM.FP26     EQU     58
+SM.FP27     EQU     59
+SM.FP28     EQU     60
+SM.FP29     EQU     61
+SM.FP30     EQU     62
+SM.FP31     EQU     63
+SM.FP32     EQU     64
+SM.FP33     EQU     65
+SM.FP34     EQU     66
+SM.FP35     EQU     67
+SM.FP36     EQU     68
 
-SM.FP37     EQU   69
-SM.FP38     EQU   70
-SM.FP39     EQU   71
-SM.FP40     EQU   72
-SM.FP41     EQU   73
-SM.FP42     EQU   74
-SM.FP43     EQU   75
-SM.FP44     EQU   76
-SM.FP45     EQU   77
-SM.FP46     EQU   78
-SM.FP47     EQU   79
-SM.FP48     EQU   80
-SM.FKTABE   EQU   SM.FKTAB+(2*SM.FP48)
+SM.FP37     EQU     69
+SM.FP38     EQU     70
+SM.FP39     EQU     71
+SM.FP40     EQU     72
+SM.FP41     EQU     73
+SM.FP42     EQU     74
+SM.FP43     EQU     75
+SM.FP44     EQU     76
+SM.FP45     EQU     77
+SM.FP46     EQU     78
+SM.FP47     EQU     79
+SM.FP48     EQU     80
+SM.FKTABE   EQU     SM.FKTAB+(2*SM.FP48)
 
-SM.TK:      DB    0             ;Speicher Alpha-Tastencode
-SM.FKT:     DB    0             ;Speicher Funktionsadresse  {0 ... 3} fuer Funktionstastenebene
-            DEFS  12,0          ;TEMO
-SM.ZSMER:   DB    0             ;Merker  Z-Schnellschreiben
-SM.ZSTC:    DB    0             ;Zaehler Z-schnell 0,5s
-SM.TC:      DB    0             ;Zeitzaehler C-blinken 0,3s
-SM.MERK:    DB    0             ;Zeichenmerker Cursorposition
-SM.GRZEI:   DB    0             ;Merker Grafikzeichen
-SM.FSTAT:   DB    0             ;Status Format
-SM.STAT:    DB    0             ;Status der virtuellen Tast.
-SM.MODE:    DB    0             ;Status der Betriebsart
-SM.ZEIZ:    DW    0             ;Zeilenzaehler Text
-SM.BZA:     DB    0             ;Zeilenzaehler Window--Text
-SM.WEITE:   DW    0             ;Zeilen--Sprungweite
-SM.TABZ     EQU   $             ;Tabulatorzaehler
-            DEFS  12,0
-;            ORG   00DA5H        ;Bereich fuer Tabulatoren
+SM.TK:      DB      0                   ;Speicher Alpha-Tastencode
+SM.FKT:     DB      0                   ;Speicher Funktionsadresse  {0 ... 3} fuer Funktionstastenebene
+            DEFS    12,0                ;TEMO
+SM.ZSMER:   DB      0                   ;Merker  Z-Schnellschreiben
+SM.ZSTC:    DB      0                   ;Zaehler Z-schnell 0,5s
+SM.TC:      DB      0                   ;Zeitzaehler C-blinken 0,3s
+SM.MERK:    DB      0                   ;Zeichenmerker Cursorposition
+SM.GRZEI:   DB      0                   ;Merker Grafikzeichen
+SM.FSTAT:   DB      0                   ;Status Format
+SM.STAT:    DB      0                   ;Status der virtuellen Tast.
+SM.MODE:    DB      0                   ;Status der Betriebsart
+SM.ZEIZ:    DW      0                   ;Zeilenzaehler Text
+SM.BZA:     DB      0                   ;Zeilenzaehler Window--Text
+SM.WEITE:   DW      0                   ;Zeilen--Sprungweite
+SM.TABZ     EQU     $                   ;Tabulatorzaehler
+            DEFS    12,0
+;            ORG   00DA5H               ;Bereich fuer Tabulatoren
 
-SM.UMERK:   DB    0             ;Merker fuer Umschalter
+SM.UMERK:   DB      0                   ;Merker fuer Umschalter
 
-                                ;Funktionsmerker der Alphatastatur
-SM.USCH:    DW    0
-SM.TABU:    DW    0
-SM.DELZ:    DW    0
-SM.DEL:     DW    0
-SM.NEWL:    DW    0
-SM.EINA:    DW    0
-SM.ZPOS:    DB    0             ;Zeilennr.  Schreibcursor
-SM.SPOS:    DB    0             ;Spaltennr. Schreibcursor
-SM.LOE1     EQU   $-SM.UMERK
-SM.LOE      EQU   $-SM.ZSMER
-SM.ZMIN:    DB    0             ;Merker Anfangszeile
-SM.SMIN:    DB    0             ;Merker Anfangsspalte
-SM.ZMAX:    DB    0             ;Merker End    zeile
-SM.SMAX:    DB    0             ;Merker End    spalte
-SM.ZPOS2:   DB    0             ;siehe oben (Zweitmerker)
-SM.SPOS2:   DB    0
-SM.ZMIN2:   DB    0
-SM.SMIN2:   DB    0
-SM.ZMAX2:   DB    0
-SM.SMAX2:   DB    0
-SM.ZANZ:    DB    0             ;Merker BWS-Format
-SM.SPANZ:   DB    0             ;Merker BWS-Format
-SM.WINA:    DW    0             ;Position Window--Anfang
-SM.WINE:    DW    0             ;Position Window--Ende
-SM.END:     DW    0             ;Position Textende
-SM.LZA:     DB    0             ;Laenge Zeichenkette alt
-SM.ZKA:     DEFS  75,SD.SPACE   ;Zeichenkette alt
-SM.LZN:     DB    0             ;Laenge Zeichenkette neu
-SM.ZKN:     DW    0             ;Merker Zeichenkette neu
-SM.PTSE:    DW    0             ;Merker Ende   programm. Speicher
-SM.PTSA:    DW    0             ;Merker AnFang    ''        ''
+                                        ;Funktionsmerker der Alphatastatur
+SM.USCH:    DW      0
+SM.TABU:    DW      0
+SM.DELZ:    DW      0
+SM.DEL:     DW      0
+SM.NEWL:    DW      0
+SM.EINA:    DW      0
+SM.ZPOS:    DB      0                   ;Zeilennr.  Schreibcursor
+SM.SPOS:    DB      0                   ;Spaltennr. Schreibcursor
+SM.LOE1     EQU     $-SM.UMERK
+SM.LOE      EQU     $-SM.ZSMER
+SM.ZMIN:    DB      0                   ;Merker Anfangszeile
+SM.SMIN:    DB      0                   ;Merker Anfangsspalte
+SM.ZMAX:    DB      0                   ;Merker End    zeile
+SM.SMAX:    DB      0                   ;Merker End    spalte
+SM.ZPOS2:   DB      0                   ;siehe oben (Zweitmerker)
+SM.SPOS2:   DB      0
+SM.ZMIN2:   DB      0
+SM.SMIN2:   DB      0
+SM.ZMAX2:   DB      0
+SM.SMAX2:   DB      0
+SM.ZANZ:    DB      0                   ;Merker BWS-Format
+SM.SPANZ:   DB      0                   ;Merker BWS-Format
+SM.WINA:    DW      0                   ;Position Window--Anfang
+SM.WINE:    DW      0                   ;Position Window--Ende
+SM.END:     DW      0                   ;Position Textende
+SM.LZA:     DB      0                   ;Laenge Zeichenkette alt
+SM.ZKA:     DEFS    75,SD.SPACE         ;Zeichenkette alt
+SM.LZN:     DB      0                   ;Laenge Zeichenkette neu
+SM.ZKN:     DW      0                   ;Merker Zeichenkette neu
+SM.PTSE:    DW      0                   ;Merker Ende   programm. Speicher
+SM.PTSA:    DW      0                   ;Merker AnFang    ''        ''
 
-SM.ZEIAD:   DW    0             ;DBUG
-SM.ZEIZ2:   DB    0             ;DBUG
-SM.START:   DW    0             ;EXEC
-SM.ANFAD:   DW    0             ;DBUG
-SM.PARAM:   DW    0             ;DBUG
-            DW    0
-SM.BWSE:    DW    0             ;DATA
+SM.ZEIAD:   DW      0                   ;DBUG
+SM.ZEIZ2:   DB      0                   ;DBUG
+SM.START:   DW      0                   ;EXEC
+SM.ANFAD:   DW      0                   ;DBUG
+SM.PARAM:   DW      0                   ;DBUG
+            DW      0
+SM.BWSE:    DW      0                   ;DATA
 
-			;Bereich fuer Nutzerkonstanten
-SM.NUTZK:   DEFS  20H,0
-            DEFS  10,0  ;original: 12,0
+                                        ;Bereich fuer Nutzerkonstanten
+SM.NUTZK:   DEFS    20H,0
+            DEFS    10,0                ;original: 12,0
 
 ;****************************************************************
 ;*                  Arbeitsbereich KMBG (Programm KS01)         *
-SM.AEATB:   DW    0             ;Adresse E/A-Tabelle
-SM.PZAUS:   DW    0             ;Pufferzeiger Ausgabe
-SM.PZEIN:   DW    0             ;Pufferzeiger Eingabe
-SM.ZAUS:    DW    0             ;Zaehler Ausgabe
-SM.ZEIN:    DW    0             ;Zaehler Eingabe
-SM.Z1:      DB    0             ;Zaehler Schreib-/Lese wdhg.
-SM.Z2:      DB    0             ;Zaehler Blocklueckenverl.
-SM.CRCZ:    DW    0             ;CRC-Zeichen
-SM.FEHLZ:   DB    0             ;interner Fehleranzeiger
-SM.POS:     DW    0             ;Position des Fehlers im Datensatz
-SM.SDAT:    DB    0             ;Solldaten
-SM.IDAT:    DB    0             ;Ist daten
-SM.PUFFS:   DEFS  260,0         ;Eingabepuffer
+SM.AEATB:   DW      0                   ;Adresse E/A-Tabelle
+SM.PZAUS:   DW      0                   ;Pufferzeiger Ausgabe
+SM.PZEIN:   DW      0                   ;Pufferzeiger Eingabe
+SM.ZAUS:    DW      0                   ;Zaehler Ausgabe
+SM.ZEIN:    DW      0                   ;Zaehler Eingabe
+SM.Z1:      DB      0                   ;Zaehler Schreib-/Lese wdhg.
+SM.Z2:      DB      0                   ;Zaehler Blocklueckenverl.
+SM.CRCZ:    DW      0                   ;CRC-Zeichen
+SM.FEHLZ:   DB      0                   ;interner Fehleranzeiger
+SM.POS:     DW      0                   ;Position des Fehlers im Datensatz
+SM.SDAT:    DB      0                   ;Solldaten
+SM.IDAT:    DB      0                   ;Ist daten
+SM.PUFFS:   DEFS    260,0               ;Eingabepuffer
 
 ;*                  Arbeitszellen fuer  CRC-Routine             *
-SM.KOMDO:   DB    0             ;Kommando
-SM.ZEITK:   DB    0             ;Zeitkonstante
-SM.ADR:     DW    0             ;Adresse
-SM.CONTR:   DB    0             ;Ereigniskontrolle
+SM.KOMDO:   DB      0                   ;Kommando
+SM.ZEITK:   DB      0                   ;Zeitkonstante
+SM.ADR:     DW      0                   ;Adresse
+SM.CONTR:   DB      0                   ;Ereigniskontrolle
 ;*                                                              *
 ;****************************************************************
-            DW    0
-                                ;E-/A-Tabelle
-SM.EADRU:   DEFS  16,0          ;             fuer Drucker
+            DW      0
+                                        ;E-/A-Tabelle
+SM.EADRU:   DEFS    16,0                ;             fuer Drucker
 
-SM.EALBS:   DEFS  32,0          ;             fuer Lochbandstanzer
-SM.EALBL:   DEFS  32,0          ;             fuer Lochbandleser
+SM.EALBS:   DEFS    32,0                ;             fuer Lochbandstanzer
+SM.EALBL:   DEFS    32,0                ;             fuer Lochbandleser
 
-SM.EAAMB    EQU   00FE0H        ;             fuer Magnetbandgeraet
+SM.EAAMB    EQU     00FE0H              ;             fuer Magnetbandgeraet
 
 
-                                ;weitere System-Konstanten
-SM.PTSC     EQU   0FC00H        ;Standardanfangsadr.   programm. PF-Tasten
+                                        ;weitere System-Konstanten
+SM.PTSC     EQU     0FC00H              ;Standardanfangsadr.   programm. PF-Tasten
 
-SM.DATUM    EQU   00FF0H        ;aktuelles Datum  ( 3 Byte )
-SM.PTS      EQU   00FF7H        ;Merker Anfangsadresse programm. PF-Tasten
-SM.RST38    EQU   00FF9H        ;Sprung zur RST38-Routine
-SM.CTRL     EQU   00FFCH        ;Merker CTRL-Taste
-SM.KGMER    EQU   00FFDH        ;Merker Klein-/Grossschreibung
-SM.IMERK    EQU   00FFEH        ;Merker INS_MOD
-SM.SPMER    EQU   00FFFH        ;Merker fuer Tastengruppen
-                                ;0   Zeichencode < 20H
-                                ;1   SP ! " # $ % & ' ( ) *
-                                ;2   + , -
-                                ;3   0 1 2 3 4 5 6 7 8 9
-                                ;4   : ; < > = ?
-                                ;5   40H - 60H UND 7BH - 7EH
-                                ;6   kleine Buchstaben
-                                ;7   Funktionstasten
-SM.SMEND    EQU   $
-			;Stand: 28.Januar 85 - K EAW/wfvm..MSH
+SM.DATUM    EQU     00FF0H              ;aktuelles Datum  ( 3 Byte )
+SM.PTS      EQU     00FF7H              ;Merker Anfangsadresse programm. PF-Tasten
+SM.RST38    EQU     00FF9H              ;Sprung zur RST38-Routine
+SM.CTRL     EQU     00FFCH              ;Merker CTRL-Taste
+SM.KGMER    EQU     00FFDH              ;Merker Klein-/Grossschreibung
+SM.IMERK    EQU     00FFEH              ;Merker INS_MOD
+SM.SPMER    EQU     00FFFH              ;Merker fuer Tastengruppen
+                                        ;0   Zeichencode < 20H
+                                        ;1   SP ! " # $ % & ' ( ) *
+                                        ;2   + , -
+                                        ;3   0 1 2 3 4 5 6 7 8 9
+                                        ;4   :  ; < > = ?
+                                        ;5   40H - 60H UND 7BH - 7EH
+                                        ;6   kleine Buchstaben
+                                        ;7   Funktionstasten
+SM.SMEND    EQU     $
+                                        ;Stand: 28.Januar 85 - K EAW/wfvm..MSH
 
-;	END
+;           END
 

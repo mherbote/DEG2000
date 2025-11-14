@@ -1,60 +1,60 @@
-	TITLE 'EQUAL - Anweisungen fuer Assembler'
-	PAGE	87
-SY.SYSTB  EQU	0000BH
-SM.STACK  EQU	00CE0H
-SM.FKTAB  EQU	00CE0H
-SM.TABU   EQU	00DAAH
-SM.END    EQU	00DC6H  ;Position Textende
-SM.ZEIN   EQU	00E5AH  ;Zaehler Eingabe
-SM.PUFFS  EQU	00E65H  ;Eingabepuffer
-SD.PFFI   EQU	08010H  ;Eingabepuffer
-SD.TPA    EQU	08830H  ;Anf.adr. Textpuffer
-ATACO     EQU	0225CH
-SD.BWSA   EQU	03000H
-TA.ABFR1  EQU	04026H
-SY.SETCHL EQU	04033H
-SY.RESC   EQU	04036H
-PRINT     EQU	04040H
-PUF.KASS  EQU	04070H
+            TITLE   'EQUAL - Anweisungen fuer Assembler'
+            PAGE    87
+SY.SYSTB    EQU     0000BH
+SM.STACK    EQU     00CE0H
+SM.FKTAB    EQU     00CE0H
+SM.TABU     EQU     00DAAH
+SM.END      EQU     00DC6H              ;Position Textende
+SM.ZEIN     EQU     00E5AH              ;Zaehler Eingabe
+SM.PUFFS    EQU     00E65H              ;Eingabepuffer
+SD.PFFI     EQU     08010H              ;Eingabepuffer
+SD.TPA      EQU     08830H              ;Anf.adr. Textpuffer
+ATACO       EQU     0225CH
+SD.BWSA     EQU     03000H
+TA.ABFR1    EQU     04026H
+SY.SETCHL   EQU     04033H
+SY.RESC     EQU     04036H
+PRINT       EQU     04040H
+PUF.KASS    EQU     04070H
 
-	ORG	00000H
-	DEFS	05400H,0
-	INCLUDE K0.MAC	;EQUAL - Anweisungen fuer Assembler
+            ORG     00000H
+            DEFS    05400H,0
+            INCLUDE K0.MAC              ;EQUAL - Anweisungen fuer Assembler
 ;
-	ORG	05400H
+            ORG     05400H
 ;
-;	INCLUDE	U1.MAC	;Allgemeine Unterprogramme
-;	INCLUDE	XY.MAC	;Handling f. IX/IY-adressierte Bereiche
-;	INCLUDE	UC.MAC	;Konvertierungen
-;	INCLUDE	CP.MAC	;Komprimierung
-;	INCLUDE	DC.MAC	;Dekomprimierung
-;	INCLUDE UR.MAC	;Routinen fuer Monitor UND Tastatur
-	INCLUDE K1.MAC	;Allgemeine Unterprogramme
+;           INCLUDE U1.MAC              ;Allgemeine Unterprogramme
+;           INCLUDE XY.MAC              ;Handling f. IX/IY-adressierte Bereiche
+;           INCLUDE UC.MAC              ;Konvertierungen
+;           INCLUDE CP.MAC              ;Komprimierung
+;           INCLUDE DC.MAC              ;Dekomprimierung
+;           INCLUDE UR.MAC                    ;Routinen fuer Monitor UND Tastatur
+            INCLUDE K1.MAC              ;Allgemeine Unterprogramme
 ;
-;	INCLUDE K1.MAC	;BAMOS/Emulator  ---  Kassettenmagnetband
-;	INCLUDE	KR.MAC	;Kassettengrundroutinen
-;	INCLUDE	UF.MAC	;Fehleranzeige und Behandlung
-;	INCLUDE	UA.MAC	;Ausschriften
-;	INCLUDE UR.MAC	;Routinen fuer Kassette
-;	INCLUDE	UK.MAC	;Einzelzeicheneingabe fuer KMBG
-	INCLUDE K2.MAC	;BAMOS/Emulator  ---  Kassettenmagnetband
+;           INCLUDE K1.MAC                    ;BAMOS/Emulator  ---  Kassettenmagnetband
+;           INCLUDE KR.MAC              ;Kassettengrundroutinen
+;           INCLUDE UF.MAC              ;Fehleranzeige und Behandlung
+;           INCLUDE UA.MAC              ;Ausschriften
+;           INCLUDE UR.MAC                    ;Routinen fuer Kassette
+;           INCLUDE UK.MAC              ;Einzelzeicheneingabe fuer KMBG
+            INCLUDE K2.MAC              ;BAMOS/Emulator  ---  Kassettenmagnetband
 ;
-;	INCLUDE	KI.MAC	;Initialisieren von MRES Kassetten
-;	INCLUDE	KV.MAC	;Anzeigen und Aendern des MRES-Verzeichnisses
-;	INCLUDE	KH.MAC	;Kommandos: KRDx und KWRx
-;	INCLUDE	FD.MAC	;Ein-/Ausgabe im freien Format
-;	INCLUDE LD.MAC	;Laden von MRES-P-Dateien
-;	INCLUDE RL.MAC	;Relativloader fuer O-Dateien
-;	INCLUDE SV.MAC	;Retten von Maschinencodeprogrammen als MRES - P-Datei
-	INCLUDE K3.MAC	;MRES Routinen
+;           INCLUDE KI.MAC              ;Initialisieren von MRES Kassetten
+;           INCLUDE KV.MAC              ;Anzeigen und Aendern des MRES-Verzeichnisses
+;           INCLUDE KH.MAC              ;Kommandos: KRDx und KWRx
+;           INCLUDE FD.MAC              ;Ein-/Ausgabe im freien Format
+;           INCLUDE LD.MAC                    ;Laden von MRES-P-Dateien
+;           INCLUDE RL.MAC                    ;Relativloader fuer O-Dateien
+;           INCLUDE SV.MAC                    ;Retten von Maschinencodeprogrammen als MRES - P-Datei
+            INCLUDE K3.MAC              ;MRES Routinen
 ;
-;	INCLUDE	KX.MAC	;Kopieren von MRES-Kassetten Teil 1
-;	INCLUDE	KY.MAC	;Kopieren von MRES-Kassetten Teil 2
-;	INCLUDE	KU.MAC	;Unterprogramme fuer KOPI
-	INCLUDE K4.MAC	;Kopieren MRES
+;           INCLUDE KX.MAC              ;Kopieren von MRES-Kassetten Teil 1
+;           INCLUDE KY.MAC              ;Kopieren von MRES-Kassetten Teil 2
+;           INCLUDE KU.MAC              ;Unterprogramme fuer KOPI
+            INCLUDE K4.MAC              ;Kopieren MRES
 ;
-	INCLUDE KM.MAC
+            INCLUDE KM.MAC
 ;
-	TITLE 'Symbolliste S1b'
-	END
+            TITLE   'Symbolliste S1b'
+            END
 

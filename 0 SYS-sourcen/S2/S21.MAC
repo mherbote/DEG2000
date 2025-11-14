@@ -57,25 +57,25 @@ UB.KTAB     EQU     02B03H              ; Steuertabelle Kassette SYS 1.2
             DW      0B000H              ; Ladeadresse: B000H
 ;--------------------------/
 
-        ;     INCLUDE KS01.MAC
-        ;     INCLUDE K209.MAC
-        ;     INCLUDE MS05.MAC
-        ;     INCLUDE TS06.MAC
-        ;     INCLUDE S213.MAC
+                                        ;     INCLUDE KS01.MAC
+                                        ;     INCLUDE K209.MAC
+                                        ;     INCLUDE MS05.MAC
+                                        ;     INCLUDE TS06.MAC
+                                        ;     INCLUDE S213.MAC
             INCLUDE Speicher.MAC
             .DEPHASE
 
             .PHASE  0C000H
-        ;     INCLUDE S165.MAC
-        ;     INCLUDE S310.MAC
-        ;     INCLUDE MO26.MAC
-        ;     INCLUDE TA35.MAC   ;???   TA36
-        ;     INCLUDE K158.MAC
-        ;     INCLUDE LO28.MAC
-        ;     INCLUDE S975.MAC   ;???   S967
-        ;     INCLUDE S424.MAC   ;???   S425
-        ;     INCLUDE SM01.MAC
-        ;     INCLUDE S052.MAC   ;???   S053
+                                        ;     INCLUDE S165.MAC
+                                        ;     INCLUDE S310.MAC
+                                        ;     INCLUDE MO26.MAC
+                                        ;     INCLUDE TA35.MAC          ;???   TA36
+                                        ;     INCLUDE K158.MAC
+                                        ;     INCLUDE LO28.MAC
+                                        ;     INCLUDE S975.MAC          ;???   S967
+                                        ;     INCLUDE S424.MAC          ;???   S425
+                                        ;     INCLUDE SM01.MAC
+                                        ;     INCLUDE S052.MAC          ;???   S053
             INCLUDE System.MAC
 
 XXXX        EQU     $

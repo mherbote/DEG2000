@@ -1,68 +1,68 @@
-;         PN    UE01
+;           PN      UE01
 ;****************************************************************
 ;*                  EQUAL - Anweisungen fuer Assembler          *
 ;****************************************************************
-AKB      EQU	030H    ;IO-Adresse der AKB
-MaxBL    EQU	080H    ;max. Blocklaenge
+AKB         EQU     030H                ;IO-Adresse der AKB
+MaxBL       EQU     080H                ;max. Blocklaenge
 
-UE.TACL  EQU	0F7H    ;Kursor nach links
-UE.TACR  EQU	0F9H    ; ''    nach rechts
-UE.TASYS EQU	0CDH    ;SYS-Taste
-UE.TAQUI EQU	01EH    ;ET1
-UE.SVL   EQU	07DH    ;Laenge der SAVE-Bloecke
-UE.COTAL EQU	060H    ;Laenge ASC/KOI Codetabelle
-UE.KMPUL EQU	132H    ;max. Laenge E/A-Puffer
+UE.TACL     EQU     0F7H                ;Kursor nach links
+UE.TACR     EQU     0F9H                ; ''    nach rechts
+UE.TASYS    EQU     0CDH                ;SYS-Taste
+UE.TAQUI    EQU     01EH                ;ET1
+UE.SVL      EQU     07DH                ;Laenge der SAVE-Bloecke
+UE.COTAL    EQU     060H                ;Laenge ASC/KOI Codetabelle
+UE.KMPUL    EQU     132H                ;max. Laenge E/A-Puffer
 
-UE.SYSTB EQU	SY.SYSTB
-UE.STANF EQU	SM.STACK
-UE.EDEND EQU	SM.END   ;Speicherpl. fuer Adr. Editorende
-UE.ZEIN  EQU	SM.ZEIN  ;Pufferzaehler Eingabe
-UE.PUF   EQU	SM.PUFFS ;System-Puffer
-UE.BWSA  EQU	SD.BWSA  ;Bildwiederholspeicher
-UE.KPUFF EQU	SD.PFFI  ;E/A Puffer
-UE.TEXAN EQU	SD.TPA   ;Begin Editorraum
+UE.SYSTB    EQU     SY.SYSTB
+UE.STANF    EQU     SM.STACK
+UE.EDEND    EQU     SM.END              ;Speicherpl. fuer Adr. Editorende
+UE.ZEIN     EQU     SM.ZEIN             ;Pufferzaehler Eingabe
+UE.PUF      EQU     SM.PUFFS            ;System-Puffer
+UE.BWSA     EQU     SD.BWSA             ;Bildwiederholspeicher
+UE.KPUFF    EQU     SD.PFFI             ;E/A Puffer
+UE.TEXAN    EQU     SD.TPA              ;Begin Editorraum
 
-UE.BRKMB EQU	K1.BRKMB ;04000H	;phys. Kass.Routine
-UE.CRC   EQU	K1.CRC   ;04740H	;CRC-Berechnung
+UE.BRKMB    EQU     K1.BRKMB            ;04000H    ;phys. Kass.Routine
+UE.CRC      EQU     K1.CRC              ;04740H    ;CRC-Berechnung
 
-;         END
-;         PN    UB
-          ORG   2B00H
-UB.ZN:    DS	1,0
-K0.HSB:   DS	1,0   ;HS-Bereich
-K0.LPD:   DS	1,0   ;Laenge der Daten im Puffer
-UB.KTAB:  DS	27,0  ;Originale Tabelle nach Robotron
-UB.KTABE: DS	8,0   ;Tabelle fuer Kassetten im DEG2000 Emulator
-UB.PAR1:  DW	0
-UB.PAR2:  DW	0
-UB.PAR3:  DW	0
-UB.PAR4:  DW	0
-UB.PAR5:  DW	0
-UB.PATAB: DS	4,0
-UB.SATZ:  DB	0
-          DB	55
-          DB	80H
-          DS	55,' '
-UB.DTAB:  DS	41,0
-UB.END    EQU	$
-;         END
-;         PN    BC
+;           END
+;           PN      UB
+            ORG     2B00H
+UB.ZN:      DS      1,0
+K0.HSB:     DS      1,0                 ;HS-Bereich
+K0.LPD:     DS      1,0                 ;Laenge der Daten im Puffer
+UB.KTAB:    DS      27,0                ;Originale Tabelle nach Robotron
+UB.KTABE:   DS      8,0                 ;Tabelle fuer Kassetten im DEG2000 Emulator
+UB.PAR1:    DW      0
+UB.PAR2:    DW      0
+UB.PAR3:    DW      0
+UB.PAR4:    DW      0
+UB.PAR5:    DW      0
+UB.PATAB:   DS      4,0
+UB.SATZ:    DB      0
+            DB      55
+            DB      80H
+            DS      55,' '
+UB.DTAB:    DS      41,0
+UB.END      EQU     $
+;           END
+;           PN      BC
 ;----------------------------------------------------------------------
 ;
 ;        BEREICHE FUER KASSETTENKOPIEREN
 ;
 ;----------------------------------------------------------------------
-BC.EGG     EQU	0	;EINGABEGERAET
-BC.AGG     EQU	1	;AUSGABEGERAET
+BC.EGG      EQU     0                   ;EINGABEGERAET
+BC.AGG      EQU     1                   ;AUSGABEGERAET
 
-;	ORG	0E000H
-BC.TAB1    EQU	0E000H               ;Subadresse fuer Input -Kassette
-;          EQU	0E001H               ;Subadresse fuer Output-Kassette
-BC.VTABA   EQU	BC.TAB1  +    2
-BC.VTABE   EQU	BC.VTABA + 3200
-BC.TAB2    EQU	BC.VTABE + 3200
-BC.TAB2A   EQU	BC.TAB2  +  104
-BC.TAB3    EQU	BC.TAB2A +  104
-BC.END     EQU	BC.TAB3  +  104
+;           ORG     0E000H
+BC.TAB1     EQU     0E000H              ;Subadresse fuer Input -Kassette
+;           EQU     0E001H              ;Subadresse fuer Output-Kassette
+BC.VTABA    EQU     BC.TAB1  +    2
+BC.VTABE    EQU     BC.VTABA + 3200
+BC.TAB2     EQU     BC.VTABE + 3200
+BC.TAB2A    EQU     BC.TAB2  +  104
+BC.TAB3     EQU     BC.TAB2A +  104
+BC.END      EQU     BC.TAB3  +  104
 ;         END
 
