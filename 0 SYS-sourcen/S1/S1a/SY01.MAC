@@ -149,11 +149,25 @@ SY.INI:
             XOR     A
             LD      I,A                 ;I - Register laden
 
+; Speicher auf System 1.2 einstellen
             IF      SD.GENE AND 00000001B
             OUT     (0C4H),A            ;RESET - Sperre aus ---   S B S T
             OUT     (0C2H),A            ;SYS 1 aktivieren
             OUT     (0C1H),A
             OUT     (0C0H),A
+            ENDIF
+
+            IF      SD.GENE AND 00010000B
+            LD      HL,SYS1A
+            LD      BC,004C0H
+            OTIR
+            JR      SYS1B
+;            
+SYS1A:      DB      0F0H
+            DB      003H                ;alle Bereiche auf Konstantenliste umschalten
+            DB      004H                ;0000 - FFFF Standard (Bereich 1)
+            DB      0FFH
+SYS1B       EQU     $            
             ENDIF
 
             IM      2                   ;Interrupt - Mode 2

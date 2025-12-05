@@ -239,7 +239,7 @@ PF.S2:
                                         ;           Version 2.0 : 0C093H
             ENDIF
 
-                    IF      SD.GENE AND 00010000B
+            IF      SD.GENE AND 00010000B
                                         ;DEG2000 Emulator
             LD      BC,004C0H
             LD      HL,PF.OUTS2

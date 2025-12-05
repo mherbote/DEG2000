@@ -9228,7 +9228,7 @@ S0.IVSYS    EQU     0058H               ;LOW(IV)
             DB      'S1  '
 
 S0.DEG1:    CALL    S0.EM12
-            JP      0                   ;Sprung zum ZRE-EPROM
+            JP      S1.SYSA             ;Sprung zum ZRE-EPROM
 
             TITLE   'Systemkommando  S Y S 2'
             PAGE

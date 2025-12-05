@@ -34,6 +34,7 @@ BC.RECOV1   EQU     03010H
 BC.ANF      EQU     030B2H
 
 ; Verbindungsadressen zu SYS 1.2
+S1.SYSA     EQU     0000BH              ; Ruecksprung zu Version 1.2
 S0.TINIT    EQU     04000H              ; Initialisierung der Tastatur
 S0.TA1      EQU     04003H              ; U_Int - Abfrage
 S0.TA2      EQU     04006H              ; Tastencode-Eingabe

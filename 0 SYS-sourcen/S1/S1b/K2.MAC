@@ -611,12 +611,14 @@ UF.EXEC1:
             BIT     7,(IX)              ;Status
             JR      Z,UF.RET
             LD      A,(IX+1)            ;Fehlerschluessel
+            JR      UF.ERANZ1
 ;-------------------------Fehlerbehandlung---------------
 UF.ERANZ:
             PUSH    HL
             PUSH    DE
             PUSH    BC
             PUSH    AF
+UF.ERANZ1:
             PUSH    AF
             LD      A,19
             LD      (UB.ZN),A
@@ -687,18 +689,18 @@ UF.FL18:
             LD      HL,UA.BMGF
             CALL    UR.MIMO
             JP      C,UF.SYS1
-            JP      SY.SYSTB            ;UF.RET
+            JP      UF.RET
 ;------------------------------------------
 UF.FL17:
-            JP      SY.SYSTB            ;UF.RET
+            JP      UF.RET
 ;-------------------------------------
 UF.FL14:
-            JP      SY.SYSTB            ;UF.RET
+            JP      UF.RET
 
 UF.FL16:
             LD      HL,UA.FRZ
             CALL    UR.MIMO
-            JP      SY.SYSTB            ;UF.RET
+            JP      UF.RET
 ;----------------------------------------------------------------------
 ;           END
             TITLE   'Ausschriften'
