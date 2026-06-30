@@ -19,31 +19,42 @@ Module ICEmonitor
 
     Private Sub dohelp()
         Try
-            '                                                                       Output help text
+            '                                                                             Output help text
             Call COMMON.PrintGrid(Haupt.CMDliste, {"==> ?"})
-            Call COMMON.PrintGrid(Haupt.CMDliste, {"r filename[,address]      read object into memory"})
-            Call COMMON.PrintGrid(Haupt.CMDliste, {"d [address]               dump             memory"})
-            Call COMMON.PrintGrid(Haupt.CMDliste, {"l [address]               list             memory"})
-            Call COMMON.PrintGrid(Haupt.CMDliste, {"m [address]               modify           memory"})
-            Call COMMON.PrintGrid(Haupt.CMDliste, {"f address,count,value     fill             memory"})
-            Call COMMON.PrintGrid(Haupt.CMDliste, {"v from,to,count           move             memory"})
-            Call COMMON.PrintGrid(Haupt.CMDliste, {"p address                 show/modify port       "})
-            Call COMMON.PrintGrid(Haupt.CMDliste, {"g [address]               run         program    "})
-            Call COMMON.PrintGrid(Haupt.CMDliste, {"t [count]                 trace       program    "})
-            Call COMMON.PrintGrid(Haupt.CMDliste, {"ENTER                     single step program    "})
-            Call COMMON.PrintGrid(Haupt.CMDliste, {"x [register]              show/modify register   "})
-            Call COMMON.PrintGrid(Haupt.CMDliste, {"x f<flag>                 modify flag            "})
-            Call COMMON.PrintGrid(Haupt.CMDliste, {"b[no] address[,pass]      set   soft breakpoint  "})
-            Call COMMON.PrintGrid(Haupt.CMDliste, {"b                         show  soft breakpoints "})
-            Call COMMON.PrintGrid(Haupt.CMDliste, {"b[no] c                   clear soft breakpoint  "})
-            Call COMMON.PrintGrid(Haupt.CMDliste, {"h [address]               show  history          "})
-            Call COMMON.PrintGrid(Haupt.CMDliste, {"h c                       clear history          "})
-            Call COMMON.PrintGrid(Haupt.CMDliste, {"z start,stop              set trigger adr for t-state count"})
-            Call COMMON.PrintGrid(Haupt.CMDliste, {"z                         show                t-state count"})
-            Call COMMON.PrintGrid(Haupt.CMDliste, {"c                         measure clock frequency"})
-            Call COMMON.PrintGrid(Haupt.CMDliste, {"s                         show settings          "})
-            '       Call COMMON.PrintGrid(Haupt.CMDliste, {"! command                 execute UNIX command"})
-            Call COMMON.PrintGrid(Haupt.CMDliste, {"q                         quit"})
+            Call COMMON.PrintGrid(Haupt.CMDliste, {"a test1 | test2 | char | CR | clear   show testbild            "})                     'doanzeige()
+
+            Call COMMON.PrintGrid(Haupt.CMDliste, {"r filename[,address]                  read object into memory  "})                     'dogetfile()
+            Call COMMON.PrintGrid(Haupt.CMDliste, {"g [address]                           run              program "})                     'dogo()
+
+            Call COMMON.PrintGrid(Haupt.CMDliste, {"ENTER                                 single step      program "})
+            Call COMMON.PrintGrid(Haupt.CMDliste, {"b[no] address[-bereich[,pass]]        set   soft breakpoint    "})                     'dobreak()
+            Call COMMON.PrintGrid(Haupt.CMDliste, {"b                                     show  soft breakpoints   "})
+            Call COMMON.PrintGrid(Haupt.CMDliste, {"b[no] c                               clear soft breakpoint    "})
+
+            Call COMMON.PrintGrid(Haupt.CMDliste, {"d [address]                           dump             memory  "})                     'dodump()
+            Call COMMON.PrintGrid(Haupt.CMDliste, {"l [address]                           list             memory  "})                     'dolist()
+            Call COMMON.PrintGrid(Haupt.CMDliste, {"m [address]                           modify           memory  "})                     'domodify()
+            Call COMMON.PrintGrid(Haupt.CMDliste, {"f address,count,value                 fill             memory  "})                     'dofill()
+            Call COMMON.PrintGrid(Haupt.CMDliste, {"v from,to,count                       move             memory  "})                     'domove()
+
+            Call COMMON.PrintGrid(Haupt.CMDliste, {"x [register]                          show/modify      register"})                     'doreg()
+            'Call COMMON.PrintGrid(Haupt.CMDliste, {"x f<flag>                             modify flag              "})
+
+            'Call COMMON.PrintGrid(Haupt.CMDliste, {"p address                             show/modify      port    "})                    'doport()
+            'Call COMMON.PrintGrid(Haupt.CMDliste, {"t [count]                             trace            program "})                    'dotrace()
+
+            'Call COMMON.PrintGrid(Haupt.CMDliste, {"h [address]                           show  history            "})                     'dohist()
+            'Call COMMON.PrintGrid(Haupt.CMDliste, {"h c                                   clear history            "})
+
+            'Call COMMON.PrintGrid(Haupt.CMDliste, {"z start,stop                          set trigger adr for t-state count"})             'docount()
+            'Call COMMON.PrintGrid(Haupt.CMDliste, {"z                                     show                t-state count"})
+
+            'Call COMMON.PrintGrid(Haupt.CMDliste, {"c                                     measure clock frequency  "})                     'doclock()
+
+            'Call COMMON.PrintGrid(Haupt.CMDliste, {"s                                     show settings            "})                     'doshow()
+
+            'Call COMMON.PrintGrid(Haupt.CMDliste, {"! command                             execute UNIX command     "})                     'dounix()
+            Call COMMON.PrintGrid(Haupt.CMDliste, {"q                                     quit"})
         Catch ex As Exception
         End Try
     End Sub ' dohelp
@@ -59,6 +70,8 @@ Module ICEmonitor
                     Call BWS.TestBild(1)
                 Case UCase("Test2")
                     Call BWS.TestBild(2)
+                Case UCase("char")
+                    Call BWS.TestBild(3)
                 Case UCase("CR")
                     Call BWS.TestBild(0)
                 Case UCase("clear")
@@ -169,10 +182,12 @@ cont:
 #Else
         Dim i As Long
         Dim ibreak As Long
+        Dim bereich As Long
 
         ibreak = COMMON.vZ80cpu.PC - 1                                          ' store adr of breakpoint
+        bereich = COMMON.vZ80cpu.Seg_HS((ibreak \ 256) \ 16)
         For i = 1 To COMMON.SBSIZE
-            If COMMON.vZ80cpu.soft(i).sb_adr = ibreak Then
+            If COMMON.vZ80cpu.soft(i).sb_adr = ibreak And COMMON.vZ80cpu.soft(i).sb_bereich = bereich Then
                 GoTo was_softbreak
             End If
         Next
@@ -210,8 +225,13 @@ was_softbreak:
 #Else
         Dim ibreak As Long
         Dim iaddr As Long
+        Dim bereich As Long
         Dim ipass As Long
         Dim cmd As String
+        Dim min As Boolean
+
+        min = False
+        bereich = 1
 
         If COMMON.SBSIZE <= 0 Then
             Call COMMON.PrintGrid(Haupt.CMDliste, {"==> b"})
@@ -249,8 +269,9 @@ was_softbreak:
         End If
 
         If Len(cmd) = 1 And UCase(cmd) = "C" Then   'clear soft break point
-            Call COMMON.vZ80cpu.Speicher_schreiben_Byte(COMMON.vZ80cpu.soft(ibreak).sb_adr, COMMON.vZ80cpu.soft(ibreak).sb_oldopc)
+            Call COMMON.vZ80cpu.Speicher_schreiben_Byte1(COMMON.vZ80cpu.soft(ibreak).sb_adr, COMMON.vZ80cpu.soft(ibreak).sb_oldopc, COMMON.vZ80cpu.soft(ibreak).sb_bereich)
             COMMON.vZ80cpu.soft(ibreak).sb_adr = 0
+            COMMON.vZ80cpu.soft(ibreak).sb_bereich = 1
             COMMON.vZ80cpu.soft(ibreak).sb_oldopc = 0
             COMMON.vZ80cpu.soft(ibreak).sb_passcount = 0
             COMMON.vZ80cpu.soft(ibreak).sb_pass = 0
@@ -258,15 +279,22 @@ was_softbreak:
             If COMMON.vZ80cpu.soft(ibreak).sb_pass <> 0 Then
                 Call COMMON.vZ80cpu.Speicher_schreiben_Byte(COMMON.vZ80cpu.soft(ibreak).sb_adr, COMMON.vZ80cpu.soft(ibreak).sb_oldopc)
             End If
+            If InStr(cmd, "-") > 0 Then
+                min = True
+            End If
             iaddr = COMMON.NextHexValue(cmd)
+            If min Then
+                bereich = COMMON.NextHexValue(cmd)
+            End If
             If iaddr = -1 Then
                 Call COMMON.PrintGrid(Haupt.CMDliste, {"==> " + Haupt.CommandLine.Text})
                 Call COMMON.PrintGrid(Haupt.CMDliste, {"    Input Error by Address"})
                 Exit Sub
             End If
             COMMON.vZ80cpu.soft(ibreak).sb_adr = iaddr
-            COMMON.vZ80cpu.soft(ibreak).sb_oldopc = COMMON.vZ80cpu.Speicher_lesen_Byte(iaddr)
-            Call COMMON.vZ80cpu.Speicher_schreiben_Byte(iaddr, &H76)            ' HALT Befehl
+            COMMON.vZ80cpu.soft(ibreak).sb_bereich = bereich
+            COMMON.vZ80cpu.soft(ibreak).sb_oldopc = COMMON.vZ80cpu.Speicher_lesen_Byte1(iaddr, bereich)
+            Call COMMON.vZ80cpu.Speicher_schreiben_Byte1(iaddr, &H76, bereich)            ' HALT Befehl
             If Len(cmd) > 0 Then
                 ipass = COMMON.NextHexValue(cmd)
                 If ipass = -1 Then
@@ -284,11 +312,12 @@ was_softbreak:
     End Sub ' dobreak
     Private Sub dobreak1()
         Call COMMON.PrintGrid(Haupt.CMDliste, {"==> " + Haupt.CommandLine.Text})
-        Call COMMON.PrintGrid(Haupt.CMDliste, {"    No Addr Pass  Counter"})
+        Call COMMON.PrintGrid(Haupt.CMDliste, {"    No Addr    Pass  Counter"})
         For i = 0 To COMMON.SBSIZE
             If COMMON.vZ80cpu.soft(i).sb_pass Then
                 Call COMMON.PrintGrid(Haupt.CMDliste, {"    " + Format(i, "00") +
                                                        " " + COMMON.vZ80cpu.HexAnzeigeWordByte(COMMON.vZ80cpu.soft(i).sb_adr, "B") +
+                                                       "-" + Format(COMMON.vZ80cpu.soft(i).sb_bereich, "00") +
                                                        " " + Format(COMMON.vZ80cpu.soft(i).sb_pass, "00000") +
                                                        " " + Format(COMMON.vZ80cpu.soft(i).sb_passcount, "00000")})
             End If

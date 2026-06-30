@@ -44,6 +44,7 @@
 #If HISIZE0 = 1 Then
     Public Class history                                                        ' Structure of a history entry
         Public h_adr As UShort                                                  ' address of execution
+        Public h_bereich As UShort                                              ' bereich of address   ' muß ncoh erweitert werden
         Public h_af As UShort                                                   ' register AF
         Public h_bc As UShort                                                   ' register BC
         Public h_de As UShort                                                   ' register DE
@@ -61,7 +62,7 @@
 #If SBSIZE0 = 1 Then
     Public Class softbreak                                                      ' structure of a breakpoint        
         Public sb_adr As UShort                                                 ' address of breakpoint
-        Public sb_bereich As UShort                                             ' Speicherbereich {0 ... 5}        '???  muß ncoh erweitert werden
+        Public sb_bereich As UShort                                             ' Speicherbereich {0 ... cSeg_HS}        '???  muß ncoh erweitert werden
         Public sb_oldopc As Byte                                                ' op-code at adress of breakpoint
         Public sb_passcount As Integer                                          ' pass counter of breakpoint
         Public sb_pass As Integer                                               ' no. of pass to break

@@ -154,33 +154,66 @@ Public Class Haupt
 
         ParamStr = Environment.GetCommandLineArgs()
         COMMON.LOGfile = False
-        If ParamStr.Length > 2 Then
-            If ParamStr(2) = "-L" Then COMMON.LOGfile = True
-            ProgVerz = ParamStr(1) + "\"
-        ElseIf ParamStr.Length > 1 Then
-            ProgVerz = ParamStr(1) + "\"
-        Else
-            ProgVerz = System.Windows.Forms.Application.StartupPath + "\"
-        End If
 
-        COMMON.BinVerzeichnis = ProgVerz + My.Settings.BinVerzeichnis
-        COMMON.MemVerzeichnis = ProgVerz + My.Settings.MemVerzeichnis
-        COMMON.COMVerzeichnis = ProgVerz + My.Settings.COMVerzeichnis
-        COMMON.TapeVerzeichnis = ProgVerz + My.Settings.TapeVerzeichnis
-        COMMON.WavVerzeichnis = ProgVerz + My.Settings.WavVerzeichnis
-        COMMON.FontVerzeichnis = ProgVerz + My.Settings.FontVerzeichnis
+        Select Case ParamStr.Length
+            Case 3
+                If ParamStr(2) = "-L" Then
+                    COMMON.LOGfile = True
+                    'Init LogFile
+                    My.Application.Log.DefaultFileLogWriter.BaseFileName = System.IO.Path.Combine(Application.StartupPath, "DEG2000")
+                    My.Application.Log.DefaultFileLogWriter.Append = False
+                    My.Application.Log.DefaultFileLogWriter.AutoFlush = True
+                    My.Application.Log.WriteEntry("", TraceEventType.Information, 0)
+                    My.Application.Log.WriteEntry("=================================================================", TraceEventType.Information, 1)
+                    My.Application.Log.WriteEntry("DEG200 gestartet", TraceEventType.Information, 1)
+                End If
+        End Select
+        Select Case ParamStr.Length
+            Case 1
+                ProgVerz = My.Settings.ProgVerz + "\"
+            Case 2
+                If ParamStr(1) = "-L" Then
+                    COMMON.LOGfile = True
+                    'Init LogFile
+                    My.Application.Log.DefaultFileLogWriter.BaseFileName = System.IO.Path.Combine(Application.StartupPath, "DEG2000")
+                    My.Application.Log.DefaultFileLogWriter.Append = False
+                    My.Application.Log.DefaultFileLogWriter.AutoFlush = True
+                    My.Application.Log.WriteEntry("", TraceEventType.Information, 0)
+                    My.Application.Log.WriteEntry("=================================================================", TraceEventType.Information, 1)
+                    My.Application.Log.WriteEntry("DEG200 gestartet", TraceEventType.Information, 1)
+                    My.Application.Log.WriteEntry("My.Set.ProgVerz: " + My.Settings.ProgVerz, TraceEventType.Information, 20)
+                    My.Application.Log.WriteEntry("ParamStr(0)    : " + ParamStr(0), TraceEventType.Information, 20)
+                    My.Application.Log.WriteEntry("ParamStr(1)    : " + ParamStr(1), TraceEventType.Information, 20)
+                ElseIf ParamStr(1) = "." Then
+                    ProgVerz = My.Settings.ProgVerz + "\"
+                Else
+                    ProgVerz = ParamStr(1) + "\"
+                End If
+
+                ProgVerz = My.Settings.ProgVerz + "\"
+            Case 3
+                If COMMON.LOGfile Then
+                    My.Application.Log.WriteEntry("ParamStr(0)    : " + ParamStr(0), TraceEventType.Information, 20)
+                    My.Application.Log.WriteEntry("ParamStr(1)    : " + ParamStr(1), TraceEventType.Information, 20)
+                    My.Application.Log.WriteEntry("ParamStr(2)    : " + ParamStr(2), TraceEventType.Information, 20)
+                End If
+                If ParamStr(1) = "." Then
+                    ProgVerz = My.Settings.ProgVerz + "\"
+                Else
+                    ProgVerz = ParamStr(1) + "\"
+                End If
+        End Select
+
+        COMMON.BinVerzeichnis = ProgVerz + My.Settings.BinVerzeichnis + "\"
+        COMMON.MemVerzeichnis = ProgVerz + My.Settings.MemVerzeichnis + "\"
+        COMMON.COMVerzeichnis = ProgVerz + My.Settings.COMVerzeichnis + "\"
+        COMMON.TapeVerzeichnis = ProgVerz + My.Settings.TapeVerzeichnis + "\"
+        COMMON.WavVerzeichnis = ProgVerz + My.Settings.WavVerzeichnis + "\"
+        COMMON.FontVerzeichnis = ProgVerz + My.Settings.FontVerzeichnis + "\"
         COMMON.FontDateinameStart = ProgVerz + My.Settings.FontVerzeichnis + "\" + My.Settings.FontDateiname
         COMMON.FontDateiname = COMMON.FontDateinameStart
 
         If COMMON.LOGfile Then
-            'Init LogFile
-            My.Application.Log.DefaultFileLogWriter.BaseFileName = System.IO.Path.Combine(Application.StartupPath, "DEG2000")
-            My.Application.Log.DefaultFileLogWriter.Append = False
-            My.Application.Log.DefaultFileLogWriter.AutoFlush = True
-            My.Application.Log.WriteEntry("", TraceEventType.Information, 0)
-            My.Application.Log.WriteEntry("=================================================================", TraceEventType.Information, 1)
-            My.Application.Log.WriteEntry("DEG200 gestartet", TraceEventType.Information, 1)
-
             My.Application.Log.WriteEntry("ProgVerzeichnis: " + ProgVerz, TraceEventType.Information, 1)
             My.Application.Log.WriteEntry("BinVerzeichnis : " + COMMON.BinVerzeichnis, TraceEventType.Information, 1)
             My.Application.Log.WriteEntry("COMVerzeichnis : " + COMMON.COMVerzeichnis, TraceEventType.Information, 1)
@@ -664,6 +697,11 @@ Public Class Haupt
         Call BWS.Init1()
 
         OpenFileDialog1.InitialDirectory = COMMON.MemVerzeichnis
+        If COMMON.LOGfile Then
+            My.Application.Log.WriteEntry("MemVerzeichnis : " + COMMON.MemVerzeichnis, TraceEventType.Information, 10)
+            My.Application.Log.WriteEntry("OpenFileVerz.  : " + OpenFileDialog1.InitialDirectory, TraceEventType.Information, 10)
+        End If
+        OpenFileDialog1.RestoreDirectory = True
         OpenFileDialog1.FileName = "*.MEM;*.DEG"
         If OpenFileDialog1.ShowDialog() = Windows.Forms.DialogResult.OK Then
 
@@ -880,8 +918,18 @@ Public Class Haupt
         Dim i As Integer
 
         OpenFileDialog1.InitialDirectory = COMMON.COMVerzeichnis
+        If COMMON.LOGfile Then
+            My.Application.Log.WriteEntry("COMVerzeichnis : " + COMMON.COMVerzeichnis, TraceEventType.Information, 10)
+            My.Application.Log.WriteEntry("OpenFileVerz.  : " + OpenFileDialog1.InitialDirectory, TraceEventType.Information, 10)
+        End If
+        OpenFileDialog1.RestoreDirectory = True
         OpenFileDialog1.FileName = "*.COM"
         If OpenFileDialog1.ShowDialog() = Windows.Forms.DialogResult.OK Then
+            If COMMON.LOGfile Then
+                My.Application.Log.WriteEntry("COMVerzeichnis : " + COMMON.COMVerzeichnis, TraceEventType.Information, 11)
+                My.Application.Log.WriteEntry("OpenFileVerz.  : " + OpenFileDialog1.InitialDirectory, TraceEventType.Information, 11)
+                My.Application.Log.WriteEntry("OpenFileName   : " + OpenFileDialog1.FileName, TraceEventType.Information, 11)
+            End If
             Try
                 '1) Z80 Abarbeitung anhalten
                 Call CPUbreak()
@@ -933,8 +981,13 @@ Public Class Haupt
 
 #Region "BMK Menü Einstellungen"
     Private Sub ChangeFont_Click_1(sender As Object, e As EventArgs) Handles ChangeFont.Click
-        OpenFileDialog1.FileName = "*.FNT"
         OpenFileDialog1.InitialDirectory = ProgVerz + My.Settings.FontVerzeichnis
+        If COMMON.LOGfile Then
+            My.Application.Log.WriteEntry("FontVerzeichnis: " + COMMON.FontVerzeichnis, TraceEventType.Information, 10)
+            My.Application.Log.WriteEntry("OpenFileVerz.  : " + OpenFileDialog1.InitialDirectory, TraceEventType.Information, 10)
+        End If
+        OpenFileDialog1.RestoreDirectory = True
+        OpenFileDialog1.FileName = "*.FNT"
 
         Try
             If OpenFileDialog1.ShowDialog() = Windows.Forms.DialogResult.OK Then

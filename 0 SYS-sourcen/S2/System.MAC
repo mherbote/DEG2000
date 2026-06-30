@@ -40,63 +40,31 @@ S1.LA       EQU     $                   ;4. allgemeine Adressen
             JP      S1.LESR
             JP      S1.SCHR
 
+            TITLE   'Systemkommando  S Y S 1'
             PAGE
 ;****************************************************************
-;*               R S T 3 8 -  /  N M I -  Eintrittsadresse      *
+;*                 Systemkommando :  S Y S 1                    *
 ;****************************************************************
-S1.RST38    EQU     $
-S1.NMI:     LD      (S2.DDSP),SP        ;CPU - Zustand retten
-            LD      (TS.STACK),SP
-            LD      SP,S2.STACK
-            PUSH    AF
-            PUSH    HL
-            PUSH    DE
-            PUSH    BC
-            EX      AF,AF'              ;'
-            EXX
-            PUSH    AF
-            PUSH    HL
-            PUSH    DE
-            PUSH    BC
-            PUSH    IY
-            PUSH    IX
-            LD      A,I
-            LD      (S2.DDI),A
-            LD      SP,(S2.DDSP)
-            POP     HL
-            PUSH    HL
-            LD      (S2.DDPC),HL
-            LD      A,S0.PTAST          ;Tastaturinitialisierung
-            LD      (TS.PTAST),A
-            CALL    TA.PIOPR
-            CALL    TA.E0IN
-            LD      HL,S2.DDEI
-            LD      (S2.DMANF),HL
-S1.RST:     LD      HL,S1.INIT6
-            PUSH    HL
-            LD      HL,S1.DB0
-            PUSH    HL
-            RETN
+            DW      $
+            DB      'S1  '
+
+S0.DEG1:    CALL    S0.EM12
+            JP      S1.SYSA             ;Sprung zum ZRE-EPROM
+
+            TITLE   'Systemkommando  S Y S 2'
+            PAGE
 ;****************************************************************
 ;*               Eintrittsadresse   D E G 2                     *
 ;****************************************************************
-S1.RES1:    LD      A,0C3H
-            LD      (00000H),A
-            LD      (00038H),A
-            LD      (00066H),A
-            LD      HL,S1.RES
-            LD      (00001H),HL
-            LD      HL,S1.RST38
-            LD      (00039H),HL
-            LD      HL,S1.NMI
-            LD      (00067H),HL
-            XOR     A
-            LD      (S0.DEAT),A
+S0.DEG2:    LD      SP,S0.STACK+2
+            CALL    S0.EM11             ; Umschalten Speicherbereiche Emulator
 
-            LD      HL,S0.BWSB
-            LD      DE,S2.STACK
-            LD      BC,S0.BASCL-S0.BWSB
-            LDIR
+S1.RES1:    CALL    FIRSTINI
+            LD      IX,S1.RES1
+            LD      (IX+0),0
+            LD      (IX+1),0
+            LD      (IX+2),0
+            CALL    BWSZUAB
 
             PAGE
 ;****************************************************************
@@ -167,10 +135,7 @@ S1.SYSTB:   LD      A,HIGH(S0.IV)
             LD      A,11000000B
             LD      (MS.DIREL),A
             LD      (MS.DIRES),A
-            LD      HL,S0.BWSB
-            LD      DE,S2.STACK
-            LD      BC,S0.BASCL-S0.BWSB
-            LDIR
+            CALL    BWSZUAB
 
             XOR     A                   ;ZANZ,SPANZ belegen
             LD      (MS.CMD),A
@@ -210,65 +175,6 @@ S1.SYSTB:   LD      A,HIGH(S0.IV)
 
             CALL    S1.STAT
             CALL    S1.DAT              ;Datum anzeigen
-
-            JP      S1.SYSTC            ;ueberspringen des UPs  DAT
-
-            PAGE
-;****************************************************************
-;*                              Anzeige: Datum:                 *
-;****************************************************************
-S1.DAT:     CALL    S1.ANZEI            ;Anzeige: Datum:
-            DW      00F02H              ;ZPOS=2  , SPOS=15
-            DB      8
-            DB      'Datum:  '
-            DB      0
-
-            LD      A,24                ;Anzeige des Datums
-            LD      (MS.CMD),A
-            LD      B,2
-            LD      HL,S3.DATUM-S3.SEAT
-            LD      DE,S0.DEAT
-            ADD     HL,DE
-            CALL    MO.MONI
-            LD      A,20
-            LD      (MS.CMD),A
-            LD      A,'.'
-            LD      (MS.TK),A
-            CALL    MO.MONI
-            LD      A,24
-            LD      (MS.CMD),A
-            LD      B,2
-            LD      HL,S3.DATUM-S3.SEAT
-            LD      DE,S0.DEAT+2
-            ADD     HL,DE
-            CALL    MO.MONI
-            LD      A,20
-            LD      (MS.CMD),A
-            LD      A,'.'
-            LD      (MS.TK),A
-            CALL    MO.MONI
-            LD      A,24
-            LD      (MS.CMD),A
-            LD      B,2
-            LD      HL,S3.DATUM-S3.SEAT
-            LD      DE,S0.DEAT+4
-            ADD     HL,DE
-            CALL    MO.MONI
-
-;                               Anzeige: :
-            LD      L,S0.SYSZ-1         ;ZPOS=SYSZ , SPOS=0
-            LD      H,0
-            LD      (MS.ZPOS),HL
-            LD      A,20
-            LD      (MS.CMD),A
-            LD      A,':'
-            LD      (MS.TK),A
-            CALL    MO.MONI
-
-            LD      A,21                ;SPOS=SPOS+1
-            LD      (MS.CMD),A
-            CALL    MO.MONI
-            RET
 
             PAGE
 ;****************************************************************
@@ -366,6 +272,126 @@ S1.TFE:     CALL    TA.TFE              ;Warten auf Tastenende
 S1.ABFR:    LD      SP,(TS.STACK)       ;Kellerzeiger zuruecksetzen
             CALL    TA.ABFR             ;Tastaturabfrage
             JR      S1.ABFR
+
+            PAGE
+;****************************************************************
+;*               First Initialisierungen                        *
+;****************************************************************
+FIRSTINI:   LD      A,0C3H
+            LD      (00000H),A
+            LD      (00038H),A
+            LD      (00066H),A
+            LD      HL,S1.RES           ; RESET - Eintrittsadresse setzen
+            LD      (00001H),HL
+            LD      HL,S1.RST38         ; RST38 - Eintrittsadresse setzen
+            LD      (00039H),HL
+            LD      HL,S1.NMI           ; NMI   - Eintrittsadresse setzen
+            LD      (00067H),HL
+            XOR     A                   ; 
+            LD      (S0.DEAT),A
+            RET
+
+BWSZUAB:                                ; BWS Zu-/Ab-schaltroutinen umkopieren
+            LD      HL,S0.BWSB
+            LD      DE,S2.STACK
+            LD      BC,S0.BASCL-S0.BWSB
+            LDIR
+            RET
+
+            PAGE
+;****************************************************************
+;*                              Anzeige: Datum:                 *
+;****************************************************************
+S1.DAT:     CALL    S1.ANZEI            ;Anzeige: Datum:
+            DW      00F02H              ;ZPOS=2  , SPOS=15
+            DB      8
+            DB      'Datum:  '
+            DB      0
+
+            LD      A,24                ;Anzeige des Datums
+            LD      (MS.CMD),A
+            LD      B,2
+            LD      HL,S3.DATUM-S3.SEAT
+            LD      DE,S0.DEAT
+            ADD     HL,DE
+            CALL    MO.MONI
+            LD      A,20
+            LD      (MS.CMD),A
+            LD      A,'.'
+            LD      (MS.TK),A
+            CALL    MO.MONI
+            LD      A,24
+            LD      (MS.CMD),A
+            LD      B,2
+            LD      HL,S3.DATUM-S3.SEAT
+            LD      DE,S0.DEAT+2
+            ADD     HL,DE
+            CALL    MO.MONI
+            LD      A,20
+            LD      (MS.CMD),A
+            LD      A,'.'
+            LD      (MS.TK),A
+            CALL    MO.MONI
+            LD      A,24
+            LD      (MS.CMD),A
+            LD      B,2
+            LD      HL,S3.DATUM-S3.SEAT
+            LD      DE,S0.DEAT+4
+            ADD     HL,DE
+            CALL    MO.MONI
+
+;                               Anzeige: :
+            LD      L,S0.SYSZ-1         ;ZPOS=SYSZ , SPOS=0
+            LD      H,0
+            LD      (MS.ZPOS),HL
+            LD      A,20
+            LD      (MS.CMD),A
+            LD      A,':'
+            LD      (MS.TK),A
+            CALL    MO.MONI
+
+            LD      A,21                ;SPOS=SPOS+1
+            LD      (MS.CMD),A
+            CALL    MO.MONI
+            RET
+
+            PAGE
+;****************************************************************
+;*               R S T 3 8 -  /  N M I -  Eintrittsadresse      *
+;****************************************************************
+S1.RST38    EQU     $
+S1.NMI:     LD      (S2.DDSP),SP        ;CPU - Zustand retten
+            LD      (TS.STACK),SP
+            LD      SP,S2.STACK
+            PUSH    AF
+            PUSH    HL
+            PUSH    DE
+            PUSH    BC
+            EX      AF,AF'              ;'
+            EXX
+            PUSH    AF
+            PUSH    HL
+            PUSH    DE
+            PUSH    BC
+            PUSH    IY
+            PUSH    IX
+            LD      A,I
+            LD      (S2.DDI),A
+            LD      SP,(S2.DDSP)
+            POP     HL
+            PUSH    HL
+            LD      (S2.DDPC),HL
+            LD      A,S0.PTAST          ;Tastaturinitialisierung
+            LD      (TS.PTAST),A
+            CALL    TA.PIOPR
+            CALL    TA.E0IN
+            LD      HL,S2.DDEI
+            LD      (S2.DMANF),HL
+S1.RST:     LD      HL,S1.INIT6
+            PUSH    HL
+            LD      HL,S1.DB0
+            PUSH    HL
+            RETN
 
             TITLE   'Tastenroutinen'
             PAGE
@@ -7483,10 +7509,7 @@ S9.AL:      LD      A,(IX+2)            ;Segment            absoluter Loader
             CALL    S4.BWS
 S9.AL3:     CALL    LO.AL
 S9.AL2:     PUSH    AF
-            LD      HL,S0.BWSB
-            LD      DE,S2.STACK
-            LD      BC,S0.BASCL-S0.BWSB
-            LDIR
+            CALL    BWSZUAB
             POP     AF
             JP      NZ,LO.LO13
 S9.AL1:     JR      S9.SC52E
@@ -7861,10 +7884,7 @@ S4.SC750    EQU     $
 S4.SC760    EQU     $
 S4.UM16:    JP      0B403H
 
-S4.RES:     LD      HL,S0.BWSB
-            LD      DE,S2.STACK
-            LD      BC,S0.BASCL-S0.BWSB
-            LDIR
+S4.RES:     CALL    BWSZUAB
             JP      S1.RES1
             ENDIF
 
@@ -7981,10 +8001,7 @@ S4.BSCN:    LD      HL,S4.UUM4          ;Umschalt - Unterprogramme laden
 
 S4.RES:     LD      SP,S0.STACK
             CALL    S4.BSCN
-            LD      HL,S0.BWSB          ;BWS-Umschalt-UP's umladen
-            LD      DE,S2.STACK
-            LD      BC,S0.BASCL-S0.BWSB
-            LDIR
+            CALL    BWSZUAB             ;BWS-Umschalt-UP's umladen
             OUT     (C),S4.SBST+4       ;RESET-Sperre aus
 
             IF      S4.V2 AND 1         ;OPS (0000H,4000H) wegschalten
@@ -9218,26 +9235,6 @@ S0.MEMCK    EQU     09FFFH
 
 S0.IV:      DW      S1.IO               ;Interruptroutine: EI,RETI
 S0.IVSYS    EQU     0058H               ;LOW(IV)
-
-            TITLE   'Systemkommando  S Y S 1'
-            PAGE
-;****************************************************************
-;*                 Systemkommando :  S Y S 1                    *
-;****************************************************************
-            DW      $
-            DB      'S1  '
-
-S0.DEG1:    CALL    S0.EM12
-            JP      S1.SYSA             ;Sprung zum ZRE-EPROM
-
-            TITLE   'Systemkommando  S Y S 2'
-            PAGE
-;****************************************************************
-;*                 Systemkommando :  S Y S 2                    *
-;****************************************************************
-S0.DEG2:    LD      SP,S0.STACK+2
-            CALL    S0.EM11
-            JP      S1.RES1
 
             TITLE   'Umschalten  fuer Emulator'
             PAGE

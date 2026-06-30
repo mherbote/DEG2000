@@ -1,0 +1,503 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DEG2000.AboutBox1">
+    <Position X="0.75" Y="3" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAiAAAAAAAQAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAA=</HashCode>
+      <FileName>AboutBox1.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.Z80cpu">
+    <Position X="8.75" Y="0.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Delegate Name="DEG2000.Z80cpu.opfunc" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Z80cpu.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="DEG2000.Z80cpu.opfuncp" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Z80cpu.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="DEG2000.Z80cpu.opfunc2" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Z80cpu.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="DEG2000.Z80cpu.history">
+        <Compartments>
+          <Compartment Name="Fields" Collapsed="true" />
+        </Compartments>
+        <TypeIdentifier>
+          <NewMemberFileName>Z80cpu.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="DEG2000.Z80cpu.softbreak">
+        <Compartments>
+          <Compartment Name="Fields" Collapsed="true" />
+        </Compartments>
+        <TypeIdentifier>
+          <NewMemberFileName>Z80cpu.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>wDBSIEBDSgMIIgKUCJCifbmYFkIGYbAFAgATtsdDBQk=</HashCode>
+      <FileName>Z80cpu.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.Tastatur">
+    <Position X="0.75" Y="13.5" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>/29RA2T5fy8IkIne/0uJzv///+99/6GVnv/fqRk4cXk=</HashCode>
+      <FileName>Tastatur.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.BWS">
+    <Position X="0.75" Y="10.75" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Enum Name="DEG2000.BWS.eCursorTyp" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>BWS.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>CMkEDA4AMbUqIYDFYCSBRwACgICIAEIAgAkPg4KQIhg=</HashCode>
+      <FileName>BWS.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.Zeichen">
+    <Position X="0.75" Y="8.75" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>BAAAAAgMAAIQAAAAAAABCAAgAAKCABBAAAAJABAAAEA=</HashCode>
+      <FileName>Zeichen.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.SplashScreen1">
+    <Position X="0.75" Y="0.5" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>IAgAAAABACAAAAAAAACAAAQCAAAACAgAAgAAAAAAAAA=</HashCode>
+      <FileName>SplashScreen1.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.AnzeigeBuffer">
+    <Position X="21" Y="3.75" Width="3" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>gAACJGAgECAQXBAAAESAACACpSBQAAgAA5EIwAQxAAQ=</HashCode>
+      <FileName>AnzeigeBuffer.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.AnzeigeHS">
+    <Position X="21" Y="2.25" Width="3" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAABAEAwACAQQBIAAACAABwCBOAwYAQIg5MIgAUBAAA=</HashCode>
+      <FileName>AnzeigeHS.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.CPU1">
+    <Position X="11" Y="0.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>LUWII9mDhT3F9/f3PAgj3isgRP40CEJMIOG4ZZVp//8=</HashCode>
+      <FileName>CPU1.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.DataGridViewDisableButtonCell">
+    <Position X="18" Y="3.25" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAQIABA=</HashCode>
+      <FileName>Laufwerke.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.DataGridViewDisableButtonColumn">
+    <Position X="18" Y="2" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Laufwerke.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.Haupt">
+    <Position X="18" Y="0.5" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>d2nnPe5oe/Cr/nbs2HHM6aAjleFf4XjPats+sHXNT3E=</HashCode>
+      <FileName>Haupt.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.Hauptspeicher">
+    <Position X="21" Y="0.5" Width="3" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg=</HashCode>
+      <FileName>Z80cpu.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.IOsim">
+    <Position X="6.25" Y="5" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Delegate Name="DEG2000.IOsim.op_funcb" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>IOsim.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>YACLQJBAAgiDQAAgAgKglyAAQwIAALqiAZBkAIAFAkM=</HashCode>
+      <FileName>IOsim.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.Kassetten">
+    <Position X="21" Y="7" Width="3" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AwAAAAAAEDgAAAAAAACAAAACBABgAAAAAAAAAAAAAPA=</HashCode>
+      <FileName>Kassetten.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.KassettenLW">
+    <Position X="21" Y="8.5" Width="3" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="DEG2000.KassettenLW.zeile" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>KassettenLW.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="DEG2000.KassettenLW.buffer1" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>KassettenLW.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>IQAEACQCALAEAgEgAACgAAEAIRCCCAAYAMBABgAABAA=</HashCode>
+      <FileName>KassettenLW.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.Laufwerke">
+    <Position X="21" Y="5.25" Width="3" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAgEAgECAAKAAAAQCAAEACBGAQABAAUiAAAAAgAAA=</HashCode>
+      <FileName>Laufwerke.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.NumericUpDownCell">
+    <Position X="18" Y="4.75" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAAAABAAAAAAAAAAAAAAAEAAAAAAAAAAAEAA=</HashCode>
+      <FileName>AnzeigeHS.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.NumericUpDownColumn">
+    <Position X="18" Y="6.25" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA=</HashCode>
+      <FileName>AnzeigeHS.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.NumericUpDownEditingControl">
+    <Position X="18" Y="8.25" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>gAAACAIAAIAAAAAAAAQAAIAAAAAAQAMAAUAAAAgIAAA=</HashCode>
+      <FileName>AnzeigeHS.vb</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DEG2000.ucKassette">
+    <Position X="21" Y="11.5" Width="3" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>uIcAgUCDACiBAEEAgKSnAAoDBHAyhgAAw9WMiCcABQA=</HashCode>
+      <FileName>ucKassette.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.My.MySettings">
+    <Position X="6.25" Y="7.5" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>BAggAAEAAAYQAAAAAAEiAAAAIAABEAAAAAAQAAACAAA=</HashCode>
+      <FileName>Settings.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.Font">
+    <Position X="0.75" Y="6.25" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAGIAQAAAAAAAAAAAAAAAAAAIAQAAAIAAAAAAAI=</HashCode>
+      <FileName>Font.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Module Name="DEG2000.COMMON">
+    <Position X="3.5" Y="0.5" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>1AgtMyAicwaFogFOkTG2jYiAsi8B2gBxCEAYkETOGUc=</HashCode>
+      <FileName>COMMON.vb</FileName>
+    </TypeIdentifier>
+  </Module>
+  <Module Name="DEG2000.Disass">
+    <Position X="6.25" Y="0.5" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="DEG2000.Disass.optab" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Disass.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="DEG2000.Disass.regClass" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Disass.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAACECAAAAAAAAEIAAFgggAAAAAkBBAAAIAgAgAAAAA=</HashCode>
+      <FileName>Disass.vb</FileName>
+    </TypeIdentifier>
+  </Module>
+  <Module Name="DEG2000.ICEmonitor">
+    <Position X="6.25" Y="3.5" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AgABQgAggAYBQABACQAADHoAAAAJACAIRAAAAAAACAA=</HashCode>
+      <FileName>ICEmonitor.vb</FileName>
+    </TypeIdentifier>
+  </Module>
+  <Module Name="DEG2000.My.MySettingsProperty">
+    <Position X="6.25" Y="9" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Module>
+  <Module Name="DEG2000.My.Resources.Resources">
+    <Position X="6.25" Y="10" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAIAEAAgAAAAAAgAAAADkQBAAQAEIAIAAACEAAQAAIA=</HashCode>
+    </TypeIdentifier>
+  </Module>
+  <Module Name="DEG2000.CB">
+    <Position X="11" Y="3.75" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="DEG2000.CB.op_cb" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>CB.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAB8iAAAvETAGgAAAEFhAjwgABiAAIEO/N4Ah7xc=</HashCode>
+      <FileName>CB.vb</FileName>
+    </TypeIdentifier>
+  </Module>
+  <Module Name="DEG2000.DD">
+    <Position X="13.5" Y="0.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="DEG2000.DD.op_dd" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>DD.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>eAUGqIoIADAJyCQAIiQiIBFRARwCggghCEhEMeDpSIA=</HashCode>
+      <FileName>DD.vb</FileName>
+    </TypeIdentifier>
+  </Module>
+  <Module Name="DEG2000.DDCB">
+    <Position X="13.5" Y="3.75" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="DEG2000.DDCB.op_ddcb" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>DDCB.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAkDAOAAAAEBAAIBAAgEAABAAAAAAAAAA=</HashCode>
+      <FileName>DDCB.vb</FileName>
+    </TypeIdentifier>
+  </Module>
+  <Module Name="DEG2000.ED">
+    <Position X="11" Y="6.75" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="DEG2000.ED.op_ed" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>ED.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>NAYBKHQQAIBBEAQDRhAACABIBFAAOBggAAADBACCEBI=</HashCode>
+      <FileName>ED.vb</FileName>
+    </TypeIdentifier>
+  </Module>
+  <Module Name="DEG2000.FD">
+    <Position X="15.75" Y="0.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="DEG2000.FD.op_fd" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>FD.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAgMJUMAAggOUhWgJyATQCCQARwGgQkQEEgEEPhRiIA=</HashCode>
+      <FileName>FD.vb</FileName>
+    </TypeIdentifier>
+  </Module>
+  <Module Name="DEG2000.FDCB">
+    <Position X="15.75" Y="3.75" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="DEG2000.FDCB.op_fdcb" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>FDCB.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAQBAQBImgAAAAABAABAAAAEAQAAAAAAAQAA=</HashCode>
+      <FileName>FDCB.vb</FileName>
+    </TypeIdentifier>
+  </Module>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

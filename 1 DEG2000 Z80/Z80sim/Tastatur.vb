@@ -134,7 +134,8 @@ Public Class Tastatur
         Call Click2Buffer(TastCode)
     End Sub
 
-    Private Sub Buffer_Click(sender As Object, e As EventArgs) Handles Button123.Click
+    Private Sub Buffer_Click1(sender As Object, e As EventArgs) Handles Button123.Click
+        ' Buffon On / Off
         Select Case Button123.Text
             Case "Buffer On"
                 Height = 565
@@ -144,6 +145,45 @@ Public Class Tastatur
                 Button123.Text = "Buffer On"
             Case Else
         End Select
+    End Sub
+    Private Sub Buffer_Click2(sender As Object, e As EventArgs) Handles Button125.Click
+        ' Edit Paste
+        Dim i As Int16
+        Dim b As UShort
+        Try
+            If Clipboard.ContainsText() Then
+                Dim clip As String = Clipboard.GetText()
+                Dim clipL As Int16 = clip.Length
+                If clipL > 0 And clipL < COMMON.const_NextCharTast - 1 Then
+                    For i = 0 To clipL - 1
+                        b = AscW(clip(i))
+                        If COMMON.NextCharTast0 < COMMON.const_NextCharTast - 1 Then
+                            Select Case b
+                                Case &HD
+                                    b = &H1E
+                            End Select
+                            If b <> &HA Then
+                                COMMON.NextCharTast0 += 1
+                                COMMON.NextCharTast1(COMMON.NextCharTast0) = True
+                                COMMON.NextCharTast2(COMMON.NextCharTast0) = b
+                            End If
+                        End If
+                    Next
+                    Call FillBuffer()
+                End If
+            End If
+        Catch ex As Exception
+            MsgBox("Tastatur.Edit_Paste.Click: " + ex.Message)
+        End Try
+    End Sub
+    Private Sub Buffer_Click3(sender As Object, e As EventArgs) Handles Button126.Click
+        ' Clear Buffer
+        Try
+            COMMON.NextCharTast0 = 0
+            Call FillBuffer()
+        Catch ex As Exception
+            MsgBox("Tastatur.Clear_Buffer.Click: " + ex.Message)
+        End Try
     End Sub
 
     Private Function ShiftEbene(Taste As Char) As Boolean

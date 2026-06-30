@@ -288,7 +288,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="ClassDiagram1.cd" />
+    <None Include="ClassDiagram.cd" />
+    <None Include="ClassDiagram_CPU.cd" />
+    <None Include="ClassDiagram_Laufwerke.cd" />
     <None Include="DEG2000.ruleset" />
     <None Include="DEG2000.snk" />
     <None Include="DEG2000_TemporaryKey.pfx" />

@@ -345,8 +345,18 @@ Public Class ucKassette
         Try
             If ButtonText = "Open" Then
                 OpenFileDialog1.InitialDirectory = COMMON.TapeVerzeichnis
+                If COMMON.LOGfile Then
+                    My.Application.Log.WriteEntry("TapeVerzeichnis: " + COMMON.TapeVerzeichnis, TraceEventType.Information, 10)
+                    My.Application.Log.WriteEntry("OpenFileVerz.  : " + OpenFileDialog1.InitialDirectory, TraceEventType.Information, 10)
+                End If
+                OpenFileDialog1.RestoreDirectory = True
                 OpenFileDialog1.FileName = "*.CAS"
                 If OpenFileDialog1.ShowDialog() = Windows.Forms.DialogResult.OK Then
+                    If COMMON.LOGfile Then
+                        My.Application.Log.WriteEntry("TapeVerzeichnis: " + COMMON.TapeVerzeichnis, TraceEventType.Information, 11)
+                        My.Application.Log.WriteEntry("OpenFileVerz.  : " + OpenFileDialog1.InitialDirectory, TraceEventType.Information, 11)
+                        My.Application.Log.WriteEntry("OpenFileName   : " + OpenFileDialog1.FileName, TraceEventType.Information, 11)
+                    End If
                     CreateCassette.Enabled = False
                     Kassette.OpenKassette(OpenFileDialog1.FileName)
                     Select Case Kassette.FilePos

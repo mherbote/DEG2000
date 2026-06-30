@@ -349,31 +349,31 @@ Partial Class Haupt
         'CopyRightToolStripMenuItem
         '
         Me.CopyRightToolStripMenuItem.Name = "CopyRightToolStripMenuItem"
-        Me.CopyRightToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.CopyRightToolStripMenuItem.Size = New System.Drawing.Size(130, 22)
         Me.CopyRightToolStripMenuItem.Text = "CopyRight"
         '
         'Testbild1ToolStripMenuItem
         '
         Me.Testbild1ToolStripMenuItem.Name = "Testbild1ToolStripMenuItem"
-        Me.Testbild1ToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.Testbild1ToolStripMenuItem.Size = New System.Drawing.Size(130, 22)
         Me.Testbild1ToolStripMenuItem.Text = "Testbild1"
         '
         'Testbild2ToolStripMenuItem
         '
         Me.Testbild2ToolStripMenuItem.Name = "Testbild2ToolStripMenuItem"
-        Me.Testbild2ToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.Testbild2ToolStripMenuItem.Size = New System.Drawing.Size(130, 22)
         Me.Testbild2ToolStripMenuItem.Text = "Testbild2"
         '
         'CharsetToolStripMenuItem
         '
         Me.CharsetToolStripMenuItem.Name = "CharsetToolStripMenuItem"
-        Me.CharsetToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.CharsetToolStripMenuItem.Size = New System.Drawing.Size(130, 22)
         Me.CharsetToolStripMenuItem.Text = "Charset"
         '
         'LeerToolStripMenuItem
         '
         Me.LeerToolStripMenuItem.Name = "LeerToolStripMenuItem"
-        Me.LeerToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.LeerToolStripMenuItem.Size = New System.Drawing.Size(130, 22)
         Me.LeerToolStripMenuItem.Text = "Leer"
         '
         'KeyboardVis

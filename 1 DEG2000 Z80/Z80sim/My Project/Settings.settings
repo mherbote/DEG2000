@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="ProgVerz" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">D:\\devel\\1 DEG2000\\</Value>
+      <Value Profile="(Default)">D:\devel\1 DEG2000</Value>
     </Setting>
     <Setting Name="BinVerzeichnis" Type="System.String" Scope="Application">
       <Value Profile="(Default)">BIN1</Value>

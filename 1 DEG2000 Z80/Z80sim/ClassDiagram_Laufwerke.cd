@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DEG2000.Laufwerke">
+    <Position X="0.75" Y="0.5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAgEAgECAAKAAAAQCAAEACBGAQABAAUiAAAAAgAAA=</HashCode>
+      <FileName>Laufwerke.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.Kassetten">
+    <Position X="0.75" Y="6.75" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AwAAAAAAEDgAAAAAAACAAAACBABgAAAAAAAAAAAAAPA=</HashCode>
+      <FileName>Kassetten.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.ucKassette">
+    <Position X="4" Y="0.5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>uIcAgUCDACiBAEEAgKSnAAoDBHAyhgAAw9WMiCcABQA=</HashCode>
+      <FileName>ucKassette.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.KassettenLW">
+    <Position X="7.25" Y="0.5" Width="3" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="DEG2000.KassettenLW.zeile" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>KassettenLW.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="DEG2000.KassettenLW.buffer1" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>KassettenLW.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>IQAEACQCALAEAgEgAACgAAEAIRCCCAAYAMBABgAABAA=</HashCode>
+      <FileName>KassettenLW.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

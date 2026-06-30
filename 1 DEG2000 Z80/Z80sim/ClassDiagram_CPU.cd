@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DEG2000.Z80cpu">
+    <Position X="0.5" Y="0.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Delegate Name="DEG2000.Z80cpu.opfunc" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Z80cpu.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="DEG2000.Z80cpu.opfuncp" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Z80cpu.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="DEG2000.Z80cpu.opfunc2" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Z80cpu.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Class Name="DEG2000.Z80cpu.history">
+        <Compartments>
+          <Compartment Name="Fields" Collapsed="true" />
+        </Compartments>
+        <TypeIdentifier>
+          <NewMemberFileName>Z80cpu.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="DEG2000.Z80cpu.softbreak">
+        <Compartments>
+          <Compartment Name="Fields" Collapsed="true" />
+        </Compartments>
+        <TypeIdentifier>
+          <NewMemberFileName>Z80cpu.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>wDBSIEBDSgMIIgKUCJCifbmYFkIGYbAFAgATtsdDBQk=</HashCode>
+      <FileName>Z80cpu.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEG2000.CPU1">
+    <Position X="3" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>LUWII9mDhT3F9/f3PAgj3isgRP40CEJMIOG4ZZVp//8=</HashCode>
+      <FileName>CPU1.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Module Name="DEG2000.DD">
+    <Position X="5.25" Y="0.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="DEG2000.DD.op_dd" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>DD.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>eAUGqIoIADAJyCQAIiQiIBFRARwCggghCEhEMeDpSIA=</HashCode>
+      <FileName>DD.vb</FileName>
+    </TypeIdentifier>
+  </Module>
+  <Module Name="DEG2000.FD">
+    <Position X="7.5" Y="0.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="DEG2000.FD.op_fd" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>FD.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAgMJUMAAggOUhWgJyATQCCQARwGgQkQEEgEEPhRiIA=</HashCode>
+      <FileName>FD.vb</FileName>
+    </TypeIdentifier>
+  </Module>
+  <Module Name="DEG2000.CB">
+    <Position X="10" Y="0.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="DEG2000.CB.op_cb" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>CB.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAB8iAAAvETAGgAAAEFhAjwgABiAAIEO/N4Ah7xc=</HashCode>
+      <FileName>CB.vb</FileName>
+    </TypeIdentifier>
+  </Module>
+  <Module Name="DEG2000.DDCB">
+    <Position X="12.25" Y="0.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="DEG2000.DDCB.op_ddcb" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>DDCB.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAkDAOAAAAEBAAIBAAgEAABAAAAAAAAAA=</HashCode>
+      <FileName>DDCB.vb</FileName>
+    </TypeIdentifier>
+  </Module>
+  <Module Name="DEG2000.FDCB">
+    <Position X="14.5" Y="0.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="DEG2000.FDCB.op_fdcb" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>FDCB.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAQBAQBImgAAAAABAABAAAAEAQAAAAAAAQAA=</HashCode>
+      <FileName>FDCB.vb</FileName>
+    </TypeIdentifier>
+  </Module>
+  <Module Name="DEG2000.ED">
+    <Position X="17" Y="0.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="DEG2000.ED.op_ed" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>ED.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>NAYBKHQQAIBBEAQDRhAACABIBFAAOBggAAADBACCEBI=</HashCode>
+      <FileName>ED.vb</FileName>
+    </TypeIdentifier>
+  </Module>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
